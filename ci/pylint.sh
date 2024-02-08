@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# This script runs the pylint checker..
+
+FULL_PATH=$(realpath $0)
+SCRIPT_DIR=$(dirname $FULL_PATH)
+PROJECT_ROOT=$SCRIPT_DIR/..
+set -e
+set -o pipefail
+
+cd $PROJECT_ROOT
+
+if [[ -z $(which poetry) ]]; then
+    echo "Installing poetry"
+    export POETRY_HOME=$HOME/.local
+    curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
+    export PATH="$POETRY_HOME/bin:$PATH"
+    poetry config virtualenvs.in-project false
+fi
+
+echo "Installing dependencies"
+poetry install
+
+echo "Run pylint checker"
+
+poetry run $PROJECT_ROOT/scripts/run_pylint.sh

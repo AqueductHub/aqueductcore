@@ -1,0 +1,28 @@
+version: '3'
+services:
+  aqueduct:
+    image: aqueductcore/release:latest
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+      POSTGRES_USERNAME: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: aqueduct
+    volumes:
+      - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
+    ports:
+      - 80:8000
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=aqueduct
+    expose:
+      - 5432

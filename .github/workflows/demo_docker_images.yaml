@@ -1,0 +1,29 @@
+name: Demo Docker Images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.MY_GITHUB_REPO_PAT }}
+          submodules: recursive
+
+      - name: Log in to registry
+        uses: docker/login-action@v2
+        with:
+          registry: riverlane.azurecr.io
+          username: ${{ secrets.AZURE_CR_USERNAME }}
+          password: ${{ secrets.AZURE_CR_PASSWORD }}
+
+      - name: Setting up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Build Release Test Containers
+        run: ci/build_release.sh -i demo -p true -t ${{ github.sha }} -a false

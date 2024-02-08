@@ -1,0 +1,28 @@
+{
+	"name": "Aqueduct Core Dev Container",
+	"dockerComposeFile": "../containers/dev/docker-compose.yml",
+	"service": "aqueductcore",
+	"shutdownAction": "stopCompose",
+	"workspaceFolder": "/workspace",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"ms-python.python",
+				"ms-python.pylint",
+				"ms-python.mypy-type-checker",
+				"ms-python.black-formatter",
+				"ms-azuretools.vscode-docker",
+				"streetsidesoftware.code-spell-checker",
+				"redhat.vscode-yaml",
+				"mongodb.mongodb-vscode",
+				"zxh404.vscode-proto3",
+				"ckolkman.vscode-postgres",
+				"ms-python.isort",
+				"ritwickdey.LiveServer"
+			]
+		}
+	},
+	"remoteUser": "dev_user"
+}

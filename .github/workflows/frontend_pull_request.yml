@@ -1,0 +1,69 @@
+name: Static Analysis and Unit Tests
+
+on:
+  push:
+    branches: [main, feat-*]
+  pull_request:
+    branches: [main, feat-*]
+  workflow_dispatch:
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install eslint
+        run: yarn add eslint
+        working-directory: aqueductcore/frontend
+
+      - name: Run eslint check
+        run: yarn eslint "src/**/*.{js,jsx,ts,tsx,json}"
+        working-directory: aqueductcore/frontend
+
+  prettier-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install prettier
+        run: yarn add prettier
+        working-directory: aqueductcore/frontend
+
+      - name: Run Prettier check
+        run: yarn prettier --write "src/**/*.{js,jsx,ts,tsx,json}" --config .prettierrc.json
+        working-directory: aqueductcore/frontend
+
+  type-test-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install packages
+        run: yarn install
+        working-directory: aqueductcore/frontend
+
+      - name: Run type checking
+        run: yarn tsc
+        working-directory: aqueductcore/frontend
+
+      - name: Run tests
+        run: yarn test --watchAll=false
+        working-directory: aqueductcore/frontend
+
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install packages
+        run: yarn
+        working-directory: aqueductcore/frontend
+
+      - name: Build the project
+        run: yarn build
+        working-directory: aqueductcore/frontend

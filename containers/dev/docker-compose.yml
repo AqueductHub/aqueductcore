@@ -1,0 +1,28 @@
+---
+version: '3.8'
+services:
+  aqueductcore:
+    build:
+      context: ../..
+      dockerfile: containers/dev/Dockerfile
+    depends_on:
+      - postgres
+    user: dev_user
+    container_name: aqueductcore
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    env_file: ../../envs/.env.dev
+    volumes:
+      # Use a named volume for the source code
+      - ../../:/workspace
+      - ${HOME}/.ssh:/home/dev_user/.ssh
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=aqueductcore
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=aqueductcore_dev
+    expose:
+      - 5432

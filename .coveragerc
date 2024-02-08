@@ -1,0 +1,4 @@
+[run]
+concurrency =
+    greenlet
+    thread

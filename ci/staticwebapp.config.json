@@ -1,0 +1,15 @@
+{
+    "routes": [
+        {
+            "route": "/",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        }
+    ],
+    "auth": {},
+    "globalHeaders": {
+        "Cache-Control": "no-store"
+    },
+    "responseOverrides": {}
+}
