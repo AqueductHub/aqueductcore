@@ -2,7 +2,6 @@
 
 # This script builds the docker images for a release
 # -t Tag to tag images with, defaults to dev if not specified
-# -d Path to docs docker image, pulls latest docs docker image from registry if not specified.
 # -a Enable alpha features
 # -p Push built images to Dockerhub
 
@@ -15,11 +14,10 @@ set -o pipefail
 tag="dev"
 push="false"
 
-while getopts "t:d:p:a:" flag
+while getopts "t:p:a:" flag
 do 
     case "${flag}" in
         t) tag=${OPTARG};;
-        d) docs=${OPTARG};;
         p) push=${OPTARG};;
         a) alpha=${OPTARG};;
     esac
@@ -35,16 +33,16 @@ echo "Installing poetry"
     poetry config virtualenvs.in-project false
 fi
 
-echo "Create sdist aqueductcore"
+echo "Create sdist"
 poetry build -f sdist
 
 set -x
 
-echo "Build aqueductcore static files"
+echo "Build static files"
 docker run --rm -v ${PROJECT_ROOT}:/app node:16.20-bullseye bash -c \
     "bash /app/scripts/build_frontend.sh -a $alpha"
 
-echo "Build aqueductcore docker image"
+echo "Build docker image"
 
 docker buildx create --use
 docker buildx build -f $PROJECT_ROOT/containers/release/Dockerfile \

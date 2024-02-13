@@ -1,6 +1,6 @@
 site_name: Aqueduct Experiment Control Software
 site_author: Riverlane Ltd.
-site_url: https://black-sand-0b0e2a903.3.azurestaticapps.net
+site_url: https://aqueducthub.github.io/aqueductcore/
 repo_name: aqueducthub/aqueductcore
 docs_dir: "docs"
 theme:
@@ -66,5 +66,6 @@ nav:
   - "index.md"
   - "setup.md"
   - "getting-started.md"
+  - "Python Client": "https://aqueducthub.github.io/aqueductpy/"
 
 copyright: Copyright &copy; 2023 - 2024 Riverlane Ltd.
