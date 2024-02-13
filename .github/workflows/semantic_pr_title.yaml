@@ -7,6 +7,8 @@ on:
 jobs:
   semantic_pull_request:
     runs-on: ubuntu-20.04
+    permissions:
+      pull-requests: read
     steps:
       # Uses https://github.com/amannn/action-semantic-pull-request
       - name: Check PR title uses conventional commit spec
