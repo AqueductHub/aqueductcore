@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "aqueductcore"
-version = "0.0.1"
-description = "Aqueduct Core"
-authors = ["Aqueduct Team <amir.alavi@riverlane.com>"]
-license = "Proprietary"
+version = "0.0.7"
+description = "Aqueduct core web application."
+authors = ["Aqueduct Team <aqueduct@riverlane.com>"]
+license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
