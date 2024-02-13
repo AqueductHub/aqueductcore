@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://black-sand-0b0e2a903.3.azurestaticapps.net/main/</loc>
+         <loc>https://aqueducthub.github.io/aqueductcore/main/</loc>
          <lastmod>2024-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started/</loc>
+         <loc>https://aqueducthub.github.io/aqueductcore/main/getting-started/</loc>
          <lastmod>2024-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://black-sand-0b0e2a903.3.azurestaticapps.net/main/setup/</loc>
+         <loc>https://aqueducthub.github.io/aqueductcore/main/setup/</loc>
          <lastmod>2024-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
