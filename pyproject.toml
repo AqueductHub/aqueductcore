@@ -24,7 +24,7 @@ python-multipart = "^0.0"
 aiofiles = "^23.2"
 streaming-form-data = "^1.13"
 gunicorn = "^21.2"
-pip-licenses = "^4.3.4"
+pip-licenses = "^4.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -47,7 +47,7 @@ aiosqlite = "^0.19"
 alembic = "^1.12"
 psycopg2-binary = "^2.9"
 mkdocstrings = {version = "^0.24",extras = ["python"]}
-nbconvert = "^7.14.2"
+nbconvert = "^7.14"
 
 
 [build-system]
