@@ -1,4 +1,4 @@
-name: Dev Docker Images
+name: Development Docker Images
 
 on:
   push:
@@ -12,15 +12,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MY_GITHUB_REPO_PAT }}
-          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
-          registry: riverlane.azurecr.io
-          username: ${{ secrets.AZURE_CR_USERNAME }}
-          password: ${{ secrets.AZURE_CR_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Setting up Python
         uses: actions/setup-python@v2
@@ -28,4 +26,4 @@ jobs:
           python-version: 3.8
 
       - name: Build Release Test Containers
-        run: ci/build_release.sh -i dev -p true -t ${{ github.sha }} -a false
+        run: ci/build_dev.sh -p true -t ${{ github.sha }} -a false

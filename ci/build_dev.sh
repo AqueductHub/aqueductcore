@@ -48,17 +48,17 @@ echo "Build aqueductcore docker image"
 
 docker buildx create --use
 docker buildx build -f $PROJECT_ROOT/containers/release/Dockerfile \
-    -t aqueducthub/aqueductcore:$tag -t aqueducthub/aqueductcore:latest \
-    -o type=docker,dest=$PROJECT_ROOT/build/aqueductcore.tar $PROJECT_ROOT
+    -t aqueducthub/aqueductcore-dev:$tag -t aqueducthub/aqueductcore-dev:latest \
+    -o type=docker,dest=$PROJECT_ROOT/build/aqueductcore-dev.tar $PROJECT_ROOT
 
 docker buildx stop
 
 
 echo "Load docker images"
-docker load -i build/aqueductcore.tar
+docker load -i build/aqueductcore-dev.tar
 
 if [[ $push != "false" ]]; then
     echo "Push docker images"
-    docker image push aqueducthub/aqueductcore:$tag
-    docker image push aqueducthub/aqueductcore:latest
+    docker image push aqueducthub/aqueductcore-dev:$tag
+    docker image push aqueducthub/aqueductcore-dev:latest
 fi
