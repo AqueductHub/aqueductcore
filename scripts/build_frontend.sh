@@ -12,5 +12,5 @@ rm -rf ${PROJECT_ROOT}/frontend_build \
 && cd ${PROJECT_ROOT}/aqueductcore/frontend \
 && rm -rf build \
 && yarn install \
-&& REACT_APP_JUST_AQD=true yarn build \
+&& yarn build \
 && mv build ${PROJECT_ROOT}/frontend_build

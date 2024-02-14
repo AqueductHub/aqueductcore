@@ -56,7 +56,7 @@ echo "Load docker images"
 docker load -i build/$image_name.tar
 
 if [[ $push != "false" ]]; then
-    echo "Push docker images"
+    echo "Push docker images to DockerHub"
     docker image push aqueducthub/$image_name:$tag
     docker image push aqueducthub/$image_name:latest
 fi
