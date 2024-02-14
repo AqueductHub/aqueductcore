@@ -2,8 +2,8 @@
 
 # This script builds the docker images for a release
 # -t Tag to tag images with, defaults to dev if not specified
-# -a Enable alpha features
-# -p Push built images to Dockerhub
+# -i Docker image name
+# -p Push built image to Dockerhub
 
 FULL_PATH=$(realpath $0)
 SCRIPT_DIR=$(dirname $FULL_PATH)
@@ -14,12 +14,12 @@ set -o pipefail
 tag="dev"
 push="false"
 
-while getopts "t:p:a:" flag
+while getopts "t:p:i:" flag
 do 
     case "${flag}" in
         t) tag=${OPTARG};;
+        i) image_name=${OPTARG};;
         p) push=${OPTARG};;
-        a) alpha=${OPTARG};;
     esac
 done
 
@@ -40,23 +40,23 @@ set -x
 
 echo "Build static files"
 docker run --rm -v ${PROJECT_ROOT}:/app node:16.20-bullseye bash -c \
-    "bash /app/scripts/build_frontend.sh -a $alpha"
+    "bash /app/scripts/build_frontend.sh"
 
 echo "Build docker image"
 
 docker buildx create --use
 docker buildx build -f $PROJECT_ROOT/containers/release/Dockerfile \
-    -t aqueducthub/aqueductcore-dev:$tag -t aqueducthub/aqueductcore-dev:latest \
-    -o type=docker,dest=$PROJECT_ROOT/build/aqueductcore-dev.tar $PROJECT_ROOT
+    -t aqueducthub/$image_name:$tag -t aqueducthub/$image_name:latest \
+    -o type=docker,dest=$PROJECT_ROOT/build/$image_name.tar $PROJECT_ROOT
 
 docker buildx stop
 
 
 echo "Load docker images"
-docker load -i build/aqueductcore-dev.tar
+docker load -i build/$image_name.tar
 
 if [[ $push != "false" ]]; then
     echo "Push docker images"
-    docker image push aqueducthub/aqueductcore-dev:$tag
-    docker image push aqueducthub/aqueductcore-dev:latest
+    docker image push aqueducthub/$image_name:$tag
+    docker image push aqueducthub/$image_name:latest
 fi

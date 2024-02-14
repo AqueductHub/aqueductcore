@@ -1,6 +1,6 @@
 {
 	"name": "Aqueduct Core Dev Container",
-	"dockerComposeFile": "../containers/dev/docker-compose.yml",
+	"dockerComposeFile": "../containers/dev/docker-compose.yaml",
 	"service": "aqueductcore",
 	"shutdownAction": "stopCompose",
 	"workspaceFolder": "/workspace",

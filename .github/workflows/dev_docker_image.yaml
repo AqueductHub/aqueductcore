@@ -26,4 +26,4 @@ jobs:
           python-version: 3.8
 
       - name: Build Release Test Containers
-        run: ci/build_dev.sh -p true -t ${{ github.sha }} -a false
+        run: ci/build_docker_image.sh -i aqueductcore-dev -p true -t ${{ github.sha }}

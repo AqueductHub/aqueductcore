@@ -29,7 +29,7 @@ jobs:
           python-version: 3.8
 
       - name: Build Release Test Containers
-        run: ci/build_release.sh -p true -t ${{ inputs.version }} -a false
+        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
 
       - name: Build final archived file
         run: |
