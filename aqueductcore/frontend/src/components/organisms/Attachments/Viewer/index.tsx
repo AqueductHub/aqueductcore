@@ -1,6 +1,6 @@
 import FileOpenOutlinedIcon from "@mui/icons-material/FileOpenOutlined";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import { Box, Button, IconButton, Typography, styled } from "@mui/material";
+import { Box, Button, IconButton, Typography, styled, useTheme } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactJson from "@microlink/react-json-view";
 import CloseIcon from "@mui/icons-material/Close";
@@ -15,6 +15,10 @@ const ViewerBox = styled(Box)`
   border: 1px solid ${({ theme }) => theme.palette.neutral.main};
   border-radius: ${({ theme }) => theme.spacing(1)};
   height: ${({ theme }) => theme.spacing(67.5)};
+  background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.background.card
+      : props.theme.palette.common.white};
 `;
 
 const ViewerBoxHeader = styled(Box)`
@@ -23,6 +27,7 @@ const ViewerBoxHeader = styled(Box)`
   padding: 0 ${({ theme }) => theme.spacing(1.25)};
   display: flex;
   align-items: center;
+  background-color: ${(props) => props.theme.palette.background.paper};
 `;
 
 const ViewerBoxHeaderContent = styled(Typography)`
@@ -45,6 +50,10 @@ const FilePreviewJSON = styled(Box)`
   height: calc(100% - ${({ theme }) => theme.spacing(6.25)});
   padding: ${({ theme }) => `${theme.spacing(1)} ${theme.spacing(2)}`};
   overflow: scroll;
+  background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.common.black
+      : props.theme.palette.common.white};
 `;
 
 const FilePreviewImages = styled(Box)`
@@ -83,6 +92,7 @@ function Viewer({
 
   const [info, setInfo] = useState<{ data: unknown; type: PreviewFilesType }>();
   const fileURL = file ? `${AQD_FILE_URI}${file.path}/${file.name}` : "";
+  const theme = useTheme()
 
   useEffect(() => {
     fetch(fileURL).then((response) => {
@@ -113,7 +123,7 @@ function Viewer({
   }, [file]);
   return (
     <ViewerBox>
-      <ViewerBoxHeader sx={file ? { backgroundColor: "background.paper" } : null}>
+      <ViewerBoxHeader>
         <ViewerBoxHeaderContent>{file ? file.name : "No file selected"}</ViewerBoxHeaderContent>
         {file ? (
           <>
@@ -132,7 +142,7 @@ function Viewer({
         /*  JSON */
         info?.type === "JSON" ? (
           <FilePreviewJSON>
-            <ReactJson src={info.data} />
+            <ReactJson src={info.data} theme={theme.palette.mode === 'dark' ? 'bright' : 'bright:inverted'} />
           </FilePreviewJSON>
         ) : /* IMAGES */
           ["image/jpeg", "image/png"].includes(info?.type) ? (

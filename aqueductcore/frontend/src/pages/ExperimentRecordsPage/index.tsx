@@ -26,6 +26,8 @@ import {
   ExperimentFiltersType,
 } from "types/globalTypes";
 
+export const tableHeightOffset = 200;
+
 const Container = styled(Box)`
   margin: -${mainPadding}px;
   margin-top: -${drawerTopOffset + mainPadding}px;
@@ -190,7 +192,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
             }
             experimentList={processedExperimentData}
             pageInfo={pageInfo}
-            maxHeight="50vh"
+            maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           />
         ) : null}
       </Box>

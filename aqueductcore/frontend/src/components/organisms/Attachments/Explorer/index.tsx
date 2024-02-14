@@ -17,9 +17,6 @@ const ExplorerBox = styled(Box)`
   overflow: hidden;
   border: 1px solid ${(props) => props.theme.palette.neutral.main};
   border-radius: ${(props) => props.theme.spacing(1)};
-`;
-
-const ExplorerTable = styled(Table)`
   background-color: ${(props) =>
     props.theme.palette.mode === "dark"
       ? props.theme.palette.background.card
@@ -92,7 +89,7 @@ function Explorer({
       <TableContainer
         sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
       >
-        <ExplorerTable stickyHeader>
+        <Table stickyHeader>
           <ExplorerTableHead>
             <TableRow>
               <FileNameHeaderCell>File name</FileNameHeaderCell>
@@ -119,7 +116,7 @@ function Explorer({
               </TableRow>
             ))}
           </TableBody>
-        </ExplorerTable>
+        </Table>
       </TableContainer>
     </ExplorerBox>
   );
