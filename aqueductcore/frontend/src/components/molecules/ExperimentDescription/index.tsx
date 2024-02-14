@@ -41,6 +41,8 @@ const ExperimentDescriptionTextField = styled(TextareaAutosize)`
   margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
   margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
   border-radius: ${(props) => props.theme.spacing(1)};
+  background-color: ${(props) => props.theme.palette.background.card};
+  color: ${(props) => props.theme.palette.text.primary};
   vertical-align: middle;
   font-size: 0.92rem;
   letter-spacing: 10;
