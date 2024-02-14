@@ -6,6 +6,6 @@ const logoWidth = 180;
 
 export const AqueductLogo = ({ theme }: { theme?: ThemeModeTypes }) => {
     return (
-        <img width={logoWidth} src={theme === 'dark' ? AqueductLogoDark : AqueductLogoLight} />
+        <img width={logoWidth} src={theme === 'dark' ? AqueductLogoDark : AqueductLogoLight} title='aqueduct-logo' />
     );
 };
