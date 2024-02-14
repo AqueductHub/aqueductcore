@@ -62,37 +62,25 @@ interface Theme {
   getColorSchemeSelector: (scheme: "dark" | "light") => string;
 }
 
-const commonThemePaletteObject = {
-  primary: {
-    main: "#00968F",
-    dark: "#006F62",
-    light: "#53C7BF",
-  },
-  secondary: {
-    main: "#FF9E4C",
-    dark: "#C76F1C",
-    light: "#FFCF7B",
-  },
-};
-
 export const cssVariableTheme = {
   components: {
     MuiListItemButton: {
       styleOverrides: {
         root: ({ theme }: { theme: Theme }) => ({
           "&.Mui-selected": {
-            backgroundColor: "#00968F",
-            color: "white",
+            backgroundColor: "#3CCBDA",
             [theme.getColorSchemeSelector("dark")]: {
-              backgroundColor: "#00968F",
-            },
-            "& > .MuiListItemIcon-root": {
-              color: "white",
+              color: '#000000',
+              backgroundColor: "#3CCBDA",
+              "& > .MuiListItemIcon-root": {
+                color: '#000000',
+              }
             },
             "&.Mui-selected:hover, &.Mui-selected:focus-visible": {
-              backgroundColor: "#028b84",
+              backgroundColor: "#00C2D6",
               [theme.getColorSchemeSelector("dark")]: {
-                backgroundColor: "#00968fcf",
+                backgroundColor: "#53D1E8",
+                color: '#000000'
               },
             },
           },
@@ -115,25 +103,44 @@ export const cssVariableTheme = {
         }),
       },
     },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: ({ theme }: { theme: Theme }) => ({
+          background: "rgb(235, 234, 227)",
+          [theme.getColorSchemeSelector("dark")]: {
+            background: "rgb(45, 45, 42)",
+          },
+        }),
+      }
+    }
   },
   colorSchemes: {
     light: {
       palette: {
-        ...commonThemePaletteObject,
         mode: "light" as PaletteMode,
+        primary: {
+          main: "#03A0B0",
+          dark: "#008C8A",
+          light: "#74E5E3",
+        },
+        secondary: {
+          main: "#FF9E4C",
+          dark: "#C76F1C",
+          light: "#FFCF7B",
+        },
         disabled: {
           main: "#DBDBDB",
         },
         background: {
           main: "var(--color-grey-0, #FFFFFF)",
           sub: "var(--color-grey-100, #EEEEEE)",
-          default: "#FFFFFF",
-          paper: "#F5F5F5",
+          default: "rgb(245,245,245)",
+          paper: "#EFEFEF",
           card: "#F7F6F6",
         },
         text: {
           disabled: "var(--color-grey-400, #AFAFAF)",
-          green: "var(--color-primary-main-600, #00968F)",
+          green: "var(--color-primary-main-600, #3CCBDA)",
           greenEmphasis: "var(--color-primary-dark-800, #005A56)",
           primary: "#202020",
           subtitle: "var(--color-grey-600, #7F7F7F)",
@@ -152,7 +159,7 @@ export const cssVariableTheme = {
           contrastText: "#000",
         },
         border: {
-          focus: "var(--color-primary-main-600, #00968F)",
+          focus: "var(--color-primary-main-600, #3CCBDA)",
           invert: "var(--color-grey-50, #F8F8F8)",
           light: "var(--color-grey-200, #D3D3D3)",
           primary: "var(--color-grey-900, #202020)",
@@ -163,12 +170,12 @@ export const cssVariableTheme = {
           miscOverlayBackground: "var(--color-transparent-black-50, #00000080)",
           miscAqueductLogo: "var(--color-logo-invert, #FFFFFE)",
           miscTableHeader: "var(--color-grey-900, #202020)",
-          primaryFillPrimary: "var(--color-primary-main-600, #00968F)",
-          primaryFillPrimaryDark1: "var(--color-primary-dark-700, #006F62)",
+          primaryFillPrimary: "var(--color-primary-main-600, #3CCBDA)",
+          primaryFillPrimaryDark1: "var(--color-primary-dark-700, #008C8A)",
           primaryFillPrimaryDark2: "var(--color-primary-dark-800, #005A56)",
-          primaryFillPrimaryLight: "var(--color-primary-light-400, #53C7BF)",
-          primaryFillPrimaryTransparent: "var(--color-transparent-primary-10, #00968f1a)",
-          primaryFillPrimaryTransparentLight: "var(--color-transparent-primary-5, #00968f0d)",
+          primaryFillPrimaryLight: "var(--color-primary-light-400, #74E5E3)",
+          primaryFillPrimaryTransparent: "var(--color-transparent-primary-10, #3CCBDA1a)",
+          primaryFillPrimaryTransparentLight: "var(--color-transparent-primary-5, #3CCBDA0d)",
           stateActive: "var(--color-transparent-white-8, #ffffff14)",
           stateHover: "var(--color-transparent-white-5, #ffffff0d)",
           statePressed: "var(--color-transparent-white-10, #ffffff1a)",
@@ -184,22 +191,31 @@ export const cssVariableTheme = {
     },
     dark: {
       palette: {
-        ...commonThemePaletteObject,
         mode: "dark" as PaletteMode,
+        primary: {
+          main: "#3CCBDA",
+          dark: "#008C8A",
+          light: "#74E5E3",
+        },
+        secondary: {
+          main: "#FF9E4C",
+          dark: "#C76F1C",
+          light: "#FFCF7B",
+        },
         disabled: {
           main: "#747474",
         },
         background: {
           main: "var(--color-grey-1000, #191919)",
           sub: "var(--color-grey-900, #202020)",
-          default: "#2d2d2d",
-          paper: "#000000",
+          default: "rgb(37,36,33)",
+          paper: "rgb(45, 45, 42)",
           card: "#2f2e2e",
         },
         text: {
           disabled: "var(--color-grey-700, #4D4D4D)",
-          green: "var(--color-primary-main-600, #00968F)",
-          greenEmphasis: "var(--color-primary-light-400, #53C7BF)",
+          green: "var(--color-primary-main-600, #3CCBDA)",
+          greenEmphasis: "var(--color-primary-light-400, #74E5E3)",
           primary: "#F8F8F8",
           subtitle: "var(--color-grey-400, #AFAFAF)",
           white: "var(--color-grey-50, #F8F8F8)",
@@ -217,7 +233,7 @@ export const cssVariableTheme = {
           contrastText: "#fff",
         },
         border: {
-          focus: "var(--color-primary-light-400, #53C7BF)",
+          focus: "var(--color-primary-light-400, #74E5E3)",
           invert: "var(--color-grey-900, #202020)",
           light: "var(--color-grey-700, #4D4D4D)",
           primary: "var(--color-grey-50, #F8F8F8)",
@@ -228,12 +244,12 @@ export const cssVariableTheme = {
           miscOverlayBackground: "var(--color-transparent-black-50, #00000080)",
           miscAqueductLogo: "var(--color-logo-dark-green, #20352D)",
           miscTableHeader: "var(--color-grey-50, #F8F8F8)",
-          primaryFillPrimary: "var(--color-primary-main-600, #00968F)",
-          primaryFillPrimaryDark1: "var(--color-primary-dark-700, #006F62)",
+          primaryFillPrimary: "var(--color-primary-main-600, #3CCBDA)",
+          primaryFillPrimaryDark1: "var(--color-primary-dark-700, #008C8A)",
           primaryFillPrimaryDark2: "var(--color-primary-dark-800, #005A56)",
-          primaryFillPrimaryLight: "var(--color-primary-light-400, #53C7BF)",
-          primaryFillPrimaryTransparent: "var(--color-transparent-primary-10, #00968f1a)",
-          primaryFillPrimaryTransparentLight: "var(--color-transparent-primary-5, #00968f0d)",
+          primaryFillPrimaryLight: "var(--color-primary-light-400, #74E5E3)",
+          primaryFillPrimaryTransparent: "var(--color-transparent-primary-10, #3CCBDA1a)",
+          primaryFillPrimaryTransparentLight: "var(--color-transparent-primary-5, #3CCBDA0d)",
           stateActive: "var(--color-transparent-black-8, #00000014)",
           stateHover: "var(--color-transparent-black-5, #0000000d)",
           statePressed: "var(--color-transparent-black-10, #0000001a)",

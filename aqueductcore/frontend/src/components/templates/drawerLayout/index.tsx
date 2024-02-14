@@ -24,7 +24,7 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { AqueductLogo } from "assets/svg/AqueductLogo";
+import { AqueductLogo } from "components/atoms/AqueductLogo";
 import { WithOptional } from "types/globalTypes";
 
 export const drawerWidth = 264;
@@ -71,6 +71,13 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
+const LogoContainer = styled(Box)`
+  display: flex;
+  justify-content: flex-start;
+  margin-top: ${(props) => props.theme.spacing(3)};
+  margin-left: ${(props) => props.theme.spacing(2)};
+`;
+
 function DrawerLayout(props: PropsWithChildren) {
   const location = useLocation();
   const theme = useTheme();
@@ -89,13 +96,9 @@ function DrawerLayout(props: PropsWithChildren) {
   const drawer = (
     <div>
       {/****** Logo *******/}
-      <Box sx={{ display: "flex", mt: 3 }} justifyContent="center" alignItems="center">
-        <AqueductLogo />
-      </Box>
-      {/****** Title *******/}
-      <Box sx={{ display: "flex", my: 3 }} justifyContent="center" alignItems="center">
-        <Typography>Aqueduct</Typography>
-      </Box>
+      <LogoContainer>
+        <AqueductLogo theme={theme.palette.mode} />
+      </LogoContainer>
       {/****** List *******/}
       <List>
         {drawerItems.map((item) =>
@@ -201,7 +204,7 @@ function DrawerLayout(props: PropsWithChildren) {
         position="fixed"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          ml: { sm: `${drawerWidth}px` }
         }}
       >
         <Toolbar sx={{ display: { sm: "none" } }}>
