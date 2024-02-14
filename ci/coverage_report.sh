@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script runs unit tests.
+# This script generates coverage report.
 
 FULL_PATH=$(realpath $0)
 SCRIPT_DIR=$(dirname $FULL_PATH)

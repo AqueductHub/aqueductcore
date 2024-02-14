@@ -15,7 +15,3 @@ fi
 
 # Build static website
 poetry run mkdocs build --clean --verbose
-
-
-# Copy web assets and substitute DOC_DIR variable in index.html
-cp -r $PROJECT_ROOT/ci/staticwebapp.config.json $PROJECT_ROOT/site

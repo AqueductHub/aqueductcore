@@ -14,9 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MY_GITHUB_REPO_PAT }}
-          fetch-depth: 0
-          submodules: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -45,21 +43,3 @@ jobs:
       - name: Build docs
         run: |
           poetry run mike deploy --push ${{ steps.extract_branch.outputs.branch }}
-
-      - name: Create all versions directory
-        run: |
-          mkdir -p site \
-          && git archive gh-pages | tar x -C site
-
-      - name: Form authentication structure for Azure web app
-        run: |
-          cp -r ci/staticwebapp.config.json site
-
-      - name: Build And Deploy
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SAND_0B0E2A903 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "site" # App source code path
