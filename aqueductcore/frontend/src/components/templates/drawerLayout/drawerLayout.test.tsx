@@ -27,7 +27,7 @@ const DrawerComponent = () => {
 test("Aqueduct Logo be visible in the drawer", async () => {
   const { getAllByTitle } = render(<DrawerComponent />);
 
-  const pageLogo = getAllByTitle("aqueduct logo");
+  const pageLogo = getAllByTitle("aqueduct-logo");
   expect(pageLogo[0]).toBeInTheDocument();
 });
 
