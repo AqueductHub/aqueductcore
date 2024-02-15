@@ -1,4 +1,4 @@
-# Service layer constants
+"""Validation constants"""
 
 MAX_EXPERRIMENTS_PER_REQUEST = 500
 MAX_TAGS_PER_REQUEST = 500

@@ -32,4 +32,3 @@ class ECSFilesPathError(ECSError):
 
 class ECSFileUploadError(ECSError):
     """Exception raised when there is an issue with file upload."""
-

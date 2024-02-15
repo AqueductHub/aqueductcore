@@ -1,5 +1,5 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
-from re import compile
+from re import compile as recompile
 
 from datetime import datetime
 from typing import Tuple
@@ -65,6 +65,6 @@ def generate_id_and_alias() -> Tuple[UUID, str]:
 def is_tag_valid(tag: str) -> bool:
     """Validate if tag consists of alphanumeric characters, underscores and hyphens only"""
     pattern = r"^[a-zA-Z0-9_-]+$"
-    regex = compile(pattern)
+    regex = recompile(pattern)
 
     return bool(regex.match(tag))

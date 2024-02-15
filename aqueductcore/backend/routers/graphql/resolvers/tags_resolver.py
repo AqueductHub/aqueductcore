@@ -22,7 +22,7 @@ async def get_tags(
 ) -> Tags:
     """Tags resolver."""
 
-    if limit > MAX_TAGS_PER_REQUEST:
+    if limit and limit > MAX_TAGS_PER_REQUEST:
         raise ECSValidationError(f"Maximum allowed limit for tags is {MAX_TAGS_PER_REQUEST}")
 
     include_dangling = False

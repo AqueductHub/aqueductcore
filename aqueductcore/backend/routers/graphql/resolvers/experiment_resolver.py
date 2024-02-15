@@ -31,7 +31,9 @@ async def get_expriments(
     """Resolve all experiments."""
 
     if limit > MAX_EXPERRIMENTS_PER_REQUEST:
-        raise ECSValidationError(f"Maximum allowed limit for experiments is {MAX_EXPERRIMENTS_PER_REQUEST}")
+        raise ECSValidationError(
+            f"Maximum allowed limit for experiments is {MAX_EXPERRIMENTS_PER_REQUEST}"
+        )
 
     experiments = await get_all_experiments(
         db_session,

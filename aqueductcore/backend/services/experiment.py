@@ -22,7 +22,6 @@ from aqueductcore.backend.services.utils import (
     generate_id_and_alias,
     tag_model_to_orm,
     tag_orm_to_model,
-    is_tag_valid,
 )
 from aqueductcore.backend.services.validators import (
     validate_description,
@@ -58,7 +57,7 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
 
     try:
         validate_experiment_filters(title, tags, should_include_tags)
-    except ECSValidationError:
+    except ECSValidationError: # pylint: disable=try-except-raise
         raise
 
     statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
@@ -213,7 +212,7 @@ async def create_db_experiment(
         validate_title(title)
         validate_description(description)
         validate_tags(tags)
-    except ECSValidationError:
+    except ECSValidationError: # pylint: disable=try-except-raise
         raise
 
     input_tag_keys = [tag.lower() for tag in tags]
@@ -258,7 +257,7 @@ async def update_db_experiment(
     try:
         validate_title(title)
         validate_description(description)
-    except ECSValidationError:
+    except ECSValidationError: # pylint: disable=try-except-raise
         raise
 
     statement = (

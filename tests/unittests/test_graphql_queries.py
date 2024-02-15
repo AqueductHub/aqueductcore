@@ -71,7 +71,8 @@ all_experiments_query = """
 
 all_tags_query = """
     query TestQuery($dangling:Boolean!) {
-        tags(filters: {
+        tags(
+            filters: {
                 includeDangling: $dangling
             }) {
             tagsData
