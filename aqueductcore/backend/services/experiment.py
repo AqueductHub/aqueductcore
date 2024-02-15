@@ -15,13 +15,22 @@ from aqueductcore.backend.server.errors import (
     ECSDBError,
     ECSDBExperimentNonExisting,
     ECSFilesPathError,
+    ECSValidationError,
 )
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_id_and_alias,
     tag_model_to_orm,
     tag_orm_to_model,
+    is_tag_valid,
 )
+from aqueductcore.backend.services.validators import (
+    validate_description,
+    validate_experiment_filters,
+    validate_tags,
+    validate_title,
+)
+
 
 ARCHIVED = "__archived__"
 func: Callable
@@ -46,6 +55,12 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
         List of experiments data models.
 
     """
+
+    try:
+        validate_experiment_filters(title, tags, should_include_tags)
+    except ECSValidationError:
+        raise
+
     statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
 
     if title is not None:
@@ -194,6 +209,13 @@ async def create_db_experiment(
 ) -> ExperimentRead:
     """Create an experiment"""
 
+    try:
+        validate_title(title)
+        validate_description(description)
+        validate_tags(tags)
+    except ECSValidationError:
+        raise
+
     input_tag_keys = [tag.lower() for tag in tags]
     tags_in_db_statement = select(orm.Tag).filter(orm.Tag.key.in_(input_tag_keys))
     result = await db_session.execute(tags_in_db_statement)
@@ -232,6 +254,12 @@ async def update_db_experiment(
     description: Optional[str] = None,
 ) -> ExperimentRead:
     """Update experiment details"""
+
+    try:
+        validate_title(title)
+        validate_description(description)
+    except ECSValidationError:
+        raise
 
     statement = (
         select(orm.Experiment)
