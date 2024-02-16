@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -28,7 +30,7 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Build Release Test Containers
+      - name: Build Release Images
         run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
 
       - name: Build final archived file
