@@ -7,22 +7,36 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.cpptools",
-				"ms-vscode.cmake-tools",
-				"ms-python.python",
-				"ms-python.pylint",
+				// Project
+				"streetsidesoftware.code-spell-checker",
+				"ms-azuretools.vscode-docker",
+				"aaron-bond.better-comments",
+				"esbenp.prettier-vscode",
+				"ritwickdey.LiveServer"	,
+				"redhat.vscode-yaml",
+				"mhutchie.git-graph",
+				// Backend
 				"ms-python.mypy-type-checker",
 				"ms-python.black-formatter",
-				"ms-azuretools.vscode-docker",
-				"streetsidesoftware.code-spell-checker",
-				"redhat.vscode-yaml",
-				"mongodb.mongodb-vscode",
-				"zxh404.vscode-proto3",
 				"ckolkman.vscode-postgres",
+				"mongodb.mongodb-vscode",
+				"ms-vscode.cmake-tools",
+				"zxh404.vscode-proto3",
+				"ms-vscode.cpptools",
+				"ms-python.pylint",
+				"ms-python.python",
 				"ms-python.isort",
-				"ritwickdey.LiveServer"
+				// Frontend
+				"styled-components.vscode-styled-components",
+				"christian-kohler.npm-intellisense",
+				"stylelint.vscode-stylelint",
+				"xabikos.JavaScriptSnippets",
+				"vscodeshift.mui-snippets",
+				"dbaeumer.vscode-eslint",
+				"mikestead.dotenv"
 			]
 		}
 	},
-	"remoteUser": "dev_user"
+	"remoteUser": "dev_user",
+	"postCreateCommand": "bash scripts/install_packages.sh"
 }
