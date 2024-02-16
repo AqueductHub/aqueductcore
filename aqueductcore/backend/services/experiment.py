@@ -55,10 +55,7 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
 
     """
 
-    try:
-        validate_experiment_filters(title, tags, should_include_tags)
-    except ECSValidationError: # pylint: disable=try-except-raise
-        raise
+    validate_experiment_filters(title, tags, should_include_tags)
 
     statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
 
@@ -208,12 +205,9 @@ async def create_db_experiment(
 ) -> ExperimentRead:
     """Create an experiment"""
 
-    try:
-        validate_title(title)
-        validate_description(description)
-        validate_tags(tags)
-    except ECSValidationError: # pylint: disable=try-except-raise
-        raise
+    validate_title(title)
+    validate_description(description)
+    validate_tags(tags)
 
     input_tag_keys = [tag.lower() for tag in tags]
     tags_in_db_statement = select(orm.Tag).filter(orm.Tag.key.in_(input_tag_keys))
@@ -254,11 +248,8 @@ async def update_db_experiment(
 ) -> ExperimentRead:
     """Update experiment details"""
 
-    try:
-        validate_title(title)
-        validate_description(description)
-    except ECSValidationError: # pylint: disable=try-except-raise
-        raise
+    validate_title(title)
+    validate_description(description)
 
     statement = (
         select(orm.Experiment)
