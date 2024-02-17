@@ -15,7 +15,6 @@ from aqueductcore.backend.server.errors import (
     ECSDBError,
     ECSDBExperimentNonExisting,
     ECSFilesPathError,
-    ECSValidationError,
 )
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,

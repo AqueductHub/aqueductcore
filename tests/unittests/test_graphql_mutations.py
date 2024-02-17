@@ -12,6 +12,11 @@ from aqueductcore.backend.schemas.experiment import ExperimentCreate
 from aqueductcore.backend.server.context import ServerContext
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from tests.unittests.initial_data import experiment_data
+from aqueductcore.backend.services.constants import (
+    MAX_EXPERIMENT_TITLE_LENGTH,
+    MAX_EXPERIMENT_DESCRIPTION_LENGTH,
+    MAX_EXPERIMENT_TAGS
+)
 
 
 @pytest.fixture()
@@ -30,6 +35,96 @@ create_experiment_mutation = """
                     "fusion",
                     "cold"
                 ]
+            }
+        ) {
+            id
+            title
+            description
+            tags
+            createdAt
+            updatedAt
+            alias
+        }
+    }
+"""
+
+
+create_experiment_mutation_invalid_title = """
+    mutation CreateExperiment {
+        createExperiment(
+            createExperimentInput: {
+                title: \"""" + "".join("a" for _ in range(MAX_EXPERIMENT_TITLE_LENGTH + 1)) + """\",
+                description: "Assess the quantum supremacy of state-of-the-art processors through rigorous benchmarking, pushing the boundaries of computational capabilities.",
+                tags: [
+                    "fusion",
+                    "cold"
+                ]
+            }
+        ) {
+            id
+            title
+            description
+            tags
+            createdAt
+            updatedAt
+            alias
+        }
+    }
+"""
+
+
+create_experiment_mutation_invalid_description = """
+    mutation CreateExperiment {
+        createExperiment(
+            createExperimentInput: {
+                title: "Quantum Supremacy and Benchmarking Quantum Processors",
+                description: \"""" + "".join("a" for _ in range(MAX_EXPERIMENT_DESCRIPTION_LENGTH + 1)) + """\",
+                tags: [
+                    "fusion",
+                    "cold"
+                ]
+            }
+        ) {
+            id
+            title
+            description
+            tags
+            createdAt
+            updatedAt
+            alias
+        }
+    }
+"""
+
+
+create_experiment_mutation_over_limit_tags = """
+    mutation CreateExperiment {
+        createExperiment(
+            createExperimentInput: {
+                title: "Quantum Supremacy and Benchmarking Quantum Processors",
+                description: "Assess the quantum supremacy of state-of-the-art processors through rigorous benchmarking, pushing the boundaries of computational capabilities.",
+                tags: [""" + ','.join(f'"{tag}"' for tag in range(MAX_EXPERIMENT_TAGS + 1)) + """]
+            }
+        ) {
+            id
+            title
+            description
+            tags
+            createdAt
+            updatedAt
+            alias
+        }
+    }
+"""
+
+
+create_experiment_mutation_invalid_tags = """
+    mutation CreateExperiment {
+        createExperiment(
+            createExperimentInput: {
+                title: "Quantum Supremacy and Benchmarking Quantum Processors",
+                description: "Assess the quantum supremacy of state-of-the-art processors through rigorous benchmarking, pushing the boundaries of computational capabilities.",
+                tags: ["tag$1"]
             }
         ) {
             id
@@ -104,7 +199,7 @@ remove_tag_from_experiment_mutation = """
 
 
 @pytest.mark.asyncio
-async def test_create_experiment(
+async def test_create_experiment_invalid_title(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test create experiment graphql mutation"""
@@ -119,18 +214,72 @@ async def test_create_experiment(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(db_session=db_session)
-    resp = await schema.execute(create_experiment_mutation, context_value=context)
+    resp = await schema.execute(create_experiment_mutation_invalid_title, context_value=context)
 
-    assert resp.errors is None
-    assert resp.data is not None
+    assert resp.errors[0].message == f"Title should be maximum {MAX_EXPERIMENT_TITLE_LENGTH} characters long."
 
-    resp_data = resp.data["createExperiment"]
-    assert resp_data["title"] == "Quantum Supremacy and Benchmarking Quantum Processors"
-    assert (
-        resp_data["description"]
-        == "Assess the quantum supremacy of state-of-the-art processors through rigorous benchmarking, pushing the boundaries of computational capabilities."
-    )
-    assert sorted(resp_data["tags"]) == sorted(["fusion", "cold"])
+
+@pytest.mark.asyncio
+async def test_create_experiment_invalid_description(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test create experiment graphql mutation"""
+    db_experiments = []
+    for experiment in experiments_data:
+        db_exerperiment = experiment_model_to_orm(experiment)
+        db_experiments.append(db_exerperiment)
+        db_session.add(db_exerperiment)
+        await db_session.commit()
+        await db_session.refresh(db_exerperiment)
+
+    schema = Schema(query=Query, mutation=Mutation)
+
+    context = ServerContext(db_session=db_session)
+    resp = await schema.execute(create_experiment_mutation_invalid_description, context_value=context)
+
+    assert resp.errors[0].message == f"Description should be maximum {MAX_EXPERIMENT_DESCRIPTION_LENGTH} characters long."
+
+
+@pytest.mark.asyncio
+async def test_create_experiment_invalid_tags(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test create experiment graphql mutation"""
+    db_experiments = []
+    for experiment in experiments_data:
+        db_exerperiment = experiment_model_to_orm(experiment)
+        db_experiments.append(db_exerperiment)
+        db_session.add(db_exerperiment)
+        await db_session.commit()
+        await db_session.refresh(db_exerperiment)
+
+    schema = Schema(query=Query, mutation=Mutation)
+
+    context = ServerContext(db_session=db_session)
+    resp = await schema.execute(create_experiment_mutation_invalid_tags, context_value=context)
+
+    assert resp.errors[0].message == f"Tags ['tag$1'] are invalid."
+
+
+@pytest.mark.asyncio
+async def test_create_experiment_over_limit_tags(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test create experiment graphql mutation"""
+    db_experiments = []
+    for experiment in experiments_data:
+        db_exerperiment = experiment_model_to_orm(experiment)
+        db_experiments.append(db_exerperiment)
+        db_session.add(db_exerperiment)
+        await db_session.commit()
+        await db_session.refresh(db_exerperiment)
+
+    schema = Schema(query=Query, mutation=Mutation)
+
+    context = ServerContext(db_session=db_session)
+    resp = await schema.execute(create_experiment_mutation_over_limit_tags, context_value=context)
+
+    assert resp.errors[0].message == f"You can have a maximum of {MAX_EXPERIMENT_TAGS} tags in an experiment."
 
 
 @pytest.mark.asyncio

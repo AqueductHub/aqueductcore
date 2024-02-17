@@ -35,7 +35,7 @@ def validate_tags(tags: List[str]):
             raise ECSValidationError(
                 f"You can have a maximum of {MAX_EXPERIMENT_TAGS} tags in an experiment."
             )
-        invalid_tags = [tag for tag in tags if len(tag) > MAX_TAG_LENGTH]
+        invalid_tags = [tag for tag in tags if len(tag) > MAX_TAG_LENGTH or not is_tag_valid(tag)]
         if invalid_tags:
             raise ECSValidationError(f"Tags {invalid_tags} are invalid.")
 
@@ -47,7 +47,7 @@ def validate_experiment_filters(
     """Validate filters received in request"""
     if title and len(title) > MAX_FILTER_TITLE_LENGTH:
         raise ECSValidationError(
-            f"Title should be a maximum {MAX_FILTER_TITLE_LENGTH} characters long."
+            f"Title should be maximum {MAX_FILTER_TITLE_LENGTH} characters long."
         )
 
     if tags:
@@ -69,10 +69,11 @@ def validate_experiment_filters(
         invalid_tags = [tag for tag in should_include_tags if len(tag) > MAX_TAG_LENGTH
                         or not is_tag_valid(tag)]
         if invalid_tags:
-            raise ECSValidationError(f"Tags {invalid_tags} are invalid in shouldIncludeTags filter.")
+            raise ECSValidationError(f"Tags {invalid_tags} are invalid in " + \
+                                " shouldIncludeTags filter.")
 
 def validate_tag(tag: str):
     """Validate tag to have a specified maximum length and allowed characters only"""
     if len(tag) > MAX_TAG_LENGTH or not is_tag_valid(tag):
         raise ECSValidationError(f"Tag should be less than {MAX_TAG_LENGTH} characters long " + \
-                                "and contain alphanumeric characters, hyphens and underscores only.")
+                            "and contain alphanumeric characters, hyphens and underscores only.")
