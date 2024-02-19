@@ -39,7 +39,7 @@ poetry build
 set -x
 
 echo "Build static files"
-docker run --rm -v ${PROJECT_ROOT}:/app node:16.20-bullseye bash -c \
+docker run --rm -v ${PROJECT_ROOT}:/app node:20.11.1-bullseye bash -c \
     "bash /app/scripts/build_frontend.sh"
 
 echo "Build docker image"

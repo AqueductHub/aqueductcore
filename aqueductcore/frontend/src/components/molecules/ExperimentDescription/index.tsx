@@ -77,7 +77,7 @@ export function ExperimentDescriptionUpdate({
       );
     }, 0);
   };
-  const descriptionField = useRef<HTMLInputElement>(null);
+  const descriptionField = useRef<HTMLTextAreaElement>(null);
 
   const [internalExperimentDescription, setInternalExperimentDescription] =
     useState<string>(experimentDescription);
