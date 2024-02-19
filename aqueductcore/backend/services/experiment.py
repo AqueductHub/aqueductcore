@@ -22,6 +22,13 @@ from aqueductcore.backend.services.utils import (
     tag_model_to_orm,
     tag_orm_to_model,
 )
+from aqueductcore.backend.services.validators import (
+    validate_description,
+    validate_experiment_filters,
+    validate_tags,
+    validate_title,
+)
+
 
 ARCHIVED = "__archived__"
 func: Callable
@@ -46,6 +53,9 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
         List of experiments data models.
 
     """
+
+    validate_experiment_filters(title, tags, should_include_tags)
+
     statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
 
     if title is not None:
@@ -194,6 +204,10 @@ async def create_db_experiment(
 ) -> ExperimentRead:
     """Create an experiment"""
 
+    validate_title(title)
+    validate_description(description)
+    validate_tags(tags)
+
     input_tag_keys = [tag.lower() for tag in tags]
     tags_in_db_statement = select(orm.Tag).filter(orm.Tag.key.in_(input_tag_keys))
     result = await db_session.execute(tags_in_db_statement)
@@ -232,6 +246,9 @@ async def update_db_experiment(
     description: Optional[str] = None,
 ) -> ExperimentRead:
     """Update experiment details"""
+
+    validate_title(title)
+    validate_description(description)
 
     statement = (
         select(orm.Experiment)
