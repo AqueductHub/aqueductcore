@@ -22,7 +22,7 @@
     
     
       
-        <title>Aqueductpy Application Programming Interface (API) Tutorial - Aqueduct Experiment Control Software</title>
+        <title>PyAqueduct Application Programming Interface (API) Tutorial - Aqueduct Experiment Control Software</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#aqueductpy-application-programming-interface-api-tutorial" class="md-skip">
+        <a href="#pyaqueduct-application-programming-interface-api-tutorial" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Aqueductpy Application Programming Interface (API) Tutorial
+              PyAqueduct Application Programming Interface (API) Tutorial
             
           </span>
         </div>
@@ -297,7 +297,7 @@
           
   
   <span class="md-ellipsis">
-    Aqueductpy Application Programming Interface (API) Tutorial
+    PyAqueduct Application Programming Interface (API) Tutorial
   </span>
   
 
@@ -308,7 +308,7 @@
         
   
   <span class="md-ellipsis">
-    Aqueductpy Application Programming Interface (API) Tutorial
+    PyAqueduct Application Programming Interface (API) Tutorial
   </span>
   
 
@@ -416,7 +416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="https://aqueducthub.github.io/aqueductpy/" class="md-nav__link">
+      <a href="https://aqueducthub.github.io/pyaqueduct/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -444,8 +444,8 @@
                   
 
 
-<h1 id="aqueductpy-application-programming-interface-api-tutorial">Aqueductpy Application Programming Interface (API) Tutorial<a class="headerlink" href="#aqueductpy-application-programming-interface-api-tutorial" title="Permanent link">&para;</a></h1>
-<p>In this tutorial, the API of Aqueductpy is introduced by working on a sample experiment. The sample experiment generates some results in the form of different files such as CSV, JSON, HDF5, and image files. Each execution of the experiment generates new set of files and therefore, is treated as a new experiment run.</p>
+<h1 id="pyaqueduct-application-programming-interface-api-tutorial">PyAqueduct Application Programming Interface (API) Tutorial<a class="headerlink" href="#pyaqueduct-application-programming-interface-api-tutorial" title="Permanent link">&para;</a></h1>
+<p>In this tutorial, the API of PyAqueduct is introduced by working on a sample experiment. The sample experiment generates some results in the form of different files such as CSV, JSON, HDF5, and image files. Each execution of the experiment generates new set of files and therefore, is treated as a new experiment run.</p>
 <h2 id="experiment-analysis-of-projectile-motion">Experiment: analysis of projectile motion<a class="headerlink" href="#experiment-analysis-of-projectile-motion" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Install experiment dependecies.</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">sys</span>
@@ -542,7 +542,7 @@
 </span><span id="__span-1-89"><a id="__codelineno-1-89" name="__codelineno-1-89" href="#__codelineno-1-89"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation and data processing completed.&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="create-experiment-on-aqueudct">Create experiment on Aqueudct<a class="headerlink" href="#create-experiment-on-aqueudct" title="Permanent link">&para;</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">aqueductpy</span> <span class="kn">import</span> <span class="n">API</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">pyaqueduct</span> <span class="kn">import</span> <span class="n">API</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">api</span> <span class="o">=</span> <span class="n">API</span><span class="p">(</span><span class="s2">&quot;[AQUEDUCT_SERVER_URL_PLACE_HOLDER]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>

@@ -353,7 +353,7 @@
         
   
   <span class="md-ellipsis">
-    Aqueductpy Application Programming Interface (API) Tutorial
+    PyAqueduct Application Programming Interface (API) Tutorial
   </span>
   
 
@@ -369,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="https://aqueducthub.github.io/aqueductpy/" class="md-nav__link">
+      <a href="https://aqueducthub.github.io/pyaqueduct/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -403,12 +403,12 @@
 - <a href="#using-production-docker-images">Using production docker images</a>
 - <a href="#installing-from-source">Installing from source</a></p>
 <h2 id="using-production-docker-images">Using Production Docker Images<a class="headerlink" href="#using-production-docker-images" title="Permanent link">&para;</a></h2>
-<p>For the ease of deployment in production, Aqueduct releases a production-ready container image. The docker images are available through Dockerhub.</p>
+<p>For the ease of deployment in production, Aqueduct is released as a production-ready container image. The docker image is available through Dockerhub, <a href="https://hub.docker.com/r/aqueducthub/aqueductcore"><code>aqueducthub/aqueductcore</code></a>.</p>
 <p>This example Docker compose file shows how you can use the Docker images:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">services</span><span class="p">:</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">aqueduct</span><span class="p">:</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aqueductcore/release:latest</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aqueducthub/aqueductcore:latest</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
