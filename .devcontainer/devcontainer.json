@@ -37,6 +37,5 @@
 			]
 		}
 	},
-	"remoteUser": "dev_user",
-	"postCreateCommand": "bash scripts/install_packages.sh"
+	"remoteUser": "dev_user"
 }
