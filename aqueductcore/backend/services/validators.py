@@ -40,9 +40,9 @@ def validate_tags(tags: List[str]):
             raise ECSValidationError(f"Tags {invalid_tags} are invalid.")
 
 def validate_experiment_filters(
-        title: Optional[str],
-        tags: Optional[List[str]],
-        should_include_tags: Optional[List[str]]
+        title: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        should_include_tags: Optional[List[str]] = None
     ):
     """Validate filters received in request"""
     if title and len(title) > MAX_FILTER_TITLE_LENGTH:
