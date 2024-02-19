@@ -13,7 +13,7 @@ This project uses the following main software stack and technologies:
 - [Usage](#usage)
 - [Installation](#installation)
   * [Developers Setup Guide](#developers-setup-guide)
-  * [AqueductPy](#aqueductpy)
+  * [PyAqueduct](#pyaqueduct)
   * [Database Migration Guide](#database-migration-guide)
     + [Steps](#steps)
 - [Contributing](#contributing)
@@ -25,7 +25,7 @@ Aqueduct contains data management tools that augment a lab’s existing data sto
 
 This functionality is facilitated through 2 components:
 - [aqueductcore](/aqueductcore) is the server software that hosts the main application, and web interface and handles data storage.
-- [aqueductpy](/aqueductpy) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
+- [pyaqueduct](/pyaqueduct) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
   
 
 ## Installation
@@ -101,12 +101,12 @@ bash scripts/install_packages.sh
 
 After executing the script, proceed with the instructions from Step 3.
     
-### AqueductPy
+### PyAqueduct
 
-Although [AqueductPy](/aqueductPy) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started) in the docs.
+Although [PyAqueduct](https://github.com/AqueductHub/pyaqueduct) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started) in the docs.
 
 ```bash
-pip install AqueductPy
+pip install pyaqueduct
 ```
 
 ### Database Migration Guide

@@ -60,12 +60,12 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [aqueductpy]
+          paths: [pyaqueduct]
 
 nav:
   - "index.md"
   - "setup.md"
   - "getting-started.md"
-  - "Python Client": "https://aqueducthub.github.io/aqueductpy/"
+  - "Python Client": "https://aqueducthub.github.io/pyaqueduct/"
 
 copyright: Copyright &copy; 2023 - 2024 Riverlane Ltd.
