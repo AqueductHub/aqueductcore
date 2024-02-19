@@ -8,7 +8,7 @@ On this page we provide instructions for two ways to set up Aqueduct:
 - [Installing from source](#installing-from-source)
 
 ## Using Production Docker Images
-For the ease of deployment in production, Aqueduct releases a production-ready container image. The docker images are available through Dockerhub.
+For the ease of deployment in production, Aqueduct is released as a production-ready container image. The docker image is available through Dockerhub, [`aqueducthub/aqueductcore`](https://hub.docker.com/r/aqueducthub/aqueductcore).
 
 This example Docker compose file shows how you can use the Docker images:
 
@@ -16,7 +16,7 @@ This example Docker compose file shows how you can use the Docker images:
 version: '3'
 services:
   aqueduct:
-    image: aqueductcore/release:latest
+    image: aqueducthub/aqueductcore:latest
     restart: always
     depends_on:
       - postgres

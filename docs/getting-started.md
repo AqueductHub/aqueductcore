@@ -1,6 +1,6 @@
-# Aqueductpy Application Programming Interface (API) Tutorial
+# PyAqueduct Application Programming Interface (API) Tutorial
 
-In this tutorial, the API of Aqueductpy is introduced by working on a sample experiment. The sample experiment generates some results in the form of different files such as CSV, JSON, HDF5, and image files. Each execution of the experiment generates new set of files and therefore, is treated as a new experiment run.
+In this tutorial, the API of PyAqueduct is introduced by working on a sample experiment. The sample experiment generates some results in the form of different files such as CSV, JSON, HDF5, and image files. Each execution of the experiment generates new set of files and therefore, is treated as a new experiment run.
 
 ## Experiment: analysis of projectile motion 
 
@@ -108,7 +108,7 @@ print("Simulation and data processing completed.")
 
 
 ```python
-from aqueductpy import API
+from pyaqueduct import API
 
 api = API("[AQUEDUCT_SERVER_URL_PLACE_HOLDER]", timeout=1)
 
