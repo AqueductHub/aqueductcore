@@ -1,4 +1,4 @@
-import { findByDisplayValue, render, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import FilterExperiments from "components/organisms/FilterExperiments";

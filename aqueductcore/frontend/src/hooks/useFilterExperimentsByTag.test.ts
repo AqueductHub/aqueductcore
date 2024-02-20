@@ -1,13 +1,11 @@
 import { renderHook } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { act } from "react-dom/test-utils";
 
 import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 import useFilterExperimentsByTag from "./useFilterExperimentsByTag";
-import { drawerItems } from "components/templates/drawerLayout";
 import { ARCHIVED } from "constants/constants";
-import { isArchived, isFavourite } from "helper/formatters";
+import { isArchived } from "helper/formatters";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
