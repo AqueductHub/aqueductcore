@@ -51,6 +51,22 @@ async def test_get_all_experiments(
 
 
 @pytest.mark.asyncio
+async def test_get_all_experiments_limit_exceeded(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test get_all_experiments with higher value of limit than allowed value"""
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_session.add(db_experiment)
+        await db_session.commit()
+        await db_session.refresh(db_experiment)
+
+    experiments = await get_all_experiments(db_session, order_by_creation_date=True)
+    
+
+
+
+@pytest.mark.asyncio
 async def test_get_all_experiments_ordered_by_creation_date(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):

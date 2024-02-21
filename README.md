@@ -1,7 +1,7 @@
 # Aqueduct
 
 Aqueduct is a versatile experiment management system designed to streamline and simplify quantum system administration.
-We are building Aqueduct to be a user-friendly, reliable, and well-supported solution for the emerging use cases of quantum computing. While quantum computing labs and companies focus on building better qubits, Aqueduct is here to assist with the bring-up, calibration, maintenance, and operation of quantum computers.
+We are building Aqueduct to be a user-friendly, reliable, and well-supported solution for quantum experiment management. While quantum computing labs and companies focus on building better qubits, Aqueduct is here to assist with the bring-up, automation, maintenance, and operation of quantum computers.
 
 This project uses the following main software stack and technologies:
 - Frontend (GUI): **React**, **TypeScript**
@@ -13,7 +13,7 @@ This project uses the following main software stack and technologies:
 - [Usage](#usage)
 - [Installation](#installation)
   * [Developers Setup Guide](#developers-setup-guide)
-  * [AquductPy](#aquductpy)
+  * [PyAqueduct](#pyaqueduct)
   * [Database Migration Guide](#database-migration-guide)
     + [Steps](#steps)
 - [Contributing](#contributing)
@@ -21,18 +21,18 @@ This project uses the following main software stack and technologies:
 
 ## Usage
 
-Aqueduct contains data management tools that augment a lab’s existing data storage systems by tracking critical settings, raw data and processed data from experiments, keeping them organised and readily accessible. Through convenient features such as tagging, favouriting, archiving, and annotation of experimental data, we facilitate a smoother data workflow for all labs. Aqueduct’s software APIs make it possible to retrofit existing experiment scripts so that all the lab’s data, not just the data produced by Deltaflow.Control can be saved and accessed in a single, centralized location.
+Aqueduct contains data management tools that augment a lab’s existing data storage systems by tracking critical settings, raw data and processed data from experiments, keeping them organised and readily accessible. Through convenient features such as tagging, favouriting, archiving, and annotation of experimental data, we facilitate a smoother data workflow for all labs. Aqueduct’s software APIs make it possible to retrofit existing experiment scripts so that all the lab’s data can be saved and accessed in a single, centralized location.
 
 This functionality is facilitated through 2 components:
 - [aqueductcore](/aqueductcore) is the server software that hosts the main application, and web interface and handles data storage.
-- [aqueductpy](/aqueductpy) is our Python client which allows easy creation of experiments and upload of data and metadata for them.
+- [pyaqueduct](/pyaqueduct) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
   
 
 ## Installation
 
 If you want to set up the project as a contributor, please continue to [this section](#setup-guide).
 
-To install Aqueduct, you need to have docker and docker-compose installed on your machine, use [this link](https://docs.docker.com/compose/gettingstarted) to see how to do that if you need to.
+To install Aqueduct, you need to have docker and docker-compose installed on your machine, please [see here](https://docs.docker.com/compose/gettingstarted) for docker install instructions.
 
 Then all you need to do is
 1) Copy the below configuration in a file, you can name it `docker-compose.yaml`, and it will pull the docker image and set the environment variables.
@@ -70,7 +70,7 @@ services:
 2) Then you can make it up and running: `docker compose -f docker-compose.yaml up -d`
 3) Check the GUI on your browser using `localhost`.
 
-You can find `docker-compose.yaml` file under `aqueductcode/scripts/release` directory. for more information please check the [documentation](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/setup).
+You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory. for more information please check the [documentation](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/setup).
 
 ### Developers Setup Guide
 0. Prerequisites
@@ -79,35 +79,34 @@ You can find `docker-compose.yaml` file under `aqueductcode/scripts/release` dir
 - Node.js installed (v16.16 or higher)
 
 1. Clone the repository and change the directory into the root of the project.
-2. Open the project (Optional: but in the recommended Environment)
-   1. If you're using [VSCode](https://code.visualstudio.com), which is recommended to use, you can open up the project in the VSCode dev container, if you're not familiar with what that is, just have a look [here](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started). There's not much to do on your side
-   2. Or you can set up a Virtual Environment (Optional but recommended)
-       ```bash
-        #Install virtualenv if you haven't already
-        pip install virtualenv
-        
-        # Create a virtual environment (replace 'env_name' with your preferred name)
-        virtualenv env_name
-        
-        source env_name/
-        ```
+2. Open the project (Optional: but in recommended Environment)
+   1. If you're using [VSCode](https://code.visualstudio.com), which is recommended to use, you can open up the project in the VSCode dev container, if you're not familiar with what that is, just have a look [here](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
 3. Run the Server
-    1. `poetry install`
-    2. `python scripts/start_ecs_service.py`
-    3. It's up and running on `localhost:8000`
+    1. Navigate to the project's root folder.
+    2. `poetry install`.
+    3. `python scripts/start_ecs_service.py`.
+    4. It's up and running on `localhost:8000`.
   
 4. Run the GUI
-    1. `cd aqueductcore/frontend`
-    2. `yarn install`
-    3. `yarn start`
-    4. It's up and running on `localhost:3000`
-    
-### AquductPy
+    1. `cd aqueductcore/frontend`.
+    2. `yarn install`.
+    3. `yarn start`.
+    4. It's up and running on `localhost:3000`.
 
-Although [AquductPy](/aquductPy) ---The Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started) in the docs
+Also to install all required packages this script can be used
 
 ```bash
-pip install AqueductPy
+bash scripts/install_packages.sh
+```
+
+After executing the script, proceed with the instructions from Step 3.
+    
+### PyAqueduct
+
+Although [PyAqueduct](https://github.com/AqueductHub/pyaqueduct) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started) in the docs.
+
+```bash
+pip install pyaqueduct
 ```
 
 ### Database Migration Guide
@@ -146,4 +145,4 @@ Aqueduct is an open-source project, and we greatly value all contributions. Cont
 
 ## License
 
-This project is licensed under the MIT License - see the [MIT](/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file.

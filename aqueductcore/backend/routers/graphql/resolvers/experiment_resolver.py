@@ -10,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from aqueductcore.backend.routers.graphql.inputs import ExperimentIdentifierInput, IDType
 from aqueductcore.backend.routers.graphql.types import ExperimentData, Experiments
 from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
+from aqueductcore.backend.server.errors import ECSValidationError
+from aqueductcore.backend.services.constants import MAX_EXPERIMENTS_PER_REQUEST
 from aqueductcore.backend.services.experiment import (
     get_all_experiments,
     get_experiment_by_alias,
@@ -27,6 +29,12 @@ async def get_expriments(
     filters: Optional[ExperimentFiltersInput] = None,
 ) -> Experiments:
     """Resolve all experiments."""
+
+    if limit > MAX_EXPERIMENTS_PER_REQUEST:
+        raise ECSValidationError(
+            f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
+        )
+
     experiments = await get_all_experiments(
         db_session,
         title=filters.title if filters else None,
