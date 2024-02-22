@@ -11,6 +11,7 @@ import DrawerLayout from "components/templates/drawerLayout";
 import { client } from "API/apolloClientConfig";
 import { cssVariableTheme } from "theme";
 import SettingsPage from "pages/SettingsPage";
+import AuthenticationPage from "pages/AuthenticationPage";
 function App() {
   const themeConfig = extendTheme(cssVariableTheme);
   return (
@@ -21,6 +22,10 @@ function App() {
         <BrowserRouter>
           <DrawerLayout>
             <Routes>
+              <Route
+                path="/login"
+                element={<AuthenticationPage />}
+              />
               <Route
                 path="/"
                 element={<Navigate replace to="/aqd/experiments" />}
