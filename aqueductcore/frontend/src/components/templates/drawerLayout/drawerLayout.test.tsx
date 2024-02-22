@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import DescriptionIcon from "@mui/icons-material/Description";
-import SettingsIcon from "@mui/icons-material/Settings";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import { render } from "@testing-library/react";
-import StarIcon from "@mui/icons-material/Star";
 
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import DrawerLayout, { drawerItems } from ".";

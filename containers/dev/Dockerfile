@@ -21,8 +21,8 @@ RUN apt-get update \
     default-jre-headless graphviz python3-venv python-is-python3 gtkwave \
     python3-tk libssl-dev libffi-dev gettext
 
-# Configure NodeSource repo for nodejs v16 installation.
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+# Configure NodeSource repo for nodejs v20 installation.
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 
 # Configure the recent of version of yarn
 RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \

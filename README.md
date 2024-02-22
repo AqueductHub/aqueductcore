@@ -76,7 +76,7 @@ You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` dir
 0. Prerequisites
 - Python installed on your system (version 3.8 or higher)
 - PostgreSQL installed and running (version 15 or higher)
-- Node.js installed (v16.16 or higher)
+- Node.js installed (v20.11.1 or higher)
 
 1. Clone the repository and change the directory into the root of the project.
 2. Open the project (Optional: but in recommended Environment)
