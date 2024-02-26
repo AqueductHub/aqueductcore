@@ -26,12 +26,12 @@ Aqueduct contains data management tools that augment a lab’s existing data sto
 
 This functionality is facilitated through 2 components:
 
-- [aqueductcore](/aqueductcore) is the server software that hosts the main application, and web interface and handles data storage.
-- [pyaqueduct](/pyaqueduct) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
+- [aqueductcore](https://github.com/AqueductHub/aqueductcore) is the server software that hosts the main application, and web interface and handles data storage.
+- [pyaqueduct](https://github.com/AqueductHub/pyaqueduct) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
 
 ## Installation
 
-If you want to set up the project as a contributor, please continue to [this section](#setup-guide).
+If you want to set up the project as a contributor, please continue to [this section](#developers-setup-guide).
 
 To install Aqueduct, you need to have docker and docker-compose installed on your machine, please [see here](https://docs.docker.com/compose/gettingstarted) for docker install instructions.
 
