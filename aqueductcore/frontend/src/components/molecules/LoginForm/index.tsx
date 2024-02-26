@@ -15,7 +15,7 @@ const FormInputField = styled(TextField)`
 function LoginForm() {
     return (
         <>
-            <FieldLabel>Username or email</FieldLabel>
+            <FieldLabel>Username</FieldLabel>
             <FormInputField
                 size="small"
                 type="text"
