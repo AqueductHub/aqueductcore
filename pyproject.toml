@@ -6,6 +6,11 @@ authors = ["Aqueduct Team <aqueduct@riverlane.com>"]
 license = "MIT"
 readme = "README.md"
 
+
+exclude = [
+    "aqueductcore/frontend"
+]
+
 [tool.poetry.dependencies]
 python = ">= 3.8,< 3.12"
 grpcio = "^1.57"
