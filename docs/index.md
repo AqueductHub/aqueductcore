@@ -1,7 +1,28 @@
 # Welcome to Aqueduct
 
-Aqueduct, an experiment control software (ECS) is what we call the collection of software that labs use to run experiments. Every lab, whether commercial or academic, has an ECS (albeit with varying capabilities). The opportunity in this space we see is that existing ECS solutions are mediocre and emerging use-cases for quantum computing (QC) systems are introducing new software infrastructure requirements that labs do not want to develop on their own. Key examples of these new needs can be observed in the software needed in testbed systems: support for multiple users, better data management systems, and automation.
+Aqueduct is the open platform that simplifies quantum experiment management.
 
-The minimum viable product (MVP) we are launching is a system for storing, browsing and searching experiment results. A data management system is a key requirement for larger systems that will be shared (e.g., testbeds) as users will not want their data intermingled with that of others. Our overwhelming observation is that the quantum ecosystem lacks good data management solutions. Furthermore, data management is a minimally disruptive to the work the lab does and can adapt to many lab setups; as such it is low risk for many labs to test the product.
+We are building Aqueduct to be a user-friendly, reliable, and well-supported solution for the emerging use-cases of quantum computing. 
+While qubit labs and companies focus on building better qubits, Aqueduct is here to assist in the bring-up, calibration, maintenance, and operation of quantum computers.
 
-Our goal is to develop a set of usable, reliable, and well-supported software tools that will displace the hand-rolled and brittle software that currently runs most labs. Our business strategy segments our users based on whether they are running experiments (e.g., academic labs, startup commercial labs) of if they are building larger systems or testbeds (e.g., scale ups). This segmentation is conducive to a freemium model: we will give away software to users, who will self-serve, in the former category to increase credibility, build goodwill and drive adoption. We will monetise the latter category by selling premium versions of the software with features relevant to that segment, along with charging for the work needed to integrate our software with the rest of their system.
+In this current version of Aqueduct, we provide a user-friendly GUI and backend for storing, browsing, and searching for experiment results. 
+Your experiment data can be saved into Aqueduct with simple Python APIs which do not disrupt existing workflows. 
+We provide easy sorting and filtering of experiments, and quick previews of text and plots so you can easily find the data that you need. 
+Aqueduct is easy to try and easy to adopt.
+
+Upcoming features including support for multiple users, automation, and plug-ins.
+
+Quantum computers may be shared between users. 
+Aqueduct will support authentication and authorisation, so users can be assigned permissions to read and write data, and to have access to system functions.
+
+Calibration routines are often rerun regularly. 
+We will provide an automation solution for the scheduling of these jobs, as well as user experiments.
+
+A powerful plug-in SDK will allow for easy extensibility, allowing users to easily build additional functionality and integrations which can be private for their specific systems or public to be shared with the greater community. 
+
+We welcome engagement from the community. 
+We would love to hear your ideas and needs for Aqueduct and we look forward to building new features together.
+
+Aqueduct will be a freemium product. 
+The core product will always be open source and free-to-use. 
+We reserve the right to charge for features not included in the core product and for non-community support. 
