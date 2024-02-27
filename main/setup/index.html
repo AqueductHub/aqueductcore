@@ -400,8 +400,8 @@
   <h1>Setup Guide</h1>
 
 <p>On this page we provide instructions for two ways to set up Aqueduct:
-- <a href="#using-production-docker-images">Using production docker images</a>
-- <a href="#installing-from-source">Installing from source</a></p>
+- <a href="#using-production-docker-images">Using Production Docker Images</a><br />
+- <a href="#installing-from-source">Installing from Source</a>  </p>
 <h2 id="using-production-docker-images">Using Production Docker Images<a class="headerlink" href="#using-production-docker-images" title="Permanent link">&para;</a></h2>
 <p>For the ease of deployment in production, Aqueduct is released as a production-ready container image. The docker image is available through Dockerhub, <a href="https://hub.docker.com/r/aqueducthub/aqueductcore"><code>aqueducthub/aqueductcore</code></a>.</p>
 <p>This example Docker compose file shows how you can use the Docker images:</p>
@@ -434,6 +434,7 @@
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="nt">expose</span><span class="p">:</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
 </span></code></pre></div>
+<p>In this example, the Aqueduct server will be running at [http://localhost]. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you are provided with a tar file to install Aqueduct, it already includes the docker image and related configurations. Please refer to the README.md file for further information.</p>
