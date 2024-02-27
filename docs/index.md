@@ -10,7 +10,7 @@ Your experiment data can be saved into Aqueduct with simple Python APIs which do
 We provide easy sorting and filtering of experiments, and quick previews of text and plots so you can easily find the data that you need. 
 Aqueduct is easy to try and easy to adopt.
 
-In the coming months we will add support for multiple users, automation, and plug-ins.
+Upcoming features including support for multiple users, automation, and plug-ins.
 
 Quantum computers may be shared between users. 
 Aqueduct will support authentication and authorisation, so users can be assigned permissions to read and write data, and to have access to system functions.
@@ -18,7 +18,7 @@ Aqueduct will support authentication and authorisation, so users can be assigned
 Calibration routines are often rerun regularly. 
 We will provide an automation solution for the scheduling of these jobs, as well as user experiments.
 
-A powerful plugin SDK will allow for easy extensibility, allowing users to easily build additional functionality and integrations which can be private for their specific systems or public to be shared with the greater community. 
+A powerful plug-in SDK will allow for easy extensibility, allowing users to easily build additional functionality and integrations which can be private for their specific systems or public to be shared with the greater community. 
 
 We welcome engagement from the community. 
 We would love to hear your ideas and needs for Aqueduct and we look forward to building new features together.

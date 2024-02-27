@@ -44,7 +44,7 @@ services:
 
 ```
 
-In this example, the Aqueduct server will be running at [http://localhost:80]. 
+In this example, the Aqueduct server will be running at [http://localhost]. 
 
 !!! note
     
