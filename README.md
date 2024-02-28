@@ -43,7 +43,7 @@ Then all you need to do is
 version: "3"
 services:
   aqueduct:
-    image: aqueductcore/release:latest
+    image: aqueducthub/aqueductcore:latest
     restart: always
     depends_on:
       - postgres
@@ -73,7 +73,7 @@ services:
 2. Then you can make it up and running: `docker compose -f docker-compose.yaml up -d`
 3. Check the GUI on your browser using `localhost`.
 
-You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory. for more information please check the [documentation](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/setup).
+You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory. For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/main/setup/).
 
 ### Developers Setup Guide
 
@@ -114,7 +114,7 @@ After executing the script, proceed with the instructions from Step 3.
 
 ### PyAqueduct
 
-Although [PyAqueduct](https://github.com/AqueductHub/pyaqueduct) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://black-sand-0b0e2a903.3.azurestaticapps.net/main/getting-started) in the docs.
+Although [PyAqueduct](https://github.com/AqueductHub/pyaqueduct) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://aqueducthub.github.io/aqueductcore/main/getting-started/) in the docs.
 
 ```bash
 pip install pyaqueduct
