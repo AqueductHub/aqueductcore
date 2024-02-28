@@ -1,12 +1,13 @@
 # pylint: skip-file
 import os
 import shutil
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import TemporaryDirectory
 from typing import AsyncGenerator, List, Tuple
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -67,7 +68,7 @@ async def test_file_download(
     response = client.get(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(experiment_files[0])}/{experiment_files[1]}"
     )
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.content == experiment_files[2]
 
 
@@ -92,7 +93,7 @@ async def test_nonexisting_file_download(
     response = client.get(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(experiment_files[0])}/{experiment_file_name}"
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "The requested file is not found."}
 
 
@@ -106,8 +107,23 @@ async def test_nonexisting_experiment_download(
     response = client.get(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(uuid4())}/{non_existing_experiment_file_name}"
     )
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "The specified experiment was not found."}
+
+
+@pytest.mark.asyncio
+async def test_invalid_filename_download(
+    client: TestClient,
+    db_session: AsyncSession,  # unused but need to create tables in DB.
+):
+    # slash (/) is removed as FastAPI already filters it out.
+    invalid_filename = 'fi:l*ep"a?t>h|.t<xt'
+
+    response = client.get(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(uuid4())}/{invalid_filename}"
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Invalid file name." in response.json()["detail"]
 
 
 @pytest.mark.asyncio
@@ -138,7 +154,7 @@ async def test_file_upload_experiment_id(
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
         # check if the file is uploaded correctly in the expected directory
         server_experiment_dir = build_experiment_dir_absolute_path(
@@ -172,7 +188,7 @@ async def test_file_upload_invalid_experiment_id(
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {"detail": "The specified experiment was not found."}
 
 
@@ -204,7 +220,7 @@ async def test_file_upload_max_body_size(
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
-        assert response.status_code == 413
+        assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert (
             f"Maximum request body size limit ({(settings.upload_max_file_size_KB+1)*1024} bytes)"
             in response.json()["detail"]
@@ -241,7 +257,7 @@ async def test_file_upload_max_file_size(
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
-        assert response.status_code == 413
+        assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert (
             f"Maximum file size limit ({settings.upload_max_file_size_KB*1024} bytes) exceeded."
             in response.json()["detail"]
@@ -267,7 +283,7 @@ async def test_file_upload_invalid_header(
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name_wrong": experiment_file_name},
         )
-        assert response.status_code == 422
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert "Filename header is missing." in response.json()["detail"]
 
 
@@ -301,5 +317,39 @@ async def test_file_upload_non_existing_body(
             files={"file_wrong": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "The file is not sent correctly." in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_file_upload_invalid_filename(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(db_session=db_session)
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    experiment_file_name = "test_upload_file.zip"
+    invalid_filename = 'fi:l*e/p"a?t>h|.t<xt'
+
+    with TemporaryDirectory() as tmpdirname:
+        test_data = bytes(bytearray(os.urandom(settings.upload_max_file_size_KB * BYTES_IN_KB)))
+        upload_file_path = os.path.join(tmpdirname, experiment_file_name)
+        with open(upload_file_path, mode="wb") as file_writer:
+            file_writer.write(test_data)
+
+        response = client.post(
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            files={"file": open(upload_file_path, "rb")},
+            headers={"file_name": invalid_filename},
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "Invalid file name." in response.json()["detail"]

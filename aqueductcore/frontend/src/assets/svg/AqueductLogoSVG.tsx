@@ -1,8 +1,4 @@
-import { useTheme } from "@mui/material";
-
 export const AqueductLogoSVG = () => {
-  const theme = useTheme();
-  // const fill = theme.palette.mode === "dark" ? "#FFFFFF" : "#000105";
   return (
     <svg width="125" height="125" viewBox="0 0 125 125" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_1_59)">

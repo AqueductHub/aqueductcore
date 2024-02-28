@@ -4,8 +4,8 @@ summary: Aqueduct setup guide.
 ---
 
 On this page we provide instructions for two ways to set up Aqueduct:
-- [Using production docker images](#using-production-docker-images)
-- [Installing from source](#installing-from-source)
+- [Using Production Docker Images](#using-production-docker-images)  
+- [Installing from Source](#installing-from-source)  
 
 ## Using Production Docker Images
 For the ease of deployment in production, Aqueduct is released as a production-ready container image. The docker image is available through Dockerhub, [`aqueducthub/aqueductcore`](https://hub.docker.com/r/aqueducthub/aqueductcore).
@@ -43,6 +43,8 @@ services:
       - 5432
 
 ```
+
+In this example, the Aqueduct server will be running at [http://localhost]. 
 
 !!! note
     
