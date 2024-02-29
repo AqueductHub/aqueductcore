@@ -1,4 +1,5 @@
 """Pydantic schemas to be used in crud operations"""
+
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
@@ -6,32 +7,11 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class ECSModel(BaseModel, extra="forbid"):
+class AQDModel(BaseModel, extra="forbid"):
     """Base model for all pydantic models."""
 
 
-class UserBase(ECSModel):
-    """Base model for user table"""
-
-    id: UUID
-    email: str
-    first_name: str
-    last_name: str
-
-
-class UserCreate(UserBase):
-    """Model for create User query"""
-
-    hashed_password: str
-
-
-class UserRead:
-    """Model for reading User details"""
-
-    id: str
-
-
-class TagBase(ECSModel):
+class TagBase(AQDModel):
     """Base model for Tag"""
 
     key: str
@@ -46,7 +26,7 @@ class TagRead(TagBase):
     """Model for creating a tag"""
 
 
-class ExperimentBase(ECSModel):
+class ExperimentBase(AQDModel):
     """Base model for Experiment"""
 
     id: UUID
