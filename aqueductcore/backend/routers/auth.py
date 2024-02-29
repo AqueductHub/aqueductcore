@@ -44,6 +44,7 @@ class OIDCConfiguration(BaseModel):
 
     issuer: HttpUrl
     authorization_endpoint: HttpUrl
+    userinfo_endpoint: HttpUrl
     response_types_supported: List[str]
     scopes_supported: List[str]
     subject_types_supported: List[str]
@@ -103,7 +104,8 @@ async def openid_configuration(request: Request) -> OIDCConfiguration:
 
     return OIDCConfiguration(
         issuer=cast(HttpUrl, client_hostname),
-        authorization_endpoint=cast(HttpUrl, f"{client_hostname}auth"),
+        authorization_endpoint=cast(HttpUrl, f"{client_hostname}authorize"),
+        userinfo_endpoint=cast(HttpUrl, f"{client_hostname}userinfo"),
         response_types_supported=[
             "id_token token",
         ],
@@ -114,12 +116,12 @@ async def openid_configuration(request: Request) -> OIDCConfiguration:
     )
 
 
-@router.post("/login")
-async def login_handler(
+@router.post("/authorize")
+async def authorize(
     username: Annotated[str, Form()],
     password: Annotated[str, Form()],
-    redirect_uri: str,
-    state: str,
+    redirect_uri: Annotated[HttpUrl, Form()],
+    state: Annotated[str, Form()],
 ) -> RedirectResponse:
     """Login endpoint to generate authorization code based on username and password."""
     user = authenticate_user(username, password)
@@ -142,3 +144,8 @@ async def login_handler(
         url=redirect_url,
         status_code=status.HTTP_302_FOUND,
     )
+
+
+@router.post("/userinfo")
+async def userinfo(user: Annotated[User, Depends(get_current_user)]):
+    return {"sub": user.username}
