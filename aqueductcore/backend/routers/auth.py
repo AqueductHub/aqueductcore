@@ -148,4 +148,5 @@ async def authorize(
 
 @router.post("/userinfo")
 async def userinfo(user: Annotated[User, Depends(get_current_user)]):
+    """Get user information per OpenID Connect standard."""
     return {"sub": user.username}
