@@ -1,6 +1,5 @@
 """Router for handling experiment files."""
 
-
 from fastapi import HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.routers import files, frontend, graphql
+from aqueductcore.backend.routers import auth, files, frontend, graphql
 from aqueductcore.backend.server.session import async_engine
 from aqueductcore.backend.settings import settings
 
@@ -23,7 +23,11 @@ app.include_router(graphql.router, prefix=f"{settings.api_prefix}" + "/graphql",
 app.include_router(
     files.router, prefix=f"{settings.api_prefix}" + f"{settings.files_route_prefix}", tags=["files"]
 )
-
+app.include_router(
+    auth.router,
+    prefix=f"{settings.api_prefix}" + "/realms/aqueduct/protocol/openid-connect",
+    tags=["auth"],
+)
 
 app.mount(
     "/",
