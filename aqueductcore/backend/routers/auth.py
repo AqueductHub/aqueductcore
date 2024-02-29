@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import cast
+from typing import Dict, List, cast
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
@@ -44,11 +44,11 @@ class OIDCConfiguration(BaseModel):
 
     issuer: HttpUrl
     authorization_endpoint: HttpUrl
-    response_types_supported: list[str]
-    scopes_supported: list[str]
-    subject_types_supported: list[str]
-    grant_types_supported: list[str]
-    id_token_signing_alg_values_supported: list[str]
+    response_types_supported: List[str]
+    scopes_supported: List[str]
+    subject_types_supported: List[str]
+    grant_types_supported: List[str]
+    id_token_signing_alg_values_supported: List[str]
 
 
 class User(BaseModel):
@@ -66,7 +66,7 @@ def authenticate_user(username: str, password: str):
     return User(username=username)
 
 
-def create_token(data: dict, expires_delta: timedelta) -> str:
+def create_token(data: Dict, expires_delta: timedelta) -> str:
     """Create token with the specified data and expiry date."""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
