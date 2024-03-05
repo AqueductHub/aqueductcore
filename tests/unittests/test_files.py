@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from aqueductcore.backend.main import app
-from aqueductcore.backend.schemas.experiment import ExperimentCreate
+from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.server.context import ServerContext, context_dependency
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm

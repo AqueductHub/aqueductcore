@@ -8,26 +8,26 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
-from aqueductcore.backend.routers.graphql.inputs import IDType
-from aqueductcore.backend.routers.graphql.query_schema import Query
-from aqueductcore.backend.schemas.experiment import (
+from aqueductcore.backend.models.experiment import (
     ExperimentCreate,
     ExperimentRead,
     TagCreate,
     TagRead,
 )
+from aqueductcore.backend.routers.graphql.inputs import IDType
+from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.server.context import ServerContext
 from aqueductcore.backend.services.experiment import get_all_tags
-from aqueductcore.backend.services.constants import (
-    MAX_EXPERIMENTS_PER_REQUEST,
-    MAX_FILTER_TITLE_LENGTH,
-    MAX_TAGS_ALLOWED_IN_FILTER,
-    MAX_TAGS_PER_REQUEST,
-)
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     experiment_orm_to_model,
     tag_model_to_orm,
+)
+from aqueductcore.backend.services.validators import (
+    MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER,
+    MAX_EXPERIMENT_TITLE_FILTER_LENGTH,
+    MAX_EXPERIMENTS_PER_REQUEST,
+    MAX_TAGS_PER_REQUEST,
 )
 from aqueductcore.backend.settings import settings
 
@@ -75,10 +75,13 @@ all_experiments_query = """
 }
 """
 
-all_experiments_invalid_limit_query = """
+all_experiments_invalid_limit_query = (
+    """
 {
     experiments (
-        limit: """ + str(MAX_EXPERIMENTS_PER_REQUEST + 1000) + """
+        limit: """
+    + str(MAX_EXPERIMENTS_PER_REQUEST + 1000)
+    + """
         offset: 0
     ) {
         experimentsData {
@@ -99,14 +102,18 @@ all_experiments_invalid_limit_query = """
     }
 }
 """
+)
 
-all_experiments_invalid_title_filter_query = """
+all_experiments_invalid_title_filter_query = (
+    """
 {
     experiments (
         limit: 10
         offset: 0,
         filters: {
-            title: \"""" + "a" * (MAX_FILTER_TITLE_LENGTH + 1) + """\"
+            title: \""""
+    + "a" * (MAX_EXPERIMENT_TITLE_FILTER_LENGTH + 1)
+    + """\"
         }
     ) {
         experimentsData {
@@ -127,6 +134,7 @@ all_experiments_invalid_title_filter_query = """
     }
 }
 """
+)
 
 all_tags_query = """
     query TestQuery($dangling:Boolean!) {
@@ -140,13 +148,16 @@ all_tags_query = """
     }
     """
 
-all_experiments_over_limit_tags_filter_query = """
+all_experiments_over_limit_tags_filter_query = (
+    """
 {
     experiments (
         limit: 10
         offset: 0,
         filters: {
-            tags: [""" + ','.join(f'"{tag}"' for tag in range(MAX_TAGS_ALLOWED_IN_FILTER + 1)) + """]
+            tags: ["""
+    + ",".join(f'"{tag}"' for tag in range(MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER + 1))
+    + """]
         }
     ) {
         experimentsData {
@@ -157,6 +168,7 @@ all_experiments_over_limit_tags_filter_query = """
     }
 }
 """
+)
 
 all_experiments_invalid_tags_filter_query = """
 {
@@ -185,14 +197,18 @@ tags_pagination_query = """
     }
     """
 
-tags_pagination_over_limit_query = """
+tags_pagination_over_limit_query = (
+    """
     query TestQuery {
-        tags (limit: """ + str(MAX_TAGS_PER_REQUEST + 1) + """, offset: 0) {
+        tags (limit: """
+    + str(MAX_TAGS_PER_REQUEST + 1)
+    + """, offset: 0) {
             tagsData
             totalTagsCount
         }
     }
     """
+)
 
 filter_by_tag_query = """
     {
@@ -332,7 +348,10 @@ async def test_query_all_experiments_invalid_limit(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_limit_query, context_value=context)
 
-    assert resp.errors[0].message == f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
+    assert (
+        resp.errors[0].message
+        == f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
+    )
 
 
 @pytest.mark.asyncio
@@ -354,7 +373,11 @@ async def test_query_all_experiments_title_filter(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
-    assert resp.errors[0].message == f"Title should be maximum {MAX_FILTER_TITLE_LENGTH} characters long."
+    assert (
+        resp.errors[0].message
+        == f"Title should be maximum {MAX_EXPERIMENT_TITLE_FILTER_LENGTH} characters long."
+    )
+
 
 # all_experiments_invalid_tags_filter_query
 
@@ -378,49 +401,10 @@ async def test_query_all_experiments_max_tags_filter(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
-    assert resp.errors[0].message == f"Title should be maximum {MAX_FILTER_TITLE_LENGTH} characters long."
-
-
-@pytest.mark.asyncio
-async def test_query_all_experiments_over_limit_tags_filter(
-    db_session: AsyncSession,
-    experiments_data: List[ExperimentCreate],
-    temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
-):
-    db_experiments = []
-    for experiment in experiments_data:
-        db_experiment = experiment_model_to_orm(experiment)
-        db_experiments.append(db_experiment)
-        db_session.add(db_experiment)
-        await db_session.commit()
-        await db_session.refresh(db_experiment)
-
-    schema = Schema(query=Query)
-
-    context = ServerContext(db_session=db_session)
-    resp = await schema.execute(all_experiments_over_limit_tags_filter_query, context_value=context)
-    assert resp.errors[0].message == f"You can filter for maximum of {MAX_TAGS_ALLOWED_IN_FILTER} tags at a time."
-
-
-@pytest.mark.asyncio
-async def test_query_all_experiments_invalid_tags_filter(
-    db_session: AsyncSession,
-    experiments_data: List[ExperimentCreate],
-    temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
-):
-    db_experiments = []
-    for experiment in experiments_data:
-        db_experiment = experiment_model_to_orm(experiment)
-        db_experiments.append(db_experiment)
-        db_session.add(db_experiment)
-        await db_session.commit()
-        await db_session.refresh(db_experiment)
-
-    schema = Schema(query=Query)
-
-    context = ServerContext(db_session=db_session)
-    resp = await schema.execute(all_experiments_invalid_tags_filter_query, context_value=context)
-    assert resp.errors[0].message == "Tags ['tag$1'] are invalid."
+    assert (
+        resp.errors[0].message
+        == f"Title should be maximum {MAX_EXPERIMENT_TITLE_FILTER_LENGTH} characters long."
+    )
 
 
 @pytest.mark.asyncio

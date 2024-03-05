@@ -1,12 +1,12 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
-from re import compile as recompile
 
 from datetime import datetime
+from re import compile as recompile
 from typing import Tuple
 from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.schemas.experiment import (
+from aqueductcore.backend.models.experiment import (
     ExperimentCreate,
     ExperimentRead,
     TagCreate,

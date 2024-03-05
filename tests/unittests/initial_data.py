@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from aqueductcore.backend.schemas.experiment import ExperimentCreate, TagCreate
+from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 
 experiment_data = [
     ExperimentCreate(
