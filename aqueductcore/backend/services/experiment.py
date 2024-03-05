@@ -2,6 +2,7 @@
 
 import errno
 import os
+import re
 from datetime import date, datetime, time
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
@@ -211,8 +212,11 @@ async def get_experiment_files(
     return file_names
 
 
+EXPERIMENT_ALIAS_PATTERN = r"^(19[0-9]{2}|2[0-9]{3})(0[1-9]|1[012])([123]0|[012][1-9]|31)-(\d+)$"
+
+
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def create_db_experiment(
+async def create_experiment(
     db_session: AsyncSession,
     title: ExperimentTitle,
     description: ExperimentDescription,
@@ -227,8 +231,7 @@ async def create_db_experiment(
 
     input_tag_keys = [tag.lower() for tag in tags]
     tags_in_db_statement = select(orm.Tag).filter(orm.Tag.key.in_(input_tag_keys))
-    result = await db_session.execute(tags_in_db_statement)
-    tags_in_db = result.scalars().all()
+    tags_in_db = (await db_session.execute(tags_in_db_statement)).scalars().all()
 
     tags_orm = []
     key_list = [item.key for item in tags_in_db]
@@ -236,7 +239,25 @@ async def create_db_experiment(
         if tag.lower() not in key_list:
             tags_orm.append(orm.Tag(name=tag, key=tag.lower()))
 
-    experiment_id, alias = generate_id_and_alias()
+    # get last created experiment of the day
+    today = datetime.combine(date.today(), time.min)
+    today_experiments_statement = (
+        select(orm.Experiment.alias)
+        .filter(orm.Experiment.created_at >= today)
+        .where(orm.Experiment.alias.regexp_match(EXPERIMENT_ALIAS_PATTERN))
+    )
+    today_experiments = (await db_session.execute(today_experiments_statement)).scalars().all()
+
+    if not today_experiments:
+        experiment_id, alias = generate_id_and_alias(experiment_index=1)
+    else:
+        last_experiment_alias = sorted(today_experiments, key=lambda x: int(x.split("-")[-1]))[-1]
+        if re.match(EXPERIMENT_ALIAS_PATTERN, last_experiment_alias):
+            index = int(last_experiment_alias.split("-")[-1])
+            experiment_id, alias = generate_id_and_alias(experiment_index=index + 1)
+        else:
+            experiment_id, alias = generate_id_and_alias(experiment_index=1)
+
     db_experiment = orm.Experiment(
         id=experiment_id,
         title=title,
@@ -257,7 +278,7 @@ async def create_db_experiment(
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def update_db_experiment(
+async def update_experiment(
     db_session: AsyncSession,
     experiment_id: UUID,
     title: Optional[ExperimentTitle] = None,
@@ -291,7 +312,7 @@ async def update_db_experiment(
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def add_db_tag_to_experiment(
+async def add_tag_to_experiment(
     db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""
@@ -330,7 +351,7 @@ async def add_db_tag_to_experiment(
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def remove_db_tag_from_experiment(
+async def remove_tag_from_experiment(
     db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""

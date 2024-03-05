@@ -9,15 +9,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.services.experiment import (
-    add_db_tag_to_experiment,
-    create_db_experiment,
+    add_tag_to_experiment,
+    create_experiment,
+    generate_id_and_alias,
     get_all_experiments,
     get_all_tags,
     get_experiment_by_alias,
     get_experiment_by_uuid,
     get_experiment_files,
-    remove_db_tag_from_experiment,
-    update_db_experiment,
+    remove_tag_from_experiment,
+    update_experiment,
 )
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
@@ -180,10 +181,10 @@ async def test_get_experiment_by_alias(
 
 
 @pytest.mark.asyncio
-async def test_create_db_experiment(
+async def test_create_db_experiment_pre_existing_data(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    """Test create_db_experiment operation"""
+    """Test create_db_experiment operation with pre-existing data."""
 
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
@@ -191,16 +192,15 @@ async def test_create_db_experiment(
 
     await db_session.commit()
 
-    in_db_experiment = await create_db_experiment(
+    in_db_experiment = await create_experiment(
         db_session,
         title="Quantum Communication Protocols for Secure Networks",
         description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
         tags=["superQc", "rabi", "Laser"],
     )
 
-    await db_session.commit()
-
     assert in_db_experiment.id is not None
+    assert in_db_experiment.alias == generate_id_and_alias(41)[1]
     assert in_db_experiment.title == "Quantum Communication Protocols for Secure Networks"
     assert (
         in_db_experiment.description
@@ -217,6 +217,36 @@ async def test_create_db_experiment(
 
 
 @pytest.mark.asyncio
+async def test_create_db_experiment_empty_db(
+    db_session: AsyncSession,
+):
+    """Test create_db_experiment operation with empty database."""
+
+    in_db_experiment = await create_experiment(
+        db_session,
+        title="Quantum Communication Protocols for Secure Networks",
+        description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
+        tags=["superQc", "rabi", "Laser"],
+    )
+
+    assert in_db_experiment.id is not None
+    assert in_db_experiment.alias == generate_id_and_alias(1)[1]
+    assert in_db_experiment.title == "Quantum Communication Protocols for Secure Networks"
+    assert (
+        in_db_experiment.description
+        == "Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution."
+    )
+    in_db_tag_names = [tag.name for tag in in_db_experiment.tags]
+    assert sorted(in_db_tag_names) == sorted(
+        [
+            "superQc",
+            "rabi",
+            "Laser",
+        ]
+    )  # Note: "laser" tag is created in fixture
+
+
+@pytest.mark.asyncio
 async def test_update_db_experiment(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
@@ -228,7 +258,7 @@ async def test_update_db_experiment(
 
     await db_session.commit()
 
-    in_db_experiment = await update_db_experiment(
+    in_db_experiment = await update_experiment(
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         title="Quantum-enhanced Imaging for Biomedical Applications",
@@ -255,7 +285,7 @@ async def test_add_db_tag_to_experiment(
 
     await db_session.commit()
 
-    in_db_experiment = await add_db_tag_to_experiment(
+    in_db_experiment = await add_tag_to_experiment(
         db_session=db_session, experiment_id=experiments_data[0].id, tag="important"
     )
     await db_session.commit()
@@ -276,7 +306,7 @@ async def test_remove_db_tag_from_experiment(
 
     await db_session.commit()
 
-    in_db_experiment = await remove_db_tag_from_experiment(
+    in_db_experiment = await remove_tag_from_experiment(
         db_session=db_session, experiment_id=experiments_data[0].id, tag="tag1"
     )
     await db_session.commit()

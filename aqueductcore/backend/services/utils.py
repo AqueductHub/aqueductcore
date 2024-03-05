@@ -53,11 +53,11 @@ def tag_model_to_orm(value: TagCreate) -> orm.Tag:
     return tag
 
 
-def generate_id_and_alias() -> Tuple[UUID, str]:
+def generate_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
     """Generate uuid and alias for experiment"""
     current_date = datetime.today().strftime("%Y%m%d")
     experiment_id = uuid4()
-    alias = f"{current_date}-{str(experiment_id)[-12:]}"
+    alias = f"{current_date}-{experiment_index}"
 
     return experiment_id, alias
 
