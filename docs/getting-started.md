@@ -104,7 +104,7 @@ plot_trajectory(projectile_data, plot_image_path)
 print("Simulation and data processing completed.")
 ```
 
-## Create experiment on Aqueudct
+## Create experiment on Aqueduct
 
 
 ```python
