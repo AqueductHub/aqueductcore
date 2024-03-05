@@ -7,7 +7,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.routers import auth, files, frontend, graphql
-from aqueductcore.backend.server.session import async_engine
+from aqueductcore.backend.session import async_engine
 from aqueductcore.backend.settings import settings
 
 app = FastAPI(title="Aqueduct", docs_url="/api/docs")

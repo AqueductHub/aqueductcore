@@ -6,7 +6,7 @@ from uuid import UUID
 import strawberry
 from strawberry.types import Info
 
-from aqueductcore.backend.server.context import ServerContext
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentTagInput,

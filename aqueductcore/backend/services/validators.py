@@ -3,7 +3,7 @@
 from pydantic.functional_validators import AfterValidator
 from typing_extensions import Annotated
 
-from aqueductcore.backend.server.errors import ECSValidationError
+from aqueductcore.backend.errors import ECSValidationError
 from aqueductcore.backend.services.utils import is_tag_valid
 
 MAX_EXPERIMENTS_PER_REQUEST = 500

@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from aqueductcore.backend.errors import ECSValidationError
 from aqueductcore.backend.routers.graphql.types import Tags
-from aqueductcore.backend.server.errors import ECSValidationError
 from aqueductcore.backend.services.experiment import get_all_tags
 from aqueductcore.backend.services.validators import MAX_TAGS_PER_REQUEST
 

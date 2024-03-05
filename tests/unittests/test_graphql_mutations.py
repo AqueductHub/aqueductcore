@@ -6,10 +6,10 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
-from aqueductcore.backend.server.context import ServerContext
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,

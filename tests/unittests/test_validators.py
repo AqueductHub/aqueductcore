@@ -1,6 +1,6 @@
 import pytest
 
-from aqueductcore.backend.server.errors import ECSValidationError
+from aqueductcore.backend.errors import ECSValidationError
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,
     MAX_EXPERIMENT_TAG_LENGTH,

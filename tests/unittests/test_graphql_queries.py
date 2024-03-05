@@ -8,6 +8,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.models.experiment import (
     ExperimentCreate,
     ExperimentRead,
@@ -16,7 +17,6 @@ from aqueductcore.backend.models.experiment import (
 )
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
-from aqueductcore.backend.server.context import ServerContext
 from aqueductcore.backend.services.experiment import get_all_tags
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
