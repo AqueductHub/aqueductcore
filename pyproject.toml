@@ -18,19 +18,19 @@ pydantic = {version = "^2.3",extras = ["email"]}
 typing-extensions = "^4.7"
 protobuf = "^4.24"
 uvicorn = {version = "^0.23",extras = ["standard"]}
-fastapi = "^0.103"
-fastapi-users = {version = "^12.1"}
-strawberry-graphql = {version = "^0.205",extras = ["fastapi"]}
+fastapi = "^0.110"
+strawberry-graphql = {version = "^0.219",extras = ["fastapi"]}
 pydantic-settings = "^2.0"
 sqlalchemy = {version = "^2.0",extras = ["asyncio"]}
-fastapi-users-db-sqlalchemy = "^6.0"
 asyncpg = "^0.28"
-python-multipart = "^0.0"
+python-multipart = "^0.0.9"
 aiofiles = "^23.2"
 streaming-form-data = "^1.13"
 gunicorn = "^21.2"
 pip-licenses = "^4.3"
 pathvalidate = "^3.2"
+python-jose = {version = "^3.3", extras = ["cryptography"]}
+passlib = {version = "^1.7", extras = ["bcrypt"]}
 
 
 [tool.poetry.group.dev.dependencies]
