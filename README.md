@@ -43,7 +43,7 @@ Then all you need to do is
 version: "3"
 services:
   aqueduct:
-    image: aqueductcore/release:latest
+    image: aqueducthub/aqueductcore:latest
     restart: always
     depends_on:
       - postgres
