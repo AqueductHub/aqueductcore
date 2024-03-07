@@ -7,16 +7,19 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aqueductcore.backend.routers.graphql.inputs import ExperimentIdentifierInput, IDType
+from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.routers.graphql.inputs import (
+    ExperimentIdentifierInput,
+    IDType,
+)
 from aqueductcore.backend.routers.graphql.types import ExperimentData, Experiments
 from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
-from aqueductcore.backend.server.errors import ECSValidationError
-from aqueductcore.backend.services.constants import MAX_EXPERIMENTS_PER_REQUEST
 from aqueductcore.backend.services.experiment import (
     get_all_experiments,
     get_experiment_by_alias,
     get_experiment_by_uuid,
 )
+from aqueductcore.backend.services.validators import MAX_EXPERIMENTS_PER_REQUEST
 
 if TYPE_CHECKING:
     from aqueductcore.backend.routers.graphql.query_schema import ExperimentFiltersInput
@@ -37,7 +40,7 @@ async def get_expriments(
 
     experiments = await get_all_experiments(
         db_session,
-        title=filters.title if filters else None,
+        title_filter=filters.title if filters else None,
         tags=filters.tags if filters else None,
         should_include_tags=filters.should_include_tags if filters else None,
         start_date=filters.start_date if filters else None,

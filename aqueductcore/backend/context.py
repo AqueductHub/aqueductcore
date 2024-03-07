@@ -1,10 +1,11 @@
 """Server context management module."""
+
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
 
-from aqueductcore.backend.server.session import get_session
+from aqueductcore.backend.session import get_session
 
 
 class ServerContext(BaseContext):

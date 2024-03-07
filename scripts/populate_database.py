@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.orm import Experiment, Tag
-from aqueductcore.backend.server.session import async_engine, get_session
+from aqueductcore.backend.session import async_engine, get_session
 
 
 def random_date(start: datetime, end: datetime):

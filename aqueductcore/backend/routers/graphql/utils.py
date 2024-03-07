@@ -1,8 +1,7 @@
 """Utility functions for mapping Pydantic models to Graph nodes and vice versa."""
 
-
 import aqueductcore.backend.routers.graphql.types as node
-from aqueductcore.backend.schemas.experiment import ExperimentRead
+from aqueductcore.backend.models.experiment import ExperimentRead
 
 
 def experiment_model_to_node(value: ExperimentRead) -> node.ExperimentData:

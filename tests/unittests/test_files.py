@@ -11,9 +11,9 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from aqueductcore.backend.context import ServerContext, context_dependency
 from aqueductcore.backend.main import app
-from aqueductcore.backend.schemas.experiment import ExperimentCreate
-from aqueductcore.backend.server.context import ServerContext, context_dependency
+from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.settings import settings
