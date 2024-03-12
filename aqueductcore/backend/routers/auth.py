@@ -4,25 +4,26 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Dict, List, cast
 
+import bcrypt
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OpenIdConnect
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel, HttpUrl
 from typing_extensions import Annotated
 
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
 SECRET_KEY = settings.token_secret
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.tokens_expiry_time_minutes
 
 USERNAME = settings.aqueduct_username
-PASSWORD_HASH = pwd_context.hash(settings.aqueduct_password)
+PASSWORD_HASH = bcrypt.hashpw(
+    password=settings.aqueduct_password.encode("utf8"), salt=bcrypt.gensalt()
+)
 
 oauth2_scheme = OpenIdConnect(openIdConnectUrl="/auth")
 
@@ -62,7 +63,7 @@ def authenticate_user(username: str, password: str):
     """Verify the username and password matches the environment configuration."""
     if username != USERNAME:
         return None
-    if not pwd_context.verify(password, PASSWORD_HASH):
+    if not bcrypt.checkpw(password.encode("utf-8"), PASSWORD_HASH):
         return None
     return User(username=username)
 

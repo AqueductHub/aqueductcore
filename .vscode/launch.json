@@ -8,7 +8,7 @@
             "name": "Start Uvicorn Script",
             "type": "python",
             "request": "launch",
-            "program": "scripts/start_ecs_service.py",
+            "program": "scripts/start_aqueduct_core.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
