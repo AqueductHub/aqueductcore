@@ -234,7 +234,7 @@ remove_experiment_mutation = """
     mutation RemoveExperiment {
         removeExperiment(
             experimentRemoveInput: {
-                experimentId: "b7038e5a-c93d-4cac-8d3d-b5a95ead0963"
+                experimentId: "1adb18c4-3adf-40cf-bcc7-4b32d1d22be7"
             }
         ) {
             result

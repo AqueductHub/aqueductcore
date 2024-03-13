@@ -439,3 +439,20 @@ async def test_get_experiment_files_empty(
         )
         assert len(files) == 0
 
+
+@pytest.mark.asyncio
+async def test_remove_experiment(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_session.add(db_experiment)
+
+    await db_session.commit()
+
+    experiment = experiments_data[0]
+
+    result, message = await remove_experiment(db_session=db_session, experiment_id=experiment.id)
+
+    assert result == True
+    assert message == "Experiment removed successfully"

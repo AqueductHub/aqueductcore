@@ -426,10 +426,11 @@ async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> tu
     )
 
     try:
-        with os.scandir(folder_path) as file_iterator:
-            for entry in file_iterator:
-                if entry.is_file(follow_symlinks=False):
-                    os.remove(f"{folder_path}/{entry.name}")
+        if os.path.exists(folder_path):
+            with os.scandir(folder_path) as file_iterator:
+                for entry in file_iterator:
+                    if entry.is_file(follow_symlinks=False):
+                        os.remove(f"{folder_path}/{entry.name}")
 
     except OSError as error:
         if error.errno in (errno.EACCES, errno.EPERM):
