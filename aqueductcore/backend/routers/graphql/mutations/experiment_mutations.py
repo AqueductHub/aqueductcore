@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
+    ExperimentRemoveInput,
     ExperimentTagInput,
     ExperimentUpdateInput,
 )
@@ -66,3 +67,14 @@ async def remove_tag_from_experiment(
         tag=experiment_tag_input.tag,
     )
     return experiment_model_to_node(experiment)
+
+
+async def remove_experiment(
+    db_session: AsyncSession, experiment_remove_input: ExperimentRemoveInput
+) -> tuple[bool, str]:
+    """Remove experiment mutation"""
+
+    result, message = await experiment_service.remove_experiment(
+        db_session=db_session, experiment_id=experiment_remove_input.experiment_id
+    )
+    return result, message
