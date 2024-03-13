@@ -1,6 +1,7 @@
 """GraphQL mutation controller"""
 
 from uuid import UUID
+from typing import Tuple
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -71,7 +72,7 @@ async def remove_tag_from_experiment(
 
 async def remove_experiment(
     db_session: AsyncSession, experiment_remove_input: ExperimentRemoveInput
-) -> tuple[bool, str]:
+) -> Tuple[bool, str]:
     """Remove experiment mutation"""
 
     result, message = await experiment_service.remove_experiment(

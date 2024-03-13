@@ -418,7 +418,7 @@ async def create_tag(db_session: AsyncSession, tag: TagCreate) -> TagRead:
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> tuple[bool, str]:
+async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> Tuple[bool, str]:
     """Remove experiment from database"""
 
     folder_path = build_experiment_dir_absolute_path(
