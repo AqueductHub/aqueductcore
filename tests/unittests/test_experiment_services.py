@@ -18,6 +18,7 @@ from aqueductcore.backend.services.experiment import (
     get_experiment_by_uuid,
     get_experiment_files,
     remove_tag_from_experiment,
+    remove_experiment,
     update_experiment,
 )
 from aqueductcore.backend.services.utils import (
@@ -437,3 +438,4 @@ async def test_get_experiment_files_empty(
             str(settings.experiments_dir_path), experiment_id=experiment.id
         )
         assert len(files) == 0
+

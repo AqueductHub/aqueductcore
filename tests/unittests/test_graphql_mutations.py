@@ -210,6 +210,40 @@ remove_tag_from_experiment_mutation = """
 """
 
 
+remove_tag_from_experiment_mutation = """
+    mutation RemoveTagFromExperiment {
+        removeTagFromExperiment(
+            experimentTagInput: {
+                experimentId: "877a14dd-124c-4c43-bcc2-2cf2ce9aa991"
+                tag: "laser"
+            }
+        ) {
+                id
+                title
+                description
+                tags
+                createdAt
+                updatedAt
+                alias
+        }
+    }
+"""
+
+
+remove_experiment_mutation = """
+    mutation RemoveExperiment {
+        removeExperiment(
+            experimentRemoveInput: {
+                experimentId: "b7038e5a-c93d-4cac-8d3d-b5a95ead0963"
+            }
+        ) {
+            result
+            message
+        }
+    }
+"""
+
+
 @pytest.mark.asyncio
 async def test_create_experiment_invalid_title(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
@@ -386,3 +420,27 @@ async def test_remove_tag_from_experiment(
 
     resp_data = resp.data["removeTagFromExperiment"]
     assert "laser" not in resp_data["tags"]
+
+
+@pytest.mark.asyncio
+async def test_remove_experiment(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test remove tag from experiment graphql mutation"""
+
+    db_experiments = []
+    for experiment in experiments_data:
+        db_exerperiment = experiment_model_to_orm(experiment)
+        db_experiments.append(db_exerperiment)
+        db_session.add(db_exerperiment)
+        await db_session.commit()
+        await db_session.refresh(db_exerperiment)
+
+    schema = Schema(query=Query, mutation=Mutation)
+
+    context = ServerContext(db_session=db_session)
+    resp = await schema.execute(remove_experiment_mutation, context_value=context)
+
+    assert resp.errors is None
+    assert resp.data is not None
+

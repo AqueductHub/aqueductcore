@@ -8,9 +8,10 @@ from typing import Callable, List, Optional, Tuple
 from uuid import UUID
 
 from pydantic import ConfigDict, Field, validate_call
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import SQLAlchemyError
 
 from aqueductcore.backend.errors import (
     ECSDBError,
@@ -20,6 +21,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
+from aqueductcore.backend.settings import settings
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_id_and_alias,
@@ -413,3 +415,42 @@ async def create_tag(db_session: AsyncSession, tag: TagCreate) -> TagRead:
     await db_session.commit()
 
     return tag_orm_to_model(db_tag)
+
+
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> tuple[bool, str]:
+    """Remove experiment from database"""
+
+    folder_path = build_experiment_dir_absolute_path(
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+    )
+
+    try:
+        with os.scandir(folder_path) as file_iterator:
+            for entry in file_iterator:
+                if entry.is_file(follow_symlinks=False):
+                    os.remove(f"{folder_path}/{entry.name}")
+
+    except OSError as error:
+        if error.errno in (errno.EACCES, errno.EPERM):
+            raise ECSFilesPathError("Error in reading the files: Permission denied.") from error
+
+        raise ECSFilesPathError("Unknown Error while trying to delete experiment files.") from error
+
+    remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
+        orm.experiment_tag_association.c.experiment_id == experiment_id
+    )
+    try:
+        await db_session.execute(remove_experiment_tag_links_statement)
+    except SQLAlchemyError:
+        return False, "Sorry, unable to remove tag from experiment"
+
+    remove_experiment_statement = delete(orm.Experiment).where(orm.Experiment.id == experiment_id)
+    try:
+        await db_session.execute(remove_experiment_statement)
+    except SQLAlchemyError:
+        return False, "Sorry, unable to remove experiment"
+
+    await db_session.commit()
+
+    return True, "Experiment removed successfully"
