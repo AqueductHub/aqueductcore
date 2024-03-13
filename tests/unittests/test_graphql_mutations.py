@@ -1,12 +1,13 @@
 # pylint: skip-file
 # mypy: ignore-errors
 from typing import List
+from uuid import uuid4
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
-from aqueductcore.backend.context import ServerContext
+from aqueductcore.backend.context import ServerContext, UserInfo
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
@@ -224,8 +225,7 @@ async def test_create_experiment_invalid_title(
         await db_session.refresh(db_exerperiment)
 
     schema = Schema(query=Query, mutation=Mutation)
-
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(create_experiment_mutation_invalid_title, context_value=context)
 
     assert (
@@ -249,7 +249,7 @@ async def test_create_experiment_invalid_description(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(
         create_experiment_mutation_invalid_description, context_value=context
     )
@@ -275,7 +275,7 @@ async def test_create_experiment_invalid_tags(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(create_experiment_mutation_invalid_tags, context_value=context)
 
     assert resp.data is None
@@ -298,7 +298,7 @@ async def test_create_experiment_over_limit_tags(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(create_experiment_mutation_over_limit_tags, context_value=context)
 
     assert (
@@ -323,7 +323,7 @@ async def test_update_experiment(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(update_experiment_mutation, context_value=context)
 
     assert resp.errors is None
@@ -352,7 +352,7 @@ async def test_add_tag_to_experiment(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(add_tag_to_experiment_mutation, context_value=context)
 
     assert resp.errors is None
@@ -378,7 +378,7 @@ async def test_remove_tag_from_experiment(
 
     schema = Schema(query=Query, mutation=Mutation)
 
-    context = ServerContext(db_session=db_session)
+    context = ServerContext(db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=[]))
     resp = await schema.execute(remove_tag_from_experiment_mutation, context_value=context)
 
     assert resp.errors is None

@@ -30,6 +30,7 @@ class ExperimentBase(AQDModel):
     """Base model for Experiment"""
 
     id: UUID
+    user_id: UUID
     title: str
     description: Optional[str] = None
 

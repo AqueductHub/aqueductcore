@@ -12,6 +12,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import (
     ECSDBError,
     ECSDBExperimentNonExisting,
@@ -22,7 +23,7 @@ from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
-    generate_id_and_alias,
+    generate_experiment_id_and_alias,
     tag_model_to_orm,
     tag_orm_to_model,
 )
@@ -42,6 +43,7 @@ func: Callable
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_all_experiments(  # pylint: disable=too-many-arguments
+    user_info: UserInfo,
     db_session: AsyncSession,
     title_filter: Optional[ExperimentTitleFilter] = None,
     tags: Optional[List[ExperimentTag]] = Field(
@@ -117,7 +119,9 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def get_experiment_by_uuid(db_session: AsyncSession, experiment_id: UUID) -> ExperimentRead:
+async def get_experiment_by_uuid(
+    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID
+) -> ExperimentRead:
     """Get experiment by Experiment ID
 
     Args:
@@ -145,7 +149,9 @@ async def get_experiment_by_uuid(db_session: AsyncSession, experiment_id: UUID) 
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def get_experiment_by_alias(db_session: AsyncSession, alias: str) -> ExperimentRead:
+async def get_experiment_by_alias(
+    user_info: UserInfo, db_session: AsyncSession, alias: str
+) -> ExperimentRead:
     """Get experiment by experiment unique alias
 
     Args:
@@ -180,7 +186,7 @@ def build_experiment_dir_absolute_path(experiments_root_dir: str, experiment_id:
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_experiment_files(
-    experiments_root_dir: str, experiment_id: UUID
+    user_info: UserInfo, experiments_root_dir: str, experiment_id: UUID
 ) -> List[Tuple[str, datetime]]:
     """Returns the list of the file names associated with the experiment.
 
@@ -217,6 +223,7 @@ EXPERIMENT_ALIAS_PATTERN = r"^(19[0-9]{2}|2[0-9]{3})(0[1-9]|1[012])([123]0|[012]
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def create_experiment(
+    user_info: UserInfo,
     db_session: AsyncSession,
     title: ExperimentTitle,
     description: ExperimentDescription,
@@ -249,17 +256,18 @@ async def create_experiment(
     today_experiments = (await db_session.execute(today_experiments_statement)).scalars().all()
 
     if not today_experiments:
-        experiment_id, alias = generate_id_and_alias(experiment_index=1)
+        experiment_id, alias = generate_experiment_id_and_alias(experiment_index=1)
     else:
         last_experiment_alias = sorted(today_experiments, key=lambda x: int(x.split("-")[-1]))[-1]
         if re.match(EXPERIMENT_ALIAS_PATTERN, last_experiment_alias):
             index = int(last_experiment_alias.split("-")[-1])
-            experiment_id, alias = generate_id_and_alias(experiment_index=index + 1)
+            experiment_id, alias = generate_experiment_id_and_alias(experiment_index=index + 1)
         else:
-            experiment_id, alias = generate_id_and_alias(experiment_index=1)
+            experiment_id, alias = generate_experiment_id_and_alias(experiment_index=1)
 
     db_experiment = orm.Experiment(
         id=experiment_id,
+        user_id=user_info.user_id,
         title=title,
         description=description,
         tags=tags_orm,
@@ -279,6 +287,7 @@ async def create_experiment(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def update_experiment(
+    user_info: UserInfo,
     db_session: AsyncSession,
     experiment_id: UUID,
     title: Optional[ExperimentTitle] = None,
@@ -313,7 +322,7 @@ async def update_experiment(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def add_tag_to_experiment(
-    db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
+    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""
 
@@ -352,7 +361,7 @@ async def add_tag_to_experiment(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def remove_tag_from_experiment(
-    db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
+    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""
 
@@ -382,7 +391,9 @@ async def remove_tag_from_experiment(
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def get_all_tags(db_session: AsyncSession, include_dangling=False) -> List[TagRead]:
+async def get_all_tags(
+    user_info: UserInfo, db_session: AsyncSession, include_dangling=False
+) -> List[TagRead]:
     """Get list of all tags"""
     statement = select(orm.Tag)
     if not include_dangling:
@@ -394,7 +405,9 @@ async def get_all_tags(db_session: AsyncSession, include_dangling=False) -> List
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def get_tag_by_name(db_session: AsyncSession, tag_name: ExperimentTag) -> Optional[TagRead]:
+async def get_tag_by_name(
+    user_info: UserInfo, db_session: AsyncSession, tag_name: ExperimentTag
+) -> Optional[TagRead]:
     """Get tag by ID"""
     statement = select(orm.Tag).filter(orm.Tag.name == tag_name)
     result = await db_session.execute(statement)
@@ -406,7 +419,7 @@ async def get_tag_by_name(db_session: AsyncSession, tag_name: ExperimentTag) -> 
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def create_tag(db_session: AsyncSession, tag: TagCreate) -> TagRead:
+async def create_tag(user_info: UserInfo, db_session: AsyncSession, tag: TagCreate) -> TagRead:
     """Create a tag with given name"""
     db_tag = tag_model_to_orm(tag)
     db_session.add(db_tag)

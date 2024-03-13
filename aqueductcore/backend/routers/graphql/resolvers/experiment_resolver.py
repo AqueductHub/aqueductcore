@@ -5,8 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import ECSValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentIdentifierInput,
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
 
 
 async def get_expriments(
-    db_session: AsyncSession,
+    context: ServerContext,
     offset: int,
     limit: int,
     filters: Optional[ExperimentFiltersInput] = None,
@@ -39,7 +38,8 @@ async def get_expriments(
         )
 
     experiments = await get_all_experiments(
-        db_session,
+        user_info=context.user_info,
+        db_session=context.db_session,
         title_filter=filters.title if filters else None,
         tags=filters.tags if filters else None,
         should_include_tags=filters.should_include_tags if filters else None,
@@ -54,14 +54,20 @@ async def get_expriments(
 
 
 async def get_experiment(
-    db_session: AsyncSession, experiment_identifier: ExperimentIdentifierInput
+    context: ServerContext, experiment_identifier: ExperimentIdentifierInput
 ) -> ExperimentData:
     """Resolve a single experiment."""
     if experiment_identifier.type is IDType.UUID:
         experiment = await get_experiment_by_uuid(
-            db_session, experiment_id=UUID(experiment_identifier.value)
+            user_info=context.user_info,
+            db_session=context.db_session,
+            experiment_id=UUID(experiment_identifier.value),
         )
     else:
-        experiment = await get_experiment_by_alias(db_session, alias=experiment_identifier.value)
+        experiment = await get_experiment_by_alias(
+            user_info=context.user_info,
+            db_session=context.db_session,
+            alias=experiment_identifier.value,
+        )
 
     return experiment_model_to_node(experiment)

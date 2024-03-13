@@ -2,8 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentTagInput,
@@ -15,12 +14,13 @@ from aqueductcore.backend.services import experiment as experiment_service
 
 
 async def create_experiment(
-    db_session: AsyncSession, create_experiment_input: ExperimentCreateInput
+    context: ServerContext, create_experiment_input: ExperimentCreateInput
 ) -> ExperimentData:
     """Create experiment mutation"""
 
     experiment = await experiment_service.create_experiment(
-        db_session=db_session,
+        user_info=context.user_info,
+        db_session=context.db_session,
         title=create_experiment_input.title,
         description=create_experiment_input.description,
         tags=create_experiment_input.tags,
@@ -29,12 +29,13 @@ async def create_experiment(
 
 
 async def update_experiment(
-    db_session: AsyncSession, experiment_id: UUID, experiment_update_input: ExperimentUpdateInput
+    context: ServerContext, experiment_id: UUID, experiment_update_input: ExperimentUpdateInput
 ) -> ExperimentData:
     """Update experiment mutation"""
 
     experiment = await experiment_service.update_experiment(
-        db_session=db_session,
+        user_info=context.user_info,
+        db_session=context.db_session,
         experiment_id=experiment_id,
         title=experiment_update_input.title,
         description=experiment_update_input.description,
@@ -43,12 +44,13 @@ async def update_experiment(
 
 
 async def add_tag_to_experiment(
-    db_session: AsyncSession, experiment_tag_input: ExperimentTagInput
+    context: ServerContext, experiment_tag_input: ExperimentTagInput
 ) -> ExperimentData:
     """Add tag to experiment mutation"""
 
     experiment = await experiment_service.add_tag_to_experiment(
-        db_session=db_session,
+        user_info=context.user_info,
+        db_session=context.db_session,
         experiment_id=experiment_tag_input.experiment_id,
         tag=experiment_tag_input.tag,
     )
@@ -56,12 +58,13 @@ async def add_tag_to_experiment(
 
 
 async def remove_tag_from_experiment(
-    db_session: AsyncSession, experiment_tag_input: ExperimentTagInput
+    context: ServerContext, experiment_tag_input: ExperimentTagInput
 ) -> ExperimentData:
     """Remove tag from experiment mutation"""
 
     experiment = await experiment_service.remove_tag_from_experiment(
-        db_session=db_session,
+        user_info=context.user_info,
+        db_session=context.db_session,
         experiment_id=experiment_tag_input.experiment_id,
         tag=experiment_tag_input.tag,
     )

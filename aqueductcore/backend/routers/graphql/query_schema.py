@@ -59,7 +59,7 @@ class Query:
         """Resolver for the experiments."""
         context = cast(ServerContext, info.context)
         experiments = await get_expriments(
-            db_session=context.db_session, offset=offset, limit=limit, filters=filters
+            context=context, offset=offset, limit=limit, filters=filters
         )
         return experiments
 
@@ -70,7 +70,7 @@ class Query:
         """Resolver for a single experiment."""
         context = cast(ServerContext, info.context)
         experiment = await get_experiment(
-            db_session=context.db_session, experiment_identifier=experiment_identifier
+            context=context, experiment_identifier=experiment_identifier
         )
         return experiment
 
@@ -84,7 +84,5 @@ class Query:
     ) -> Tags:
         """Resolver for the tags."""
         context = cast(ServerContext, info.context)
-        tags = await get_tags(
-            db_session=context.db_session, limit=limit, offset=offset, filters=filters
-        )
+        tags = await get_tags(context=context, limit=limit, offset=offset, filters=filters)
         return tags

@@ -23,6 +23,7 @@ async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
         alias=value.alias,
         id=value.id,
         title=value.title,
+        user_id=value.user_id,
         tags=[tag_orm_to_model(tag) for tag in value.tags],
     )
 
@@ -39,7 +40,11 @@ def tag_orm_to_model(value: orm.Tag) -> TagRead:
 def experiment_model_to_orm(value: ExperimentCreate) -> orm.Experiment:
     """Convert Pydantic Experiment to ORM Experiment."""
     experiment = orm.Experiment(
-        id=value.id, title=value.title, description=value.description, alias=value.alias
+        user_id=value.user_id,
+        id=value.id,
+        title=value.title,
+        description=value.description,
+        alias=value.alias,
     )
     experiment.tags.extend([tag_model_to_orm(item) for item in value.tags])
 
@@ -53,7 +58,7 @@ def tag_model_to_orm(value: TagCreate) -> orm.Tag:
     return tag
 
 
-def generate_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
+def generate_experiment_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
     """Generate uuid and alias for experiment"""
     current_date = datetime.today().strftime("%Y%m%d")
     experiment_id = uuid4()
