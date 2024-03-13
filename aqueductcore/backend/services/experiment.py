@@ -421,6 +421,22 @@ async def create_tag(db_session: AsyncSession, tag: TagCreate) -> TagRead:
 async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> tuple[bool, str]:
     """Remove experiment from database"""
 
+    folder_path = build_experiment_dir_absolute_path(
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+    )
+
+    try:
+        with os.scandir(folder_path) as file_iterator:
+            for entry in file_iterator:
+                if entry.is_file(follow_symlinks=False):
+                    os.remove(f"{settings.experiments_dir_path}/{experiment_id}/{entry.name}")
+
+    except OSError as error:
+        if error.errno in (errno.EACCES, errno.EPERM):
+            raise ECSFilesPathError("Error in reading the files: Permission denied.") from error
+
+        raise ECSFilesPathError("Unknown Error while trying to delete experiment files.") from error
+
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_id == experiment_id
     )
@@ -436,21 +452,5 @@ async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> tu
         return False, "Sorry, unable to remove experiment"
 
     await db_session.commit()
-
-    folder_path = build_experiment_dir_absolute_path(
-        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
-    )
-
-    try:
-        with os.scandir(folder_path) as file_iterator:
-            for entry in file_iterator:
-                if entry.is_file(follow_symlinks=False):
-                    os.remove(entry.name)
-
-    except OSError as error:
-        if error.errno in (errno.EACCES, errno.EPERM):  # Permission denied
-            raise ECSFilesPathError("Error in reading the files: Permission denied.") from error
-
-        raise ECSFilesPathError("Unknown Error while trying to delete experiment files.") from error
 
     return True, "Experiment removed successfully"
