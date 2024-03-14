@@ -4,17 +4,13 @@ from enum import Enum
 from typing import AsyncGenerator, List
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
+from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
 from typing_extensions import Annotated
 
 from aqueductcore.backend.session import get_session
-
-get_bearer_token = HTTPBearer(auto_error=False)
 
 
 class ExperimentScope(str, Enum):
@@ -45,24 +41,9 @@ class ServerContext(BaseContext):
         self.user_info = user_info
 
 
-async def get_current_user(
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer_token)],
-) -> UserInfo:
+async def get_current_user() -> UserInfo:
     """Get the current user based on the provided authentication token."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials.",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.get_unverified_claims(token.credentials)
-        user_id: str = str(payload.get("sub"))
-        if user_id is None:
-            raise credentials_exception
-        token_scopes = payload.get("scopes", [])
-        token_data = UserInfo(scopes=token_scopes, user_id=UUID(user_id))
-    except JWTError as exc:
-        raise credentials_exception from exc
+    token_data = UserInfo(scopes=[scope.value for scope in ExperimentScope], user_id=UUID(int=0))
 
     return token_data
 
