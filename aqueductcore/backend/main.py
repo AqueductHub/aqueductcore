@@ -13,7 +13,7 @@ from aqueductcore.backend.settings import settings
 
 
 @asynccontextmanager
-async def lifespan(fastapi_app: FastAPI): # pylint: disable=unused-argument
+async def lifespan(app: FastAPI): # pylint: disable=redefined-outer-name,unused-argument
     """FastAPI process startup event handler."""
 
     # initialise database with relations
