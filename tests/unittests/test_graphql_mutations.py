@@ -262,6 +262,7 @@ async def test_create_experiment_invalid_title(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(create_experiment_mutation_invalid_title, context_value=context)
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"Title should be maximum {MAX_EXPERIMENT_TITLE_LENGTH} characters long."
@@ -288,6 +289,7 @@ async def test_create_experiment_invalid_description(
         create_experiment_mutation_invalid_description, context_value=context
     )
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"Description should be maximum {MAX_EXPERIMENT_DESCRIPTION_LENGTH} characters long."
@@ -335,6 +337,7 @@ async def test_create_experiment_over_limit_tags(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(create_experiment_mutation_over_limit_tags, context_value=context)
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"You can have a maximum of {MAX_EXPERIMENT_TAGS_NUM} tags in an experiment."
@@ -443,4 +446,3 @@ async def test_remove_experiment(
 
     assert resp.errors is None
     assert resp.data is not None
-

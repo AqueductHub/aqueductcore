@@ -7,7 +7,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentIdentifierInput,
     IDType,
@@ -34,7 +34,7 @@ async def get_expriments(
     """Resolve all experiments."""
 
     if limit > MAX_EXPERIMENTS_PER_REQUEST:
-        raise ECSValidationError(
+        raise AQDValidationError(
             f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
         )
 

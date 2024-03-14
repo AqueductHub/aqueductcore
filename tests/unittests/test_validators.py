@@ -1,6 +1,6 @@
 import pytest
 
-from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,
     MAX_EXPERIMENT_TAG_LENGTH,
@@ -14,14 +14,14 @@ from aqueductcore.backend.services.validators import (
 def test_validate_title():
     title = "a" * (MAX_EXPERIMENT_TITLE_LENGTH + 1)
 
-    with pytest.raises(ECSValidationError):
+    with pytest.raises(AQDValidationError):
         validate_title(title, max_len=MAX_EXPERIMENT_TITLE_LENGTH)
 
 
 def test_validate_description():
     description = "a" * (MAX_EXPERIMENT_DESCRIPTION_LENGTH + 1)
 
-    with pytest.raises(ECSValidationError):
+    with pytest.raises(AQDValidationError):
         validate_description(description, max_len=MAX_EXPERIMENT_DESCRIPTION_LENGTH)
 
 
@@ -29,5 +29,5 @@ def test_validate_tags_invalid_tags():
     invalid_tags = ["tag$1"]
 
     for tag in invalid_tags:
-        with pytest.raises(ECSValidationError):
+        with pytest.raises(AQDValidationError):
             validate_tag(tag, max_len=MAX_EXPERIMENT_TAG_LENGTH)

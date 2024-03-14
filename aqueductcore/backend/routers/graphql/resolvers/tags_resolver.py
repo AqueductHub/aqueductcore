@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.types import Tags
 from aqueductcore.backend.services.experiment import get_all_tags
 from aqueductcore.backend.services.validators import MAX_TAGS_PER_REQUEST
@@ -24,7 +24,7 @@ async def get_tags(
     """Tags resolver."""
 
     if limit and limit > MAX_TAGS_PER_REQUEST:
-        raise ECSValidationError(f"Maximum allowed limit for tags is {MAX_TAGS_PER_REQUEST}")
+        raise AQDValidationError(f"Maximum allowed limit for tags is {MAX_TAGS_PER_REQUEST}")
 
     include_dangling = False
     if filters:

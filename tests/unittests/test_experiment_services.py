@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import Dict, List, Tuple
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,6 +21,7 @@ from aqueductcore.backend.services.experiment import (
     remove_experiment,
     update_experiment,
 )
+from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     tag_model_to_orm,
@@ -456,3 +457,21 @@ async def test_remove_experiment(
 
     assert result == True
     assert message == "Experiment removed successfully"
+
+    with pytest.raises(AQDDBExperimentNonExisting):
+        await get_experiment_by_uuid(db_session, experiment.id)
+
+
+@pytest.mark.asyncio
+async def test_remove_experiment_invalid_experiment_id(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_session.add(db_experiment)
+
+    await db_session.commit()
+
+    experiment_id = uuid4()
+    with pytest.raises(AQDDBExperimentNonExisting):
+        await remove_experiment(db_session=db_session, experiment_id=experiment_id)
