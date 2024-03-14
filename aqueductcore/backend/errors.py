@@ -15,6 +15,10 @@ class ECSValidationError(ECSDBError):
     """Exception raised when there is a validation error"""
 
 
+class ECSPermission(ECSDBError):
+    """Exception raised when there is a permission error"""
+
+
 class ECSDBExperimentNonExisting(ECSError):
     """Exception raised when there is no experiment in the DB with the specified details."""
 

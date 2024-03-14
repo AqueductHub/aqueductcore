@@ -21,6 +21,7 @@ async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
     context = cast(ServerContext, info.context)
     files = await get_experiment_files(
         user_info=context.user_info,
+        db_session=context.db_session,
         experiments_root_dir=str(settings.experiments_dir_path),
         experiment_id=experiment_id,
     )

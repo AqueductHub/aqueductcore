@@ -12,11 +12,12 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.context import UserInfo
+from aqueductcore.backend.context import UserInfo, UserScope
 from aqueductcore.backend.errors import (
     ECSDBError,
     ECSDBExperimentNonExisting,
     ECSFilesPathError,
+    ECSPermission,
     ECSValidationError,
 )
 from aqueductcore.backend.models import orm
@@ -68,6 +69,9 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
     """
 
     statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
+
+    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
 
     if title_filter is not None:
         statement = statement.filter(
@@ -137,6 +141,9 @@ async def get_experiment_by_uuid(
         .where(orm.Experiment.id == experiment_id)
     )
 
+    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+
     result = await db_session.execute(statement)
 
     experiment = result.scalars().first()
@@ -167,6 +174,9 @@ async def get_experiment_by_alias(
         .where(orm.Experiment.alias == alias)
     )
 
+    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+
     result = await db_session.execute(statement)
 
     experiment = result.scalars().first()
@@ -186,7 +196,7 @@ def build_experiment_dir_absolute_path(experiments_root_dir: str, experiment_id:
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_experiment_files(
-    user_info: UserInfo, experiments_root_dir: str, experiment_id: UUID
+    user_info: UserInfo, db_session: AsyncSession, experiments_root_dir: str, experiment_id: UUID
 ) -> List[Tuple[str, datetime]]:
     """Returns the list of the file names associated with the experiment.
 
@@ -199,6 +209,11 @@ async def get_experiment_files(
 
     """
     file_names: List[Tuple[str, datetime]] = []
+
+    # check access to the experiment by retrieving it.
+    await get_experiment_by_uuid(
+        user_info=user_info, db_session=db_session, experiment_id=experiment_id
+    )
 
     folder_path = build_experiment_dir_absolute_path(experiments_root_dir, experiment_id)
 
@@ -234,6 +249,11 @@ async def create_experiment(
     if len(tags) > MAX_EXPERIMENT_TAGS_NUM:
         raise ECSValidationError(
             f"You can have a maximum of {MAX_EXPERIMENT_TAGS_NUM} tags in an experiment."
+        )
+
+    if UserScope.EXPERIMENT_CREATE_OWN not in user_info.scopes:
+        raise ECSPermission(
+            "The user doesn't have the required permission(s) to create experiments."
         )
 
     input_tag_keys = [tag.lower() for tag in tags]
@@ -300,12 +320,16 @@ async def update_experiment(
         .options(joinedload(orm.Experiment.tags))
         .where(orm.Experiment.id == experiment_id)
     )
+
+    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+
     result = await db_session.execute(statement)
 
     db_experiment = result.scalars().first()
     if db_experiment is None:
         raise ECSDBExperimentNonExisting(
-            "DB query failed due to non-existing experiment with the specified ID."
+            "Non-existing experiment with the specified ID for the user."
         )
 
     if title:
@@ -331,11 +355,15 @@ async def add_tag_to_experiment(
         .options(joinedload(orm.Experiment.tags))
         .filter(orm.Experiment.id == experiment_id)
     )
+    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        experiment_statement = experiment_statement.filter(
+            orm.Experiment.user_id == user_info.user_id
+        )
     experiment_result = await db_session.execute(experiment_statement)
     db_experiment = experiment_result.scalars().first()
     if db_experiment is None:
         raise ECSDBExperimentNonExisting(
-            "DB query failed due to non-existing experiment with the specified ID."
+            "Non-existing experiment with the specified ID for the user."
         )
 
     tag_key = tag.lower()
@@ -370,6 +398,11 @@ async def remove_tag_from_experiment(
         .options(joinedload(orm.Experiment.tags))
         .filter(orm.Experiment.id == experiment_id)
     )
+    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        experiment_statement = experiment_statement.filter(
+            orm.Experiment.user_id == user_info.user_id
+        )
+
     result = await db_session.execute(experiment_statement)
     db_experiment = result.scalars().first()
     if db_experiment is None:
@@ -394,6 +427,7 @@ async def remove_tag_from_experiment(
 async def get_all_tags(
     user_info: UserInfo, db_session: AsyncSession, include_dangling=False
 ) -> List[TagRead]:
+    # pylint: disable=unused-argument
     """Get list of all tags"""
     statement = select(orm.Tag)
     if not include_dangling:
@@ -408,6 +442,7 @@ async def get_all_tags(
 async def get_tag_by_name(
     user_info: UserInfo, db_session: AsyncSession, tag_name: ExperimentTag
 ) -> Optional[TagRead]:
+    # pylint: disable=unused-argument
     """Get tag by ID"""
     statement = select(orm.Tag).filter(orm.Tag.name == tag_name)
     result = await db_session.execute(statement)
@@ -420,6 +455,7 @@ async def get_tag_by_name(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def create_tag(user_info: UserInfo, db_session: AsyncSession, tag: TagCreate) -> TagRead:
+    # pylint: disable=unused-argument
     """Create a tag with given name"""
     db_tag = tag_model_to_orm(tag)
     db_session.add(db_tag)
