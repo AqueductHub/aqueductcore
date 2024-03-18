@@ -432,10 +432,7 @@ async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> Tu
         experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
     )
 
-    try:
-        rmtree(folder_path, ignore_errors=True)
-    except Exception as exc:
-        raise AQDFilesPathError("Sorry, could not delete experiment files due to an unknown error")
+    rmtree(folder_path, ignore_errors=True)
 
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_id == experiment_id
