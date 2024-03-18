@@ -20,7 +20,7 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData, GenericResponse
+from aqueductcore.backend.routers.graphql.types import ExperimentData
 
 
 @strawberry.type
@@ -76,14 +76,12 @@ class Mutation:
         )
         return experiment
 
-
     @strawberry.mutation
     async def remove_experiment(
         self, info: Info, experiment_remove_input: ExperimentRemoveInput
-    ) -> GenericResponse:
+    ) -> None:
         """Mutation to remove experiment"""
         context = cast(ServerContext, info.context)
-        result, message = await remove_experiment(
+        await remove_experiment(
             db_session=context.db_session, experiment_remove_input=experiment_remove_input
         )
-        return GenericResponse(result=result, message=message)

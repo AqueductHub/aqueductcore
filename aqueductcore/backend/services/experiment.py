@@ -4,11 +4,12 @@ import errno
 import os
 import re
 from datetime import date, datetime, time
+from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
 
 from pydantic import ConfigDict, Field, validate_call
-from sqlalchemy import func, delete, or_, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -20,7 +21,6 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
-from aqueductcore.backend.settings import settings
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_id_and_alias,
@@ -36,6 +36,7 @@ from aqueductcore.backend.services.validators import (
     ExperimentTitle,
     ExperimentTitleFilter,
 )
+from aqueductcore.backend.settings import settings
 
 ARCHIVED = "__archived__"
 func: Callable
@@ -423,25 +424,18 @@ async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> Tu
     get_experiment_statement = select(orm.Experiment).where(orm.Experiment.id == experiment_id)
     get_experiment_result = await db_session.execute(get_experiment_statement)
     if not get_experiment_result.scalars().first():
-        raise AQDDBExperimentNonExisting("DB query failed due to non-existing experiment with " + \
-                                         "the specified ID.")
+        raise AQDDBExperimentNonExisting(
+            "DB query failed due to non-existing experiment with " + "the specified ID."
+        )
 
     folder_path = build_experiment_dir_absolute_path(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
     )
 
     try:
-        if os.path.exists(folder_path):
-            with os.scandir(folder_path) as file_iterator:
-                for entry in file_iterator:
-                    if entry.is_file(follow_symlinks=False):
-                        os.remove(f"{folder_path}/{entry.name}")
-
-    except OSError as error:
-        if error.errno in (errno.EACCES, errno.EPERM):
-            raise AQDFilesPathError("Error in reading the files: Permission denied.") from error
-
-        raise AQDFilesPathError("Unknown Error while trying to delete experiment files.") from error
+        rmtree(folder_path, ignore_errors=True)
+    except Exception as exc:
+        raise AQDFilesPathError("Sorry, could not delete experiment files due to an unknown error")
 
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_id == experiment_id

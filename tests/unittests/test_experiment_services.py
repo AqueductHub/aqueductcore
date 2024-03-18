@@ -1,15 +1,18 @@
 # pylint: skip-file
 
 from datetime import datetime
+from os.path import exists
 from typing import Dict, List, Tuple
 from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.services.experiment import (
     add_tag_to_experiment,
+    build_experiment_dir_absolute_path,
     create_experiment,
     generate_id_and_alias,
     get_all_experiments,
@@ -17,11 +20,10 @@ from aqueductcore.backend.services.experiment import (
     get_experiment_by_alias,
     get_experiment_by_uuid,
     get_experiment_files,
-    remove_tag_from_experiment,
     remove_experiment,
+    remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     tag_model_to_orm,
@@ -475,3 +477,8 @@ async def test_remove_experiment_invalid_experiment_id(
     experiment_id = uuid4()
     with pytest.raises(AQDDBExperimentNonExisting):
         await remove_experiment(db_session=db_session, experiment_id=experiment_id)
+
+    experiment_files_path = build_experiment_dir_absolute_path(
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+    )
+    assert exists(experiment_files_path) == False

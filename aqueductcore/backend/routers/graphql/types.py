@@ -77,11 +77,3 @@ class Tags:
 
     tags_data: List[str] = strawberry.field(description="The list of tags.")
     total_tags_count: int = strawberry.field(description="Total number of tags.")
-
-
-@strawberry.type(description="Generic response type")
-class GenericResponse:
-    """GraphQL node"""
-
-    result: bool = strawberry.field(description="Result of the operation")
-    message: str = strawberry.field(description="Operation message")

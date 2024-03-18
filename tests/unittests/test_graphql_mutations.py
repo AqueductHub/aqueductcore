@@ -1,5 +1,6 @@
 # pylint: skip-file
 # mypy: ignore-errors
+from os.path import exists
 from typing import List
 
 import pytest
@@ -10,12 +11,14 @@ from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
+from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,
     MAX_EXPERIMENT_TAGS_NUM,
     MAX_EXPERIMENT_TITLE_LENGTH,
 )
+from aqueductcore.backend.settings import settings
 from tests.unittests.initial_data import experiment_data
 
 
@@ -236,10 +239,7 @@ remove_experiment_mutation = """
             experimentRemoveInput: {
                 experimentId: "1adb18c4-3adf-40cf-bcc7-4b32d1d22be7"
             }
-        ) {
-            result
-            message
-        }
+        )
     }
 """
 
@@ -446,3 +446,8 @@ async def test_remove_experiment(
 
     assert resp.errors is None
     assert resp.data is not None
+
+    experiment_files_path = build_experiment_dir_absolute_path(
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment.id
+    )
+    assert exists(experiment_files_path) == False
