@@ -3,7 +3,7 @@
 from pydantic.functional_validators import AfterValidator
 from typing_extensions import Annotated
 
-from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.services.utils import is_tag_valid
 
 MAX_EXPERIMENTS_PER_REQUEST = 500
@@ -22,7 +22,7 @@ MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER = 10
 def validate_title(title: str, max_len: int) -> str:
     """Validate title to have a specified maximum length"""
     if len(title) > max_len:
-        raise ECSValidationError(f"Title should be maximum {max_len} characters long.")
+        raise AQDValidationError(f"Title should be maximum {max_len} characters long.")
 
     return title
 
@@ -30,7 +30,7 @@ def validate_title(title: str, max_len: int) -> str:
 def validate_description(description: str, max_len: int) -> str:
     """Validate description to have a specified maximum length"""
     if len(description) > max_len:
-        raise ECSValidationError(f"Description should be maximum {max_len} characters long.")
+        raise AQDValidationError(f"Description should be maximum {max_len} characters long.")
 
     return description
 
@@ -38,7 +38,7 @@ def validate_description(description: str, max_len: int) -> str:
 def validate_tag(tag: str, max_len: int) -> str:
     """Validate tag to have a specified maximum length and allowed characters only"""
     if len(tag) > max_len or not is_tag_valid(tag):
-        raise ECSValidationError(
+        raise AQDValidationError(
             f"Tag should be less than {max_len} characters long "
             + "and contain alphanumeric characters, hyphens and underscores only."
         )

@@ -348,6 +348,7 @@ async def test_query_all_experiments_invalid_limit(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_limit_query, context_value=context)
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
@@ -373,13 +374,11 @@ async def test_query_all_experiments_title_filter(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"Title should be maximum {MAX_EXPERIMENT_TITLE_FILTER_LENGTH} characters long."
     )
-
-
-# all_experiments_invalid_tags_filter_query
 
 
 @pytest.mark.asyncio
@@ -401,6 +400,7 @@ async def test_query_all_experiments_max_tags_filter(
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
+    assert resp.errors is not None
     assert (
         resp.errors[0].message
         == f"Title should be maximum {MAX_EXPERIMENT_TITLE_FILTER_LENGTH} characters long."
@@ -612,6 +612,8 @@ async def test_query_over_limit_all_tags(
 
     context = ServerContext(db_session=db_session)
     resp = await schema.execute(tags_pagination_over_limit_query, context_value=context)
+
+    assert resp.errors is not None
     assert resp.errors[0].message == f"Maximum allowed limit for tags is {MAX_TAGS_PER_REQUEST}"
 
 

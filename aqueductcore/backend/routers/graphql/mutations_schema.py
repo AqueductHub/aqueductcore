@@ -9,12 +9,14 @@ from strawberry.types import Info
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
+    ExperimentRemoveInput,
     ExperimentTagInput,
     ExperimentUpdateInput,
 )
 from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import (
     add_tag_to_experiment,
     create_experiment,
+    remove_experiment,
     remove_tag_from_experiment,
     update_experiment,
 )
@@ -73,3 +75,13 @@ class Mutation:
             db_session=context.db_session, experiment_tag_input=experiment_tag_input
         )
         return experiment
+
+    @strawberry.mutation
+    async def remove_experiment(
+        self, info: Info, experiment_remove_input: ExperimentRemoveInput
+    ) -> None:
+        """Mutation to remove experiment"""
+        context = cast(ServerContext, info.context)
+        await remove_experiment(
+            db_session=context.db_session, experiment_remove_input=experiment_remove_input
+        )

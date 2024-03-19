@@ -4,19 +4,20 @@ import errno
 import os
 import re
 from datetime import date, datetime, time
+from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
 
 from pydantic import ConfigDict, Field, validate_call
-from sqlalchemy import func, or_, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from aqueductcore.backend.errors import (
-    ECSDBError,
-    ECSDBExperimentNonExisting,
-    ECSFilesPathError,
-    ECSValidationError,
+    AQDDBError,
+    AQDDBExperimentNonExisting,
+    AQDFilesPathError,
+    AQDValidationError,
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
@@ -35,6 +36,7 @@ from aqueductcore.backend.services.validators import (
     ExperimentTitle,
     ExperimentTitleFilter,
 )
+from aqueductcore.backend.settings import settings
 
 ARCHIVED = "__archived__"
 func: Callable
@@ -137,7 +139,7 @@ async def get_experiment_by_uuid(db_session: AsyncSession, experiment_id: UUID) 
 
     experiment = result.scalars().first()
     if experiment is None:
-        raise ECSDBExperimentNonExisting(
+        raise AQDDBExperimentNonExisting(
             "DB query failed due to non-existing experiment with the specified ID."
         )
 
@@ -165,7 +167,7 @@ async def get_experiment_by_alias(db_session: AsyncSession, alias: str) -> Exper
 
     experiment = result.scalars().first()
     if experiment is None:
-        raise ECSDBExperimentNonExisting(
+        raise AQDDBExperimentNonExisting(
             "DB query failed due to non-existing experiment with the specified alias."
         )
 
@@ -204,10 +206,10 @@ async def get_experiment_files(
 
     except OSError as error:
         if error.errno in (errno.EACCES, errno.EPERM):  # Permission denied
-            raise ECSFilesPathError("Error in reading the files: Permission denied.") from error
+            raise AQDFilesPathError("Error in reading the files: Permission denied.") from error
         if error.errno == errno.ENOENT:  # File not found
             return []
-        raise ECSFilesPathError("Unknown Error in accessing the file system.") from error
+        raise AQDFilesPathError("Unknown Error in accessing the file system.") from error
 
     return file_names
 
@@ -225,7 +227,7 @@ async def create_experiment(
     """Create an experiment"""
 
     if len(tags) > MAX_EXPERIMENT_TAGS_NUM:
-        raise ECSValidationError(
+        raise AQDValidationError(
             f"You can have a maximum of {MAX_EXPERIMENT_TAGS_NUM} tags in an experiment."
         )
 
@@ -295,7 +297,7 @@ async def update_experiment(
 
     db_experiment = result.scalars().first()
     if db_experiment is None:
-        raise ECSDBExperimentNonExisting(
+        raise AQDDBExperimentNonExisting(
             "DB query failed due to non-existing experiment with the specified ID."
         )
 
@@ -325,7 +327,7 @@ async def add_tag_to_experiment(
     experiment_result = await db_session.execute(experiment_statement)
     db_experiment = experiment_result.scalars().first()
     if db_experiment is None:
-        raise ECSDBExperimentNonExisting(
+        raise AQDDBExperimentNonExisting(
             "DB query failed due to non-existing experiment with the specified ID."
         )
 
@@ -333,7 +335,7 @@ async def add_tag_to_experiment(
     experiment_tags = [tag.key for tag in db_experiment.tags]
 
     if tag_key in experiment_tags:
-        raise ECSDBError("DB query failed due to pre-existing tag with the Experiment.")
+        raise AQDDBError("DB query failed due to pre-existing tag with the Experiment.")
 
     tag_statement = select(orm.Tag).filter(orm.Tag.key == tag_key)
 
@@ -364,7 +366,7 @@ async def remove_tag_from_experiment(
     result = await db_session.execute(experiment_statement)
     db_experiment = result.scalars().first()
     if db_experiment is None:
-        raise ECSDBExperimentNonExisting(
+        raise AQDDBExperimentNonExisting(
             "DB query failed due to non-existing experiment with the specified ID."
         )
 
@@ -372,7 +374,7 @@ async def remove_tag_from_experiment(
     experiment_tags = [tag_db.key for tag_db in db_experiment.tags]
 
     if tag_key not in experiment_tags:
-        raise ECSDBError("DB query failed due to non-existing tag with the provided experiment.")
+        raise AQDDBError("DB query failed due to non-existing tag with the provided experiment.")
 
     db_experiment.tags = [tag for tag in db_experiment.tags if tag.key != tag_key]
 
@@ -400,7 +402,7 @@ async def get_tag_by_name(db_session: AsyncSession, tag_name: ExperimentTag) -> 
     result = await db_session.execute(statement)
     tag = result.scalars().first()
     if tag is None:
-        raise ECSDBError("DB query failed due to non-existing tag with the specified ID.")
+        raise AQDDBError("DB query failed due to non-existing tag with the specified ID.")
 
     return tag_orm_to_model(tag)
 
@@ -413,3 +415,33 @@ async def create_tag(db_session: AsyncSession, tag: TagCreate) -> TagRead:
     await db_session.commit()
 
     return tag_orm_to_model(db_tag)
+
+
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def remove_experiment(db_session: AsyncSession, experiment_id: UUID) -> Tuple[bool, str]:
+    """Remove experiment from database"""
+
+    get_experiment_statement = select(orm.Experiment).where(orm.Experiment.id == experiment_id)
+    get_experiment_result = await db_session.execute(get_experiment_statement)
+    if not get_experiment_result.scalars().first():
+        raise AQDDBExperimentNonExisting(
+            "DB query failed due to non-existing experiment with " + "the specified ID."
+        )
+
+    folder_path = build_experiment_dir_absolute_path(
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+    )
+
+    rmtree(folder_path, ignore_errors=True)
+
+    remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
+        orm.experiment_tag_association.c.experiment_id == experiment_id
+    )
+    await db_session.execute(remove_experiment_tag_links_statement)
+
+    remove_experiment_statement = delete(orm.Experiment).where(orm.Experiment.id == experiment_id)
+    await db_session.execute(remove_experiment_statement)
+
+    await db_session.commit()
+
+    return True, "Experiment removed successfully"

@@ -46,3 +46,10 @@ class ExperimentCreateInput:
     title: str
     description: str
     tags: List[str]
+
+
+@strawberry.input
+class ExperimentRemoveInput:
+    """Input type to remove experiment"""
+
+    experiment_id: UUID
