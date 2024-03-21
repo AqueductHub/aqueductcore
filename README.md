@@ -77,6 +77,7 @@ services:
       - 5432
 ```
 
+You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory.
 
 2. If you now run `docker compose -f docker-compose.yaml up -d` in the directory where the file is, 
 docker will use the yaml file to pull Aqueduct's docker image, set local environment variables, and
@@ -85,7 +86,6 @@ start the server.
 3. Start your browser and point it to `https://localhost`.
 
 For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/).
-
 
 ### Install PyAqueduct
 
