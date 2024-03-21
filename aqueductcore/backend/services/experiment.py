@@ -184,7 +184,7 @@ async def get_experiment_by_alias(
     experiment = result.scalars().first()
     if experiment is None:
         raise AQDDBExperimentNonExisting(
-            "DB query failed due to non-existing experiment with the specified alias."
+            "Non-existing experiment with the specified alias for the user."
         )
 
     return await experiment_orm_to_model(experiment)
@@ -409,7 +409,7 @@ async def remove_tag_from_experiment(
     db_experiment = result.scalars().first()
     if db_experiment is None:
         raise AQDDBExperimentNonExisting(
-            "DB query failed due to non-existing experiment with the specified ID."
+            "Non-existing experiment with the specified ID for the user."
         )
 
     tag_key = tag.lower()
@@ -475,6 +475,9 @@ async def remove_experiment(
     get_experiment_statement = select(orm.Experiment).where(orm.Experiment.id == experiment_id)
 
     if UserScope.EXPERIMENT_DELETE_ALL not in user_info.scopes:
+        if UserScope.EXPERIMENT_DELETE_OWN not in user_info.scopes:
+            raise AQDPermission("The user doesn't have the permission to remove the experiment.")
+
         get_experiment_statement = get_experiment_statement.filter(
             orm.Experiment.user_id == user_info.user_id
         )
@@ -489,17 +492,16 @@ async def remove_experiment(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
     )
 
-    # first remove the experiment from database, then remove files for more safety.
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_id == experiment_id
     )
+
     await db_session.execute(remove_experiment_tag_links_statement)
     remove_experiment_statement = delete(orm.Experiment).where(orm.Experiment.id == experiment_id)
     await db_session.execute(remove_experiment_statement)
 
     rmtree(folder_path, ignore_errors=True)
 
-    # after all steps, safely commit the transaction.
     await db_session.commit()
 
     return experiment_id
