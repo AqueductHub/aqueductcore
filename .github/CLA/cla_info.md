@@ -14,9 +14,9 @@ Specifically, the Aqueduct CLAs are based on the Project Harmony ‘Contributor 
 
 We have two CLAs (both from Project Harmony): One is for work submitted by entities (for example, if your work was done in the course of your employment at a company, this will apply). The other is for individual contributors.
 
-The individual CLA can be found [here](LINK_TO_PDF)
+The individual CLA can be found [here](https://github.com/AqueductHub/aqueductcore/blob/main/.github/CLA/RL%20Aqueduct%20CLA%20Individuals%20v.%201.0%20(March%202024).pdf)
 
-The entity CLA can be found [here](LINK_TO_PDF)
+The entity CLA can be found [here](https://github.com/AqueductHub/aqueductcore/blob/main/.github/CLA/RL%20Aqueduct%20CLA%20Entities%20v.%201.0%20(March%202024).pdf).
 
 The CLA applies to the contributor’s initial contribution and to any subsequent contributions they make so, once you have signed the CLA, you will not need to sign it again for future contributions to Aqueduct. 
 
