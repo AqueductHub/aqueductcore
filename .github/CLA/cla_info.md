@@ -26,7 +26,7 @@ The CLA is a legally binding document and the contributor should ensure that it 
 
 When you first submit a pull request to the project, we will respond with an invitation to complete the CLA. 
 
-1. The first step is to fill in an online form with some basic details (name, etc.). The form link will be in the reply on the pull request. 
+1. The first step is to fill in an [online form](https://forms.office.com/Pages/ResponsePage.aspx?id=zqoSluHCyUq06rHalpXwHTqJIsEW9SRBq5H377k3FrtUMktKNVJONldZV1FNT0pMQVIzUTdJODVFSy4u) with some basic details (name, etc.). The form link also will be in the reply on the pull request. 
 
 2. After receiving the form submission, we will then setup a DocuSign link and share a link with you via email to sign the CLA.
 
