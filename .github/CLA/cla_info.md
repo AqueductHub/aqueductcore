@@ -1,3 +1,5 @@
+# First-time Contributor Process
+
 Thank you for your interest in contributing to Aqueduct. In order to make your first submission, all contributors first need to complete a Contributor License Agreement (CLA).  Riverlane cannot accept any contributions unless they are covered by a signed CLA.   This page briefly describes what the CLA is, the steps for signing it, and hopefully answers any questions you may have about the process.
 
 ### Why do we have a CLA?
