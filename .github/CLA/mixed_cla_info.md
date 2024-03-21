@@ -1,4 +1,4 @@
-This page covers mixed contributions to the Aqueduct project. This page should be read in conjunction with our contribution guide [here](.github/CLA/cla_info.md).
+This page covers mixed contributions to the Aqueduct project. This page should be read in conjunction with our contribution guide [here](cla_info.md).
 
 A mixed contribution is any contribution in which you do not own the Copyright in the entire work of authorship.  For example, this might be the case if you are including open-source code within your submission.  The process is designed to ensure that, all contributions are fully subject to licence terms compatible with the Aqueduct's goals and MIT licence terms.
 

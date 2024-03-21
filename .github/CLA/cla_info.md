@@ -32,7 +32,7 @@ Please note that in the case of an Entity CLA, the agreement will need to be sig
 
 ### Mixed Contributions
 
-If your contribution contains code that you do not own the copyright to, then in addition to CLA above, you will need to follow the instructions [here](.github/CLA/mixed_cla_info.md). For example, this is likely to be the case if you are including an open source library or some open source code as part of your contribution. More details on what is permissible and the relevant process can be found at the earlier link.
+If your contribution contains code that you do not own the copyright to, then in addition to CLA above, you will need to follow the instructions [here](mixed_cla_info.md). For example, this is likely to be the case if you are including an open source library or some open source code as part of your contribution. More details on what is permissible and the relevant process can be found at the earlier link.
 
 ### Questions
 
