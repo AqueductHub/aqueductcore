@@ -14,8 +14,8 @@ from typing_extensions import Annotated
 
 from aqueductcore.backend.context import ServerContext, context_dependency
 from aqueductcore.backend.errors import (
-    ECSDBExperimentNonExisting,
-    ECSMaxBodySizeException,
+    AQDDBExperimentNonExisting,
+    AQDMaxBodySizeException,
 )
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
@@ -51,7 +51,7 @@ async def download_experiment_file(
         response = FileResponse(file_path, stat_result=os.stat(file_path))
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
-    except ECSDBExperimentNonExisting as error:
+    except AQDDBExperimentNonExisting as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The specified experiment was not found.",
@@ -88,7 +88,7 @@ class MaxBodySizeValidator:
         """
         self.body_len += len(chunk)
         if self.body_len > self.max_size:
-            raise ECSMaxBodySizeException(body_len=self.body_len)
+            raise AQDMaxBodySizeException(body_len=self.body_len)
 
 
 @router.post("/{experiment_id}")
@@ -166,7 +166,7 @@ async def upload_experiment_file(
                 )
             os.replace(temp_file_path, dest_file_path)
 
-    except ECSMaxBodySizeException as error:
+    except AQDMaxBodySizeException as error:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Maximum request body size limit ({max_body_size} bytes) \
@@ -177,7 +177,7 @@ async def upload_experiment_file(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Maximum file size limit ({max_file_size} bytes) exceeded.",
         ) from error
-    except ECSDBExperimentNonExisting as error:
+    except AQDDBExperimentNonExisting as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The specified experiment was not found.",

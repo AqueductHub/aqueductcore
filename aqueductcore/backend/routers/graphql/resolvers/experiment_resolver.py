@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.errors import ECSValidationError
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentIdentifierInput,
     IDType,
@@ -33,7 +33,7 @@ async def get_expriments(
     """Resolve all experiments."""
 
     if limit > MAX_EXPERIMENTS_PER_REQUEST:
-        raise ECSValidationError(
+        raise AQDValidationError(
             f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
         )
 

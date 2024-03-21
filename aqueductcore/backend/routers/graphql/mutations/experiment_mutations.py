@@ -5,6 +5,7 @@ from uuid import UUID
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
+    ExperimentRemoveInput,
     ExperimentTagInput,
     ExperimentUpdateInput,
 )
@@ -69,3 +70,16 @@ async def remove_tag_from_experiment(
         tag=experiment_tag_input.tag,
     )
     return experiment_model_to_node(experiment)
+
+
+async def remove_experiment(
+    context: ServerContext, experiment_remove_input: ExperimentRemoveInput
+) -> UUID:
+    """Remove experiment mutation"""
+
+    deleted_experiment_id = await experiment_service.remove_experiment(
+        user_info=context.user_info,
+        db_session=context.db_session,
+        experiment_id=experiment_remove_input.experiment_id,
+    )
+    return deleted_experiment_id
