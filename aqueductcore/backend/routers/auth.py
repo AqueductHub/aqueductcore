@@ -1,17 +1,16 @@
 """Single user OpenID Connect authentication server."""
 
 from datetime import datetime, timedelta, timezone
-from enum import Enum
 from typing import Dict, List, cast
 
 import bcrypt
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
-from fastapi.security import OpenIdConnect
-from jose import JWTError, jwt
+from jose import jwt
 from pydantic import BaseModel, HttpUrl
 from typing_extensions import Annotated
 
+from aqueductcore.backend.context import get_current_user
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
@@ -24,20 +23,6 @@ USERNAME = settings.aqueduct_username
 PASSWORD_HASH = bcrypt.hashpw(
     password=settings.aqueduct_password.encode("utf8"), salt=bcrypt.gensalt()
 )
-
-oauth2_scheme = OpenIdConnect(openIdConnectUrl="/auth")
-
-
-class ExperimentScope(str, Enum):
-    """Experiment scopes enumerator."""
-
-    VIEW_OWN = "experiment::view::own"
-    VIEW_ALL = "experiment::view::all"
-    EDIT_OWN = "experiment::edit::own"
-    EDIT_ALL = "experiment::edit::all"
-    DELETE_OWN = "experiment::delete::own"
-    DELETE_ALL = "experiment::delete::all"
-    CREATE_OWN = "experiment::create::own"
 
 
 class OIDCConfiguration(BaseModel):
@@ -56,7 +41,7 @@ class OIDCConfiguration(BaseModel):
 class User(BaseModel):
     """User data model."""
 
-    username: str
+    user_id: str
 
 
 def authenticate_user(username: str, password: str):
@@ -65,7 +50,7 @@ def authenticate_user(username: str, password: str):
         return None
     if not bcrypt.checkpw(password.encode("utf-8"), PASSWORD_HASH):
         return None
-    return User(username=username)
+    return User(user_id=username)
 
 
 def create_token(data: Dict, expires_delta: timedelta) -> str:
@@ -75,24 +60,6 @@ def create_token(data: Dict, expires_delta: timedelta) -> str:
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
-    """Get the current user based on the provided authentication token."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials.",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = str(payload.get("sub"))
-        if username is None:
-            raise credentials_exception
-    except JWTError as exc:
-        raise credentials_exception from exc
-    user = User(username=username)
-    return user
 
 
 @router.get("/.well-known/openid-configuration")
@@ -150,4 +117,4 @@ async def authorize(
 @router.post("/userinfo")
 async def userinfo(user: Annotated[User, Depends(get_current_user)]):
     """Get user information per OpenID Connect standard."""
-    return {"sub": user.username}
+    return {"sub": user.user_id}

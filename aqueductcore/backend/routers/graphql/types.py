@@ -3,22 +3,27 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, cast
 from uuid import UUID
 
 import strawberry
+from strawberry.types import Info
 
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
 
 
-async def get_files(root: ExperimentData) -> List[ExperimentFile]:
+async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
     """Resolve experiment files."""
     experiment_id = root.id
     result: List[ExperimentFile] = []
-
+    context = cast(ServerContext, info.context)
     files = await get_experiment_files(
-        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+        user_info=context.user_info,
+        db_session=context.db_session,
+        experiments_root_dir=str(settings.experiments_dir_path),
+        experiment_id=experiment_id,
     )
     for name, modified_time in files:
         result.append(

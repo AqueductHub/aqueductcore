@@ -15,6 +15,10 @@ class AQDValidationError(AQDDBError):
     """Exception raised when there is a validation error"""
 
 
+class AQDPermission(AQDError):
+    """Exception raised when there is a permission error"""
+
+
 class AQDDBExperimentNonExisting(AQDError):
     """Exception raised when there is no experiment in the DB with the specified details."""
 

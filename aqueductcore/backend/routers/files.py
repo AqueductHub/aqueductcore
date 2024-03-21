@@ -37,7 +37,9 @@ async def download_experiment_file(
     try:
         pathvalidate.validate_filename(file_name)
         # check if experiment exists with the specified ID, otherwise raises an exception.
-        await get_experiment_by_uuid(db_session=context.db_session, experiment_id=experiment_id)
+        await get_experiment_by_uuid(
+            user_info=context.user_info, db_session=context.db_session, experiment_id=experiment_id
+        )
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment_id
         )
@@ -111,7 +113,9 @@ async def upload_experiment_file(
     try:
         pathvalidate.validate_filename(file_name)
         # check if experiment exists with the specified ID, otherwise raises an exception.
-        await get_experiment_by_uuid(db_session=context.db_session, experiment_id=experiment_id)
+        await get_experiment_by_uuid(
+            user_info=context.user_info, db_session=context.db_session, experiment_id=experiment_id
+        )
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment_id
         )

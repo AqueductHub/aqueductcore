@@ -35,7 +35,7 @@ class Mutation:
 
         context = cast(ServerContext, info.context)
         experiment = await create_experiment(
-            db_session=context.db_session, create_experiment_input=create_experiment_input
+            context=context, create_experiment_input=create_experiment_input
         )
         return experiment
 
@@ -47,7 +47,7 @@ class Mutation:
 
         context = cast(ServerContext, info.context)
         experiment = await update_experiment(
-            db_session=context.db_session,
+            context=context,
             experiment_id=experiment_id,
             experiment_update_input=experiment_update_input,
         )
@@ -61,7 +61,7 @@ class Mutation:
 
         context = cast(ServerContext, info.context)
         experiment = await add_tag_to_experiment(
-            db_session=context.db_session, experiment_tag_input=experiment_tag_input
+            context=context, experiment_tag_input=experiment_tag_input
         )
         return experiment
 
@@ -72,7 +72,7 @@ class Mutation:
         """Mutation to remove tag from experiment"""
         context = cast(ServerContext, info.context)
         experiment = await remove_tag_from_experiment(
-            db_session=context.db_session, experiment_tag_input=experiment_tag_input
+            context=context, experiment_tag_input=experiment_tag_input
         )
         return experiment
 
@@ -82,6 +82,4 @@ class Mutation:
     ) -> None:
         """Mutation to remove experiment"""
         context = cast(ServerContext, info.context)
-        await remove_experiment(
-            db_session=context.db_session, experiment_remove_input=experiment_remove_input
-        )
+        await remove_experiment(context=context, experiment_remove_input=experiment_remove_input)

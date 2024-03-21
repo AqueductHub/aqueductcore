@@ -28,6 +28,7 @@ class Experiment(Base):
     __tablename__ = "experiment"
 
     id = mapped_column(Uuid, primary_key=True)
+    user_id = mapped_column(Uuid, nullable=False)
     title: Mapped[str]
     description: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(

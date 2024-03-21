@@ -11,7 +11,12 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.context import (
+    ServerContext,
+    UserInfo,
+    UserScope,
+    context_dependency,
+)
 from aqueductcore.backend.main import app
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
@@ -61,7 +66,9 @@ async def test_file_download(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -86,7 +93,9 @@ async def test_nonexisting_file_download(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -137,7 +146,9 @@ async def test_file_upload_experiment_id(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -203,7 +214,9 @@ async def test_file_upload_max_body_size(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -239,7 +252,9 @@ async def test_file_upload_max_file_size(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -299,7 +314,9 @@ async def test_file_upload_non_existing_body(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
@@ -332,7 +349,9 @@ async def test_file_upload_invalid_filename(
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
-        yield ServerContext(db_session=db_session)
+        yield ServerContext(
+            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 

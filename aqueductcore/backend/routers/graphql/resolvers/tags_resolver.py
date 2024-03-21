@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.types import Tags
 from aqueductcore.backend.services.experiment import get_all_tags
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
 
 
 async def get_tags(
-    db_session: AsyncSession,
+    context: ServerContext,
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     filters: Optional[TagsFilters] = None,
@@ -33,7 +32,11 @@ async def get_tags(
 
     tags = [
         item.name
-        for item in await get_all_tags(db_session=db_session, include_dangling=include_dangling)
+        for item in await get_all_tags(
+            user_info=context.user_info,
+            db_session=context.db_session,
+            include_dangling=include_dangling,
+        )
     ]
     tags_count = len(tags)
 
