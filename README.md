@@ -1,7 +1,11 @@
 # Aqueduct
 
-Aqueduct is a versatile experiment management system designed to streamline and simplify quantum system administration.
-We are building Aqueduct to be a user-friendly, reliable, and well-supported solution for quantum experiment management. While quantum computing labs and companies focus on building better qubits, Aqueduct is here to assist with the bring-up, automation, maintenance, and operation of quantum computers.
+Aqueduct is the open platform that simplifies quantum experiment management.
+
+Intuitive automation and administration features enable you to 
+focus on consistently running and scaling up your experiments.
+Powerful APIs and a flexible plugin SDK allow you to easily 
+integrate with Aqueduct and streamline your workflow.
 
 This project uses the following main software stack and technologies:
 
@@ -13,31 +17,34 @@ This project uses the following main software stack and technologies:
 
 - [Usage](#usage)
 - [Installation](#installation)
-  - [Developers Setup Guide](#developers-setup-guide)
-  - [PyAqueduct](#pyaqueduct)
-  - [Database Migration Guide](#database-migration-guide)
-    - [Steps](#steps)
+  - [Install AqueductCore](#Install-AqueductCore)
+  - [Install PyAqueduct](#Install-PyAqueduct)
+- [Developers Setup Guide](#developers-setup-guide)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Usage
 
-Aqueduct contains data management tools that augment a lab’s existing data storage systems by tracking critical settings, raw data and processed data from experiments, keeping them organised and readily accessible. Through convenient features such as tagging, favouriting, archiving, and annotation of experimental data, we facilitate a smoother data workflow for all labs. Aqueduct’s software APIs make it possible to retrofit existing experiment scripts so that all the lab’s data can be saved and accessed in a single, centralized location.
-
-This functionality is facilitated through 2 components:
-
-- [aqueductcore](https://github.com/AqueductHub/aqueductcore) is the server software that hosts the main application, and web interface and handles data storage.
-- [pyaqueduct](https://github.com/AqueductHub/pyaqueduct) is our Python Library which allows easy creation of experiments and upload of data and metadata for them.
 
 ## Installation
 
-If you want to set up the project as a contributor, please continue to [this section](#developers-setup-guide).
+To use Aqueduct, you need to install this repo 
+[aqueductcore](https://github.com/AqueductHub/aqueductcore, 
+and the 
+[pyaqueduct](https://github.com/AqueductHub/pyaqueduct) one too. 
 
-To install Aqueduct, you need to have docker and docker-compose installed on your machine, please [see here](https://docs.docker.com/compose/gettingstarted) for docker install instructions.
+### Install AqueductCore
 
-Then all you need to do is
+Aqueduct --- this repo --- is the server software that hosts the main application, 
+the web interface and handles data storage. 
 
-1. Copy the below configuration in a file, you can name it `docker-compose.yaml`, and it will pull the docker image and set the environment variables.
+To install Aqueduct, you need to have docker and docker-compose installed on your machine. 
+[See here](https://docs.docker.com/compose/gettingstarted) for docker install instructions.
+Ensure that docker is running on your machine. 
+
+1. Copy the below configuration to a file (call it `docker-compose.yaml`, e.g.). 
+(This file also exists as `aqueductcore/scripts/release/docker-compose.yaml`. 
+You can just copy it to the dir where you will work from.)
+
 
 ```yaml
 version: "3"
@@ -70,28 +77,45 @@ services:
       - 5432
 ```
 
-2. Then you can make it up and running: `docker compose -f docker-compose.yaml up -d`
-3. Check the GUI on your browser using `localhost`.
+You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory.
 
-You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` directory. For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/main/setup/).
+2. If you now run `docker compose -f docker-compose.yaml up -d` in the directory where the file is, 
+docker will use the yaml file to pull Aqueduct's docker image, set local environment variables, and
+start the server. 
 
-### Developers Setup Guide
+3. Start your browser and point it to `https://localhost`.
+
+For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/).
+
+### Install PyAqueduct
+
+[PyAqueduct](https://github.com/AqueductHub/pyaqueduct) allows easy programmatic manipulation of experiment objects. 
+
+```bash
+pip install pyaqueduct
+```
+
+You can find more information about how to use PyAqueduct [here](https://aqueducthub.github.io/pyaqueduct/) in the docs.
+
+
+## Developers Setup Guide
+
+Read this section if you want to set up the project as a contributor.
 
 0. Prerequisites
 
-- Python installed on your system (version 3.8 or higher)
-- PostgreSQL installed and running (version 15 or higher)
-- Node.js installed (v20.11.1 or higher)
+- Python (version 3.8 or higher) installed on your system 
+- PostgreSQL (version 15 or higher) installed and running 
+- Node.js (v20.11.1 or higher) installed 
 
 1. Clone the repository and change the directory into the root of the project.
-2. Open the project (Optional: but in recommended Environment)
-   1. If you're using [VSCode](https://code.visualstudio.com), which is recommended to use, you can open up the project in the VSCode dev container, if you're not familiar with what that is, just have a look [here](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started).
+2. We recommend [VSCode](https://code.visualstudio.com) as the dev environment. If you start VS Code in the repo root, it will start up dev docker container. Have a look [here](https://code.visualstudio.com/docs/devcontainers/containers#_getting-started) for more information on developing using VS Code. 
 3. Run the Server
 
    1. Navigate to the project's root folder.
    2. `poetry install`.
    3. `python scripts/start_ecs_service.py`.
-   4. It's up and running on `localhost:8000`.
+   4. The server should be up and running on `localhost:8000`.
 
 4. Run the GUI
    1. `cd aqueductcore/frontend`.
@@ -102,55 +126,15 @@ You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` dir
      REACT_APP_API_DEV_ORIGIN=http://0.0.0.0:8000
      ```
    4. `yarn start`.
-   5. It's up and running on `localhost:3000`.
+   5. The UI should be up and running on `localhost:3000`.
 
-Also to install all required packages this script can be used
+You can use this script to install all the required packages:
 
 ```bash
 bash scripts/install_packages.sh
 ```
 
 After executing the script, proceed with the instructions from Step 3.
-
-### PyAqueduct
-
-Although [PyAqueduct](https://github.com/AqueductHub/pyaqueduct) ---the Python Library--- is a separate project, you need to have that installed to pipe your experiment data in the system, as the GUI doesn't support experiment data upload but will do soon. You can find more information about how to use it [here](https://aqueducthub.github.io/aqueductcore/main/getting-started/) in the docs.
-
-```bash
-pip install pyaqueduct
-```
-
-### Database Migration Guide
-
-After any change to the structure of the relations of the database, a new migration script should be created using Alembic. This script will be used as the reference for external users to upgrade their database after updating their version of Aqueduct.
-
-#### Steps
-
-The following steps should be followed in the Python environment configured for Aqueduct:
-
-> **NOTE:** Always assume the database is populated with existing data!
-
-1. Make sure the environment variables with the database connection details are loaded into the environment.
-
-2. Make sure the database is up to date with the head of changes. (If it is not this step tries to run the migration one by one):
-
-   ```sh
-   alembic upgrade head
-   ```
-
-3. Create a new revision (Don't forget to update the message)
-
-   ```sh
-   alembic revision --autogenerate -m "PLACE HOLDER FOR MESSAGE"
-   ```
-
-4. Open the generated migration script under `alembic/versions` and adjust it accordingly by implementing the upgrade function with Alembic operations. `downgrade` function could be left untouched as we don't support downgrade at this time.
-
-5. Update the database with a head of changes. Alemtic automatically picks up the new migration script and executes it.
-
-   ```sh
-   alembic upgrade head
-   ```
 
 ## Contributing
 

@@ -4,6 +4,7 @@ import os
 from tempfile import TemporaryDirectory
 from uuid import UUID
 
+import pathvalidate
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import FileResponse, JSONResponse
 from streaming_form_data import StreamingFormDataParser
@@ -11,10 +12,10 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.server.context import ServerContext, context_dependency
-from aqueductcore.backend.server.errors import (
-    ECSDBExperimentNonExisting,
-    ECSMaxBodySizeException,
+from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.errors import (
+    AQDDBExperimentNonExisting,
+    AQDMaxBodySizeException,
 )
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
@@ -34,6 +35,7 @@ async def download_experiment_file(
     """Router for downloading files of experiments."""
 
     try:
+        pathvalidate.validate_filename(file_name)
         # check if experiment exists with the specified ID, otherwise raises an exception.
         await get_experiment_by_uuid(db_session=context.db_session, experiment_id=experiment_id)
         experiment_dir = build_experiment_dir_absolute_path(
@@ -47,10 +49,16 @@ async def download_experiment_file(
         response = FileResponse(file_path, stat_result=os.stat(file_path))
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
-    except ECSDBExperimentNonExisting as error:
+    except AQDDBExperimentNonExisting as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The specified experiment was not found.",
+        ) from error
+
+    except pathvalidate.ValidationError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file name.",
         ) from error
 
     return response
@@ -78,7 +86,7 @@ class MaxBodySizeValidator:
         """
         self.body_len += len(chunk)
         if self.body_len > self.max_size:
-            raise ECSMaxBodySizeException(body_len=self.body_len)
+            raise AQDMaxBodySizeException(body_len=self.body_len)
 
 
 @router.post("/{experiment_id}")
@@ -101,6 +109,7 @@ async def upload_experiment_file(
     max_body_size = max_file_size + 1024
 
     try:
+        pathvalidate.validate_filename(file_name)
         # check if experiment exists with the specified ID, otherwise raises an exception.
         await get_experiment_by_uuid(db_session=context.db_session, experiment_id=experiment_id)
         experiment_dir = build_experiment_dir_absolute_path(
@@ -153,7 +162,7 @@ async def upload_experiment_file(
                 )
             os.replace(temp_file_path, dest_file_path)
 
-    except ECSMaxBodySizeException as error:
+    except AQDMaxBodySizeException as error:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Maximum request body size limit ({max_body_size} bytes) \
@@ -164,10 +173,16 @@ async def upload_experiment_file(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Maximum file size limit ({max_file_size} bytes) exceeded.",
         ) from error
-    except ECSDBExperimentNonExisting as error:
+    except AQDDBExperimentNonExisting as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The specified experiment was not found.",
+        ) from error
+
+    except pathvalidate.ValidationError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file name.",
         ) from error
 
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})

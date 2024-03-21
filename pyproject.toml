@@ -6,26 +6,30 @@ authors = ["Aqueduct Team <aqueduct@riverlane.com>"]
 license = "MIT"
 readme = "README.md"
 
+exclude = [
+    "aqueductcore/frontend"
+]
+
 [tool.poetry.dependencies]
 python = ">= 3.8,< 3.12"
 grpcio = "^1.57"
-pydantic = {version = "^2.3",extras = ["email"]}
+pydantic = {version = "^2.6",extras = ["email"]}
+pydantic-settings = "^2.2"
 typing-extensions = "^4.7"
 protobuf = "^4.24"
 uvicorn = {version = "^0.23",extras = ["standard"]}
-fastapi = "^0.103"
-fastapi-users = {version = "^12.1"}
-strawberry-graphql = {version = "^0.205",extras = ["fastapi"]}
-pydantic-settings = "^2.0"
+fastapi = "^0.110"
+strawberry-graphql = {version = "^0.219",extras = ["fastapi"]}
 sqlalchemy = {version = "^2.0",extras = ["asyncio"]}
-fastapi-users-db-sqlalchemy = "^6.0"
 asyncpg = "^0.28"
-python-multipart = "^0.0"
+python-multipart = "^0.0.9"
 aiofiles = "^23.2"
 streaming-form-data = "^1.13"
 gunicorn = "^21.2"
 pip-licenses = "^4.3"
-
+pathvalidate = "^3.2"
+python-jose = {version = "^3.3", extras = ["cryptography"]}
+bcrypt = "^4.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"
@@ -48,7 +52,6 @@ alembic = "^1.12"
 psycopg2-binary = "^2.9"
 mkdocstrings = {version = "^0.24",extras = ["python"]}
 nbconvert = "^7.14"
-
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]

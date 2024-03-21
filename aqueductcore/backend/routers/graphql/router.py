@@ -5,7 +5,7 @@ from strawberry import Schema
 from strawberry.extensions import QueryDepthLimiter
 from strawberry.fastapi import GraphQLRouter
 
-from aqueductcore.backend.server.context import context_dependency
+from aqueductcore.backend.context import context_dependency
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
 

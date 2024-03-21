@@ -13,7 +13,7 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.schemas.experiment import ExperimentCreate
+from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.settings import settings
 from tests.unittests.initial_data import experiment_data
 
