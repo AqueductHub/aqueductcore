@@ -295,6 +295,7 @@ async def create_experiment(
         tags=tags_orm,
         alias=alias,
         created_at=datetime.now(),
+        created_by=user_info.user_id,
         updated_at=datetime.now(),
     )
     db_session.add(db_experiment)

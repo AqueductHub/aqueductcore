@@ -12,6 +12,7 @@ def experiment_model_to_node(value: ExperimentRead) -> node.ExperimentData:
         description=value.description,
         alias=value.alias,
         created_at=value.created_at,
+        created_by=value.created_by,
         updated_at=value.updated_at,
         tags=[item.name for item in value.tags],
     )

@@ -48,6 +48,7 @@ class ExperimentRead(ExperimentBase):
     id: UUID
     alias: str
     created_at: datetime
+    created_by: UUID
     updated_at: datetime
     tags: List[TagRead]
 
