@@ -314,6 +314,7 @@ async def create_experiment(
         alias=alias,
         created_by_user=db_user,
         created_at=datetime.now(),
+        created_by=user_info.user_id,
         updated_at=datetime.now(),
     )
     db_session.add(db_experiment)

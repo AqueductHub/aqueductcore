@@ -18,6 +18,7 @@ async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
     """Convert ORM Experiment to Pydantic Model"""
     experiment = ExperimentRead(
         created_at=value.created_at,
+        created_by=value.created_by,
         updated_at=value.updated_at,
         created_by=value.created_by_user.username,
         description=value.description,
