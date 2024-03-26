@@ -41,6 +41,7 @@ query MyQuery($experimentIdentifier: ExperimentIdentifierInput!) {
         }
         description
         createdAt
+        createdBy
         alias
         id
         tags
@@ -66,6 +67,7 @@ all_experiments_query = """
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -94,6 +96,7 @@ all_experiments_invalid_limit_query = (
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -126,6 +129,7 @@ all_experiments_invalid_title_filter_query = (
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -226,6 +230,7 @@ filter_by_tag_query = """
             title
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -250,6 +255,7 @@ filter_by_title_query = """
             title
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -273,6 +279,7 @@ def check_experiment_values(
     assert sample_experiment.title == experiment_res["title"]
     assert sample_experiment.alias == experiment_res["alias"]
     assert sample_experiment.description == experiment_res["description"]
+    assert sample_experiment.created_by == UUID(experiment_res["createdBy"])
     assert sample_experiment.created_at == datetime.fromisoformat(experiment_res["createdAt"])
     assert sample_experiment.updated_at == datetime.fromisoformat(experiment_res["updatedAt"])
 

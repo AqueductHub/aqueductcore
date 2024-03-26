@@ -46,6 +46,7 @@ create_experiment_mutation = """
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -73,6 +74,7 @@ create_experiment_mutation_invalid_title = (
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -101,6 +103,7 @@ create_experiment_mutation_invalid_description = (
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -126,6 +129,7 @@ create_experiment_mutation_over_limit_tags = (
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -148,6 +152,7 @@ create_experiment_mutation_invalid_tags = """
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -169,6 +174,7 @@ update_experiment_mutation = """
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -188,6 +194,7 @@ add_tag_to_experiment_mutation = """
             description
             tags
             createdAt
+            createdBy
             updatedAt
             alias
         }
@@ -207,6 +214,7 @@ remove_tag_from_experiment_mutation = """
                 description
                 tags
                 createdAt
+                createdBy
                 updatedAt
                 alias
         }
@@ -227,6 +235,7 @@ remove_tag_from_experiment_mutation = """
                 description
                 tags
                 createdAt
+                createdBy
                 updatedAt
                 alias
         }
