@@ -35,7 +35,6 @@ class Experiment(Base):
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now()  # pylint: disable=not-callable
     )
-    created_by: Mapped[UUID]
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now()  # pylint: disable=not-callable
     )
