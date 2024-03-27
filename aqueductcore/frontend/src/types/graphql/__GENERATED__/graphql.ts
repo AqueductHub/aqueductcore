@@ -5,84 +5,92 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** Date (isoformat) */
-  Date: any;
+  Date: { input: any; output: any; }
   /** Date with time (isoformat) */
-  DateTime: any;
-  UUID: any;
+  DateTime: { input: any; output: any; }
+  UUID: { input: any; output: any; }
+  /** Represents NULL values */
+  Void: { input: any; output: any; }
 };
 
 export type ExperimentCreateInput = {
-  description: Scalars['String'];
-  tags: Array<Scalars['String']>;
-  title: Scalars['String'];
+  description: Scalars['String']['input'];
+  tags: Array<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
 };
 
 /** Single experiment with its data. */
 export type ExperimentData = {
   __typename?: 'ExperimentData';
   /** Alias of the experiment. */
-  alias: Scalars['String'];
+  alias: Scalars['String']['output'];
   /** Creation date of the experiment. */
-  createdAt: Scalars['DateTime'];
+  createdAt: Scalars['DateTime']['output'];
   /** Description of the experiment. */
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']['output']>;
   /** List of files in an experiment. */
   files: Array<ExperimentFile>;
   /** Unique identifier of the experiment. */
-  id: Scalars['UUID'];
+  id: Scalars['UUID']['output'];
   /** Tags of the experiment. */
-  tags: Array<Scalars['String']>;
+  tags: Array<Scalars['String']['output']>;
   /** Title of the experiment. */
-  title: Scalars['String'];
+  title: Scalars['String']['output'];
   /** Last update date of the experiment. */
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 /** Single file in an experiment */
 export type ExperimentFile = {
   __typename?: 'ExperimentFile';
   /** Last modified date of the file. */
-  modifiedAt: Scalars['DateTime'];
+  modifiedAt: Scalars['DateTime']['output'];
   /** Full name of the file. */
-  name: Scalars['String'];
+  name: Scalars['String']['output'];
   /** Relative path of the file to the download route. */
-  path: Scalars['String'];
+  path: Scalars['String']['output'];
 };
 
 export type ExperimentFiltersInput = {
   /** Filter experiments created after this date. */
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
   /** List of tags that should be present. */
-  shouldIncludeTags?: InputMaybe<Array<Scalars['String']>>;
+  shouldIncludeTags?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Filter experiments created after this date. */
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
   /** List of tags to filter. */
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Search string for experiment title and alias. */
-  title?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ExperimentIdentifierInput = {
   type: IdType;
-  value: Scalars['String'];
+  value: Scalars['String']['input'];
+};
+
+export type ExperimentRemoveInput = {
+  experimentId: Scalars['UUID']['input'];
 };
 
 export type ExperimentTagInput = {
-  experimentId: Scalars['UUID'];
-  tag: Scalars['String'];
+  experimentId: Scalars['UUID']['input'];
+  tag: Scalars['String']['input'];
 };
 
 export type ExperimentUpdateInput = {
-  description?: InputMaybe<Scalars['String']>;
-  title?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Paginated list of experiments */
@@ -91,7 +99,7 @@ export type Experiments = {
   /** The list of experiments in this page */
   experimentsData: Array<ExperimentData>;
   /** Total number of experiments in the filtered dataset */
-  totalExperimentsCount: Scalars['Int'];
+  totalExperimentsCount: Scalars['Int']['output'];
 };
 
 export enum IdType {
@@ -103,6 +111,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addTagToExperiment: ExperimentData;
   createExperiment: ExperimentData;
+  removeExperiment?: Maybe<Scalars['Void']['output']>;
   removeTagFromExperiment: ExperimentData;
   updateExperiment: ExperimentData;
 };
@@ -118,13 +127,18 @@ export type MutationCreateExperimentArgs = {
 };
 
 
+export type MutationRemoveExperimentArgs = {
+  experimentRemoveInput: ExperimentRemoveInput;
+};
+
+
 export type MutationRemoveTagFromExperimentArgs = {
   experimentTagInput: ExperimentTagInput;
 };
 
 
 export type MutationUpdateExperimentArgs = {
-  experimentId: Scalars['UUID'];
+  experimentId: Scalars['UUID']['input'];
   experimentUpdateInput: ExperimentUpdateInput;
 };
 
@@ -132,6 +146,7 @@ export type Query = {
   __typename?: 'Query';
   experiment?: Maybe<ExperimentData>;
   experiments: Experiments;
+  getCurrentUserInfo: UserInfo;
   tags: Tags;
 };
 
@@ -143,49 +158,58 @@ export type QueryExperimentArgs = {
 
 export type QueryExperimentsArgs = {
   filters?: InputMaybe<ExperimentFiltersInput>;
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
 };
 
 
 export type QueryTagsArgs = {
   filters?: InputMaybe<TagsFilters>;
-  limit?: InputMaybe<Scalars['Int']>;
-  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Paginated list of experiments */
 export type Tags = {
   __typename?: 'Tags';
   /** The list of tags. */
-  tagsData: Array<Scalars['String']>;
+  tagsData: Array<Scalars['String']['output']>;
   /** Total number of tags. */
-  totalTagsCount: Scalars['Int'];
+  totalTagsCount: Scalars['Int']['output'];
 };
 
 export type TagsFilters = {
   /** Include tags with no experiments linked. */
-  includeDangling?: InputMaybe<Scalars['Boolean']>;
+  includeDangling?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Current user information */
+export type UserInfo = {
+  __typename?: 'UserInfo';
+  /** List of scopes available to the user. */
+  scopes: Array<Scalars['String']['output']>;
+  /** Username. */
+  username: Scalars['String']['output'];
 };
 
 export type AddTagToExperimentMutationVariables = Exact<{
-  experimentId: Scalars['UUID'];
-  tag: Scalars['String'];
+  experimentId: Scalars['UUID']['input'];
+  tag: Scalars['String']['input'];
 }>;
 
 
 export type AddTagToExperimentMutation = { __typename?: 'Mutation', addTagToExperiment: { __typename?: 'ExperimentData', id: any, tags: Array<string> } };
 
 export type RemoveTagFromExperimentMutationVariables = Exact<{
-  experimentId: Scalars['UUID'];
-  tag: Scalars['String'];
+  experimentId: Scalars['UUID']['input'];
+  tag: Scalars['String']['input'];
 }>;
 
 
 export type RemoveTagFromExperimentMutation = { __typename?: 'Mutation', removeTagFromExperiment: { __typename?: 'ExperimentData', id: any, tags: Array<string> } };
 
 export type UpdateExperimentNameMutationVariables = Exact<{
-  experimentId: Scalars['UUID'];
+  experimentId: Scalars['UUID']['input'];
   experimentUpdateInput: ExperimentUpdateInput;
 }>;
 
@@ -193,8 +217,8 @@ export type UpdateExperimentNameMutationVariables = Exact<{
 export type UpdateExperimentNameMutation = { __typename?: 'Mutation', updateExperiment: { __typename?: 'ExperimentData', id: any, title: string, description?: string | null, alias: string } };
 
 export type GetAllExperimentsQueryVariables = Exact<{
-  offset: Scalars['Int'];
-  limit: Scalars['Int'];
+  offset: Scalars['Int']['input'];
+  limit: Scalars['Int']['input'];
   filters?: InputMaybe<ExperimentFiltersInput>;
 }>;
 
