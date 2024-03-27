@@ -6,7 +6,7 @@ import re
 from datetime import date, datetime, time
 from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import ConfigDict, Field, validate_call
 from sqlalchemy import delete, func, or_, select
@@ -23,6 +23,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
+from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_experiment_id_and_alias,
@@ -41,6 +42,8 @@ from aqueductcore.backend.services.validators import (
 from aqueductcore.backend.settings import settings
 
 ARCHIVED = "__archived__"
+
+# pylint: disable=redefined-outer-name
 func: Callable
 
 
@@ -70,10 +73,14 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
 
     """
 
-    statement = select(orm.Experiment).options(joinedload(orm.Experiment.tags))
+    statement = (
+        select(orm.Experiment)
+        .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
+    )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
 
     if title_filter is not None:
         statement = statement.filter(
@@ -140,11 +147,12 @@ async def get_experiment_by_uuid(
     statement = (
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
         .where(orm.Experiment.id == experiment_id)
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
 
     result = await db_session.execute(statement)
 
@@ -173,11 +181,12 @@ async def get_experiment_by_alias(
     statement = (
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
         .where(orm.Experiment.alias == alias)
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
 
     result = await db_session.execute(statement)
 
@@ -287,13 +296,23 @@ async def create_experiment(
         else:
             experiment_id, alias = generate_experiment_id_and_alias(experiment_index=1)
 
+    db_user_statement = select(orm.User).where(orm.User.id == user_info.user_id)
+    db_user = (await db_session.execute(db_user_statement)).scalars().first()
+
+    if not db_user:
+        db_user = orm.User(
+            id=user_info.user_id,
+            username=user_info.username,
+        )
+        db_session.add(db_user)
+
     db_experiment = orm.Experiment(
         id=experiment_id,
-        user_id=user_info.user_id,
         title=title,
         description=description,
         tags=tags_orm,
         alias=alias,
+        created_by_user=db_user,
         created_at=datetime.now(),
         updated_at=datetime.now(),
     )
@@ -320,11 +339,12 @@ async def update_experiment(
     statement = (
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
         .where(orm.Experiment.id == experiment_id)
     )
 
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.user_id == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
 
     result = await db_session.execute(statement)
 
@@ -355,11 +375,12 @@ async def add_tag_to_experiment(
     experiment_statement = (
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
         .filter(orm.Experiment.id == experiment_id)
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.user_id == user_info.user_id
+            orm.Experiment.created_by == user_info.user_id
         )
     experiment_result = await db_session.execute(experiment_statement)
     db_experiment = experiment_result.scalars().first()
@@ -398,11 +419,12 @@ async def remove_tag_from_experiment(
     experiment_statement = (
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
+        .options(joinedload(orm.Experiment.created_by_user))
         .filter(orm.Experiment.id == experiment_id)
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.user_id == user_info.user_id
+            orm.Experiment.created_by == user_info.user_id
         )
 
     result = await db_session.execute(experiment_statement)
@@ -479,7 +501,7 @@ async def remove_experiment(
             raise AQDPermission("The user doesn't have the permission to remove the experiment.")
 
         get_experiment_statement = get_experiment_statement.filter(
-            orm.Experiment.user_id == user_info.user_id
+            orm.Experiment.created_by == user_info.user_id
         )
 
     get_experiment_result = await db_session.execute(get_experiment_statement)

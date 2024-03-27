@@ -14,6 +14,7 @@ from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
+from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,
     MAX_EXPERIMENT_TAGS_NUM,
@@ -269,7 +270,8 @@ async def test_create_experiment_invalid_title(
 
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_invalid_title, context_value=context)
 
@@ -296,7 +298,8 @@ async def test_create_experiment_invalid_description(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         create_experiment_mutation_invalid_description, context_value=context
@@ -325,7 +328,8 @@ async def test_create_experiment_invalid_tags(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_invalid_tags, context_value=context)
 
@@ -350,7 +354,8 @@ async def test_create_experiment_over_limit_tags(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_over_limit_tags, context_value=context)
 
@@ -378,7 +383,8 @@ async def test_update_experiment(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(update_experiment_mutation, context_value=context)
 
@@ -409,7 +415,8 @@ async def test_add_tag_to_experiment(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(add_tag_to_experiment_mutation, context_value=context)
 
@@ -437,7 +444,8 @@ async def test_remove_tag_from_experiment(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(remove_tag_from_experiment_mutation, context_value=context)
 
@@ -465,7 +473,8 @@ async def test_remove_experiment(
     schema = Schema(query=Query, mutation=Mutation)
 
     context = ServerContext(
-        db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+        db_session=db_session,
+        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
     )
     resp = await schema.execute(remove_experiment_mutation, context_value=context)
 

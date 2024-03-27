@@ -30,7 +30,6 @@ class ExperimentBase(AQDModel):
     """Base model for Experiment"""
 
     id: UUID
-    user_id: UUID
     title: str
     description: Optional[str] = None
 
@@ -48,10 +47,17 @@ class ExperimentRead(ExperimentBase):
     id: UUID
     alias: str
     created_at: datetime
-    created_by: UUID
+    created_by: str
     updated_at: datetime
     tags: List[TagRead]
 
 
 class ExperimentUpdate(ExperimentBase):
     """Model fields to update an experiment"""
+
+
+class UserBase(AQDModel):
+    """Base model for User"""
+
+    user_id: UUID
+    username: str
