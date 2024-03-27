@@ -6,7 +6,7 @@ import re
 from datetime import date, datetime, time
 from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from pydantic import ConfigDict, Field, validate_call
 from sqlalchemy import delete, func, or_, select
@@ -23,7 +23,6 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
-from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_experiment_id_and_alias,
@@ -248,6 +247,7 @@ EXPERIMENT_ALIAS_PATTERN = r"^(19[0-9]{2}|2[0-9]{3})(0[1-9]|1[012])([123]0|[012]
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+# pylint: disable=too-many-locals
 async def create_experiment(
     user_info: UserInfo,
     db_session: AsyncSession,
