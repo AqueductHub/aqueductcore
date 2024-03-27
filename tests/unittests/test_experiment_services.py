@@ -6,8 +6,6 @@ from typing import Dict, List, Tuple
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from aqueductcore.backend.context import UserInfo, UserScope
 from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
@@ -30,6 +28,7 @@ from aqueductcore.backend.services.utils import (
     tag_model_to_orm,
 )
 from aqueductcore.backend.settings import settings
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
@@ -44,7 +43,8 @@ async def test_get_all_experiments(
     await db_session.commit()
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)), db_session=db_session
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        db_session=db_session,
     )
 
     assert len(experiments) == len(experiments_data)
@@ -72,7 +72,7 @@ async def test_get_all_experiments_limit_exceeded(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         order_by_creation_date=True,
     )
@@ -90,7 +90,7 @@ async def test_get_all_experiments_ordered_by_creation_date(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         order_by_creation_date=True,
     )
@@ -120,7 +120,7 @@ async def test_get_all_experiments_filtered_by_tag(
     await db_session.commit()
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         tags=["tag1"],
     )
@@ -146,7 +146,7 @@ async def test_get_all_experiments_filtered_by_tag_ordered_by_creation_date(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         tags=["tag1"],
         order_by_creation_date=True,
@@ -173,7 +173,7 @@ async def test_get_experiment_by_uuid(
     await db_session.commit()
 
     experiment = await get_experiment_by_uuid(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
     )
@@ -199,7 +199,7 @@ async def test_get_experiment_by_alias(
     await db_session.commit()
 
     experiment = await get_experiment_by_alias(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         alias=experiments_data[0].alias,
     )
@@ -225,7 +225,7 @@ async def test_create_db_experiment_pre_existing_data(
     await db_session.commit()
 
     in_db_experiment = await create_experiment(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         title="Quantum Communication Protocols for Secure Networks",
         description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
@@ -256,7 +256,7 @@ async def test_create_db_experiment_empty_db(
     """Test create_db_experiment operation with empty database."""
 
     in_db_experiment = await create_experiment(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         title="Quantum Communication Protocols for Secure Networks",
         description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
@@ -293,7 +293,7 @@ async def test_update_db_experiment(
     await db_session.commit()
 
     in_db_experiment = await update_experiment(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         title="Quantum-enhanced Imaging for Biomedical Applications",
@@ -321,7 +321,7 @@ async def test_add_db_tag_to_experiment(
     await db_session.commit()
 
     in_db_experiment = await add_tag_to_experiment(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         tag="important",
@@ -345,7 +345,7 @@ async def test_remove_db_tag_from_experiment(
     await db_session.commit()
 
     in_db_experiment = await remove_tag_from_experiment(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         tag="tag1",
@@ -369,7 +369,7 @@ async def test_get_all_tags_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         include_dangling=True,
     )
@@ -379,7 +379,7 @@ async def test_get_all_tags_dangling(
         assert tags[idx].name == tag.name
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         include_dangling=False,
     )
@@ -408,7 +408,7 @@ async def test_get_all_tags_mix_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         include_dangling=True,
     )
@@ -421,7 +421,7 @@ async def test_get_all_tags_mix_dangling(
     )
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         include_dangling=False,
     )
@@ -447,7 +447,7 @@ async def test_get_all_tags_no_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         include_dangling=False,
     )
@@ -471,7 +471,7 @@ async def test_add_and_get_tags_for_experiment(
 
     for experiment in experiments_data:
         experiment_model = await get_experiment_by_uuid(
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope)),
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
             db_session=db_session,
             experiment_id=experiment.id,
         )
@@ -494,7 +494,7 @@ async def test_get_experiment_files(
 
     for key, value in temp_experiment_files.items():
         files = await get_experiment_files(
-            user_info=UserInfo(user_id=experiments_data[0].user_id, scopes=set(UserScope)),
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
             db_session=db_session,
             experiments_root_dir=str(settings.experiments_dir_path),
             experiment_id=key,
@@ -514,7 +514,7 @@ async def test_get_experiment_files_empty(
 
     for experiment in experiments_data:
         files = await get_experiment_files(
-            user_info=UserInfo(user_id=experiments_data[0].user_id, scopes=set(UserScope)),
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
             db_session=db_session,
             experiments_root_dir=str(settings.experiments_dir_path),
             experiment_id=experiment.id,
@@ -535,7 +535,7 @@ async def test_remove_experiment(
     experiment = experiments_data[0]
 
     delete_experiment_id = await remove_experiment(
-        user_info=UserInfo(user_id=experiments_data[0].user_id, scopes=set(UserScope)),
+        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         db_session=db_session,
         experiment_id=experiment.id,
     )
@@ -544,7 +544,7 @@ async def test_remove_experiment(
 
     with pytest.raises(AQDDBExperimentNonExisting):
         await get_experiment_by_uuid(
-            user_info=UserInfo(user_id=experiments_data[0].user_id, scopes=set(UserScope)),
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
             db_session=db_session,
             experiment_id=experiment.id,
         )
@@ -563,7 +563,7 @@ async def test_remove_experiment_invalid_experiment_id(
     experiment_id = uuid4()
     with pytest.raises(AQDDBExperimentNonExisting):
         await remove_experiment(
-            user_info=UserInfo(user_id=experiments_data[0].user_id, scopes=set(UserScope)),
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
             db_session=db_session,
             experiment_id=experiment_id,
         )

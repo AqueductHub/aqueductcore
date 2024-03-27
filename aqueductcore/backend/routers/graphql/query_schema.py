@@ -6,16 +6,21 @@ from datetime import date
 from typing import List, Optional, cast
 
 import strawberry
-from strawberry.types import Info
-
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import ExperimentIdentifierInput
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
+    get_current_user_info,
     get_experiment,
     get_expriments,
 )
 from aqueductcore.backend.routers.graphql.resolvers.tags_resolver import get_tags
-from aqueductcore.backend.routers.graphql.types import ExperimentData, Experiments, Tags
+from aqueductcore.backend.routers.graphql.types import (
+    ExperimentData,
+    Experiments,
+    Tags,
+    UserInfo,
+)
+from strawberry.types import Info
 
 
 @strawberry.input
@@ -51,6 +56,13 @@ class TagsFilters:
 @strawberry.type
 class Query:
     """GraphQL query controller."""
+
+    @strawberry.field
+    async def get_current_user_info(self, info: Info) -> UserInfo:
+        """Resolver for getting the currently logged in user info."""
+        context = cast(ServerContext, info.context)
+
+        return get_current_user_info(context=context)
 
     @strawberry.field
     async def experiments(

@@ -7,11 +7,10 @@ from typing import List, Optional, cast
 from uuid import UUID
 
 import strawberry
-from strawberry.types import Info
-
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
+from strawberry.types import Info
 
 
 async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
@@ -74,6 +73,14 @@ class Experiments:
     total_experiments_count: int = strawberry.field(
         description="Total number of experiments in the filtered dataset"
     )
+
+
+@strawberry.type(description="Current user information")
+class UserInfo:
+    """GraphQL node"""
+
+    username: str = strawberry.field(description="Username.")
+    scopes: List[str] = strawberry.field(description="List of scopes available to the user.")
 
 
 @strawberry.type(description="Paginated list of experiments")

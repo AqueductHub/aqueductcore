@@ -4,13 +4,12 @@ from enum import Enum
 from typing import AsyncGenerator, Set
 from uuid import UUID
 
+from aqueductcore.backend.session import get_session
 from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
 from typing_extensions import Annotated
-
-from aqueductcore.backend.session import get_session
 
 
 class UserScope(str, Enum):
@@ -29,6 +28,7 @@ class UserInfo(BaseModel):
     """User information and security scopes (permissions)."""
 
     user_id: UUID
+    username: str
     scopes: Set[UserScope]
 
 
@@ -43,7 +43,7 @@ class ServerContext(BaseContext):
 
 async def get_current_user() -> UserInfo:
     """Get the current user based on the provided authentication token."""
-    token_data = UserInfo(scopes=set(UserScope), user_id=UUID(int=0))
+    token_data = UserInfo(scopes=set(UserScope), user_id=UUID(int=0), username="admin")
 
     return token_data
 
