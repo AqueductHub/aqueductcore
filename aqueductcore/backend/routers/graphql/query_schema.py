@@ -6,6 +6,8 @@ from datetime import date
 from typing import List, Optional, cast
 
 import strawberry
+from strawberry.types import Info
+
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import ExperimentIdentifierInput
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
@@ -20,7 +22,6 @@ from aqueductcore.backend.routers.graphql.types import (
     Tags,
     UserInfo,
 )
-from strawberry.types import Info
 
 
 @strawberry.input

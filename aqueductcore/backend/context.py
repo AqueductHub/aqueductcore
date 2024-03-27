@@ -4,12 +4,13 @@ from enum import Enum
 from typing import AsyncGenerator, Set
 from uuid import UUID
 
-from aqueductcore.backend.session import get_session
 from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
 from typing_extensions import Annotated
+
+from aqueductcore.backend.session import get_session
 
 
 class UserScope(str, Enum):
