@@ -7,9 +7,9 @@ from uuid import UUID, uuid4
 
 import pytest
 from aqueductcore.backend.context import UserInfo, UserScope
-from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
+from aqueductcore.backend.settings import settings
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.experiment import (
     add_tag_to_experiment,
@@ -38,7 +38,7 @@ async def test_get_all_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test get_all_experiments operation"""
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -49,7 +49,9 @@ async def test_get_all_experiments(
     await db_session.commit()
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
     )
 
@@ -71,7 +73,7 @@ async def test_get_all_experiments_limit_exceeded(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test get_all_experiments with higher value of limit than allowed value"""
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -83,7 +85,9 @@ async def test_get_all_experiments_limit_exceeded(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         order_by_creation_date=True,
     )
@@ -94,7 +98,7 @@ async def test_get_all_experiments_ordered_by_creation_date(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test get_all_experiments operation"""
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -106,7 +110,9 @@ async def test_get_all_experiments_ordered_by_creation_date(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         order_by_creation_date=True,
     )
@@ -129,7 +135,7 @@ async def test_get_all_experiments_filtered_by_tag(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test get_all_experiments operation"""
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -140,7 +146,9 @@ async def test_get_all_experiments_filtered_by_tag(
     await db_session.commit()
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         tags=["tag1"],
     )
@@ -158,7 +166,7 @@ async def test_get_all_experiments_filtered_by_tag_ordered_by_creation_date(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
     """Test get_all_experiments operation"""
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -170,7 +178,9 @@ async def test_get_all_experiments_filtered_by_tag_ordered_by_creation_date(
         await db_session.refresh(db_experiment)
 
     experiments = await get_all_experiments(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         tags=["tag1"],
         order_by_creation_date=True,
@@ -190,7 +200,7 @@ async def test_get_experiment_by_uuid(
 ):
     """Test get_experiment_by_uuid operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -201,7 +211,9 @@ async def test_get_experiment_by_uuid(
     await db_session.commit()
 
     experiment = await get_experiment_by_uuid(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
     )
@@ -220,7 +232,7 @@ async def test_get_experiment_by_alias(
 ):
     """Test get_experiment_by_uuid operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -231,7 +243,9 @@ async def test_get_experiment_by_alias(
     await db_session.commit()
 
     experiment = await get_experiment_by_alias(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         alias=experiments_data[0].alias,
     )
@@ -250,7 +264,7 @@ async def test_create_db_experiment_pre_existing_data(
 ):
     """Test create_db_experiment operation with pre-existing data."""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -261,7 +275,9 @@ async def test_create_db_experiment_pre_existing_data(
     await db_session.commit()
 
     in_db_experiment = await create_experiment(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         title="Quantum Communication Protocols for Secure Networks",
         description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
@@ -292,7 +308,9 @@ async def test_create_db_experiment_empty_db(
     """Test create_db_experiment operation with empty database."""
 
     in_db_experiment = await create_experiment(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         title="Quantum Communication Protocols for Secure Networks",
         description="Design and evaluate quantum communication protocols to establish secure quantum networks, exploring the potential of quantum key distribution.",
@@ -322,7 +340,7 @@ async def test_update_db_experiment(
 ):
     """Test update_db_experiment operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -333,7 +351,9 @@ async def test_update_db_experiment(
     await db_session.commit()
 
     in_db_experiment = await update_experiment(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         title="Quantum-enhanced Imaging for Biomedical Applications",
@@ -354,7 +374,7 @@ async def test_add_db_tag_to_experiment(
 ):
     """Test update_db_experiment operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -365,7 +385,9 @@ async def test_add_db_tag_to_experiment(
     await db_session.commit()
 
     in_db_experiment = await add_tag_to_experiment(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         tag="important",
@@ -382,7 +404,7 @@ async def test_remove_db_tag_from_experiment(
 ):
     """Test update_db_experiment operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -393,7 +415,9 @@ async def test_remove_db_tag_from_experiment(
     await db_session.commit()
 
     in_db_experiment = await remove_tag_from_experiment(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
         tag="tag1",
@@ -417,7 +441,9 @@ async def test_get_all_tags_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         include_dangling=True,
     )
@@ -427,7 +453,9 @@ async def test_get_all_tags_dangling(
         assert tags[idx].name == tag.name
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         include_dangling=False,
     )
@@ -440,7 +468,7 @@ async def test_get_all_tags_mix_dangling(
 ):
     """Test get_all_tags operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     no_dangling_tags_expected = []
@@ -460,7 +488,9 @@ async def test_get_all_tags_mix_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         include_dangling=True,
     )
@@ -473,7 +503,9 @@ async def test_get_all_tags_mix_dangling(
     )
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         include_dangling=False,
     )
@@ -490,7 +522,7 @@ async def test_get_all_tags_no_dangling(
 ):
     """Test get_all_tags operation"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     tags_expected = []
@@ -503,7 +535,9 @@ async def test_get_all_tags_no_dangling(
     await db_session.commit()
 
     tags = await get_all_tags(
-        user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         include_dangling=False,
     )
@@ -520,7 +554,7 @@ async def test_add_and_get_tags_for_experiment(
 ):
     """Add a tag to experiment and test if map was added"""
 
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -532,7 +566,9 @@ async def test_add_and_get_tags_for_experiment(
 
     for experiment in experiments_data:
         experiment_model = await get_experiment_by_uuid(
-            user_info=UserInfo(user_id=uuid4(), username=DEFAULT_USER, scopes=set(UserScope)),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
             db_session=db_session,
             experiment_id=experiment.id,
         )
@@ -547,7 +583,7 @@ async def test_get_experiment_files(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -559,7 +595,9 @@ async def test_get_experiment_files(
 
     for key, value in temp_experiment_files.items():
         files = await get_experiment_files(
-            user_info=UserInfo(user_id=UUID(int=0), username=DEFAULT_USER, scopes=set(UserScope)),
+            user_info=UserInfo(
+                user_id=UUID(int=0), username=settings.default_username, scopes=set(UserScope)
+            ),
             db_session=db_session,
             experiments_root_dir=str(settings.experiments_dir_path),
             experiment_id=key,
@@ -571,7 +609,7 @@ async def test_get_experiment_files(
 async def test_get_experiment_files_empty(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -583,7 +621,9 @@ async def test_get_experiment_files_empty(
 
     for experiment in experiments_data:
         files = await get_experiment_files(
-            user_info=UserInfo(user_id=UUID(int=0), username=DEFAULT_USER, scopes=set(UserScope)),
+            user_info=UserInfo(
+                user_id=UUID(int=0), username=settings.default_username, scopes=set(UserScope)
+            ),
             db_session=db_session,
             experiments_root_dir=str(settings.experiments_dir_path),
             experiment_id=experiment.id,
@@ -595,7 +635,7 @@ async def test_get_experiment_files_empty(
 async def test_remove_experiment(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -608,7 +648,9 @@ async def test_remove_experiment(
     experiment = experiments_data[0]
 
     delete_experiment_id = await remove_experiment(
-        user_info=UserInfo(user_id=UUID(int=0), username=DEFAULT_USER, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=UUID(int=0), username=settings.default_username, scopes=set(UserScope)
+        ),
         db_session=db_session,
         experiment_id=experiment.id,
     )
@@ -617,7 +659,9 @@ async def test_remove_experiment(
 
     with pytest.raises(AQDDBExperimentNonExisting):
         await get_experiment_by_uuid(
-            user_info=UserInfo(user_id=UUID(int=0), username=DEFAULT_USER, scopes=set(UserScope)),
+            user_info=UserInfo(
+                user_id=UUID(int=0), username=settings.default_username, scopes=set(UserScope)
+            ),
             db_session=db_session,
             experiment_id=experiment.id,
         )
@@ -627,7 +671,7 @@ async def test_remove_experiment(
 async def test_remove_experiment_invalid_experiment_id(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -640,7 +684,9 @@ async def test_remove_experiment_invalid_experiment_id(
     experiment_id = uuid4()
     with pytest.raises(AQDDBExperimentNonExisting):
         await remove_experiment(
-            user_info=UserInfo(user_id=UUID(int=0), username=DEFAULT_USER, scopes=set(UserScope)),
+            user_info=UserInfo(
+                user_id=UUID(int=0), username=settings.default_username, scopes=set(UserScope)
+            ),
             db_session=db_session,
             experiment_id=experiment_id,
         )
