@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.errors import AQDDBExperimentNonExisting
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.settings import settings
