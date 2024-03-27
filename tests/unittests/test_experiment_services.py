@@ -6,8 +6,6 @@ from typing import Dict, List, Tuple
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from aqueductcore.backend.context import UserInfo, UserScope
 from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.errors import AQDDBExperimentNonExisting
@@ -32,6 +30,7 @@ from aqueductcore.backend.services.utils import (
     tag_model_to_orm,
 )
 from aqueductcore.backend.settings import settings
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio

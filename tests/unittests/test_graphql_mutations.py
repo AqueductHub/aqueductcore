@@ -5,9 +5,6 @@ from typing import List
 from uuid import uuid4, UUID
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-from strawberry import Schema
-
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
@@ -22,6 +19,9 @@ from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_TITLE_LENGTH,
 )
 from aqueductcore.backend.settings import settings
+from sqlalchemy.ext.asyncio import AsyncSession
+from strawberry import Schema
+
 from tests.unittests.initial_data import experiment_data
 
 

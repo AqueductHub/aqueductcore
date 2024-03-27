@@ -11,7 +11,11 @@ from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentIdentifierInput,
     IDType,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData, Experiments
+from aqueductcore.backend.routers.graphql.types import (
+    ExperimentData,
+    Experiments,
+    UserInfo,
+)
 from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
 from aqueductcore.backend.services.experiment import (
     get_all_experiments,
@@ -22,6 +26,17 @@ from aqueductcore.backend.services.validators import MAX_EXPERIMENTS_PER_REQUEST
 
 if TYPE_CHECKING:
     from aqueductcore.backend.routers.graphql.query_schema import ExperimentFiltersInput
+
+
+def get_current_user_info(
+    context: ServerContext,
+) -> UserInfo:
+    """Resolve all experiments."""
+
+    return UserInfo(
+        username=context.user_info.username,
+        scopes=[scope.value for scope in context.user_info.scopes],
+    )
 
 
 async def get_expriments(

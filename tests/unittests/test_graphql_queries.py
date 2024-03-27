@@ -5,9 +5,6 @@ from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-from strawberry import Schema
-
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
 from aqueductcore.backend.models.experiment import (
     ExperimentCreate,
@@ -32,6 +29,8 @@ from aqueductcore.backend.services.validators import (
     MAX_TAGS_PER_REQUEST,
 )
 from aqueductcore.backend.settings import settings
+from sqlalchemy.ext.asyncio import AsyncSession
+from strawberry import Schema
 
 single_experiment_query = """
 query MyQuery($experimentIdentifier: ExperimentIdentifierInput!) {
