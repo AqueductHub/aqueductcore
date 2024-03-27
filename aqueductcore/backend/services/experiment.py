@@ -6,7 +6,7 @@ import re
 from datetime import date, datetime, time
 from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import ConfigDict, Field, validate_call
 from sqlalchemy import delete, func, or_, select
@@ -23,6 +23,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
+from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_experiment_id_and_alias,
