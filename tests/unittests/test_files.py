@@ -7,10 +7,6 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from fastapi import status
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from aqueductcore.backend.context import (
     ServerContext,
     UserInfo,
@@ -22,6 +18,9 @@ from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.settings import settings
+from fastapi import status
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 BYTES_IN_KB = 1024
 
@@ -67,7 +66,8 @@ async def test_file_download(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -94,7 +94,8 @@ async def test_nonexisting_file_download(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -147,7 +148,8 @@ async def test_file_upload_experiment_id(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -215,7 +217,8 @@ async def test_file_upload_max_body_size(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -253,7 +256,8 @@ async def test_file_upload_max_file_size(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -315,7 +319,8 @@ async def test_file_upload_non_existing_body(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -350,7 +355,8 @@ async def test_file_upload_invalid_filename(
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
-            db_session=db_session, user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope))
+            db_session=db_session,
+            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency

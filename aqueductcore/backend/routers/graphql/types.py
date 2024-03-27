@@ -76,6 +76,14 @@ class Experiments:
     )
 
 
+@strawberry.type(description="Current user information")
+class UserInfo:
+    """GraphQL node"""
+
+    username: str = strawberry.field(description="Username.")
+    scopes: List[str] = strawberry.field(description="List of scopes available to the user.")
+
+
 @strawberry.type(description="Paginated list of experiments")
 class Tags:
     """GraphQL node"""
