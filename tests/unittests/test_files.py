@@ -3,7 +3,7 @@ import os
 import shutil
 from tempfile import TemporaryDirectory
 from typing import AsyncGenerator, List, Tuple
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import pytest
 import pytest_asyncio
@@ -23,6 +23,7 @@ from aqueductcore.backend.services.experiment import build_experiment_dir_absolu
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.settings import settings
+from aqueductcore.backend.models import orm
 
 BYTES_IN_KB = 1024
 
@@ -62,7 +63,11 @@ async def test_file_download(
     experiment_files: Tuple[str, str, bytes],
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
@@ -90,7 +95,11 @@ async def test_nonexisting_file_download(
 ):
     experiment_file_name = "nonexisting_test_file.txt"
 
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
@@ -144,7 +153,11 @@ async def test_file_upload_experiment_id(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
@@ -213,7 +226,11 @@ async def test_file_upload_max_body_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
@@ -251,7 +268,11 @@ async def test_file_upload_max_file_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
 
     await db_session.commit()
@@ -314,7 +335,11 @@ async def test_file_upload_non_existing_body(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
 
     await db_session.commit()
@@ -351,7 +376,11 @@ async def test_file_upload_invalid_filename(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 

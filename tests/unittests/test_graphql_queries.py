@@ -19,6 +19,7 @@ from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
 from aqueductcore.backend.constants import DEFAULT_USER
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     experiment_orm_to_model,
@@ -305,9 +306,14 @@ async def test_query_all_experiments(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -346,9 +352,13 @@ async def test_query_all_experiments_invalid_limit(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -375,9 +385,13 @@ async def test_query_all_experiments_title_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -404,9 +418,13 @@ async def test_query_all_experiments_max_tags_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -433,9 +451,13 @@ async def test_query_single_experiment(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     experiment = experiments_data[0]
     db_experiment = experiment_model_to_orm(experiment)
+    db_experiment.created_by_user = db_user
     db_experiments.append(db_experiment)
     db_session.add(db_experiment)
     await db_session.commit()
@@ -489,9 +511,13 @@ async def test_query_single_experiment(
 async def test_filter_by_tags_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
 
@@ -514,9 +540,13 @@ async def test_filter_by_tags_experiments(
 async def test_filter_by_title_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
 
@@ -539,9 +569,13 @@ async def test_filter_by_title_experiments(
 async def test_query_all_tags_all(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     no_dangling_tags_expected = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         no_dangling_tags_expected.extend(experiment.tags)
         db_session.add(db_experiment)
 
@@ -603,8 +637,12 @@ async def test_query_all_tags_all(
 async def test_query_all_tags_no_dangling(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_session.add(db_experiment)
         await db_session.commit()
         await db_session.refresh(db_experiment)
@@ -639,9 +677,13 @@ async def test_query_over_limit_all_tags(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -663,8 +705,12 @@ async def test_query_over_limit_all_tags(
 async def test_query_pagination_tags(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=DEFAULT_USER)
+    db_session.add(db_user)
+
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_session.add(db_experiment)
         await db_session.commit()
         await db_session.refresh(db_experiment)
