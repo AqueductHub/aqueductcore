@@ -17,7 +17,6 @@ from aqueductcore.backend.main import app
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
-from aqueductcore.backend.constants import DEFAULT_USER
 from aqueductcore.backend.settings import settings
 from fastapi import status
 from fastapi.testclient import TestClient
