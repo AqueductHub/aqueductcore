@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     aqueduct_password: str = "admin"
     """Aqueduct password for authentication."""
 
+    default_username: str = "admin"
+    """Default username for the User"""
+
     token_secret: str = secrets.token_hex(32)
     """Tokens secret."""
 

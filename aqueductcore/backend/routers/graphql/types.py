@@ -57,6 +57,7 @@ class ExperimentData:
         default=None, description="Description of the experiment."
     )
     created_at: datetime = strawberry.field(description="Creation date of the experiment.")
+    created_by: str = strawberry.field(description="Creator of the experiment")
     updated_at: datetime = strawberry.field(description="Last update date of the experiment.")
     tags: List[str] = strawberry.field(description="Tags of the experiment.")
     files: List[ExperimentFile] = strawberry.field(

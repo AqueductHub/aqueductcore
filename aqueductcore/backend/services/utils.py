@@ -15,15 +15,15 @@ from aqueductcore.backend.models.experiment import (
 
 
 async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
-    """Convert ORM Experiment to Pydantic Experiment."""
+    """Convert ORM Experiment to Pydantic Model"""
     experiment = ExperimentRead(
         created_at=value.created_at,
         updated_at=value.updated_at,
+        created_by=value.created_by_user.username,
         description=value.description,
         alias=value.alias,
         id=value.id,
         title=value.title,
-        user_id=value.user_id,
         tags=[tag_orm_to_model(tag) for tag in value.tags],
     )
 
@@ -40,7 +40,6 @@ def tag_orm_to_model(value: orm.Tag) -> TagRead:
 def experiment_model_to_orm(value: ExperimentCreate) -> orm.Experiment:
     """Convert Pydantic Experiment to ORM Experiment."""
     experiment = orm.Experiment(
-        user_id=value.user_id,
         id=value.id,
         title=value.title,
         description=value.description,
