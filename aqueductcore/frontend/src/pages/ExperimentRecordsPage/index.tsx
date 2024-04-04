@@ -87,6 +87,11 @@ export const ExperimentRecordsColumns: readonly ExperimentRecordsColumnsType[] =
     },
   },
   {
+    id: "createdBy",
+    label: "Created By",
+    minWidth: 170,
+  },
+  {
     id: "createdAt",
     label: "Date Created",
     minWidth: 170,

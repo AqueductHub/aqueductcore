@@ -10,6 +10,7 @@ export const GET_EXPERIMENT_BY_ID = gql`
       tags
       alias
       createdAt
+      createdBy
       files {
         name
         path

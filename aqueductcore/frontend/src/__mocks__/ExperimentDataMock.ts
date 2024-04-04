@@ -46,6 +46,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
     tags: ["rabi", ARCHIVED],
     createdAt: "2022-11-11T00:00:00",
+    createdBy: "admin",
     files: [
       {
         name: "aqueduct_intro.pdf",
@@ -88,6 +89,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
     tags: ["rabi", FAVOURITE],
     createdAt: "2022-11-11T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -99,6 +101,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
     tags: ["rabi"],
     createdAt: "2022-11-11T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -109,6 +112,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
   {
@@ -118,6 +122,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -128,6 +133,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -138,6 +144,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -148,6 +155,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -158,6 +166,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -168,6 +177,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
     createdAt: "2022-11-13T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -178,6 +188,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
     createdAt: "2022-11-23T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -188,6 +199,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
     createdAt: "2022-11-23T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -198,6 +210,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
     createdAt: "2022-11-22T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -208,6 +221,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
     createdAt: "2022-11-22T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 
@@ -218,6 +232,7 @@ export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
     createdAt: "2022-11-23T00:00:00",
+    createdBy: "admin",
     files: [],
   },
 ];

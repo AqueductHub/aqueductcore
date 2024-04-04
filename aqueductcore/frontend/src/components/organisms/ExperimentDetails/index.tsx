@@ -385,11 +385,10 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         </Grid>
         <Grid item>
           <List>
-            {/* //todo: author's name need to be provided in the backend first */}
-            {/* <ListItem sx={{ pl: 1, pr: 1 }}>
+            <ListItem sx={{ pl: 1, pr: 1 }}>
               <ExperimentDetailsTitle>Created by: </ExperimentDetailsTitle>
-              <ExperimentDetailsContent>[Author's name here]</ExperimentDetailsContent>
-            </ListItem> */}
+              <ExperimentDetailsContent>{experimentDetails.createdBy}</ExperimentDetailsContent>
+            </ListItem>
             <ListItem sx={{ pl: 1, pr: 1, position: "relative" }}>
               <ExperimentDetailsTitle>Tags: </ExperimentDetailsTitle>
               <Box>
