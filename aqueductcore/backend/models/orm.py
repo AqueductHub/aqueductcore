@@ -22,15 +22,26 @@ experiment_tag_association = Table(
 )
 
 
+class User(Base):
+    """Model for User"""
+
+    __tablename__ = "user"
+
+    id = mapped_column(Uuid, primary_key=True)
+    username: Mapped[str] = mapped_column(Text)
+    experiments: Mapped[List["Experiment"]] = relationship()
+
+
 class Experiment(Base):
     """Experiment details"""
 
     __tablename__ = "experiment"
 
     id = mapped_column(Uuid, primary_key=True)
-    user_id = mapped_column(Uuid, nullable=False)
     title: Mapped[str]
     description: Mapped[Optional[str]] = mapped_column(Text)
+    created_by: Mapped[Uuid] = mapped_column(ForeignKey("user.id"), nullable=False)
+    created_by_user: Mapped[User] = relationship(back_populates="experiments")
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now()  # pylint: disable=not-callable
     )

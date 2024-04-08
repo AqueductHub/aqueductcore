@@ -3,7 +3,7 @@ import os
 import shutil
 from tempfile import TemporaryDirectory
 from typing import AsyncGenerator, List, Tuple
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import pytest
 import pytest_asyncio
@@ -21,6 +21,7 @@ from aqueductcore.backend.settings import settings
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
+from aqueductcore.backend.models import orm
 
 BYTES_IN_KB = 1024
 
@@ -60,14 +61,20 @@ async def test_file_download(
     experiment_files: Tuple[str, str, bytes],
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -88,14 +95,20 @@ async def test_nonexisting_file_download(
 ):
     experiment_file_name = "nonexisting_test_file.txt"
 
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -142,14 +155,20 @@ async def test_file_upload_experiment_id(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -211,14 +230,20 @@ async def test_file_upload_max_body_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -249,7 +274,11 @@ async def test_file_upload_max_file_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
 
     await db_session.commit()
@@ -257,7 +286,9 @@ async def test_file_upload_max_file_size(
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -312,7 +343,11 @@ async def test_file_upload_non_existing_body(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
 
     await db_session.commit()
@@ -320,7 +355,9 @@ async def test_file_upload_non_existing_body(
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency
@@ -349,14 +386,20 @@ async def test_file_upload_invalid_filename(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
     await db_session.commit()
 
     async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
         yield ServerContext(
             db_session=db_session,
-            user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
         )
 
     app.dependency_overrides[context_dependency] = override_context_dependency

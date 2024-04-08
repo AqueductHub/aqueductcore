@@ -15,6 +15,7 @@ from aqueductcore.backend.models.experiment import (
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     experiment_orm_to_model,
@@ -40,6 +41,7 @@ query MyQuery($experimentIdentifier: ExperimentIdentifierInput!) {
         }
         description
         createdAt
+        createdBy
         alias
         id
         tags
@@ -65,6 +67,7 @@ all_experiments_query = """
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -93,6 +96,7 @@ all_experiments_invalid_limit_query = (
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -125,6 +129,7 @@ all_experiments_invalid_title_filter_query = (
             }
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -225,6 +230,7 @@ filter_by_tag_query = """
             title
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -249,6 +255,7 @@ filter_by_title_query = """
             title
             description
             createdAt
+            createdBy
             updatedAt
             alias
             tags
@@ -272,6 +279,7 @@ def check_experiment_values(
     assert sample_experiment.title == experiment_res["title"]
     assert sample_experiment.alias == experiment_res["alias"]
     assert sample_experiment.description == experiment_res["description"]
+    assert sample_experiment.created_by == experiment_res["createdBy"]
     assert sample_experiment.created_at == datetime.fromisoformat(experiment_res["createdAt"])
     assert sample_experiment.updated_at == datetime.fromisoformat(experiment_res["updatedAt"])
 
@@ -296,9 +304,14 @@ async def test_query_all_experiments(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -308,7 +321,7 @@ async def test_query_all_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(all_experiments_query, context_value=context)
 
@@ -337,9 +350,13 @@ async def test_query_all_experiments_invalid_limit(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -349,7 +366,7 @@ async def test_query_all_experiments_invalid_limit(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(all_experiments_invalid_limit_query, context_value=context)
 
@@ -366,9 +383,13 @@ async def test_query_all_experiments_title_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -378,7 +399,7 @@ async def test_query_all_experiments_title_filter(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
@@ -395,9 +416,13 @@ async def test_query_all_experiments_max_tags_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -407,7 +432,7 @@ async def test_query_all_experiments_max_tags_filter(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
@@ -424,9 +449,13 @@ async def test_query_single_experiment(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     experiment = experiments_data[0]
     db_experiment = experiment_model_to_orm(experiment)
+    db_experiment.created_by_user = db_user
     db_experiments.append(db_experiment)
     db_session.add(db_experiment)
     await db_session.commit()
@@ -436,7 +465,7 @@ async def test_query_single_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
 
     # check with UUID
@@ -480,9 +509,13 @@ async def test_query_single_experiment(
 async def test_filter_by_tags_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
 
@@ -492,7 +525,7 @@ async def test_filter_by_tags_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(filter_by_tag_query, context_value=context)
 
@@ -505,9 +538,13 @@ async def test_filter_by_tags_experiments(
 async def test_filter_by_title_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
 
@@ -517,7 +554,7 @@ async def test_filter_by_title_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(filter_by_title_query, context_value=context)
 
@@ -530,9 +567,13 @@ async def test_filter_by_title_experiments(
 async def test_query_all_tags_all(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     no_dangling_tags_expected = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         no_dangling_tags_expected.extend(experiment.tags)
         db_session.add(db_experiment)
 
@@ -548,7 +589,7 @@ async def test_query_all_tags_all(
     # enable dangling tags
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         all_tags_query,
@@ -594,8 +635,12 @@ async def test_query_all_tags_all(
 async def test_query_all_tags_no_dangling(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_session.add(db_experiment)
         await db_session.commit()
         await db_session.refresh(db_experiment)
@@ -604,7 +649,7 @@ async def test_query_all_tags_no_dangling(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         all_tags_query,
@@ -630,9 +675,13 @@ async def test_query_over_limit_all_tags(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
@@ -642,7 +691,7 @@ async def test_query_over_limit_all_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(tags_pagination_over_limit_query, context_value=context)
 
@@ -654,8 +703,12 @@ async def test_query_over_limit_all_tags(
 async def test_query_pagination_tags(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
         db_session.add(db_experiment)
         await db_session.commit()
         await db_session.refresh(db_experiment)
@@ -664,7 +717,7 @@ async def test_query_pagination_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), scopes=set(UserScope), username="admin"),
+        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(tags_pagination_query, context_value=context)
 

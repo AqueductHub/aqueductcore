@@ -11,6 +11,7 @@ from strawberry.fastapi import BaseContext
 from typing_extensions import Annotated
 
 from aqueductcore.backend.session import get_session
+from aqueductcore.backend.settings import settings
 
 
 class UserScope(str, Enum):
@@ -44,7 +45,9 @@ class ServerContext(BaseContext):
 
 async def get_current_user() -> UserInfo:
     """Get the current user based on the provided authentication token."""
-    token_data = UserInfo(scopes=set(UserScope), user_id=UUID(int=0), username="admin")
+    token_data = UserInfo(
+        scopes=set(UserScope), user_id=UUID(int=0), username=settings.default_username
+    )
 
     return token_data
 
