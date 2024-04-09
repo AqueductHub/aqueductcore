@@ -1,4 +1,0 @@
-/node_modules/**
-/coverage/**
-/build/**
-/src/types/graphql/__GENERATED__/**
