@@ -4,10 +4,10 @@ import asyncio
 import random
 from datetime import datetime, timedelta
 from random import randrange
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.orm import Experiment, Tag
+from aqueductcore.backend.models.orm import Experiment, Tag, User
 from aqueductcore.backend.session import async_engine, get_session
 
 
@@ -41,6 +41,7 @@ async def populate():
             tags.append(tag)
             db_session.add(tag)
 
+        admin_user = User(id=UUID(int=0), username="admin")
         for _ in range(10):
             id = uuid4()
             date = random_date(start_date, now)
@@ -53,7 +54,9 @@ async def populate():
                 alias=f"{date.strftime('%y%m%d')}-{random.randint(1,100)}",
             )
             experiment.tags.extend(random.choices(tags, k=4))
-            db_session.add(experiment)
+            admin_user.experiments.append(experiment)
+
+        db_session.add(admin_user)
         await db_session.commit()
 
 
