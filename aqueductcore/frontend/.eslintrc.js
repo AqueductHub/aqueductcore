@@ -29,7 +29,7 @@ module.exports = {
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-non-null-assertion": "off"
   },
-  ignores: [
+  ignorePatterns: [
     "/node_modules/**",
     "/coverage/**",
     "/build/**",
