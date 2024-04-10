@@ -80,6 +80,10 @@ jobs:
         run: yarn add eslint
         working-directory: aqueductcore/frontend
 
+      - name: Log eslint
+        run: pwd
+        working-directory: aqueductcore/frontend
+
       - name: Run eslint check
         run: yarn eslint "src/**/*.{js,jsx,ts,tsx,json}"
         working-directory: aqueductcore/frontend
