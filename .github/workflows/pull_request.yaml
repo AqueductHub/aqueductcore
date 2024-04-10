@@ -81,7 +81,7 @@ jobs:
         working-directory: aqueductcore/frontend
 
       - name: Log eslint
-        run: pwd
+        run: echo "working directory $(pwd)"
         working-directory: aqueductcore/frontend
 
       - name: Run eslint check
