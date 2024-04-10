@@ -76,8 +76,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install eslint
-        run: yarn add eslint
+      - name: Install packages
+        run: yarn
         working-directory: aqueductcore/frontend
 
       - name: Run eslint check
