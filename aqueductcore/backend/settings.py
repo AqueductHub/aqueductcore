@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import secrets
+from typing import Optional
 
-from pydantic import DirectoryPath, NonNegativeInt, PositiveInt
+from pydantic import DirectoryPath, HttpUrl, NonNegativeInt, PositiveInt
 from pydantic_settings import BaseSettings
 
 
@@ -41,20 +41,11 @@ class Settings(BaseSettings):
     files_route_prefix: str = "/files"
     """Route prefix for downloading files."""
 
-    aqueduct_username: str = "admin"
-    """Aqueduct username for authentication."""
-
-    aqueduct_password: str = "admin"
-    """Aqueduct password for authentication."""
-
     default_username: str = "admin"
     """Default username for the User"""
 
-    token_secret: str = secrets.token_hex(32)
-    """Tokens secret."""
-
-    tokens_expiry_time_minutes: int = 30
-    """Authentication token expiry time in minutes."""
+    keycloak_url: Optional[HttpUrl] = None
+    """Keycloak OIDC URL (used in Aqueduct Pro only)."""
 
 
 settings = Settings()
