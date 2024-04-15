@@ -1,3 +1,9 @@
+"""The module contains business-logic level code for plugin access and execution.
+Plugins are stored on a file system. They are declared using `manifest.yml` files.
+Depending on execution context, plugins may be implement in any language if they
+can read environment variables and print to stdout.
+"""
+
 import logging
 from pathlib import Path
 from typing import List
@@ -6,17 +12,19 @@ from aqueductcore.backend.models.plugin import (Plugin, PluginFunction,
                                                 PluginParameter, PluginExecutionResult)
 from aqueductcore.backend.settings import settings
 
-SUPPORTED_TYPES = ("str", "multiline," "float", "experiment", "file")
+SUPPORTED_TYPES = ("str", "multiline", "float", "experiment", "file")
 
 
 class PluginExecutor:
+    """Class to access plugins."""
+
     @classmethod
     def _validate_parameter(cls, param: PluginParameter):
         assert param.name, "Parameter should have a name"
         assert param.description, "Parameter should have a description"
         assert (
-            param.type in SUPPORTED_TYPES
-        ), f"Type should be one of {SUPPORTED_TYPES}, but was {param.type}"
+            param.data_type in SUPPORTED_TYPES
+        ), f"Type should be one of {SUPPORTED_TYPES}, but was {param.data_type}"
 
     @classmethod
     def _validate_function(cls, func: PluginFunction):
@@ -55,7 +63,18 @@ class PluginExecutor:
 
 
     @classmethod
-    def execute(cls, plugin, function, params) -> PluginExecutionResult:
+    def execute(cls, plugin: str, function: str, params: dict) -> PluginExecutionResult:
+        """For a given plugin name, function name, and a dictionary
+        of parameters, runs the plugin and returns execution result
+
+        Args:
+            plugin (str): plugin name.
+            function (str): function name inside plugin.
+            params (dict): parameter of values to pass to a plugin.
+
+        Returns:
+            PluginExecutionResult: results of process execution
+        """
         plugins = [p for p in cls.list_plugins() if p.name == plugin]
         assert len(plugins) == 1, f"There should be exactly 1 plugin with name {plugin}"
         functions = [f for f in plugins[0].functions if f.name == function]

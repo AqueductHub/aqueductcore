@@ -19,12 +19,12 @@ functions:
       - !parameter
         name: experiment
         description: Experiment ID
-        type: experiment
+        data_type: experiment
       - !parameter
         name: input
         description: Input file name
-        type: file
+        data_type: file
       - !parameter
         name: output
         description: Results file name
-        type: str
+        data_type: str

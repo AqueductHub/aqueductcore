@@ -88,11 +88,23 @@ class Mutation:
 
     @strawberry.mutation
     async def execute_plugin(
-            self, plugin: str, function: str,
+            self,
+            plugin: str,
+            function: str,
             params: List[List[str]],
     ) -> PluginExecutionResult:
+        """The endpoint accepts plugin execution requests.
+
+        Args:
+            plugin (str): plugin name.
+            function (str): function name.
+            params (List[List[str]]):
+                list of pairs: [[key1, value1], [key2, value2], ...].
+
+        Returns:
+            PluginExecutionResult: result of OS process execution.
+        """
         dict_params = dict(params)
-        print(dict_params)
         result = PluginExecutor.execute(plugin, function, dict_params)
         return PluginExecutionResult(
             return_code=result.return_code,

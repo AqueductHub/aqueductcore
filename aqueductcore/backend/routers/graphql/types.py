@@ -100,7 +100,7 @@ class PluginParameterType:
 
     name: str
     description: str
-    type: str
+    data_type: str
 
 
 @strawberry.type
@@ -114,6 +114,7 @@ class PluginFunctionInfo:
 
 @strawberry.type
 class PluginExecutionResult:
+    """Result of OS process execution"""
 
     return_code: int
     stdout: str
@@ -145,7 +146,7 @@ class PluginInfo:
                         PluginParameterType(
                             name=param.name,
                             description=param.description,
-                            type=param.type,
+                            data_type=param.data_type,
                         )
                         for param in func.parameters
                     ]
