@@ -4,9 +4,6 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 
 from pyaqueduct import API
-from pyaqueduct.experiment import Experiment
-
-
 
 if __name__ == "__main__":
     # this is passed by default to any plugin

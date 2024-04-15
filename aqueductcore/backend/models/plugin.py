@@ -75,17 +75,17 @@ class PluginFunction(yaml.YAMLObject):
         my_env["aqueduct_url"] = plugin.aqueduct_url
         my_env["aqueduct_key"] = plugin.aqueduct_key
 
-        proc = subprocess.Popen(
+        with subprocess.Popen(
             self.script,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=my_env,
             cwd=Path(plugin.manifest_file).parent
-        )
-        out, err = proc.communicate(timeout=timeout)
-        code = proc.returncode
-        return PluginExecutionResult(code, out.decode(), err.decode())
+        ) as proc:
+            out, err = proc.communicate(timeout=timeout)
+            code = proc.returncode
+            return PluginExecutionResult(code, out.decode(), err.decode())
 
 
 class Plugin(yaml.YAMLObject):
@@ -116,7 +116,7 @@ class Plugin(yaml.YAMLObject):
         manifest = path / MANIFEST_FILE
         assert manifest.exists() and manifest.is_file(), f"File {manifest} should exist"
 
-        with open(manifest, "r") as manifest_stream:
+        with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
             plugin = yaml.load(manifest_stream, Loader=yaml.loader.SafeLoader)
