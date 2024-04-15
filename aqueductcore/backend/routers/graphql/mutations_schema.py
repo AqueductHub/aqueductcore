@@ -1,6 +1,6 @@
 """GraohQL Mutations Controller."""
 
-from typing import cast
+from typing import List, cast
 from uuid import UUID
 
 import strawberry
@@ -20,7 +20,8 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData
+from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
+from aqueductcore.backend.plugins.plugin_executor import PluginExecutor
 
 
 @strawberry.type
@@ -83,3 +84,18 @@ class Mutation:
         """Mutation to remove experiment"""
         context = cast(ServerContext, info.context)
         await remove_experiment(context=context, experiment_remove_input=experiment_remove_input)
+
+
+    @strawberry.mutation
+    async def execute_plugin(
+            self, plugin: str, function: str,
+            params: List[List[str]],
+    ) -> PluginExecutionResult:
+        dict_params = dict(params)
+        print(dict_params)
+        result = PluginExecutor.execute(plugin, function, dict_params)
+        return PluginExecutionResult(
+            return_code=result.return_code,
+            stdout=result.stdout,
+            stderr=result.stderr,
+        )

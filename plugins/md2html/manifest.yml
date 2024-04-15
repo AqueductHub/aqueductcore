@@ -1,0 +1,30 @@
+--- !plugin
+name: "Markdown to HTML"
+description: >
+  Converting Markdown files to HTML files 1
+  Converting Markdown files to HTML files 2
+  Converting Markdown files to HTML files 3
+  Converting Markdown files to HTML files 4
+authors: aqueduct@riverlane.com
+aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+
+functions:
+  - !function
+    name: Function 1
+    description: "Markdown file to HTML file"
+    script: "python3 md2html.py"
+
+    # arguments of the function
+    parameters:
+      - !parameter
+        name: experiment
+        description: Experiment ID
+        type: experiment
+      - !parameter
+        name: input
+        description: Input file name
+        type: file
+      - !parameter
+        name: output
+        description: Results file name
+        type: str

@@ -56,5 +56,8 @@ class Settings(BaseSettings):
     tokens_expiry_time_minutes: int = 30
     """Authentication token expiry time in minutes."""
 
+    plugins_dir_path: str = "/workspace/plugins"
+    """Plugin directory where plugins are saved"""
+
 
 settings = Settings()
