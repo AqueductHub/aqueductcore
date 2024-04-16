@@ -28,7 +28,7 @@ This project uses the following main software stack and technologies:
 ## Installation
 
 To use Aqueduct, you need to install this repo 
-[aqueductcore](https://github.com/AqueductHub/aqueductcore, 
+[aqueductcore](https://github.com/AqueductHub/aqueductcore), 
 and the 
 [pyaqueduct](https://github.com/AqueductHub/pyaqueduct) one too. 
 
