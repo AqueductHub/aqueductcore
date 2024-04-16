@@ -5,14 +5,30 @@ can read environment variables and print to stdout.
 """
 
 import logging
+from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
-from aqueductcore.backend.models.plugin import (Plugin, PluginFunction,
-                                                PluginParameter, PluginExecutionResult)
+from aqueductcore.backend.models.plugin import (
+    Plugin,
+    PluginExecutionResult,
+    PluginFunction,
+    PluginParameter,
+)
 from aqueductcore.backend.settings import settings
 
-SUPPORTED_TYPES = ("str", "multiline", "float", "experiment", "file")
+
+class SupportedTypes(Enum):
+    INT = "int"
+    STR = "str"
+    MULTILINE = "multiline"
+    FLOAT = "float"
+    EXPERIMENT = "experiment"
+    FILE = "file"
+
+    @staticmethod
+    def members():
+        return set(map(str, SupportedTypes._value2member_map_))
 
 
 class PluginExecutor:
@@ -22,15 +38,17 @@ class PluginExecutor:
     def _validate_parameter(cls, param: PluginParameter):
         assert param.name, "Parameter should have a name"
         assert param.description, "Parameter should have a description"
-        assert (
-            param.data_type in SUPPORTED_TYPES
-        ), f"Type should be one of {SUPPORTED_TYPES}, but was {param.data_type}"
+
+        assert param.data_type in SupportedTypes.members(), (
+            f"Type should be one of {SupportedTypes.members()}"
+            f"but was {param.data_type}"
+        )
 
     @classmethod
     def _validate_function(cls, func: PluginFunction):
         assert func.name, "Function should have a name"
         assert (
-            len(func.description) > 10
+            len(func.description) > 4
         ), "Function should have a meaningful description"
         for param in func.parameters:
             cls._validate_parameter(param)
@@ -39,10 +57,42 @@ class PluginExecutor:
     def _validate_plugin(cls, plugin: Plugin):
         assert plugin.name, "Plugin should have a name"
         assert (
-            len(plugin.description) > 10
+            len(plugin.description) > 4
         ), "Plugin should have a meaningful description"
         for func in plugin.functions:
             cls._validate_function(func)
+
+    @classmethod
+    def _validate_values(cls, func: PluginFunction, params: Dict[str, str]):
+        # do keys coincide?
+        expected_keys = set(params)
+        provided_keys = set(param.name for param in func.parameters)
+        assert expected_keys == provided_keys, (
+            "Parameters error: keys don't match expected set. "
+            f"Missing keys: {expected_keys - provided_keys}; "
+            f"Unexpected keys: {provided_keys - expected_keys}"
+        )
+        for arg in func.parameters:
+            value = params[arg.name]
+            if arg.data_type == SupportedTypes.INT.value:
+                try:
+                    int(value)
+                except:
+                    raise ValueError(f"{value} is not decimal.")
+            if arg.data_type == SupportedTypes.FLOAT.value:
+                try:
+                    float(value)
+                except:
+                    raise ValueError(f"{value} is not a floating point number.")
+            if arg.data_type == SupportedTypes.EXPERIMENT.value:
+                try:
+                    a, b = value.split("-")
+                    assert a.isdecimal(), "Experiment alias has incompatible prefix"
+                    assert b.isalnum(), "Experiment alias has incompatible postfix"
+                except:
+                    raise ValueError(f"{value} is not a UUID.")
+            if arg.data_type == SupportedTypes.FILE.value:
+                pass
 
     # cache ttl can be managed
     # https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live
@@ -61,7 +111,6 @@ class PluginExecutor:
                     # TODO: raise again here?
         return result
 
-
     @classmethod
     def execute(cls, plugin: str, function: str, params: dict) -> PluginExecutionResult:
         """For a given plugin name, function name, and a dictionary
@@ -78,8 +127,10 @@ class PluginExecutor:
         plugins = [p for p in cls.list_plugins() if p.name == plugin]
         assert len(plugins) == 1, f"There should be exactly 1 plugin with name {plugin}"
         functions = [f for f in plugins[0].functions if f.name == function]
-        assert len(functions) == 1, f"There should be exactly 1 function with name {function}"
-        return functions[0].execute(
-            plugin=plugins[0],
-            params=params
-        )
+        assert (
+            len(functions) == 1
+        ), f"There should be exactly 1 function with name {function}"
+
+        cls._validate_values(func=functions[0], params=params)
+
+        return functions[0].execute(plugin=plugins[0], params=params)

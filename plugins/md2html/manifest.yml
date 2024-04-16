@@ -1,16 +1,15 @@
 --- !plugin
 name: "Markdown to HTML"
 description: >
-  Converting Markdown files to HTML files 1
-  Converting Markdown files to HTML files 2
-  Converting Markdown files to HTML files 3
-  Converting Markdown files to HTML files 4
+  This plugin downloads the file from
+  an aqueduct experiment, tries to convert into
+  HTML format, and uploads it back.
 authors: aqueduct@riverlane.com
 aqueduct_url: https://aqueduct-demo.azurewebsites.net/
 
 functions:
   - !function
-    name: Function 1
+    name: md2html
     description: "Markdown file to HTML file"
     script: "python3 md2html.py"
 

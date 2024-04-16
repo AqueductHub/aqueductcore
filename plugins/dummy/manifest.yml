@@ -1,0 +1,58 @@
+--- !plugin
+name: "Dummy plugin"
+description: >
+  This plugin prints environment variables
+  passed to it. No requests to Aqueduct sent.
+authors: aqueduct@riverlane.com
+aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+
+functions:
+  - !function
+    name: echo
+    description: "Print values to stdout"
+    script: >
+      sh dummy.sh
+
+    # arguments of the function
+    parameters:
+      - !parameter
+        name: var1
+        description: variable 1
+        data_type: str
+      - !parameter
+        name: var2
+        description: variable 2
+        data_type: int
+      - !parameter
+        name: var3
+        description: variable 3
+        data_type: float
+      - !parameter
+        name: var4
+        description: variable 4
+        data_type: experiment
+
+  - !function
+    name: echo_stderr
+    description: "Print values to stdout"
+    script: >
+      >&2 sh dummy.sh; exit 13
+
+    # arguments of the function
+    parameters:
+      - !parameter
+        name: var1
+        description: variable 1
+        data_type: str
+      - !parameter
+        name: var2
+        description: variable 2
+        data_type: int
+      - !parameter
+        name: var3
+        description: variable 3
+        data_type: float
+      - !parameter
+        name: var4
+        description: variable 4
+        data_type: experiment

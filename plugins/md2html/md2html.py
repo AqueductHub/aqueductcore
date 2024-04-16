@@ -2,7 +2,6 @@ import markdown
 import os
 from tempfile import TemporaryDirectory
 from pathlib import Path
-
 from pyaqueduct import API
 
 if __name__ == "__main__":
@@ -13,18 +12,20 @@ if __name__ == "__main__":
     # probably this is ok to have it as an input
     # but in current design proposal we expect to have
     # 1 experiment always
-    experiment_id = os.environ.get("experiment")
+    experiment_alias = os.environ.get("experiment")
 
     api = API(url=aqueduct_url, timeout=10)
+    experiment = api.get_experiment(experiment_alias)
     with TemporaryDirectory() as tmpdir:
-        e = api.get_experiment(experiment_id)
         file = os.environ.get("input")
         resultfile = os.environ.get("output")
-        e.download_file(file_name=file, destination_dir=tmpdir)
+        experiment.download_file(
+            file_name=file,
+            destination_dir=tmpdir)
 
         with open(Path(tmpdir) / file, "r") as source:
             with open(Path(tmpdir) / resultfile, "w") as destination:
                 html = markdown.markdown(source.read())
                 destination.write(html)
-        e.upload_file(Path(tmpdir) / resultfile)
-        print(f"Successfully uploaded {Path(tmpdir) / resultfile} to {experiment_id}")
+        experiment.upload_file(Path(tmpdir) / resultfile)
+        print(f"Successfully uploaded {Path(tmpdir) / resultfile} to {experiment_alias}")
