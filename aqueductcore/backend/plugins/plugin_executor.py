@@ -7,7 +7,7 @@ can read environment variables and print to stdout.
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from aqueductcore.backend.models.plugin import (
     Plugin,
@@ -19,6 +19,8 @@ from aqueductcore.backend.settings import settings
 
 
 class SupportedTypes(Enum):
+    """This enum contains allowed data types, which may be passed from
+    the GraphQL endpoint or specified in the manifest file."""
     INT = "int"
     STR = "str"
     MULTILINE = "multiline"
@@ -27,7 +29,8 @@ class SupportedTypes(Enum):
     FILE = "file"
 
     @staticmethod
-    def members():
+    def values() -> Set[str]:
+        """String values of the enum members."""
         return set(map(str, SupportedTypes._value2member_map_))
 
 
@@ -38,9 +41,8 @@ class PluginExecutor:
     def _validate_parameter(cls, param: PluginParameter):
         assert param.name, "Parameter should have a name"
         assert param.description, "Parameter should have a description"
-
-        assert param.data_type in SupportedTypes.members(), (
-            f"Type should be one of {SupportedTypes.members()}"
+        assert param.data_type in SupportedTypes.values(), (
+            f"Type should be one of {SupportedTypes.values()}"
             f"but was {param.data_type}"
         )
 
@@ -77,20 +79,20 @@ class PluginExecutor:
             if arg.data_type == SupportedTypes.INT.value:
                 try:
                     int(value)
-                except:
-                    raise ValueError(f"{value} is not decimal.")
+                except Exception as exc:
+                    raise ValueError(f"{value} is not decimal.") from exc
             if arg.data_type == SupportedTypes.FLOAT.value:
                 try:
                     float(value)
-                except:
-                    raise ValueError(f"{value} is not a floating point number.")
+                except Exception as exc:
+                    raise ValueError(f"{value} is not a floating point number.") from exc
             if arg.data_type == SupportedTypes.EXPERIMENT.value:
                 try:
-                    a, b = value.split("-")
-                    assert a.isdecimal(), "Experiment alias has incompatible prefix"
-                    assert b.isalnum(), "Experiment alias has incompatible postfix"
-                except:
-                    raise ValueError(f"{value} is not a UUID.")
+                    prefix, postfix = value.split("-")
+                    assert prefix.isdecimal(), "Experiment alias has incompatible prefix"
+                    assert postfix.isalnum(), "Experiment alias has incompatible postfix"
+                except Exception as exc:
+                    raise ValueError(f"{value} is not a valid experiment alias.") from exc
             if arg.data_type == SupportedTypes.FILE.value:
                 pass
 
