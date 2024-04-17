@@ -47,5 +47,7 @@ class Settings(BaseSettings):
     keycloak_url: Optional[HttpUrl] = None
     """Keycloak OIDC URL (used in Aqueduct Pro only)."""
 
+    keycloak_client_id: Optional[str] = None
+    """Keycloak client ID (used in Aqueduct Pro only)"""
 
 settings = Settings()
