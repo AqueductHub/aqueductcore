@@ -12,6 +12,5 @@ set +o allexport
 
 # create temp dir required for the Settings.
 export EXPERIMENTS_DIR_PATH=$(mktemp -d)
-export PLUGINS_DIR_PATH=$PROJECT_ROOT/plugins
 
 poetry run pytest $PROJECT_ROOT/tests/unittests -rA -vv

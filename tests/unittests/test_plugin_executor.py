@@ -7,12 +7,13 @@ from aqueductcore.backend.plugins import (
     PluginParameter,
     SupportedTypes,
 )
+from aqueductcore.backend.errors import AQDValidationError
 
 
 class TestPluginExecutor:
-    def test_list_plugins(self):
+    def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
-        assert len(plugins) == 2
+        assert len(plugins) == 1
 
     @pytest.mark.parametrize(
         "value",
@@ -49,21 +50,21 @@ class TestPluginExecutor:
     @pytest.mark.parametrize(
         "value",
         [
-            # not int
+            # var2 not int
             {
                 "var1": "text",
                 "var2": "2.2",
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
             },
-            # non float
+            # var3 non float
             {
                 "var1": "text",
                 "var2": "2",
                 "var3": "abc",
                 "var4": "20240229-5689864ffd94",
             },
-            # non alias
+            # var4 non alias
             {
                 "var1": "text",
                 "var2": "2",
@@ -84,12 +85,9 @@ class TestPluginExecutor:
     )
     def test_validate_values_raises(self, value):
         plugins = PluginExecutor.list_plugins()
-        if plugins[0].name == "Dummy plugin":
-            plugin = plugins[0]
-        else:
-            plugin = plugins[1]
+        plugin = plugins[0]
         func = plugin.functions[0]
-        with pytest.raises((ValueError, AssertionError)):
+        with pytest.raises(AQDValidationError):
             PluginExecutor._validate_values(func, value)
 
     @pytest.mark.parametrize(
@@ -201,5 +199,5 @@ class TestPluginExecutor:
         ],
     )
     def test_plugin_validation_raises(self, plugin):
-        with pytest.raises(AssertionError):
+        with pytest.raises(AQDValidationError):
             PluginExecutor._validate_plugin(plugin)

@@ -5,17 +5,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from pydantic import BaseModel
 from typing import List
 import os
 import subprocess
 
 import yaml
 
+from aqueductcore.backend.errors import AQDFilesPathError
+
 MANIFEST_FILE = "manifest.yml"
 
 
-@dataclass
-class PluginExecutionResult:
+class PluginExecutionResult(BaseModel):
     """OS process execution result"""
 
     return_code: int
@@ -73,19 +75,26 @@ class PluginFunction(yaml.YAMLObject):
         my_env = os.environ.copy()
         my_env.update(params)
         my_env["aqueduct_url"] = plugin.aqueduct_url
-        my_env["aqueduct_key"] = plugin.aqueduct_key
-
+        if plugin.aqueduct_key is not None:
+            my_env["aqueduct_key"] = plugin.aqueduct_key
+        cwd = Path.home()
+        if plugin.manifest_file:
+            cwd = Path(plugin.manifest_file).parent
         with subprocess.Popen(
             self.script,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=my_env,
-            cwd=Path(plugin.manifest_file).parent
+            cwd=cwd,
         ) as proc:
             out, err = proc.communicate(timeout=timeout)
             code = proc.returncode
-            return PluginExecutionResult(code, out.decode(), err.decode())
+            return PluginExecutionResult(
+                return_code=code,
+                stdout=out.decode(),
+                stderr=err.decode(),
+            )
 
 
 class Plugin(yaml.YAMLObject):
@@ -104,25 +113,24 @@ class Plugin(yaml.YAMLObject):
         self.authors = authors
         self.functions = functions
         self.aqueduct_url = aqueduct_url
-        self.manifest_file = ""
-        self.aqueduct_key = ""
+        self.manifest_file = None
+        self.aqueduct_key = None
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
         """Given a folder, parses a plugin definition"""
-        assert path.exists(), f"Folder {path} does not exist"
-        assert not path.is_file(), f"{path} should be a folder, not a file"
+        if not path.exists() or path.is_file():
+            raise AQDFilesPathError(f"{path} should be an existing folder.")
 
         manifest = path / MANIFEST_FILE
-        assert manifest.exists() and manifest.is_file(), f"File {manifest} should exist"
+        if not (manifest.exists() and manifest.is_file()):
+            raise AQDFilesPathError(f"File {manifest} should exist.")
 
         with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
             plugin = yaml.load(manifest_stream, Loader=yaml.loader.SafeLoader)
             plugin.manifest_file = str(manifest.absolute())
-
-            # TODO: somehow pass it here
+            # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
-
             return plugin

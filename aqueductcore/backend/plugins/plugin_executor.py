@@ -15,6 +15,7 @@ from aqueductcore.backend.models.plugin import (
     PluginFunction,
     PluginParameter,
 )
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.settings import settings
 
 
@@ -39,28 +40,31 @@ class PluginExecutor:
 
     @classmethod
     def _validate_parameter(cls, param: PluginParameter):
-        assert param.name, "Parameter should have a name"
-        assert param.description, "Parameter should have a description"
-        assert param.data_type in SupportedTypes.values(), (
-            f"Type should be one of {SupportedTypes.values()}"
-            f"but was {param.data_type}"
-        )
+        if not param.name:
+            raise AQDValidationError("Parameter should have a name.")
+        if not param.description:
+            raise AQDValidationError("Parameter should have a description.")
+        if param.data_type not in SupportedTypes.values():
+            raise AQDValidationError(
+                f"Type should be one of {SupportedTypes.values()}"
+                f"but was {param.data_type}"
+            )
 
     @classmethod
     def _validate_function(cls, func: PluginFunction):
-        assert func.name, "Function should have a name"
-        assert (
-            len(func.description) > 4
-        ), "Function should have a meaningful description"
+        if not func.name:
+            raise AQDValidationError("Plugin function should have a name.")
+        if len(func.description) < 5:
+            raise AQDValidationError("Function should have a meaningful description")
         for param in func.parameters:
             cls._validate_parameter(param)
 
     @classmethod
     def _validate_plugin(cls, plugin: Plugin):
-        assert plugin.name, "Plugin should have a name"
-        assert (
-            len(plugin.description) > 4
-        ), "Plugin should have a meaningful description"
+        if not plugin.name:
+            raise AQDValidationError("Plugin should have a name.")
+        if len(plugin.description) < 5:
+            raise AQDValidationError("Plugin should have a meaningful description.")
         for func in plugin.functions:
             cls._validate_function(func)
 
@@ -69,30 +73,33 @@ class PluginExecutor:
         # do keys coincide?
         expected_keys = set(params)
         provided_keys = set(param.name for param in func.parameters)
-        assert expected_keys == provided_keys, (
-            "Parameters error: keys don't match expected set. "
-            f"Missing keys: {expected_keys - provided_keys}; "
-            f"Unexpected keys: {provided_keys - expected_keys}"
-        )
+        if expected_keys != provided_keys:
+            raise AQDValidationError(
+                "Parameters error: keys don't match expected set. "
+                f"Missing keys: {expected_keys - provided_keys}; "
+                f"Unexpected keys: {provided_keys - expected_keys}"
+            )
         for arg in func.parameters:
             value = params[arg.name]
             if arg.data_type == SupportedTypes.INT.value:
                 try:
                     int(value)
                 except Exception as exc:
-                    raise ValueError(f"{value} is not decimal.") from exc
+                    raise AQDValidationError(f"{value} is not decimal.") from exc
             if arg.data_type == SupportedTypes.FLOAT.value:
                 try:
                     float(value)
                 except Exception as exc:
-                    raise ValueError(f"{value} is not a floating point number.") from exc
+                    raise AQDValidationError(
+                        f"{value} is not a floating point number.") from exc
             if arg.data_type == SupportedTypes.EXPERIMENT.value:
                 try:
                     prefix, postfix = value.split("-")
-                    assert prefix.isdecimal(), "Experiment alias has incompatible prefix"
-                    assert postfix.isalnum(), "Experiment alias has incompatible postfix"
+                    if not prefix.isdecimal() or not postfix.isalnum():
+                        raise AQDValidationError("Experiment alias has wrong format.")
                 except Exception as exc:
-                    raise ValueError(f"{value} is not a valid experiment alias.") from exc
+                    raise AQDValidationError(
+                        f"{value} is not a valid experiment alias.") from exc
             if arg.data_type == SupportedTypes.FILE.value:
                 pass
 
@@ -108,7 +115,7 @@ class PluginExecutor:
                     plugin = Plugin.from_folder(directory)
                     cls._validate_plugin(plugin)
                     result.append(plugin)
-                except AssertionError as err:
+                except AQDValidationError as err:
                     logging.error(err)
                     # TODO: raise again here?
         return result
@@ -127,12 +134,10 @@ class PluginExecutor:
             PluginExecutionResult: results of process execution
         """
         plugins = [p for p in cls.list_plugins() if p.name == plugin]
-        assert len(plugins) == 1, f"There should be exactly 1 plugin with name {plugin}"
+        if len(plugins) != 1:
+            raise AQDValidationError(f"There should be exactly 1 plugin with name {plugin}")
         functions = [f for f in plugins[0].functions if f.name == function]
-        assert (
-            len(functions) == 1
-        ), f"There should be exactly 1 function with name {function}"
-
+        if len(functions) != 1:
+            raise AQDValidationError(f"There should be exactly 1 function with name {function}")
         cls._validate_values(func=functions[0], params=params)
-
         return functions[0].execute(plugin=plugins[0], params=params)
