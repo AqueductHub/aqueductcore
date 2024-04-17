@@ -10,7 +10,7 @@ export const dateFormatter = (date: Date) => {
 
 export function processExperimentTableData(experimentList: ExperimentDataType[]) {
   return experimentList.map((experiment) => {
-    const { id, alias, title, description, tags, createdAt } = experiment;
+    const { id, alias, title, description, tags, createdAt, createdBy } = experiment;
 
     // star
     let star = false;
@@ -22,7 +22,7 @@ export function processExperimentTableData(experimentList: ExperimentDataType[])
     const pattern = /^__\w+__$/;
     const filteredTags = tags.filter((tag) => !pattern.test(tag));
 
-    return { id, alias, title, description, tags: filteredTags, createdAt, star };
+    return { id, alias, title, description, tags: filteredTags, createdAt, createdBy, star };
   });
 }
 

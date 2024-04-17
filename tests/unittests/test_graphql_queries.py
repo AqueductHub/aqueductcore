@@ -321,7 +321,9 @@ async def test_query_all_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(all_experiments_query, context_value=context)
 
@@ -366,7 +368,9 @@ async def test_query_all_experiments_invalid_limit(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(all_experiments_invalid_limit_query, context_value=context)
 
@@ -399,7 +403,9 @@ async def test_query_all_experiments_title_filter(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
@@ -432,7 +438,9 @@ async def test_query_all_experiments_max_tags_filter(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
 
@@ -465,7 +473,9 @@ async def test_query_single_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
 
     # check with UUID
@@ -525,7 +535,9 @@ async def test_filter_by_tags_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(filter_by_tag_query, context_value=context)
 
@@ -554,7 +566,9 @@ async def test_filter_by_title_experiments(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(filter_by_title_query, context_value=context)
 
@@ -589,7 +603,9 @@ async def test_query_all_tags_all(
     # enable dangling tags
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(
         all_tags_query,
@@ -649,7 +665,9 @@ async def test_query_all_tags_no_dangling(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(
         all_tags_query,
@@ -691,7 +709,9 @@ async def test_query_over_limit_all_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(tags_pagination_over_limit_query, context_value=context)
 
@@ -717,7 +737,9 @@ async def test_query_pagination_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
     )
     resp = await schema.execute(tags_pagination_query, context_value=context)
 

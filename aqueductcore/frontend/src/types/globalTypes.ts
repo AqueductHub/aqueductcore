@@ -25,6 +25,7 @@ export type GET_ALL_EXPERIMENTS__TYPE = {
       description: ExperimentDataType["description"];
       tags: Array<TagType>;
       createdAt: ExperimentDataType["createdAt"];
+      createdBy: ExperimentDataType["createdBy"];
       __typename?: ExperimentData["__typename"];
     }>;
     totalExperimentsCount: number;
@@ -47,6 +48,7 @@ export type GET_EXPERIMENT_BY_ID_TYPE = {
     description: ExperimentDataType["description"];
     tags: Array<TagType>;
     createdAt: ExperimentDataType["createdAt"];
+    createdBy: ExperimentDataType["createdBy"];
     files: Array<{
       name: ExperimentFileType["name"];
       path: ExperimentFileType["path"];
@@ -101,6 +103,7 @@ export type ExperimentAllFieldsDataType = {
   description: ExperimentData["description"];
   tags: Array<TagType>;
   createdAt: ExperimentData["createdAt"];
+  createdBy: ExperimentData["createdBy"];
   files: Array<ExperimentFileType>;
 };
 
@@ -111,6 +114,7 @@ export type ExperimentDataType = {
   description: ExperimentData["description"];
   tags: Array<TagType>;
   createdAt: ExperimentData["createdAt"];
+  createdBy: ExperimentData["createdBy"];
 };
 
 export type ExperimentFiltersType = {

@@ -11,6 +11,7 @@ export const GET_ALL_EXPERIMENTS = gql`
         description
         tags
         createdAt
+        createdBy
       }
       totalExperimentsCount
     }
