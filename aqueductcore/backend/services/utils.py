@@ -68,7 +68,8 @@ def generate_experiment_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
 
 def is_tag_valid(tag: str) -> bool:
     """Validate if tag consists of alphanumeric characters, underscores and hyphens only"""
-    pattern = r"^[a-zA-Z0-9_-]+$"
+    pattern = r'^[a-zA-Z0-9\-_:\/]+$'
+
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
