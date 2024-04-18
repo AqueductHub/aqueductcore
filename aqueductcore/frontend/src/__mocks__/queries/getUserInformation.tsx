@@ -26,7 +26,29 @@ export const getUserInformation_mock = {
                         ]
                     }
                 }
-            }
+            },
+            maxUsageCount: Number.POSITIVE_INFINITY,
+        }
+    ],
+    viewOnlyAccess: [
+        {
+            request: {
+                ...request,
+                variables: {}
+            },
+            result: {
+                data: {
+                    getCurrentUserInfo: {
+                        username: "admin",
+                        "scopes": [
+                            "experiment::view::own",
+                            "experiment::delete::own",
+                            "experiment::create::own",
+                        ]
+                    }
+                }
+            },
+            maxUsageCount: Number.POSITIVE_INFINITY,
         }
     ]
 };
