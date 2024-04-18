@@ -39,7 +39,7 @@ def validate_tag(tag: str, max_len: int) -> str:
     """Validate tag to have a specified maximum length and allowed characters only"""
     if not tag:
         raise AQDValidationError(
-            f"Tag cannot be a blank string"
+            "Tag cannot be a blank string"
         )
 
     if len(tag) > max_len:
