@@ -1,5 +1,5 @@
+import { render, waitFor } from "@testing-library/react";
 import { Route, Routes } from "react-router-dom";
-import { act, render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
