@@ -45,7 +45,7 @@ test("render page with the edit buttons as it's part of the scope", async () => 
     expect(tag_and_description_edit_buttons).toHaveLength(2)
 });
 
-test.only("render page when the edit is not allowed", async () => {
+test("render page when the edit is not allowed", async () => {
     const { queryByTitle, queryAllByRole } = render(
         <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess" memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
             <Routes>
