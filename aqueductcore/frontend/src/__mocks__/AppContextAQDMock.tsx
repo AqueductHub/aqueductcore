@@ -13,6 +13,7 @@ import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesByI
 import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
 import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
 import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
+import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
 import { cssVariableTheme } from "theme";
 
 interface AppContextAQDMockProps {
@@ -25,6 +26,7 @@ interface AppContextAQDMockProps {
   getAllExperimentsWithEndTime_mockMockMode?: keyof typeof getAllExperimentsWithEndTime_mock;
   updateExperiment_mockMockMode?: keyof typeof updateExperiment_mock;
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
+  getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
 }
 
 function AppContextAQDMock({
@@ -36,6 +38,7 @@ function AppContextAQDMock({
   getAllExperimentsWithEndTime_mockMockMode = "success",
   updateExperiment_mockMockMode = "success",
   getExperimentFiles_mockMockMode = "success",
+  getUserInformation_mockMockMode = "success",
   children,
 }: AppContextAQDMockProps) {
   Object.defineProperty(window, "matchMedia", {
@@ -73,6 +76,7 @@ function AppContextAQDMock({
     ...getAllExperimentsWithStartTime_mock[getAllExperimentsWithStartTime_mockMockMode],
     ...getAllExperimentsWithEndTime_mock[getAllExperimentsWithEndTime_mockMockMode],
     ...updateExperiment_mock[updateExperiment_mockMockMode],
+    ...getUserInformation_mock[getUserInformation_mockMockMode],
   ];
   return (
     <MockedProvider mocks={mocks} addTypename={false}>
