@@ -9,26 +9,28 @@ import StarIcon from "@mui/icons-material/Star";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import {
-  Box,
+  CircularProgress,
+  Typography,
+  ListItem,
   Button,
+  styled,
   Grid,
   Chip,
   List,
-  ListItem,
-  Typography,
-  styled,
-  CircularProgress,
+  Box,
 } from "@mui/material";
 
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
-import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
+import { isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
+import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
+import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
+import { isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { useGetAllTags } from "API/graphql/queries/getAllTags";
-import { isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { EditTags } from "components/molecules/EditTags";
 
 const BackButton = styled(Button)`
@@ -89,6 +91,8 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const { data: allTags } = useGetAllTags();
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: userInfo } = useGetCurrentUserInfo()
+  const isEditable = Boolean(userInfo && isUserAbleToEditExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
 
   const handleTagUpdate = (updatedTagsList: TagType[]) => {
     if (selectedTags.length < updatedTagsList.length) {
@@ -282,6 +286,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
             </Grid>
             <Grid item xs>
               <ExperimentTitleUpdate
+                isEditable={isEditable}
                 experimentTitle={experimentDetails.title}
                 handleExperimentTitleUpdate={handleExperimentTitleUpdate}
               />
@@ -290,18 +295,19 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         </Grid>
         <Grid item>
           <Box display="flex" justifyContent="flex-end" sx={{ mt: { xs: 2, md: 0 } }}>
-            <Grid item>
-              {!updateExperimentLoading ? (
-                <SaveChangesIndicator color="neutral" sx={{ mr: 1 }}>
-                  <CloudDownloadOutlinedIcon
-                    sx={{ verticalAlign: "middle", fontSize: 16, mr: 0.25 }}
-                  />
-                  Saved
-                </SaveChangesIndicator>
-              ) : (
-                <CircularProgress size="1.2rem" sx={{ mr: 5 }} />
-              )}
-            </Grid>
+            {isEditable &&
+              <Grid item>
+                {!updateExperimentLoading ? (
+                  <SaveChangesIndicator color="neutral" sx={{ mr: 1 }}>
+                    <CloudDownloadOutlinedIcon
+                      sx={{ verticalAlign: "middle", fontSize: 16, mr: 0.25 }}
+                    />
+                    Saved
+                  </SaveChangesIndicator>
+                ) : (
+                  <CircularProgress size="1.2rem" sx={{ mr: 5 }} />
+                )}
+              </Grid>}
             <Grid item>
               {addTagLoading || removeTagLoading ? (
                 <BorderedButtonWithIcon
@@ -313,6 +319,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                 ></BorderedButtonWithIcon>
               ) : (
                 <BorderedButtonWithIcon
+                  disabled={!isEditable}
                   variant="outlined"
                   size="small"
                   color="neutral"
@@ -356,6 +363,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                 </BorderedButtonWithIcon>
               ) : (
                 <BorderedButtonWithIcon
+                  disabled={!isEditable}
                   variant="outlined"
                   size="small"
                   color="neutral"
@@ -403,6 +411,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   </Typography>
                 )}
                 <EditTags
+                  isEditable={isEditable}
                   tags={allTags?.tags?.tagsData || []}
                   selectedOptions={selectedTags}
                   handleTagUpdate={handleTagUpdate}
@@ -413,6 +422,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         </Grid>
       </Grid>
       <ExperimentDescriptionUpdate
+        isEditable={isEditable}
         experimentDescription={experimentDetails.description ? experimentDetails.description : ""}
         handleExperimentDescriptionUpdate={handleExperimentDescriptionUpdate}
       />
