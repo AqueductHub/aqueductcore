@@ -37,11 +37,21 @@ def validate_description(description: str, max_len: int) -> str:
 
 def validate_tag(tag: str, max_len: int) -> str:
     """Validate tag to have a specified maximum length and allowed characters only"""
-    if len(tag) > max_len or not is_tag_valid(tag):
+    if not tag:
+        raise AQDValidationError(
+            "Tag cannot be empty"
+        )
+
+    if len(tag) > max_len:
         raise AQDValidationError(
             f"Tag should be less than {max_len} characters long "
-            + "and contain alphanumeric characters, hyphens and underscores only."
         )
+
+    if not is_tag_valid(tag):
+        raise AQDValidationError(
+            "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+        )
+
     return tag
 
 
