@@ -1,8 +1,8 @@
 import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
 import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
+import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import CssBaseline from "@mui/material/CssBaseline";
-import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { PropsWithChildren } from "react";
 
 import { getAllExperimentsWithNameFilter_mock } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
