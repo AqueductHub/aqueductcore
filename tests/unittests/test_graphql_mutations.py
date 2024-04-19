@@ -2,25 +2,24 @@
 # mypy: ignore-errors
 from os.path import exists
 from typing import List
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 import pytest
-from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
-from aqueductcore.backend.models.experiment import ExperimentCreate
-from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
-from aqueductcore.backend.routers.graphql.query_schema import Query
-from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
-from aqueductcore.backend.services.utils import experiment_model_to_orm
-from aqueductcore.backend.models import orm
-from aqueductcore.backend.services.validators import (
-    MAX_EXPERIMENT_DESCRIPTION_LENGTH,
-    MAX_EXPERIMENT_TAGS_NUM,
-    MAX_EXPERIMENT_TITLE_LENGTH,
-)
-from aqueductcore.backend.settings import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
+from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
+from aqueductcore.backend.models import orm
+from aqueductcore.backend.models.experiment import ExperimentCreate
+from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
+from aqueductcore.backend.routers.graphql.query_schema import Query
+from aqueductcore.backend.services.experiment import \
+    build_experiment_dir_absolute_path
+from aqueductcore.backend.services.utils import experiment_model_to_orm
+from aqueductcore.backend.services.validators import (
+    MAX_EXPERIMENT_DESCRIPTION_LENGTH, MAX_EXPERIMENT_TAGS_NUM,
+    MAX_EXPERIMENT_TITLE_LENGTH)
+from aqueductcore.backend.settings import settings
 from tests.unittests.initial_data import experiment_data
 
 
@@ -252,6 +251,24 @@ remove_experiment_mutation = """
             }
         )
     }
+"""
+
+
+execute_plugin = """
+  mutation ExecutePlugin {
+        executePlugin(
+            plugin: "Dummy plugin"
+            function: "echo"
+            params: [
+                ["var1", "abc"],
+                ["var2", "111"],
+                ["var3", "1.33e+03"],
+                ["var4", "20240229-5689864ffd94"],
+            ]
+    ) {
+        returnCode, stderr, stdout
+    }
+  }
 """
 
 
@@ -535,3 +552,43 @@ async def test_remove_experiment(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment.id
     )
     assert exists(experiment_files_path) == False
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_stdout_ok():
+    schema = Schema(query=Query, mutation=Mutation)
+    resp = await schema.execute(execute_plugin)
+    assert resp.errors is None
+    res = resp.data["executePlugin"]
+    assert res["returnCode"] == 0
+    assert res["stdout"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stderr"] == ""
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_stderr_ok():
+    schema = Schema(query=Query, mutation=Mutation)
+    resp = await schema.execute(execute_plugin.replace("echo", "echo_stderr"))
+    assert resp.errors is None
+    res = resp.data["executePlugin"]
+    assert res["returnCode"] == 13
+    assert res["stdout"] == ""
+    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_stderr_ok():
+    schema = Schema(query=Query, mutation=Mutation)
+    resp = await schema.execute(execute_plugin.replace("echo", "echo_stderr"))
+    assert resp.errors is None
+    res = resp.data["executePlugin"]
+    assert res["returnCode"] == 13
+    assert res["stdout"] == ""
+    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_failed_validation():
+    schema = Schema(query=Query, mutation=Mutation)
+    resp = await schema.execute(execute_plugin.replace("111", "non_number"))
+    assert resp.errors[0].message == "non_number is not decimal."
