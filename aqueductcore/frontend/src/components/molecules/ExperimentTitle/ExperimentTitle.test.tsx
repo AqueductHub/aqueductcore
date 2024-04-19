@@ -14,6 +14,7 @@ function ExperimentDetailsWithinComponent() {
     tags: [],
     alias: "20231010-21",
     createdAt: "",
+    createdBy: "admin",
   };
 
   return <ExperimentDetails experimentDetails={experimentData} />;

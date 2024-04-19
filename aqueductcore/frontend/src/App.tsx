@@ -8,10 +8,12 @@ import { Toaster } from "react-hot-toast";
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import DrawerLayout from "components/templates/drawerLayout";
-import { client } from "API/apolloClientConfig";
-import { cssVariableTheme } from "theme";
-import SettingsPage from "pages/SettingsPage";
 import AuthenticationPage from "pages/AuthenticationPage";
+import { AuthProvider } from "context/AuthProvider";
+import { client } from "API/apolloClientConfig";
+import SettingsPage from "pages/SettingsPage";
+import { cssVariableTheme } from "theme";
+
 function App() {
   const themeConfig = extendTheme(cssVariableTheme);
   return (
@@ -20,35 +22,37 @@ function App() {
         <CssBaseline />
         {/* main page */}
         <BrowserRouter>
-          <DrawerLayout>
-            <Routes>
-              <Route
-                path="/login"
-                element={<AuthenticationPage />}
-              />
-              <Route
-                path="/"
-                element={<Navigate replace to="/aqd/experiments" />}
-              />
-              <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
-              <Route
-                path="/aqd/experiments/favourites"
-                element={<ExperimentRecordsPage category="favourites" />}
-              />
-              <Route
-                path="/aqd/experiments/archived"
-                element={<ExperimentRecordsPage category="archived" />}
-              />
-              <Route
-                path="/aqd/experiments/:experimentIdentifier"
-                element={<ExperimentDetailsPage />}
-              />
-              <Route
-                path="/settings"
-                element={<SettingsPage />}
-              />
-            </Routes>
-          </DrawerLayout>
+          <AuthProvider>
+            <DrawerLayout>
+              <Routes>
+                <Route
+                  path="/login"
+                  element={<AuthenticationPage />}
+                />
+                <Route
+                  path="/"
+                  element={<Navigate replace to="/aqd/experiments" />}
+                />
+                <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
+                <Route
+                  path="/aqd/experiments/favourites"
+                  element={<ExperimentRecordsPage category="favourites" />}
+                />
+                <Route
+                  path="/aqd/experiments/archived"
+                  element={<ExperimentRecordsPage category="archived" />}
+                />
+                <Route
+                  path="/aqd/experiments/:experimentIdentifier"
+                  element={<ExperimentDetailsPage />}
+                />
+                <Route
+                  path="/settings"
+                  element={<SettingsPage />}
+                />
+              </Routes>
+            </DrawerLayout>
+          </AuthProvider>
           <Toaster />
         </BrowserRouter>
       </CssVarsProvider>

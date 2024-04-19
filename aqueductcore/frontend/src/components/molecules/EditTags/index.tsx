@@ -9,7 +9,7 @@ const EditButton = styled(Button)`
   padding: 0;
 `;
 
-export function EditTags({ tags, selectedOptions, handleTagUpdate }: TagsFieldProps) {
+export function EditTags({ tags, selectedOptions, handleTagUpdate, isEditable = true }: TagsFieldProps) {
   const [dropdownStatus, setDropDownStatus] = useState(false);
   const handleClickAway = () => setDropDownStatus(false);
   const handleTagButtonClick = () => setDropDownStatus(!dropdownStatus);
@@ -17,7 +17,7 @@ export function EditTags({ tags, selectedOptions, handleTagUpdate }: TagsFieldPr
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <Box sx={{ display: "inline", py: 0 }}>
-        {!dropdownStatus && <EditButton onClick={handleTagButtonClick}>Edit</EditButton>}
+        {!dropdownStatus && isEditable && <EditButton onClick={handleTagButtonClick}>Edit</EditButton>}
         {dropdownStatus && (
           <Box sx={{ position: "absolute", top: 50 }}>
             <TagsDropdown
