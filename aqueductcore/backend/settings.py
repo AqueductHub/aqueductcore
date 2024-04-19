@@ -47,5 +47,8 @@ class Settings(BaseSettings):
     keycloak_url: Optional[HttpUrl] = None
     """Keycloak OIDC URL (used in Aqueduct Pro only)."""
 
+    plugins_dir_path: str = "/workspace/plugins"
+    """Plugin directory where plugins are saved"""
+
 
 settings = Settings()

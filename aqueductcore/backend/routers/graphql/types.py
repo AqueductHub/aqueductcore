@@ -12,6 +12,7 @@ from strawberry.types import Info
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
+from aqueductcore.backend.models.plugin import Plugin
 
 
 async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
@@ -91,3 +92,65 @@ class Tags:
 
     tags_data: List[str] = strawberry.field(description="The list of tags.")
     total_tags_count: int = strawberry.field(description="Total number of tags.")
+
+
+@strawberry.type
+class PluginParameterType:
+    """A single parameter of the plugin interface"""
+
+    name: str
+    description: str
+    data_type: str
+
+
+@strawberry.type
+class PluginFunctionInfo:
+    """Represents a function of the plugin. One plugin
+    may have multiple functions."""
+
+    name: str
+    description: str
+    parameters: List[PluginParameterType]
+
+@strawberry.type
+class PluginExecutionResult:
+    """Result of OS process execution"""
+
+    return_code: int
+    stdout: str
+    stderr: str
+
+
+@strawberry.type
+class PluginInfo:
+    """Plugin information passed to the frontend"""
+
+    name: str
+    description: str
+    authors: str = strawberry.field(description="Plugin authors' emails")
+    functions: List[PluginFunctionInfo]
+
+    @staticmethod
+    def from_plugin(plugin: Plugin):
+        """Generates a plugin information object for a plugin model."""
+
+        return PluginInfo(
+            name=plugin.name,
+            description=plugin.description,
+            authors=plugin.authors,
+            functions=[
+                PluginFunctionInfo(
+                    name=func.name,
+                    description=func.description,
+                    parameters=[
+                        PluginParameterType(
+                            name=param.name,
+                            description=param.description,
+                            data_type=param.data_type,
+                        )
+                        for param in func.parameters
+                    ]
+                )
+                for func in plugin.functions
+            ]
+        )
