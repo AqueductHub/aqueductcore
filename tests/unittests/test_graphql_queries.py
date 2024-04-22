@@ -1,11 +1,15 @@
 # pylint: skip-file
 # mypy: ignore-errors
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+from strawberry import Schema
+
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import (
     ExperimentCreate,
     ExperimentRead,
@@ -15,7 +19,6 @@ from aqueductcore.backend.models.experiment import (
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
-from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     experiment_orm_to_model,
@@ -28,8 +31,6 @@ from aqueductcore.backend.services.validators import (
     MAX_TAGS_PER_REQUEST,
 )
 from aqueductcore.backend.settings import settings
-from sqlalchemy.ext.asyncio import AsyncSession
-from strawberry import Schema
 
 single_experiment_query = """
 query MyQuery($experimentIdentifier: ExperimentIdentifierInput!) {
@@ -56,6 +57,33 @@ all_experiments_query = """
     experiments (
         limit: 10
         offset: 0
+    ) {
+        experimentsData {
+            id
+            title
+            files {
+                path
+                name
+                modifiedAt
+            }
+            description
+            createdAt
+            createdBy
+            updatedAt
+            alias
+            tags
+        }
+        totalExperimentsCount
+    }
+}
+"""
+
+all_experiments_query_filter_by_date = """
+query MyQuery($filters: ExperimentFiltersInput!) {
+    experiments (
+        limit: 10
+        offset: 0
+        filters: $filters
     ) {
         experimentsData {
             id
@@ -344,6 +372,117 @@ async def test_query_all_experiments(
             sample_experiment=await experiment_orm_to_model(db_experiments[idx]),
             files=temp_experiment_files[db_experiments[idx].id],
         )
+
+
+@pytest.mark.asyncio
+async def test_query_filter_by_date(
+    db_session: AsyncSession,
+):
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    experiment_creation_datetime = datetime.now(timezone.utc) + timedelta(days=100)
+
+    import pytz
+
+    experiment_id = uuid4()
+    db_experiment = orm.Experiment(
+        id=experiment_id,
+        title="test filter by date",
+        description="test filter by date",
+        alias="test filter by date",
+        created_at=experiment_creation_datetime.astimezone(pytz.timezone("Asia/Tokyo")),
+        updated_at=experiment_creation_datetime.astimezone(pytz.timezone("Asia/Tokyo")),
+    )
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+    await db_session.refresh(db_experiment)
+
+    schema = Schema(query=Query)
+
+    context = ServerContext(
+        db_session=db_session,
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+    )
+    filters = {
+        "startDate": f"{(experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "endDate": f"{(experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
+    }
+    resp = await schema.execute(
+        all_experiments_query_filter_by_date,
+        context_value=context,
+        variable_values={"filters": filters},
+    )
+
+    assert resp.errors is None
+    assert resp.data is not None
+
+    assert len(resp.data["experiments"]["experimentsData"]) == 1
+
+    experiment = resp.data["experiments"]["experimentsData"][0]
+
+    check_experiment_values(
+        experiment_res=experiment,
+        sample_experiment=await experiment_orm_to_model(db_experiment),
+    )
+
+    # check no start date
+    filters = {
+        "endDate": f"{(experiment_creation_datetime+timedelta(days=1)).strftime('%Y-%m-%d')}",
+    }
+    resp = await schema.execute(
+        all_experiments_query_filter_by_date,
+        context_value=context,
+        variable_values={"filters": filters},
+    )
+
+    assert resp.errors is None
+    assert resp.data is not None
+
+    assert len(resp.data["experiments"]["experimentsData"]) == 1
+    check_experiment_values(
+        experiment_res=experiment,
+        sample_experiment=await experiment_orm_to_model(db_experiment),
+    )
+
+    # check no end date
+    filters = {
+        "startDate": f"{(experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
+    }
+    resp = await schema.execute(
+        all_experiments_query_filter_by_date,
+        context_value=context,
+        variable_values={"filters": filters},
+    )
+
+    assert resp.errors is None
+    assert resp.data is not None
+
+    assert len(resp.data["experiments"]["experimentsData"]) == 1
+    check_experiment_values(
+        experiment_res=experiment,
+        sample_experiment=await experiment_orm_to_model(db_experiment),
+    )
+
+    # check no experiment
+    filters = {
+        "startDate": f"{(experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "endDate": f"{(experiment_creation_datetime+timedelta(days=2)).strftime('%Y-%m-%d')}",
+    }
+    resp = await schema.execute(
+        all_experiments_query_filter_by_date,
+        context_value=context,
+        variable_values={"filters": filters},
+    )
+
+    assert resp.errors is None
+    assert resp.data is not None
+
+    assert len(resp.data["experiments"]["experimentsData"]) == 0
 
 
 @pytest.mark.asyncio
