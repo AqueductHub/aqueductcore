@@ -197,7 +197,7 @@ function DrawerLayout(props: PropsWithChildren) {
                 <ListItemText primary={item.text} />
                 {item.openInNewTab && <ListItemIcon
                   sx={{
-                    mr: -6,
+                    mr: -4.5,
                     alignItems: "flex-end"
                   }}
                 >
