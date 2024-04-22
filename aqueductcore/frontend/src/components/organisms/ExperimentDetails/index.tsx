@@ -20,9 +20,9 @@ import {
   Box,
 } from "@mui/material";
 
+import { dateFormatter, isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
-import { isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
@@ -387,7 +387,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
             </ListItem>
             <ListItem sx={{ pl: 1, pr: 1 }}>
               <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
-              <ExperimentDetailsContent>{experimentDetails.createdAt}</ExperimentDetailsContent>
+              <ExperimentDetailsContent>{dateFormatter(new Date(experimentDetails.createdAt))}</ExperimentDetailsContent>
             </ListItem>
           </List>
         </Grid>
