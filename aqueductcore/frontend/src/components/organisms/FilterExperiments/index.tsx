@@ -35,8 +35,8 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
     if (setFilters) {
       setFilters({
         ...filters,
-        startDate: startDate?.isValid ? startDate?.format("YYYY-MM-DD") : null,
-        endDate: endDate?.isValid ? endDate?.format("YYYY-MM-DD") : null,
+        startDate: startDate?.isValid ? startDate?.startOf('day').toISOString() : null,
+        endDate: endDate?.isValid ? endDate?.endOf('day').toISOString() : null,
         title: searchString,
         tags: selectedTags.length ? selectedTags : null,
       });
