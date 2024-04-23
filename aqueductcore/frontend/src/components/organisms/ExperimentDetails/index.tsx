@@ -1,4 +1,5 @@
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -6,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import RestoreIcon from "@mui/icons-material/Restore";
 import LinkIcon from "@mui/icons-material/Link";
 import StarIcon from "@mui/icons-material/Star";
+import Modal from '@mui/material/Modal';
 import toast from "react-hot-toast";
 import { useState } from "react";
 import {
@@ -25,6 +27,7 @@ import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/rem
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
+import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExperiment";
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
@@ -80,6 +83,20 @@ const ExperimentDetailsContent = styled(Typography)`
   line-height: ${(props) => `${props.theme.spacing(3)}`};
 `;
 
+const DeleteExperimentBox = styled(Box)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.common.black
+      : props.theme.palette.common.white};
+  box-shadow: 24;
+  padding: ${(props) => props.theme.spacing(4)};
+`;
+
 interface ExperimentDetailsProps {
   experimentDetails: ExperimentDataType;
 }
@@ -92,6 +109,9 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: userInfo } = useGetCurrentUserInfo()
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const isEditable = Boolean(userInfo && isUserAbleToEditExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
 
   const handleTagUpdate = (updatedTagsList: TagType[]) => {
@@ -135,6 +155,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const { loading: updateExperimentLoading, mutate: mutateExperiment } = useUpdateExperiment();
   const { loading: addTagLoading, mutate: mutateAddTag } = useAddTagToExperiment();
   const { loading: removeTagLoading, mutate: mutateRemoveTag } = useRemoveTagFromExperiment();
+  const { loading: removeExperimentLoading, mutate: mutateRemoveExperiment } = useRemoveExperiment();
 
   const handleExperimentTitleUpdate = (value: string) => {
     mutateExperiment({
@@ -238,6 +259,27 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         });
       },
     });
+  };
+
+  const handleDeleteExperiment = () => {
+    if (!removeExperimentLoading) {
+      mutateRemoveExperiment({
+        variables: {
+          experimentId: experimentDetails.id
+        },
+        onError() {
+          toast.error("Failed To Delete experiment", {
+            id: "restore_error",
+          });
+        },
+        onCompleted() {
+          toast.success("Successfully deleted experiment", {
+            id: "restore_error",
+          });
+          window.location.href = "/";
+        },
+      })
+    }
   };
 
   function handleCopyToClipboard() {
@@ -375,6 +417,43 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                 </BorderedButtonWithIcon>
               )}
             </Grid>
+            {isArchived(experimentDetails.tags) && <Grid item>
+              <BorderedButtonWithIcon
+                disabled={!isEditable}
+                variant="outlined"
+                size="small"
+                color="warning"
+                startIcon={<DeleteForeverOutlinedIcon />}
+                sx={{ ml: 1, color: "#c00000", backgroundColor: "#ffe1e1", borderColor: "#ff7a7f" }}
+                onClick={handleOpen}
+              >
+                Delete
+              </BorderedButtonWithIcon>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <DeleteExperimentBox>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Delete Experiment
+                  </Typography>
+                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    Are you sure you want to delete this experiment ? This action cannot be undone.
+                  </Typography>
+                  <Grid container spacing={ 2 } sx={{ mt: 1 }}>
+                    <Grid item>
+                      <Button variant="contained" color="error" onClick={handleDeleteExperiment}>Confirm Deletion</Button>
+                    </Grid>
+                    <Grid item>
+                      <Button variant="contained" color="neutral" onClick={handleClose}>Cancel</Button>
+                    </Grid>
+                    <Grid item></Grid>
+                  </Grid>
+                </DeleteExperimentBox>
+              </Modal>
+            </Grid>}
           </Box>
         </Grid>
       </Grid>
