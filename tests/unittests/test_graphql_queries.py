@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 import pytest
+import pytz
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
@@ -374,26 +375,29 @@ async def test_query_all_experiments(
         )
 
 
+@pytest.mark.parametrize(
+    "time_zone",
+    pytz.all_timezones,
+)
 @pytest.mark.asyncio
-async def test_query_filter_by_date(
-    db_session: AsyncSession,
-):
+async def test_query_filter_by_date(db_session: AsyncSession, time_zone: str):
 
     db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     experiment_creation_datetime = datetime.now(timezone.utc) + timedelta(days=100)
 
-    import pytz
-
+    tz_experiment_creation_datetime = experiment_creation_datetime.astimezone(
+        pytz.timezone(time_zone)
+    )
     experiment_id = uuid4()
     db_experiment = orm.Experiment(
         id=experiment_id,
         title="test filter by date",
         description="test filter by date",
         alias="test filter by date",
-        created_at=experiment_creation_datetime.astimezone(pytz.timezone("Asia/Tokyo")),
-        updated_at=experiment_creation_datetime.astimezone(pytz.timezone("Asia/Tokyo")),
+        created_at=tz_experiment_creation_datetime,
+        updated_at=tz_experiment_creation_datetime,
     )
     db_experiment.created_by_user = db_user
     db_session.add(db_experiment)
@@ -409,8 +413,8 @@ async def test_query_filter_by_date(
         ),
     )
     filters = {
-        "startDate": f"{(experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
-        "endDate": f"{(experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "startDate": f"{(tz_experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "endDate": f"{(tz_experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
     }
     resp = await schema.execute(
         all_experiments_query_filter_by_date,
@@ -432,7 +436,7 @@ async def test_query_filter_by_date(
 
     # check no start date
     filters = {
-        "endDate": f"{(experiment_creation_datetime+timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "endDate": f"{(tz_experiment_creation_datetime+timedelta(days=1)).strftime('%Y-%m-%d')}",
     }
     resp = await schema.execute(
         all_experiments_query_filter_by_date,
@@ -451,7 +455,7 @@ async def test_query_filter_by_date(
 
     # check no end date
     filters = {
-        "startDate": f"{(experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "startDate": f"{(tz_experiment_creation_datetime -timedelta(days=1)).strftime('%Y-%m-%d')}",
     }
     resp = await schema.execute(
         all_experiments_query_filter_by_date,
@@ -470,8 +474,8 @@ async def test_query_filter_by_date(
 
     # check no experiment
     filters = {
-        "startDate": f"{(experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
-        "endDate": f"{(experiment_creation_datetime+timedelta(days=2)).strftime('%Y-%m-%d')}",
+        "startDate": f"{(tz_experiment_creation_datetime +timedelta(days=1)).strftime('%Y-%m-%d')}",
+        "endDate": f"{(tz_experiment_creation_datetime+timedelta(days=2)).strftime('%Y-%m-%d')}",
     }
     resp = await schema.execute(
         all_experiments_query_filter_by_date,

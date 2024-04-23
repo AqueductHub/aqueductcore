@@ -89,16 +89,16 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
             )
         )
 
-    if start_date is not None and end_date is not None:
+    utc_start_date = start_date.astimezone(timezone.utc) if start_date else None
+    utc_end_date = end_date.astimezone(timezone.utc) if end_date else None
+    if utc_start_date is not None and utc_end_date is not None:
         statement = statement.filter(
-            orm.Experiment.created_at.between(start_date.astimezone(timezone.utc), end_date)
+            orm.Experiment.created_at.between(utc_start_date, utc_end_date)
         )
     elif start_date is not None:
-        statement = statement.filter(
-            orm.Experiment.created_at >= start_date.astimezone(timezone.utc)
-        )
+        statement = statement.filter(orm.Experiment.created_at >= utc_start_date)
     elif end_date is not None:
-        statement = statement.filter(orm.Experiment.created_at <= end_date.astimezone(timezone.utc))
+        statement = statement.filter(orm.Experiment.created_at <= utc_end_date)
 
     if tags is not None:
         tags = [tag.lower() for tag in tags]
