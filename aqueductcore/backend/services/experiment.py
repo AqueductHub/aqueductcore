@@ -3,7 +3,7 @@
 import errno
 import os
 import re
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
@@ -57,8 +57,8 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
     should_include_tags: Optional[List[ExperimentTag]] = Field(
         None, max_length=MAX_EXPERIMENT_SHOULD_INCLUDE_TAGS_NUM
     ),
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
     order_by_creation_date: bool = False,
 ) -> List[ExperimentRead]:
     """Get list of all experiments
@@ -89,16 +89,16 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
             )
         )
 
-    if start_date is not None and end_date is not None:
-        start_date = datetime.combine(start_date, time.min)
-        end_date = datetime.combine(end_date, time.max)
-        statement = statement.filter(orm.Experiment.created_at.between(start_date, end_date))
+    utc_start_date = start_date.astimezone(timezone.utc) if start_date else None
+    utc_end_date = end_date.astimezone(timezone.utc) if end_date else None
+    if utc_start_date is not None and utc_end_date is not None:
+        statement = statement.filter(
+            orm.Experiment.created_at.between(utc_start_date, utc_end_date)
+        )
     elif start_date is not None:
-        start_date = datetime.combine(start_date, time.min)
-        statement = statement.filter(orm.Experiment.created_at >= start_date)
+        statement = statement.filter(orm.Experiment.created_at >= utc_start_date)
     elif end_date is not None:
-        end_date = datetime.combine(end_date, time.max)
-        statement = statement.filter(orm.Experiment.created_at <= end_date)
+        statement = statement.filter(orm.Experiment.created_at <= utc_end_date)
 
     if tags is not None:
         tags = [tag.lower() for tag in tags]
@@ -231,7 +231,9 @@ async def get_experiment_files(
         with os.scandir(folder_path) as file_iterator:
             for entry in file_iterator:
                 if entry.is_file(follow_symlinks=False):
-                    file_names.append((entry.name, datetime.fromtimestamp(entry.stat().st_mtime)))
+                    file_names.append(
+                        (entry.name, datetime.fromtimestamp(entry.stat().st_mtime, tz=timezone.utc))
+                    )
 
     except OSError as error:
         if error.errno in (errno.EACCES, errno.EPERM):  # Permission denied
@@ -313,8 +315,8 @@ async def create_experiment(
         tags=tags_orm,
         alias=alias,
         created_by_user=db_user,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
     db_session.add(db_experiment)
 
@@ -360,7 +362,7 @@ async def update_experiment(
     if description:
         db_experiment.description = description
 
-    db_experiment.updated_at = datetime.now()
+    db_experiment.updated_at = datetime.now(timezone.utc)
     await db_session.commit()
 
     return await experiment_orm_to_model(db_experiment)

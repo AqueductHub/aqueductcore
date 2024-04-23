@@ -2,7 +2,7 @@
 
 import asyncio
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from random import randrange
 from uuid import UUID, uuid4
 
@@ -32,7 +32,7 @@ async def populate():
     tags = []
 
     start_date = datetime(2020, 5, 17)
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
 
     async with get_session() as db_session:
         for _ in range(10):
