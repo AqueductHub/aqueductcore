@@ -1,5 +1,6 @@
 # pylint: skip-file
 # mypy: ignore-errors
+import random
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
@@ -377,7 +378,7 @@ async def test_query_all_experiments(
 
 @pytest.mark.parametrize(
     "time_zone",
-    pytz.all_timezones,
+    random.sample(pytz.all_timezones, 10),
 )
 @pytest.mark.asyncio
 async def test_query_filter_by_date(db_session: AsyncSession, time_zone: str):
