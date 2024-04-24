@@ -22,5 +22,4 @@
     "outDir": "./dist",
   },
   "include": ["src"],
-  "exclude": ["**/__tests__/*","**/*.test.tsx", "**/*.test.ts"]
 }

@@ -3,7 +3,7 @@
 
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Tuple
 from uuid import UUID
@@ -59,7 +59,10 @@ async def temp_experiment_files(db_session: AsyncSession, experiments_data: List
             file_path = os.path.join(settings.experiments_dir_path, str(experiment.id), file_name)
             Path(file_path).touch(exist_ok=False)
             experiment_files[experiment.id].append(
-                (file_name, datetime.fromtimestamp(Path(file_path).stat().st_mtime))
+                (
+                    file_name,
+                    datetime.fromtimestamp(Path(file_path).stat().st_mtime, tz=timezone.utc),
+                )
             )
 
     yield experiment_files

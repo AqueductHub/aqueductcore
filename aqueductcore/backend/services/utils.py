@@ -1,6 +1,6 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from re import compile as recompile
 from typing import Tuple
 from uuid import UUID, uuid4
@@ -17,8 +17,8 @@ from aqueductcore.backend.models.experiment import (
 async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
     """Convert ORM Experiment to Pydantic Model"""
     experiment = ExperimentRead(
-        created_at=value.created_at,
-        updated_at=value.updated_at,
+        created_at=value.created_at.replace(tzinfo=timezone.utc),
+        updated_at=value.updated_at.replace(tzinfo=timezone.utc),
         created_by=value.created_by_user.username,
         description=value.description,
         alias=value.alias,
@@ -68,7 +68,8 @@ def generate_experiment_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
 
 def is_tag_valid(tag: str) -> bool:
     """Validate if tag consists of alphanumeric characters, underscores and hyphens only"""
-    pattern = r"^[a-zA-Z0-9_-]+$"
+    pattern = r"^[a-zA-Z0-9\-_:\/]+$"
+
     regex = recompile(pattern)
 
     return bool(regex.match(tag))

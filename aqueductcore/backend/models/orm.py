@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import Column, ForeignKey, String, Table, Text, Uuid, func
+from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Text, Uuid, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -43,10 +43,10 @@ class Experiment(Base):
     created_by: Mapped[Uuid] = mapped_column(ForeignKey("user.id"), nullable=False)
     created_by_user: Mapped[User] = relationship(back_populates="experiments")
     created_at: Mapped[datetime] = mapped_column(
-        server_default=func.now()  # pylint: disable=not-callable
+        DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )
     updated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now()  # pylint: disable=not-callable
+        DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )
     alias: Mapped[str] = mapped_column(unique=True)
 

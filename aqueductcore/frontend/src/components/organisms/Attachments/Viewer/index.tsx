@@ -95,32 +95,35 @@ function Viewer({
   const theme = useTheme()
 
   useEffect(() => {
-    fetch(fileURL).then((response) => {
-      const contentType = response.headers.get("content-type");
-      if (contentType?.includes("application/json")) {
-        response.json().then((data) => {
-          setInfo({
-            data,
-            type: "JSON",
+    if (file) {
+      fetch(fileURL).then((response) => {
+        const contentType = response.headers.get("content-type");
+        if (contentType?.includes("application/json")) {
+          response.json().then((data) => {
+            setInfo({
+              data,
+              type: "JSON",
+            });
           });
-        });
-      } else if (contentType?.includes("image/jpeg")) {
-        setInfo({
-          data: fileURL,
-          type: "image/jpeg",
-        });
-      } else if (contentType?.includes("image/png")) {
-        setInfo({
-          data: fileURL,
-          type: "image/png",
-        });
-      } else
-        setInfo({
-          data: fileURL,
-          type: "file",
-        });
-    });
+        } else if (contentType?.includes("image/jpeg")) {
+          setInfo({
+            data: fileURL,
+            type: "image/jpeg",
+          });
+        } else if (contentType?.includes("image/png")) {
+          setInfo({
+            data: fileURL,
+            type: "image/png",
+          });
+        } else
+          setInfo({
+            data: fileURL,
+            type: "file",
+          });
+      });
+    }
   }, [file]);
+
   return (
     <ViewerBox>
       <ViewerBoxHeader>

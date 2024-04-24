@@ -1,8 +1,9 @@
 import {
+  ExperimentFiltersInput,
   ExperimentData,
   ExperimentFile,
-  ExperimentFiltersInput,
   Experiments,
+  UserInfo,
   Tags,
 } from "./graphql/__GENERATED__/graphql";
 
@@ -70,6 +71,13 @@ export type GET_EXPERIMENT_FILES_BY_ID_TYPE = {
     __typename?: ExperimentData["__typename"];
   };
 };
+export type GET_USER_INFO_TYPE = {
+  getCurrentUserInfo: {
+    scopes: UserInfo["scopes"]
+    username: UserInfo["username"]
+    __typename?: UserInfo["__typename"];
+  };
+};
 
 //############### Mutation types ###############//
 export type UPDATE_EXPERIMENT_DETAILS_TYPE = {
@@ -94,6 +102,7 @@ export type TagsFieldProps = {
   tags: TagType[];
   selectedOptions: TagType[];
   handleTagUpdate: (value: TagType[]) => void;
+  isEditable?: boolean,
 };
 
 export type ExperimentAllFieldsDataType = {

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import datetime
 from typing import List, Optional, cast
 
 import strawberry
@@ -39,10 +39,10 @@ class ExperimentFiltersInput:
     should_include_tags: Optional[List[str]] = strawberry.field(
         default=None, description="List of tags that should be present."
     )
-    start_date: Optional[date] = strawberry.field(
+    start_date: Optional[datetime] = strawberry.field(
         default=None, description="Filter experiments created after this date."
     )
-    end_date: Optional[date] = strawberry.field(
+    end_date: Optional[datetime] = strawberry.field(
         default=None, description="Filter experiments created after this date."
     )
 
