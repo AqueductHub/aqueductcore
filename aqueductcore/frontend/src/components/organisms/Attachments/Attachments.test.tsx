@@ -27,8 +27,8 @@ test("render page with right default modifiedAt descending order", () => {
             <Attachments experimentsFiles={ExperimentDataMock[0].files} />
         </AppContextAQDMock >)
     const tableCells = getAllByRole("cell");
-    let sortedFromMock = ExperimentDataMock[0].files.sort((a, b) => new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime()).flatMap(item => [item.name, dateFormatter(new Date(item.modifiedAt))]) //Descending
-    let sortedFromDOM = tableCells.map(item => item.textContent)
+    const sortedFromMock = ExperimentDataMock[0].files.sort((a, b) => new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime()).flatMap(item => [item.name, dateFormatter(new Date(item.modifiedAt))]) //Descending
+    const sortedFromDOM = tableCells.map(item => item.textContent)
     expect(sortedFromDOM).toStrictEqual(sortedFromMock)
 });
 
@@ -44,7 +44,7 @@ test("render page with right default modifiedAt acsending order", async () => {
 
     const tableCells = getAllByRole("cell");
 
-    let sortedFromMock = ExperimentDataMock[0].files.sort((a, b) => new Date(a.modifiedAt).getTime() - new Date(b.modifiedAt).getTime()).flatMap(item => [item.name, dateFormatter(new Date(item.modifiedAt))]) //Acsending
-    let sortedFromDOM = tableCells.map(item => item.textContent)
+    const sortedFromMock = ExperimentDataMock[0].files.sort((a, b) => new Date(a.modifiedAt).getTime() - new Date(b.modifiedAt).getTime()).flatMap(item => [item.name, dateFormatter(new Date(item.modifiedAt))]) //Acsending
+    const sortedFromDOM = tableCells.map(item => item.textContent)
     expect(sortedFromDOM).toStrictEqual(sortedFromMock)
 });
