@@ -1,12 +1,13 @@
+import { Box, Button, IconButton, Typography, styled, useTheme } from "@mui/material";
 import FileOpenOutlinedIcon from "@mui/icons-material/FileOpenOutlined";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import { Box, Button, IconButton, Typography, styled, useTheme } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactJson from "@microlink/react-json-view";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 
 import { ExperimentFileType, PreviewFilesType } from "types/globalTypes";
+import { selectedFileType } from "types/componentTypes";
 import { AQD_FILE_URI } from "constants/api";
 
 const ViewerBox = styled(Box)`
@@ -87,7 +88,7 @@ function Viewer({
   handleSelectFile,
 }: {
   file?: ExperimentFileType;
-  handleSelectFile: (fileIndex: number) => void;
+  handleSelectFile: (fileId: selectedFileType) => void;
 }) {
 
   const [info, setInfo] = useState<{ data: unknown; type: PreviewFilesType }>();
