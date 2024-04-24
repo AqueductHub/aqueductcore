@@ -1,6 +1,7 @@
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import {
   Chip,
   List,
   Box,
+  Alert,
 } from "@mui/material";
 
 import { dateFormatter, isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
@@ -276,7 +278,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
           toast.success("Successfully deleted experiment", {
             id: "restore_error",
           });
-          window.location.href = "/";
+          navigate("/")
         },
       })
     }
@@ -422,9 +424,9 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                 disabled={!isEditable}
                 variant="outlined"
                 size="small"
-                color="warning"
-                startIcon={<DeleteForeverOutlinedIcon />}
-                sx={{ ml: 1, color: "#c00000", backgroundColor: "#ffe1e1", borderColor: "#ff7a7f" }}
+                color="error"
+                startIcon={<DeleteForeverOutlinedIcon color="error" />}
+                sx={{ ml: 1 }}
                 onClick={handleOpen}
               >
                 Delete
@@ -439,10 +441,13 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   <Typography id="modal-modal-title" variant="h6" component="h2">
                     Delete Experiment
                   </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Are you sure you want to delete this experiment ? This action cannot be undone.
+                  <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1.5 }}>
+                    Are you sure you want to delete this experiment?
                   </Typography>
-                  <Grid container spacing={ 2 } sx={{ mt: 1 }}>
+                  <Alert variant="outlined" severity="warning" icon={<WarningAmberIcon fontSize="inherit" />} >
+                    This action cannot be undone.
+                  </Alert>
+                  <Grid container spacing={ 2 } sx={{ mt: 0.5 }}>
                     <Grid item>
                       <Button variant="contained" color="error" onClick={handleDeleteExperiment}>Confirm Deletion</Button>
                     </Grid>
