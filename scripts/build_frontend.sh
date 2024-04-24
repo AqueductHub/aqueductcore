@@ -8,8 +8,8 @@ PROJECT_ROOT=$SCRIPT_DIR/..
 set -e
 set -o pipefail
 
-source aqueductcore/frontend/envs/.env.prod
-export $(cut -d= -f1 aqueductcore/frontend/envs/.env.prod)
+source ${PROJECT_ROOT}/aqueductcore/frontend/envs/.env.prod
+export $(cut -d= -f1 ${PROJECT_ROOT}/aqueductcore/frontend/envs/.env.prod)
 
 rm -rf ${PROJECT_ROOT}/frontend_build \
 && cd ${PROJECT_ROOT}/aqueductcore/frontend \
