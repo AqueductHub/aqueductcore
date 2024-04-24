@@ -61,7 +61,7 @@ export const drawerItems: DrawerItemsType[] = [
       { text: "Archived", url: "/aqd/experiments/archived" },
     ],
   },
-  { text: "Documentation", icon: <DescriptionIcon />, url: "https://aqueducthub.github.io/aqueductcore/", openInNewTab: true},
+  { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true},
   { text: "Settings", icon: <SettingsIcon />, url: "/settings" },
 ];
 
