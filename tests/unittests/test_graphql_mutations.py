@@ -371,7 +371,7 @@ async def test_create_experiment_invalid_tags(
 
     assert resp.data is None
     assert resp.errors is not None
-    assert "Tag should be less than" in resp.errors[0].message
+    assert resp.errors[0].message == "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
 
 
 @pytest.mark.asyncio

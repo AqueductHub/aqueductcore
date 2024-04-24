@@ -6,11 +6,12 @@ from typing import Dict, List, Tuple
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from aqueductcore.backend.context import UserInfo, UserScope
 from aqueductcore.backend.errors import AQDDBExperimentNonExisting
-from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
-from aqueductcore.backend.settings import settings
 from aqueductcore.backend.models import orm
+from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.services.experiment import (
     add_tag_to_experiment,
     build_experiment_dir_absolute_path,
@@ -30,7 +31,6 @@ from aqueductcore.backend.services.utils import (
     tag_model_to_orm,
 )
 from aqueductcore.backend.settings import settings
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio

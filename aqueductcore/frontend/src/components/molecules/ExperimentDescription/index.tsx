@@ -57,11 +57,13 @@ const ExperimentDescriptionTextField = styled(TextareaAutosize)`
 `;
 
 interface ExperimentDescriptionProps {
+  isEditable?: boolean,
   experimentDescription: string;
   handleExperimentDescriptionUpdate: (value: string) => void;
 }
 
 export function ExperimentDescriptionUpdate({
+  isEditable = true,
   experimentDescription,
   handleExperimentDescriptionUpdate,
 }: ExperimentDescriptionProps) {
@@ -106,7 +108,7 @@ export function ExperimentDescriptionUpdate({
         </Grid>
         <Grid item xs={6}>
           <Box display="flex" justifyContent="flex-end">
-            {!editDescriptionStatus && (
+            {!editDescriptionStatus && isEditable && (
               <EditDescriptionButton
                 title="Edit description"
                 size="small"

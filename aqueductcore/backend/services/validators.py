@@ -14,7 +14,7 @@ MAX_EXPERIMENT_DESCRIPTION_LENGTH = 5000
 MAX_EXPERIMENT_TAG_LENGTH = 64
 MAX_EXPERIMENT_TAGS_NUM = 64
 
-MAX_EXPERIMENT_TITLE_FILTER_LENGTH = 8
+MAX_EXPERIMENT_TITLE_FILTER_LENGTH = 64
 MAX_EXPERIMENT_SHOULD_INCLUDE_TAGS_NUM = 6
 MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER = 10
 
@@ -37,11 +37,21 @@ def validate_description(description: str, max_len: int) -> str:
 
 def validate_tag(tag: str, max_len: int) -> str:
     """Validate tag to have a specified maximum length and allowed characters only"""
-    if len(tag) > max_len or not is_tag_valid(tag):
+    if not tag:
+        raise AQDValidationError(
+            "Tag cannot be empty"
+        )
+
+    if len(tag) > max_len:
         raise AQDValidationError(
             f"Tag should be less than {max_len} characters long "
-            + "and contain alphanumeric characters, hyphens and underscores only."
         )
+
+    if not is_tag_valid(tag):
+        raise AQDValidationError(
+            "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+        )
+
     return tag
 
 

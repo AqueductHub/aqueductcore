@@ -19,13 +19,15 @@ const ExperimentName = styled(Typography)`
 const ExperimentNameTitleField = styled(TextField)``;
 
 interface ExperimentTitleProps {
-  experimentTitle: string;
   handleExperimentTitleUpdate: (value: string) => void;
+  experimentTitle: string;
+  isEditable?: boolean;
 }
 
 export function ExperimentTitleUpdate({
-  experimentTitle,
   handleExperimentTitleUpdate,
+  experimentTitle,
+  isEditable = true
 }: ExperimentTitleProps) {
   const [editNameStatus, setEditTitleStatus] = useState(false);
   const [inputWidth, setInputWidth] = useState<string | number>("auto");
@@ -104,7 +106,7 @@ export function ExperimentTitleUpdate({
         )}
       </Grid>
       <Grid item>
-        {!editNameStatus && (
+        {!editNameStatus && isEditable && (
           <UpdateNameButton title="Edit title" onClick={handleTitleUpdate}>
             <EditOutlinedIcon sx={{ verticalAlign: "middle" }} />
           </UpdateNameButton>
