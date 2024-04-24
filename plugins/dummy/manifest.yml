@@ -6,6 +6,10 @@ description: >
 authors: aqueduct@riverlane.com
 aqueduct_url: https://aqueduct-demo.azurewebsites.net/
 
+# global variables for all functions of the plugin
+params:
+  dummykey: dummyvalue
+
 functions:
   - !function
     name: echo

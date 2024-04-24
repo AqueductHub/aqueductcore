@@ -1,5 +1,7 @@
 import pytest
 
+from pathlib import Path
+
 from aqueductcore.backend.plugins import (
     Plugin,
     PluginExecutor,
@@ -13,7 +15,7 @@ from aqueductcore.backend.errors import AQDValidationError
 class TestPluginExecutor:
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
-        assert len(plugins) == 1
+        assert len(plugins) == 2
 
     @pytest.mark.parametrize(
         "value",
@@ -98,6 +100,7 @@ class TestPluginExecutor:
                 description="long descr",
                 authors="a@a.org",
                 functions=[],
+                params={},
                 aqueduct_url="",
             ),
             Plugin(
@@ -110,6 +113,7 @@ class TestPluginExecutor:
                         name="func1", description="descr", script="", parameters=[]
                     ),
                 ],
+                params={},
             ),
             Plugin(
                 name="name",
@@ -130,6 +134,7 @@ class TestPluginExecutor:
                         ],
                     ),
                 ],
+                params={},
             ),
         ],
     )
@@ -146,6 +151,7 @@ class TestPluginExecutor:
                 authors="a@a.org",
                 functions=[],
                 aqueduct_url="",
+                params={},
             ),
             # empty name
             Plugin(
@@ -154,6 +160,7 @@ class TestPluginExecutor:
                 authors="a@a.org",
                 functions=[],
                 aqueduct_url="",
+                params={},
             ),
             # short function description
             Plugin(
@@ -166,6 +173,7 @@ class TestPluginExecutor:
                         name="func1", description="sh", script="", parameters=[]
                     ),
                 ],
+                params={},
             ),
             # empty function name
             Plugin(
@@ -176,6 +184,7 @@ class TestPluginExecutor:
                 functions=[
                     PluginFunction(name="", description="sh", script="", parameters=[]),
                 ],
+                params={},
             ),
             # unsupported type
             Plugin(
@@ -195,9 +204,25 @@ class TestPluginExecutor:
                         ],
                     ),
                 ],
+                params={},
             ),
         ],
     )
     def test_plugin_validation_raises(self, plugin):
         with pytest.raises(AQDValidationError):
             PluginExecutor._validate_plugin(plugin)
+
+    @pytest.mark.skip
+    def test_plugin_wolfram_alpha(self):
+        wolfram_alpha = Plugin.from_folder(Path("plugins/python-example"))
+        result = wolfram_alpha.functions[0].execute(
+            wolfram_alpha,
+            {
+                "equation": "x^2 + 7 = 0",
+                "experiment": "20240229-5689864ffd94",
+                "result_file": "wolfram_solution.txt"
+            }
+        )
+        assert result.stderr == ""
+        assert result.return_code == 0
+        assert result.stdout == "x = -i sqrt(7)\nx = i sqrt(7)\n"

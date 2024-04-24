@@ -561,7 +561,7 @@ async def test_execute_plugin_stdout_ok():
     assert resp.errors is None
     res = resp.data["executePlugin"]
     assert res["returnCode"] == 0
-    assert res["stdout"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stdout"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\ndummykey=dummyvalue\n"
     assert res["stderr"] == ""
 
 
@@ -573,7 +573,7 @@ async def test_execute_plugin_stderr_ok():
     res = resp.data["executePlugin"]
     assert res["returnCode"] == 13
     assert res["stdout"] == ""
-    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\ndummykey=dummyvalue\n"
 
 
 @pytest.mark.asyncio
@@ -584,7 +584,7 @@ async def test_execute_plugin_stderr_ok():
     res = resp.data["executePlugin"]
     assert res["returnCode"] == 13
     assert res["stdout"] == ""
-    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\ndummykey=dummyvalue\n"
 
 
 @pytest.mark.asyncio
