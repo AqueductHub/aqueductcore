@@ -2,6 +2,7 @@ import { FocusEvent } from "react";
 import dayjs from "dayjs";
 
 import { SortOrder } from "types/componentTypes";
+import { ExperimentFileType } from "types/globalTypes";
 
 // ################## DOM related functions ################## //
 export const focusInCurrentTarget = ({
@@ -22,14 +23,13 @@ export const focusInCurrentTarget = ({
 
 // ################## Sort functions ################## //
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  let itemA: any = a[orderBy]
-  let itemB: any = b[orderBy]
+  let itemA = a[orderBy]
+  let itemB = b[orderBy]
   // ###  Special cases
   // # 1- Date
   if (dayjs(new Date(String(a[orderBy]))).isValid() && dayjs(new Date(String(b[orderBy]))).isValid()) {
-    itemA = new Date(String(a[orderBy])).getTime()
-    itemB = new Date(String(b[orderBy])).getTime()
+    itemA = new Date(String(a[orderBy])).getTime() as T[keyof T]
+    itemB = new Date(String(b[orderBy])).getTime() as T[keyof T]
   }
   // Comparison
   if (itemB < itemA) {
@@ -41,8 +41,7 @@ export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function getComparator<Key extends keyof any>(
+export function getComparator<Key extends keyof ExperimentFileType>(
   order: SortOrder,
   orderBy: Key,
 ): (
