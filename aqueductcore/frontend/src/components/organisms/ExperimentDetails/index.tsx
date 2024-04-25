@@ -33,7 +33,7 @@ import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExpe
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-import { isUserAbleToEditExperiment } from "helper/auth/userScope";
+import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { EditTags } from "components/molecules/EditTags";
@@ -119,6 +119,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const handleOpen = () => setDeleteExperimentModalOpen(true);
   const handleCloseDeleteExperimentModal = () => setDeleteExperimentModalOpen(false);
   const isEditable = Boolean(userInfo && isUserAbleToEditExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
+  const isDeletable = Boolean(userInfo && isUserAbleToDeleteExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
 
   const handleTagUpdate = (updatedTagsList: TagType[]) => {
     if (selectedTags.length < updatedTagsList.length) {
@@ -425,7 +426,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
             </Grid>
             {isArchived(experimentDetails.tags) && <Grid item>
               <BorderedButtonWithIcon
-                disabled={!isEditable}
+                disabled={!isDeletable}
                 variant="outlined"
                 size="small"
                 color="error"
@@ -448,10 +449,10 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1.5 }}>
                     Are you sure you want to delete this experiment?
                   </Typography>
-                  <DeleteExperimentAlert variant="outlined" severity="warning" icon={<WarningAmberIcon sx={{mr: -0.5}} fontSize="small" />} >
+                  <DeleteExperimentAlert variant="outlined" severity="warning" icon={<WarningAmberIcon sx={{ mr: -0.5 }} fontSize="small" />} >
                     This action cannot be undone.
                   </DeleteExperimentAlert>
-                  <Grid container spacing={ 2 } sx={{ mt: 0.5 }}>
+                  <Grid container spacing={2} sx={{ mt: 0.5 }}>
                     <Grid item>
                       <Button variant="contained" color="error" onClick={handleDeleteExperiment}>Confirm Deletion</Button>
                     </Grid>
