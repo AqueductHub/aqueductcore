@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
+import { dateFormatter } from "helper/formatters";
 
 test("render page with no error", async () => {
     render(
@@ -24,10 +25,12 @@ test("render page with the experiment info", async () => {
     const experiment_title = await findByText(selected_experiment.title);
     const experiment_desc = await findByText(String(selected_experiment.description));
     const experiment_createdBy = await findByText(selected_experiment.createdBy);
+    const experiment_timeCreated = await findByText(dateFormatter(new Date(selected_experiment.createdAt)));
 
     expect(experiment_title).toBeInTheDocument();
     expect(experiment_desc).toBeInTheDocument();
     expect(experiment_createdBy).toBeInTheDocument();
+    expect(experiment_timeCreated).toBeInTheDocument();
 });
 
 test("render page with the edit buttons as it's part of the scope", async () => {

@@ -5,7 +5,7 @@ import { ARCHIVED, FAVOURITE } from "constants/constants";
 export const dateFormatter = (date: Date) => {
   const localDate = date.toLocaleDateString();
   const localTime = date.toLocaleTimeString("en-GB", { hour12: false });
-  return `${localDate}  ${localTime}`;
+  return `${localDate} - ${localTime}`;
 };
 
 export function processExperimentTableData(experimentList: ExperimentDataType[]) {
