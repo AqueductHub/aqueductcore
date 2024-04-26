@@ -101,6 +101,7 @@ class PluginParameterType:
     name: str
     description: str
     data_type: str
+    default_value: str
 
 
 @strawberry.type
@@ -147,6 +148,7 @@ class PluginInfo:
                             name=param.name,
                             description=param.description,
                             data_type=param.data_type,
+                            default_value=param.default_value,
                         )
                         for param in func.parameters
                     ]

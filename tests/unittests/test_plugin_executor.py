@@ -14,6 +14,7 @@ class TestPluginExecutor:
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
         assert len(plugins) == 1
+        assert plugins[0].functions[0].parameters[0].default_value == "1"
 
     @pytest.mark.parametrize(
         "value",
@@ -133,6 +134,7 @@ class TestPluginExecutor:
                                 name="var1",
                                 description="descr",
                                 data_type=SupportedTypes.TEXTAREA.value,
+                                default_value="1",
                             )
                         ],
                     ),
@@ -197,7 +199,10 @@ class TestPluginExecutor:
                         script="",
                         parameters=[
                             PluginParameter(
-                                name="var1", description="descr", data_type="something"
+                                name="var1",
+                                description="descr",
+                                data_type="something",
+                                default_value="some",
                             )
                         ],
                     ),

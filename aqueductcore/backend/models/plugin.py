@@ -28,12 +28,19 @@ class PluginParameter(yaml.YAMLObject):
     """Typed and named parameter of the plugin function"""
 
     yaml_tag = "!parameter"
-    yaml_loader = yaml.SafeLoader
+    yaml_loader = yaml.UnsafeLoader
 
-    def __init__(self, name: str, description: str, data_type: str):
-        self.name = name
-        self.description = description
-        self.data_type = data_type
+    def __init__(
+            self,
+            name: str,
+            description: str,
+            data_type: str,
+            default_value: str = "",
+    ):
+        self.name = str(name)
+        self.description = str(description)
+        self.data_type = str(data_type)
+        self.default_value = str(default_value)
 
     def __str__(self):
         return f"{self.description} ({self.name}: {self.data_type})"
@@ -46,7 +53,7 @@ class PluginFunction(yaml.YAMLObject):
     one function which may be executed."""
 
     yaml_tag = "!function"
-    yaml_loader = yaml.SafeLoader
+    yaml_loader = yaml.UnsafeLoader
 
     def __init__(
         self,
@@ -105,7 +112,7 @@ class Plugin(yaml.YAMLObject):
     """Class representing a plugin"""
 
     yaml_tag = "!plugin"
-    yaml_loader = yaml.SafeLoader
+    yaml_loader = yaml.UnsafeLoader
 
     def __init__(
         self, name: str, description: str, authors: str, functions: List[PluginFunction],
@@ -133,7 +140,7 @@ class Plugin(yaml.YAMLObject):
         with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
-            plugin = yaml.load(manifest_stream, Loader=yaml.loader.SafeLoader)
+            plugin = yaml.load(manifest_stream, Loader=yaml.loader.UnsafeLoader)
             plugin.manifest_file = str(manifest.absolute())
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
