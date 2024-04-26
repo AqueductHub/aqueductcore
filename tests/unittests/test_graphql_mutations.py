@@ -264,6 +264,7 @@ execute_plugin = """
                 ["var2", "111"],
                 ["var3", "1.33e+03"],
                 ["var4", "20240229-5689864ffd94"],
+                ["var5", "some\\nmultiline"],
             ]
     ) {
         returnCode, stderr, stdout
@@ -561,7 +562,13 @@ async def test_execute_plugin_stdout_ok():
     assert resp.errors is None
     res = resp.data["executePlugin"]
     assert res["returnCode"] == 0
-    assert res["stdout"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stdout"] == (
+        "var1=abc\n"
+        "var2=111\n"
+        "var3=1.33e+03\n"
+        "var4=20240229-5689864ffd94\n"
+        "var5=some\nmultiline"
+    )
     assert res["stderr"] == ""
 
 
@@ -573,18 +580,13 @@ async def test_execute_plugin_stderr_ok():
     res = resp.data["executePlugin"]
     assert res["returnCode"] == 13
     assert res["stdout"] == ""
-    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
-
-
-@pytest.mark.asyncio
-async def test_execute_plugin_stderr_ok():
-    schema = Schema(query=Query, mutation=Mutation)
-    resp = await schema.execute(execute_plugin.replace("echo", "echo_stderr"))
-    assert resp.errors is None
-    res = resp.data["executePlugin"]
-    assert res["returnCode"] == 13
-    assert res["stdout"] == ""
-    assert res["stderr"] == "var1=abc\nvar2=111\nvar3=1.33e+03\nvar4=20240229-5689864ffd94\n"
+    assert res["stderr"] == (
+        "var1=abc\n"
+        "var2=111\n"
+        "var3=1.33e+03\n"
+        "var4=20240229-5689864ffd94\n"
+        "var5=some\nmultiline"
+    )
 
 
 @pytest.mark.asyncio

@@ -24,7 +24,7 @@ class SupportedTypes(Enum):
     the GraphQL endpoint or specified in the manifest file."""
     INT = "int"
     STR = "str"
-    MULTILINE = "multiline"
+    TEXTAREA = "textarea"
     FLOAT = "float"
     EXPERIMENT = "experiment"
     FILE = "file"
@@ -71,8 +71,8 @@ class PluginExecutor:
     @classmethod
     def _validate_values(cls, func: PluginFunction, params: Dict[str, str]):
         # do keys coincide?
-        expected_keys = set(params)
-        provided_keys = set(param.name for param in func.parameters)
+        provided_keys = set(params)
+        expected_keys = set(param.name for param in func.parameters)
         if expected_keys != provided_keys:
             raise AQDValidationError(
                 "Parameters error: keys don't match expected set. "

@@ -23,18 +23,21 @@ class TestPluginExecutor:
                 "var2": "1212312323",
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
+                "var5": "text\narea",
             },
             {
                 "var1": "no text",
                 "var2": "0",
                 "var3": "1.0",
                 "var4": "20240229-5689864ffd94",
+                "var5": "text\narea",
             },
             {
                 "var1": "text",
                 "var2": "-1",
                 "var3": "-1.4e-04",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
             },
         ],
     )
@@ -56,6 +59,7 @@ class TestPluginExecutor:
                 "var2": "2.2",
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
             },
             # var3 non float
             {
@@ -63,6 +67,7 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "abc",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
             },
             # var4 non alias
             {
@@ -70,6 +75,7 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "3",
                 "var4": "±20240229-5689864ffd94",
+                "var5": "",
             },
             # not enough params
             {"var1": "text", "var2": "2", "var3": "3"},
@@ -79,7 +85,8 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "3",
                 "var4": "20240229-5689864ffd94",
-                "var5": "oops",
+                "var5": "",
+                "var6": "oops",
             },
         ],
     )
@@ -125,7 +132,7 @@ class TestPluginExecutor:
                             PluginParameter(
                                 name="var1",
                                 description="descr",
-                                data_type=SupportedTypes.MULTILINE.value,
+                                data_type=SupportedTypes.TEXTAREA.value,
                             )
                         ],
                     ),

@@ -35,6 +35,11 @@ class PluginParameter(yaml.YAMLObject):
         self.description = description
         self.data_type = data_type
 
+    def __str__(self):
+        return f"{self.description} ({self.name}: {self.data_type})"
+
+    def __repr__(self):
+        return f"<{str(self)}>"
 
 class PluginFunction(yaml.YAMLObject):
     """Each plugin may have multiple functions. This class represents
