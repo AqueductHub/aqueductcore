@@ -1,19 +1,20 @@
+import { useLocation, useSearchParams } from "react-router-dom";
 import { Typography, styled } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
+import { useState } from "react";
 
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
-import FilterExperiments from "components/organisms/FilterExperiments";
-import { Error } from "components/atoms/Error";
+import { useGetAllExperiments } from "API/graphql/queries/getAllExperiments";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";
+import FilterExperiments from "components/organisms/FilterExperiments";
+import { useDidUpdateEffect } from "helper/functions";
+import { Error } from "components/atoms/Error";
 import {
   dateFormatter,
   processExperimentTableData,
   removeFavouriteAndArchivedTag,
 } from "helper/formatters";
-import { useGetAllExperiments } from "API/graphql/queries/getAllExperiments";
 import {
   experimentRecordsRowsPerPageOptions,
   MAX_TAGS_VISIBLE_LENGTH,
@@ -106,8 +107,9 @@ const ExperimentRecordsColumnsWithFavColumn: readonly ExperimentRecordsColumnsTy
 ];
 
 function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageType }) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(experimentRecordsRowsPerPageOptions[0]);
+  const [searchParams,] = useSearchParams();
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
+  const [rowsPerPage, setRowsPerPage] = useState(Number(searchParams.get('rowsPerPage')) || experimentRecordsRowsPerPageOptions[0]);
   const [filters, setFilters] = useState<ExperimentFiltersType>({
     startDate: null,
     endDate: null,
@@ -141,7 +143,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     count: AllExperiments?.experiments?.totalExperimentsCount || 0,
   };
   // handle different categories based on different <Routes /> in App.tsx
-  useEffect(() => {
+  useDidUpdateEffect(() => {
     handleResetPagination();
     switch (category) {
       case "favourites":

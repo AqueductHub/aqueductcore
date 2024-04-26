@@ -1,25 +1,25 @@
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TablePagination from "@mui/material/TablePagination";
 import TableContainer from "@mui/material/TableContainer";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import StarIcon from "@mui/icons-material/Star";
-import { useNavigate } from "react-router-dom";
 import TableRow from "@mui/material/TableRow";
 import { grey } from "@mui/material/colors";
+import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import Paper from "@mui/material/Paper";
-import { useState } from "react";
 
-import {
-  ExperimentDataType,
-  ExperimentRecordsColumnsType,
-  ExperimentsListTableProps,
-} from "types/globalTypes";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
 import { FAVOURITE, experimentRecordsRowsPerPageOptions } from "constants/constants";
+import {
+  ExperimentRecordsColumnsType,
+  ExperimentsListTableProps,
+  ExperimentDataType,
+} from "types/globalTypes";
 
 function ExperimentsListTable({
   ExperimentRecordsColumns,
@@ -41,6 +41,7 @@ function ExperimentsListTable({
   const [showActionId, setShowActionId] = useState("-1");
   const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
   const navigate = useNavigate();
+  const [, setSearchParams] = useSearchParams();
   const { mutate: mutateAddTag } = useAddTagToExperiment();
   const { mutate: mutateRemoveTag } = useRemoveTagFromExperiment();
 
@@ -52,6 +53,13 @@ function ExperimentsListTable({
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  useEffect(() => {
+    const newQueryParameters: URLSearchParams = new URLSearchParams();
+    newQueryParameters.set('rowsPerPage', String(rowsPerPage))
+    newQueryParameters.set('page', String(page))
+    setSearchParams(newQueryParameters)
+  }, [page, rowsPerPage])
 
   function handleToggleFavorite(
     e: React.MouseEvent,
