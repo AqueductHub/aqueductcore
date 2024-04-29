@@ -120,6 +120,8 @@ class PluginExecutionResult:
     return_code: int
     stdout: str
     stderr: str
+    log_exeperiment: str
+    log_file: str
 
 
 @strawberry.type

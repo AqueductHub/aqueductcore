@@ -154,6 +154,20 @@ class PluginExecutor:
         return result
 
     @classmethod
+    def get_plugin(cls, plugin: str) -> Plugin:
+        plugins = [p for p in cls.list_plugins() if p.name == plugin]
+        if len(plugins) != 1:
+            raise AQDValidationError(f"There should be exactly 1 plugin with name {plugin}")
+        return plugins[0]
+
+    @classmethod
+    def get_function(cls, plugin: Plugin, function: str) -> PluginFunction:
+        functions = [f for f in plugin.functions if f.name == function]
+        if len(functions) != 1:
+            raise AQDValidationError(f"There should be exactly 1 function with name {function}")
+        return functions[0]
+
+    @classmethod
     def execute(cls, plugin: str, function: str, params: dict) -> PluginExecutionResult:
         """For a given plugin name, function name, and a dictionary
         of parameters, runs the plugin and returns execution result
@@ -166,11 +180,18 @@ class PluginExecutor:
         Returns:
             PluginExecutionResult: results of process execution
         """
-        plugins = [p for p in cls.list_plugins() if p.name == plugin]
-        if len(plugins) != 1:
-            raise AQDValidationError(f"There should be exactly 1 plugin with name {plugin}")
-        functions = [f for f in plugins[0].functions if f.name == function]
-        if len(functions) != 1:
-            raise AQDValidationError(f"There should be exactly 1 function with name {function}")
-        cls._validate_values(func=functions[0], params=params)
-        return functions[0].execute(plugin=plugins[0], params=params)
+        plugin_object = cls.get_plugin(plugin)
+        function_object = cls.get_function(plugin_object, function)
+        cls._validate_values(func=function_object, params=params)
+        return function_object.execute(plugin=plugin_object, params=params)
+
+    @classmethod
+    def get_default_experiment_id(cls, plugin: str, function: str, params: dict) -> str:
+        plugin_object = cls.get_plugin(plugin)
+        function_object = cls.get_function(plugin_object, function)
+        for variable in function_object.parameters:
+            if variable.data_type == SupportedTypes.EXPERIMENT.value:
+                return params[variable.name]
+        raise AQDValidationError(
+            "No experiment ID in plugin function"
+            f" {plugin}/{function} definition")
