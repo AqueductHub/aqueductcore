@@ -6,7 +6,6 @@ import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { dateFormatter } from "helper/formatters";
 import userEvent from "@testing-library/user-event";
-import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExperiment";
 
 test("render page with no error", async () => {
     render(
