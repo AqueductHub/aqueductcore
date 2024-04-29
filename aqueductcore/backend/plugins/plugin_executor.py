@@ -9,25 +9,27 @@ from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Set
 
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.models.plugin import (
     Plugin,
     PluginExecutionResult,
     PluginFunction,
     PluginParameter,
 )
-from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.settings import settings
 
 
 class SupportedTypes(Enum):
     """This enum contains allowed data types, which may be passed from
     the GraphQL endpoint or specified in the manifest file."""
+
     INT = "int"
     STR = "str"
     TEXTAREA = "textarea"
     FLOAT = "float"
     EXPERIMENT = "experiment"
     FILE = "file"
+    BOOL = "bool"
 
     @staticmethod
     def values() -> Set[str]:
@@ -48,7 +50,9 @@ class PluginExecutor:
             raise AQDValidationError(
                 f"Type should be one of {SupportedTypes.values()}"
                 f"but was {param.data_type}"
-            )
+        )
+        if param.default_value:
+            param.default_value = cls._validate_single_variable(param, param.default_value)
 
     @classmethod
     def _validate_function(cls, func: PluginFunction):
@@ -69,6 +73,44 @@ class PluginExecutor:
             cls._validate_function(func)
 
     @classmethod
+    def _validate_single_variable(cls, arg: PluginParameter, value: str) -> str:
+        if arg.data_type == SupportedTypes.INT.value:
+            try:
+                int(value)
+                return value
+            except Exception as exc:
+                raise AQDValidationError(f"{value} is not decimal.") from exc
+
+        if arg.data_type == SupportedTypes.FLOAT.value:
+            try:
+                float(value)
+                return value
+            except Exception as exc:
+                raise AQDValidationError(f"{value} is not a floating point number.") from exc
+
+        if arg.data_type == SupportedTypes.EXPERIMENT.value:
+            try:
+                prefix, postfix = value.split("-")
+                if not prefix.isdecimal() or not postfix.isalnum():
+                    raise AQDValidationError("Experiment alias has wrong format.")
+                return value
+            except Exception as exc:
+                raise AQDValidationError(f"{value} is not a valid experiment alias.") from exc
+
+        if arg.data_type == SupportedTypes.BOOL.value:
+            if value == "":
+                return value
+            if value in ("0", "false", "False", "FALSE"):
+                return "0"
+            elif value in ("1", "true", "True", "TRUE"):
+                return "1"
+            else:
+                raise AQDValidationError(f"{value} is not bool.")
+
+        # for files, strings and textareas
+        return value
+
+    @classmethod
     def _validate_values(cls, func: PluginFunction, params: Dict[str, str]):
         # do keys coincide?
         provided_keys = set(params)
@@ -81,27 +123,11 @@ class PluginExecutor:
             )
         for arg in func.parameters:
             value = params[arg.name]
-            if arg.data_type == SupportedTypes.INT.value:
-                try:
-                    int(value)
-                except Exception as exc:
-                    raise AQDValidationError(f"{value} is not decimal.") from exc
-            if arg.data_type == SupportedTypes.FLOAT.value:
-                try:
-                    float(value)
-                except Exception as exc:
-                    raise AQDValidationError(
-                        f"{value} is not a floating point number.") from exc
-            if arg.data_type == SupportedTypes.EXPERIMENT.value:
-                try:
-                    prefix, postfix = value.split("-")
-                    if not prefix.isdecimal() or not postfix.isalnum():
-                        raise AQDValidationError("Experiment alias has wrong format.")
-                except Exception as exc:
-                    raise AQDValidationError(
-                        f"{value} is not a valid experiment alias.") from exc
-            if arg.data_type == SupportedTypes.FILE.value:
-                pass
+            default_value = arg.default_value
+            # what if default value is also given with an error?
+            if default_value:
+                arg.default_value = cls._validate_single_variable(arg, default_value)
+            params[arg.name] = cls._validate_single_variable(arg, value)
 
     # cache ttl can be managed
     # https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live

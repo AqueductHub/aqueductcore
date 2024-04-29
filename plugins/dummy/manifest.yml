@@ -41,6 +41,12 @@ functions:
           name: var5
           description: variable 5 multiline
           data_type: textarea
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: var6
+          description: boolean variable
+          data_type: bool
+          default_value: true
 
   - !function
     name: echo_stderr
@@ -75,3 +81,9 @@ functions:
           name: var5
           description: variable 5 multiline
           data_type: textarea
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: var6
+          description: boolean variable
+          data_type: bool
+          default_value: true

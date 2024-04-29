@@ -265,6 +265,7 @@ execute_plugin = """
                 ["var3", "1.33e+03"],
                 ["var4", "20240229-5689864ffd94"],
                 ["var5", "some\\nmultiline"],
+                ["var6", "TRUE"],
             ]
     ) {
         returnCode, stderr, stdout
@@ -567,7 +568,8 @@ async def test_execute_plugin_stdout_ok():
         "var2=111\n"
         "var3=1.33e+03\n"
         "var4=20240229-5689864ffd94\n"
-        "var5=some\nmultiline"
+        "var5=some\nmultiline\n"
+        "var6=1\n"
     )
     assert res["stderr"] == ""
 
@@ -585,7 +587,8 @@ async def test_execute_plugin_stderr_ok():
         "var2=111\n"
         "var3=1.33e+03\n"
         "var4=20240229-5689864ffd94\n"
-        "var5=some\nmultiline"
+        "var5=some\nmultiline\n"
+        "var6=1\n"
     )
 
 

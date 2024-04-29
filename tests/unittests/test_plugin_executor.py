@@ -14,7 +14,10 @@ class TestPluginExecutor:
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
         assert len(plugins) == 1
-        assert plugins[0].functions[0].parameters[0].default_value == "1"
+        var1 = plugins[0].functions[0].parameters[0]
+        assert var1.default_value == "1" and var1.name == "var1"
+        var6 = plugins[0].functions[0].parameters[5]
+        assert var6.default_value == "1" and var6.name == "var6"
 
     @pytest.mark.parametrize(
         "value",
@@ -25,6 +28,7 @@ class TestPluginExecutor:
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
                 "var5": "text\narea",
+                "var6": "False",
             },
             {
                 "var1": "no text",
@@ -32,6 +36,7 @@ class TestPluginExecutor:
                 "var3": "1.0",
                 "var4": "20240229-5689864ffd94",
                 "var5": "text\narea",
+                "var6": "1",
             },
             {
                 "var1": "text",
@@ -39,6 +44,7 @@ class TestPluginExecutor:
                 "var3": "-1.4e-04",
                 "var4": "20240229-5689864ffd94",
                 "var5": "",
+                "var6": "True",
             },
         ],
     )
@@ -61,6 +67,7 @@ class TestPluginExecutor:
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
                 "var5": "",
+                "var6": "0",
             },
             # var3 non float
             {
@@ -69,6 +76,7 @@ class TestPluginExecutor:
                 "var3": "abc",
                 "var4": "20240229-5689864ffd94",
                 "var5": "",
+                "var6": "0",
             },
             # var4 non alias
             {
@@ -77,6 +85,7 @@ class TestPluginExecutor:
                 "var3": "3",
                 "var4": "±20240229-5689864ffd94",
                 "var5": "",
+                "var6": "0",
             },
             # not enough params
             {"var1": "text", "var2": "2", "var3": "3"},
@@ -87,7 +96,17 @@ class TestPluginExecutor:
                 "var3": "3",
                 "var4": "20240229-5689864ffd94",
                 "var5": "",
-                "var6": "oops",
+                "var6": "false",
+                "var7": "oops",
+            },
+            # var6 is not bool
+            {
+                "var1": "text",
+                "var2": "2",
+                "var3": "3",
+                "var4": "20240229-5689864ffd94",
+                "var5": "",
+                "var6": "not quite sure",
             },
         ],
     )
