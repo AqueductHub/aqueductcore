@@ -47,6 +47,13 @@ functions:
           description: boolean variable
           data_type: bool
           default_value: true
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: var7
+          description: select / combobox
+          data_type: select
+          default_value: "string three"
+          options: [ string1, string2, string three, string4 ]
 
   - !function
     name: echo_stderr
@@ -87,3 +94,10 @@ functions:
           description: boolean variable
           data_type: bool
           default_value: true
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: var7
+          description: select / combobox
+          data_type: select
+          default_value: "string three"
+          options: [ string1, string2, string three, string4 ]

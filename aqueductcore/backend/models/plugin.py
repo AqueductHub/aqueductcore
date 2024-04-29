@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -36,11 +36,13 @@ class PluginParameter(yaml.YAMLObject):
             description: str,
             data_type: str,
             default_value: str = "",
+            options: Optional[List[str]] = None,
     ):
         self.name = str(name)
         self.description = str(description)
         self.data_type = str(data_type)
         self.default_value = str(default_value)
+        self.options = list(map(str, options or []))
 
     def __str__(self):
         return f"{self.description} ({self.name}: {self.data_type})"

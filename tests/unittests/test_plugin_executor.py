@@ -29,6 +29,7 @@ class TestPluginExecutor:
                 "var4": "20240229-5689864ffd94",
                 "var5": "text\narea",
                 "var6": "False",
+                "var7": "string1",
             },
             {
                 "var1": "no text",
@@ -37,6 +38,7 @@ class TestPluginExecutor:
                 "var4": "20240229-5689864ffd94",
                 "var5": "text\narea",
                 "var6": "1",
+                "var7": "string2",
             },
             {
                 "var1": "text",
@@ -45,6 +47,7 @@ class TestPluginExecutor:
                 "var4": "20240229-5689864ffd94",
                 "var5": "",
                 "var6": "True",
+                "var7": "string4",
             },
         ],
     )

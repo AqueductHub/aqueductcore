@@ -30,6 +30,7 @@ class SupportedTypes(Enum):
     EXPERIMENT = "experiment"
     FILE = "file"
     BOOL = "bool"
+    SELECT = "select"
 
     @staticmethod
     def values() -> Set[str]:
@@ -106,6 +107,12 @@ class PluginExecutor:
                 return "1"
             else:
                 raise AQDValidationError(f"{value} is not bool.")
+
+        if arg.data_type == SupportedTypes.SELECT.value:
+            if value in arg.options:
+                return value
+            else:
+                raise AQDValidationError(f"{value} is not in {arg.options}.")
 
         # for files, strings and textareas
         return value
