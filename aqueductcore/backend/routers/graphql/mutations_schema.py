@@ -129,7 +129,7 @@ class Mutation:
             alias=exp_id
         )
         now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
-        file_name = f"{now}-{plugin}-{function}.log"
+        file_name = f"{plugin}-{function}-{now}.log"
         pathvalidate.validate_filename(file_name)
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment.id
