@@ -1,9 +1,9 @@
 import pytest
 
-from aqueductcore.backend.plugins import (
+from aqueductcore.backend.plugins import PluginExecutor
+from aqueductcore.backend.models.plugin import (
     Plugin,
-    PluginExecutor,
-    PluginFunction,
+    PluginFunction, 
     PluginParameter,
     SupportedTypes,
 )

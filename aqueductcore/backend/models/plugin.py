@@ -72,6 +72,7 @@ class PluginParameter(yaml.YAMLObject):
 
     # pylint: disable=too-many-return-statements,too-many-branches
     def validate(self):
+        """Validate variable and its default value."""
         if not self.name:
             raise AQDValidationError("Parameter should have a name.")
         if not self.description:
@@ -85,6 +86,7 @@ class PluginParameter(yaml.YAMLObject):
             self.default_value = self.validate_value(self.default_value)
 
     def validate_value(self, value: str) -> str:
+        """Validate value and return a normalised version, if possible."""
         if self.data_type == SupportedTypes.INT.value:
             try:
                 int(value)
@@ -198,6 +200,7 @@ class PluginFunction(yaml.YAMLObject):
         raise AQDValidationError(f"Function {self.name} has no experiment parameters")
 
     def validate(self):
+        """Validate the instance of the function and its parameters."""
         if not self.name:
             raise AQDValidationError("Plugin function should have a name.")
         if len(self.description) < 5:
@@ -206,6 +209,7 @@ class PluginFunction(yaml.YAMLObject):
             param.validate()
 
     def validate_values(self, params: Dict[str, str]):
+        """Check params dict to agree with data types definition for the function"""
         # do keys coincide?
         provided_keys = set(params)
         expected_keys = set(param.name for param in self.parameters)
@@ -273,7 +277,7 @@ class Plugin(yaml.YAMLObject):
         return functions[0]
 
     def validate(self):
-        """Validates instance"""
+        """Validate instance of the plugin and its functions."""
         if not self.name:
             raise AQDValidationError("Plugin should have a name.")
         if len(self.description) < 5:

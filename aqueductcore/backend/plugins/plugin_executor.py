@@ -6,15 +6,12 @@ can read environment variables and print to stdout.
 
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.models.plugin import (
     Plugin,
     PluginExecutionResult,
-    PluginFunction,
-    PluginParameter,
-    SupportedTypes,
 )
 from aqueductcore.backend.settings import settings
 
