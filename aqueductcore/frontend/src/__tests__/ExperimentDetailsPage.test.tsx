@@ -1,11 +1,12 @@
 import { render, waitFor } from "@testing-library/react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { dateFormatter } from "helper/formatters";
 import userEvent from "@testing-library/user-event";
+import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 
 test("render page with no error", async () => {
     render(
@@ -80,10 +81,12 @@ test("remove experiment button is present in archived experiments", async () => 
 });
 
 test("click on confirm deletion button results in experiment deletion", async () => {
-    const { findByText } = render(
+    const { findByText, queryByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
+                <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
+                <Route path="/" element={<Navigate replace to="/aqd/experiments" />} />
             </Routes>
         </AppContextAQDMock >);
 
@@ -94,4 +97,33 @@ test("click on confirm deletion button results in experiment deletion", async ()
     expect(confirmDeletionButton).toBeInTheDocument();
 
     await userEvent.click(confirmDeletionButton);
+
+    await waitFor(() => {
+        const deletedExperimentConfirmation = queryByText("Successfully deleted experiment");
+        expect(deletedExperimentConfirmation).toBeInTheDocument();
+    });
+});
+
+test("click on confirm fails for non existing experiment", async () => {
+    const { findByText, queryByText } = render(
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }} removeExperiment_mockMockMode="failed">
+            <Routes>
+                <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
+                <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
+                <Route path="/" element={<Navigate replace to="/aqd/experiments" />} />
+            </Routes>
+        </AppContextAQDMock >);
+
+    const deleteButton = await findByText("Delete");
+    await userEvent.click(deleteButton);
+
+    const confirmDeletionButton = await findByText("Confirm Deletion"); // Confirm Deletion
+    expect(confirmDeletionButton).toBeInTheDocument();
+
+    await userEvent.click(confirmDeletionButton);
+
+    await waitFor(() => {
+        const deletedExperimentConfirmation = queryByText("Failed To Delete experiment");
+        expect(deletedExperimentConfirmation).toBeInTheDocument();
+    });
 });
