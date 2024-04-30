@@ -274,8 +274,8 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         variables: {
           experimentId: experimentDetails.id
         },
-        onError() {
-          toast.error("Failed To Delete experiment", {
+        onError(error) {
+          toast.error(error.message, {
             id: "restore_error",
           });
         },
