@@ -105,7 +105,7 @@ test.skip("click on confirm deletion button results in experiment deletion", asy
 });
 
 test.skip("click on confirm fails for non existing experiment", async () => {
-    const { findByText, queryByText } = render(
+    const { findByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }} removeExperiment_mockMockMode="failed">
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
