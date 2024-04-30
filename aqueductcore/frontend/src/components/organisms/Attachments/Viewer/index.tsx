@@ -110,7 +110,7 @@ function Viewer({
               type: "JSON",
             });
           });
-        } else if (contentType?.includes("text/plain; charset=utf-8")) {
+        } else if (contentType?.includes("text/x-markdown")) {
           response.text().then((data) => {
             setInfo({
               data,
