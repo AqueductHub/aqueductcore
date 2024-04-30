@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
@@ -120,7 +120,9 @@ test("click on confirm fails for non existing experiment", async () => {
     const confirmDeletionButton = await findByText("Confirm Deletion"); // Confirm Deletion
     expect(confirmDeletionButton).toBeInTheDocument();
 
-    await userEvent.click(confirmDeletionButton);
+    await act(async () => {
+        await userEvent.click(confirmDeletionButton);
+    });
 
     await waitFor(() => {
         const deletedExperimentConfirmation = queryByText("Failed To Delete experiment");
