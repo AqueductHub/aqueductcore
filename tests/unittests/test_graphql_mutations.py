@@ -374,7 +374,10 @@ async def test_create_experiment_invalid_tags(
 
     assert resp.data is None
     assert resp.errors is not None
-    assert resp.errors[0].message == "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+    assert (
+        resp.errors[0].message
+        == "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+    )
 
 
 @pytest.mark.asyncio
@@ -559,8 +562,10 @@ async def test_remove_experiment(
 
 @pytest.mark.asyncio
 async def test_execute_plugin_stdout_ok(
-    db_session: AsyncSession, 
+    db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
 ):
     db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
@@ -605,8 +610,10 @@ async def test_execute_plugin_stdout_ok(
 
 @pytest.mark.asyncio
 async def test_execute_plugin_stderr_ok(
-    db_session: AsyncSession, 
+    db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
 ):
     db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
@@ -650,8 +657,10 @@ async def test_execute_plugin_stderr_ok(
 
 @pytest.mark.asyncio
 async def test_execute_plugin_failed_validation(
-    db_session: AsyncSession, 
-    experiments_data: List[ExperimentCreate]
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
 ):
     db_user = orm.User(id=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)

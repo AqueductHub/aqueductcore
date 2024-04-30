@@ -5,9 +5,8 @@ can read environment variables and print to stdout.
 """
 
 import logging
-from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List
 
 from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.models.plugin import (
@@ -15,27 +14,9 @@ from aqueductcore.backend.models.plugin import (
     PluginExecutionResult,
     PluginFunction,
     PluginParameter,
+    SupportedTypes,
 )
 from aqueductcore.backend.settings import settings
-
-
-class SupportedTypes(Enum):
-    """This enum contains allowed data types, which may be passed from
-    the GraphQL endpoint or specified in the manifest file."""
-
-    INT = "int"
-    STR = "str"
-    TEXTAREA = "textarea"
-    FLOAT = "float"
-    EXPERIMENT = "experiment"
-    FILE = "file"
-    BOOL = "bool"
-    SELECT = "select"
-
-    @staticmethod
-    def values() -> Set[str]:
-        """String values of the enum members."""
-        return set(map(str, SupportedTypes._value2member_map_))
 
 
 class PluginExecutor:
@@ -73,6 +54,7 @@ class PluginExecutor:
         for func in plugin.functions:
             cls._validate_function(func)
 
+    # pylint: disable=too-many-return-statements,too-many-branches
     @classmethod
     def _validate_single_variable(cls, arg: PluginParameter, value: str) -> str:
         if arg.data_type == SupportedTypes.INT.value:
@@ -103,16 +85,14 @@ class PluginExecutor:
                 return value
             if value in ("0", "false", "False", "FALSE"):
                 return "0"
-            elif value in ("1", "true", "True", "TRUE"):
+            if value in ("1", "true", "True", "TRUE"):
                 return "1"
-            else:
-                raise AQDValidationError(f"{value} is not bool.")
+            raise AQDValidationError(f"{value} is not bool.")
 
         if arg.data_type == SupportedTypes.SELECT.value:
             if value in arg.options:
                 return value
-            else:
-                raise AQDValidationError(f"{value} is not in {arg.options}.")
+            raise AQDValidationError(f"{value} is not in {arg.options}.")
 
         # for files, strings and textareas
         return value
@@ -155,17 +135,18 @@ class PluginExecutor:
 
     @classmethod
     def get_plugin(cls, plugin: str) -> Plugin:
+        """Returns plugin instance given its name.
+        
+        Args:
+            plugin: plugin name.
+
+        Returns:
+            Plugin instance. 
+        """
         plugins = [p for p in cls.list_plugins() if p.name == plugin]
         if len(plugins) != 1:
             raise AQDValidationError(f"There should be exactly 1 plugin with name {plugin}")
         return plugins[0]
-
-    @classmethod
-    def get_function(cls, plugin: Plugin, function: str) -> PluginFunction:
-        functions = [f for f in plugin.functions if f.name == function]
-        if len(functions) != 1:
-            raise AQDValidationError(f"There should be exactly 1 function with name {function}")
-        return functions[0]
 
     @classmethod
     def execute(cls, plugin: str, function: str, params: dict) -> PluginExecutionResult:
@@ -181,17 +162,6 @@ class PluginExecutor:
             PluginExecutionResult: results of process execution
         """
         plugin_object = cls.get_plugin(plugin)
-        function_object = cls.get_function(plugin_object, function)
+        function_object = plugin_object.get_function(function)
         cls._validate_values(func=function_object, params=params)
         return function_object.execute(plugin=plugin_object, params=params)
-
-    @classmethod
-    def get_default_experiment_id(cls, plugin: str, function: str, params: dict) -> str:
-        plugin_object = cls.get_plugin(plugin)
-        function_object = cls.get_function(plugin_object, function)
-        for variable in function_object.parameters:
-            if variable.data_type == SupportedTypes.EXPERIMENT.value:
-                return params[variable.name]
-        raise AQDValidationError(
-            "No experiment ID in plugin function"
-            f" {plugin}/{function} definition")

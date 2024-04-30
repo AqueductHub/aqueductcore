@@ -115,8 +115,11 @@ class Mutation:
         """
         dict_params = dict(params)
         context = cast(ServerContext, info.context)
+        plugin_object = PluginExecutor.get_plugin(plugin)
+        function_object = plugin_object.get_function(function)
+        exp_parameter = function_object.get_default_experiment_parameter()
+        exp_id = dict_params[exp_parameter.name]
         result = PluginExecutor.execute(plugin, function, dict_params)
-        exp_id = PluginExecutor.get_default_experiment_id(plugin, function, dict_params)
         experiment = await get_experiment_by_alias(
             user_info=context.user_info,
             db_session=context.db_session,
@@ -134,9 +137,9 @@ class Mutation:
         destination = os.path.join(experiment_dir, file_name)
 
         with open(destination, "w", encoding="utf-8") as dest:
-            dest.write("result code:\n%d\n======\n" % result.return_code)
-            dest.write("stdout:\n%s\n======\n" % result.stdout)
-            dest.write("stderr:\n%s\n======\n" % result.stderr)
+            dest.write(f"result code:\n{result.return_code}\n======\n")
+            dest.write(f"stdout:\n{result.stdout}\n======\n")
+            dest.write(f"stderr:\n{result.stderr}\n")
 
         return PluginExecutionResult(
             return_code=result.return_code,

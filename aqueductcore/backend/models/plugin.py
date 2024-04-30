@@ -3,17 +3,37 @@
 
 from __future__ import annotations
 
+from enum import Enum
 import os
 import subprocess
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Set
 
 import yaml
 from pydantic import BaseModel
 
-from aqueductcore.backend.errors import AQDFilesPathError
+from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
 
 MANIFEST_FILE = "manifest.yml"
+
+
+class SupportedTypes(Enum):
+    """This enum contains allowed data types, which may be passed from
+    the GraphQL endpoint or specified in the manifest file."""
+
+    INT = "int"
+    STR = "str"
+    TEXTAREA = "textarea"
+    FLOAT = "float"
+    EXPERIMENT = "experiment"
+    FILE = "file"
+    BOOL = "bool"
+    SELECT = "select"
+
+    @staticmethod
+    def values() -> Set[str]:
+        """String values of the enum members."""
+        return set(map(str, SupportedTypes._value2member_map_))
 
 
 class PluginExecutionResult(BaseModel):
@@ -109,6 +129,17 @@ class PluginFunction(yaml.YAMLObject):
                 stderr=err.decode(),
             )
 
+    def get_default_experiment_parameter(self) -> PluginParameter:
+        """Return first experiment variable defined in manifest.
+
+        Return:
+            plugin parameter object.
+        """
+        for variable in self.parameters:
+            if variable.data_type == SupportedTypes.EXPERIMENT.value:
+                return variable
+        raise AQDValidationError(f"Function {self.name} has no experiment parameters")
+
 
 class Plugin(yaml.YAMLObject):
     """Class representing a plugin"""
@@ -147,3 +178,17 @@ class Plugin(yaml.YAMLObject):
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
             return plugin
+
+    def get_function(self, name: str) -> PluginFunction:
+        """ Get plugin function by its name.
+
+        Args:
+            name: function name
+
+        Returns:
+            Plugin function object
+        """
+        functions = [f for f in self.functions if f.name == name]
+        if len(functions) != 1:
+            raise AQDValidationError(f"There should be exactly 1 function with name {name}")
+        return functions[0]
