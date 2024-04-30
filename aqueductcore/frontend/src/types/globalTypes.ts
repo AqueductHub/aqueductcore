@@ -143,7 +143,7 @@ export type ExperimentFileType = {
   modifiedAt: ExperimentFile["modifiedAt"];
 };
 
-export type PreviewFilesType = "JSON" | "image/png" | "image/jpeg" | "file";
+export type PreviewFilesType = "JSON" | "MARKDOWN" | "image/png" | "image/jpeg" | "file";
 export type ExperimentRecordsPageType = "all" | "favourites" | "archived";
 
 export interface ExperimentsListTableProps extends ExperimentDataType {

@@ -10,21 +10,21 @@ import Attachments from ".";
 test("render page with no files", () => {
     render(
         <AppContextAQDMock>
-            <Attachments experimentsFiles={[]} />
+            <Attachments experimentId={ExperimentDataMock[0].id} experimentFiles={[]} />
         </AppContextAQDMock >)
 });
 
 test("render page with some files", () => {
     render(
         <AppContextAQDMock>
-            <Attachments experimentsFiles={ExperimentDataMock[0].files} />
+            <Attachments experimentId={ExperimentDataMock[0].id} experimentFiles={ExperimentDataMock[0].files} />
         </AppContextAQDMock >)
 });
 
 test("render page with right default modifiedAt descending order", () => {
     const { getAllByRole } = render(
         <AppContextAQDMock>
-            <Attachments experimentsFiles={ExperimentDataMock[0].files} />
+            <Attachments experimentId={ExperimentDataMock[0].id} experimentFiles={ExperimentDataMock[0].files} />
         </AppContextAQDMock >)
     const tableCells = getAllByRole("cell");
     const sortedFromMock = ExperimentDataMock[0].files.sort((a, b) => new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime()).flatMap(item => [item.name, dateFormatter(new Date(item.modifiedAt))]) //Descending
@@ -35,7 +35,7 @@ test("render page with right default modifiedAt descending order", () => {
 test("render page with right default modifiedAt acsending order", async () => {
     const { getAllByRole, getByText } = render(
         <AppContextAQDMock>
-            <Attachments experimentsFiles={ExperimentDataMock[0].files} />
+            <Attachments experimentId={ExperimentDataMock[0].id} experimentFiles={ExperimentDataMock[0].files} />
         </AppContextAQDMock >)
 
     const dateModifiedColHeader = getByText(headCells[1]['label']); // get modifiedAt HeaderCell
