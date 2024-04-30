@@ -68,7 +68,7 @@ test("render page when the edit is not allowed", async () => {
     });
 });
 
-test.skip("remove experiment button is present in archived experiments", async () => {
+test("remove experiment button is present in archived experiments", async () => {
     const { findByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
             <Routes>
@@ -80,7 +80,7 @@ test.skip("remove experiment button is present in archived experiments", async (
     expect(deleteButton).toBeInTheDocument();
 });
 
-test.skip("click on confirm deletion button results in experiment deletion", async () => {
+test("click on confirm deletion button results in experiment deletion", async () => {
     const { findByText, queryByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
             <Routes>
