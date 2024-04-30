@@ -58,7 +58,7 @@ class TestPluginExecutor:
         else:
             plugin = plugins[1]
         func = plugin.functions[0]
-        PluginExecutor._validate_values(func, value)
+        func.validate_values(value)
 
     @pytest.mark.parametrize(
         "value",
@@ -115,10 +115,12 @@ class TestPluginExecutor:
     )
     def test_validate_values_raises(self, value):
         plugins = PluginExecutor.list_plugins()
-        plugin = plugins[0]
-        func = plugin.functions[0]
+        if plugins[0].name == "Dummy plugin":
+            plugin = plugins[0]
+        else:
+            plugin = plugins[1]
         with pytest.raises(AQDValidationError):
-            PluginExecutor._validate_values(func, value)
+            plugin.functions[0].validate_values(value)
 
     @pytest.mark.parametrize(
         "plugin",
@@ -165,7 +167,7 @@ class TestPluginExecutor:
         ],
     )
     def test_plugin_validation_ok(self, plugin):
-        PluginExecutor._validate_plugin(plugin)
+        plugin.validate()
 
     @pytest.mark.parametrize(
         "plugin",
@@ -234,4 +236,4 @@ class TestPluginExecutor:
     )
     def test_plugin_validation_raises(self, plugin):
         with pytest.raises(AQDValidationError):
-            PluginExecutor._validate_plugin(plugin)
+            plugin.validate()

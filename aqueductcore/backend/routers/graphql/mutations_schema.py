@@ -119,7 +119,7 @@ class Mutation:
         function_object = plugin_object.get_function(function)
         exp_parameter = function_object.get_default_experiment_parameter()
         exp_id = dict_params[exp_parameter.name]
-        result = PluginExecutor.execute(plugin, function, dict_params)
+        result = function_object.execute(plugin_object, dict_params, timeout=600)
         experiment = await get_experiment_by_alias(
             user_info=context.user_info,
             db_session=context.db_session,

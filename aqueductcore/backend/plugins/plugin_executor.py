@@ -22,100 +22,6 @@ from aqueductcore.backend.settings import settings
 class PluginExecutor:
     """Class to access plugins."""
 
-    @classmethod
-    def _validate_parameter(cls, param: PluginParameter):
-        if not param.name:
-            raise AQDValidationError("Parameter should have a name.")
-        if not param.description:
-            raise AQDValidationError("Parameter should have a description.")
-        if param.data_type not in SupportedTypes.values():
-            raise AQDValidationError(
-                f"Type should be one of {SupportedTypes.values()}"
-                f"but was {param.data_type}"
-        )
-        if param.default_value:
-            param.default_value = cls._validate_single_variable(param, param.default_value)
-
-    @classmethod
-    def _validate_function(cls, func: PluginFunction):
-        if not func.name:
-            raise AQDValidationError("Plugin function should have a name.")
-        if len(func.description) < 5:
-            raise AQDValidationError("Function should have a meaningful description")
-        for param in func.parameters:
-            cls._validate_parameter(param)
-
-    @classmethod
-    def _validate_plugin(cls, plugin: Plugin):
-        if not plugin.name:
-            raise AQDValidationError("Plugin should have a name.")
-        if len(plugin.description) < 5:
-            raise AQDValidationError("Plugin should have a meaningful description.")
-        for func in plugin.functions:
-            cls._validate_function(func)
-
-    # pylint: disable=too-many-return-statements,too-many-branches
-    @classmethod
-    def _validate_single_variable(cls, arg: PluginParameter, value: str) -> str:
-        if arg.data_type == SupportedTypes.INT.value:
-            try:
-                int(value)
-                return value
-            except Exception as exc:
-                raise AQDValidationError(f"{value} is not decimal.") from exc
-
-        if arg.data_type == SupportedTypes.FLOAT.value:
-            try:
-                float(value)
-                return value
-            except Exception as exc:
-                raise AQDValidationError(f"{value} is not a floating point number.") from exc
-
-        if arg.data_type == SupportedTypes.EXPERIMENT.value:
-            try:
-                prefix, postfix = value.split("-")
-                if not prefix.isdecimal() or not postfix.isalnum():
-                    raise AQDValidationError("Experiment alias has wrong format.")
-                return value
-            except Exception as exc:
-                raise AQDValidationError(f"{value} is not a valid experiment alias.") from exc
-
-        if arg.data_type == SupportedTypes.BOOL.value:
-            if value == "":
-                return value
-            if value in ("0", "false", "False", "FALSE"):
-                return "0"
-            if value in ("1", "true", "True", "TRUE"):
-                return "1"
-            raise AQDValidationError(f"{value} is not bool.")
-
-        if arg.data_type == SupportedTypes.SELECT.value:
-            if value in arg.options:
-                return value
-            raise AQDValidationError(f"{value} is not in {arg.options}.")
-
-        # for files, strings and textareas
-        return value
-
-    @classmethod
-    def _validate_values(cls, func: PluginFunction, params: Dict[str, str]):
-        # do keys coincide?
-        provided_keys = set(params)
-        expected_keys = set(param.name for param in func.parameters)
-        if expected_keys != provided_keys:
-            raise AQDValidationError(
-                "Parameters error: keys don't match expected set. "
-                f"Missing keys: {expected_keys - provided_keys}; "
-                f"Unexpected keys: {provided_keys - expected_keys}"
-            )
-        for arg in func.parameters:
-            value = params[arg.name]
-            default_value = arg.default_value
-            # what if default value is also given with an error?
-            if default_value:
-                arg.default_value = cls._validate_single_variable(arg, default_value)
-            params[arg.name] = cls._validate_single_variable(arg, value)
-
     # cache ttl can be managed
     # https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live
     @classmethod
@@ -126,7 +32,7 @@ class PluginExecutor:
             if directory.exists():
                 try:
                     plugin = Plugin.from_folder(directory)
-                    cls._validate_plugin(plugin)
+                    plugin.validate()
                     result.append(plugin)
                 except AQDValidationError as err:
                     logging.error(err)
@@ -163,5 +69,4 @@ class PluginExecutor:
         """
         plugin_object = cls.get_plugin(plugin)
         function_object = plugin_object.get_function(function)
-        cls._validate_values(func=function_object, params=params)
         return function_object.execute(plugin=plugin_object, params=params)
