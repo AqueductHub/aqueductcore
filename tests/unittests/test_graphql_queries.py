@@ -291,7 +291,7 @@ all_plugins_query = """
   {
     plugins {
         authors, description, name
-        functions { description, name }
+        functions { description, name, experimentVariableName }
     }
   }
 """
@@ -912,3 +912,5 @@ async def test_plugins():
     p_dummy = resp.data["plugins"][0]
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
     assert len(p_dummy["functions"]) == 2
+    print(p_dummy)
+    assert p_dummy["functions"][0]["experimentVariableName"] == "var4"

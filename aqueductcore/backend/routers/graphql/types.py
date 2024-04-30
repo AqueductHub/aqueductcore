@@ -112,6 +112,7 @@ class PluginFunctionInfo:
     name: str
     description: str
     parameters: List[PluginParameterType]
+    experiment_variable_name: Optional[str]
 
 @strawberry.type
 class PluginExecutionResult:
@@ -137,24 +138,33 @@ class PluginInfo:
     def from_plugin(plugin: Plugin):
         """Generates a plugin information object for a plugin model."""
 
+        functions = []
+        for function in plugin.functions:
+            parameters = []
+            for parameter in function.parameters:
+                parameters.append(
+                    PluginParameterType(
+                        name=parameter.name,
+                        description=parameter.description,
+                        data_type=parameter.data_type,
+                        default_value=parameter.default_value,
+                    )
+                )
+            var = function.get_default_experiment_parameter()
+            varname = None
+            if var is not None:
+                varname = var.name
+            functions.append(
+                PluginFunctionInfo(
+                    name=function.name,
+                    description=function.description,
+                    parameters=parameters,
+                    experiment_variable_name=varname,
+                )
+            )
         return PluginInfo(
             name=plugin.name,
             description=plugin.description,
             authors=plugin.authors,
-            functions=[
-                PluginFunctionInfo(
-                    name=func.name,
-                    description=func.description,
-                    parameters=[
-                        PluginParameterType(
-                            name=param.name,
-                            description=param.description,
-                            data_type=param.data_type,
-                            default_value=param.default_value,
-                        )
-                        for param in func.parameters
-                    ]
-                )
-                for func in plugin.functions
-            ]
+            functions=functions,
         )

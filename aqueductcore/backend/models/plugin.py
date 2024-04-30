@@ -188,7 +188,7 @@ class PluginFunction(yaml.YAMLObject):
                 stderr=err.decode(),
             )
 
-    def get_default_experiment_parameter(self) -> PluginParameter:
+    def get_default_experiment_parameter(self) -> Optional[PluginParameter]:
         """Return first experiment variable defined in manifest.
 
         Return:
@@ -197,7 +197,7 @@ class PluginFunction(yaml.YAMLObject):
         for variable in self.parameters:
             if variable.data_type == SupportedTypes.EXPERIMENT.value:
                 return variable
-        raise AQDValidationError(f"Function {self.name} has no experiment parameters")
+        return None
 
     def validate(self):
         """Validate the instance of the function and its parameters."""
