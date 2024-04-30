@@ -12,9 +12,11 @@ import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/getAllExper
 import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
 import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
 import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
+import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock";
 import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
 import { getExperiment_mock } from "__mocks__/queries/getExperimentByIdMock";
 import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
+import { Toaster } from "react-hot-toast";
 import { cssVariableTheme } from "theme";
 
 interface AppContextAQDMockProps {
@@ -26,6 +28,7 @@ interface AppContextAQDMockProps {
   getAllExperimentsWithStartTime_mockMockMode?: keyof typeof getAllExperimentsWithStartTime_mock;
   getAllExperimentsWithEndTime_mockMockMode?: keyof typeof getAllExperimentsWithEndTime_mock;
   updateExperiment_mockMockMode?: keyof typeof updateExperiment_mock;
+  removeExperiment_mockMockMode?: keyof typeof removeExperiment_mock;
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
@@ -40,6 +43,7 @@ function AppContextAQDMock({
   getAllExperimentsWithStartTime_mockMockMode = "success",
   getAllExperimentsWithEndTime_mockMockMode = "success",
   updateExperiment_mockMockMode = "success",
+  removeExperiment_mockMockMode = "success",
   getExperimentFiles_mockMockMode = "success",
   getUserInformation_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
@@ -81,6 +85,7 @@ function AppContextAQDMock({
     ...getAllExperimentsWithStartTime_mock[getAllExperimentsWithStartTime_mockMockMode],
     ...getAllExperimentsWithEndTime_mock[getAllExperimentsWithEndTime_mockMockMode],
     ...updateExperiment_mock[updateExperiment_mockMockMode],
+    ...removeExperiment_mock[removeExperiment_mockMockMode],
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     getExperiment_mock[getExperiment_mockMockMode],
   ];
@@ -91,6 +96,7 @@ function AppContextAQDMock({
         <MemoryRouter {...memoryRouterProps}>
           <CssBaseline />
           {children}
+          <Toaster />
         </MemoryRouter>
         {/* </BrowserRouter> */}
       </CssVarsProvider>

@@ -94,6 +94,9 @@ export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
   id: ExperimentDataType["id"];
   tags: ExperimentDataType["tags"];
 };
+export type REMOVE_EXPERIMENT_TYPE = {
+  id: ExperimentDataType["id"];
+}
 
 //############### Experiment types ###############//
 export type TagType = string;

@@ -4,9 +4,9 @@ import { Box, styled } from "@mui/material";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import { useGetExperimentById } from "API/graphql/queries/getExperimentById";
 import ExperimentDetails from "components/organisms/ExperimentDetails";
-import { useParams } from "react-router-dom";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
+import { useParams } from "react-router-dom";
 
 const Container = styled(Box)`
   margin: -${mainPadding}px;
