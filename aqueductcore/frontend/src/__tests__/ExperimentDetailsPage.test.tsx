@@ -1,12 +1,12 @@
-import { render, waitFor } from "@testing-library/react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { dateFormatter } from "helper/formatters";
-import userEvent from "@testing-library/user-event";
-import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 
 test("render page with no error", async () => {
     render(

@@ -16,8 +16,8 @@ import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock"
 import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
 import { getExperiment_mock } from "__mocks__/queries/getExperimentByIdMock";
 import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
-import { cssVariableTheme } from "theme";
 import { Toaster } from "react-hot-toast";
+import { cssVariableTheme } from "theme";
 
 interface AppContextAQDMockProps {
   children: PropsWithChildren["children"];

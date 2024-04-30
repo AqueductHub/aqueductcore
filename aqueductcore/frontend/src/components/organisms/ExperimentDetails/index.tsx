@@ -26,6 +26,7 @@ import {
 
 import { dateFormatter, isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
+import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
@@ -33,7 +34,6 @@ import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExpe
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { EditTags } from "components/molecules/EditTags";
