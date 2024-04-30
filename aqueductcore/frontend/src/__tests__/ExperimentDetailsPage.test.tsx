@@ -99,13 +99,13 @@ test("click on confirm deletion button results in experiment deletion", async ()
     await userEvent.click(confirmDeletionButton);
 
     await waitFor(() => {
-        const deletedExperimentConfirmation = queryByText("Successfully deleted experiment");
+        const deletedExperimentConfirmation = queryByText(/Successfully deleted experiment/);
         expect(deletedExperimentConfirmation).toBeInTheDocument();
     });
 });
 
-test.skip("click on confirm fails for non existing experiment", async () => {
-    const { findByText } = render(
+test.only("click on confirm fails for non existing experiment", async () => {
+    const { findByText, queryByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }} removeExperiment_mockMockMode="failed">
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
@@ -121,4 +121,9 @@ test.skip("click on confirm fails for non existing experiment", async () => {
     expect(confirmDeletionButton).toBeInTheDocument();
 
     await userEvent.click(confirmDeletionButton);
+
+    await waitFor(() => {
+        const deletedExperimentConfirmation = queryByText(/Non-existing experiment with the specified ID for the user./);
+        expect(deletedExperimentConfirmation).toBeInTheDocument();
+    });
 });

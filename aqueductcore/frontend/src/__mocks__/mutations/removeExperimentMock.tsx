@@ -41,6 +41,7 @@ export const removeExperiment_mock = {
           }
         ]
       },
+      maxUsageCount: Number.POSITIVE_INFINITY,
     },
   ],
 };
