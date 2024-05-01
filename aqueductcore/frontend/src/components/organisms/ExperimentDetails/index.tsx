@@ -1,11 +1,14 @@
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { useLocation, useNavigate } from "react-router-dom";
 import RestoreIcon from "@mui/icons-material/Restore";
 import LinkIcon from "@mui/icons-material/Link";
 import StarIcon from "@mui/icons-material/Star";
+import Modal from '@mui/material/Modal';
 import toast from "react-hot-toast";
 import { useState } from "react";
 import {
@@ -18,17 +21,19 @@ import {
   Chip,
   List,
   Box,
+  Alert,
 } from "@mui/material";
 
+import { dateFormatter, isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
+import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
-import { isArchived, isFavourite, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
+import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExperiment";
 import { ARCHIVED, FAVOURITE, MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-import { isUserAbleToEditExperiment } from "helper/auth/userScope";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { EditTags } from "components/molecules/EditTags";
@@ -80,6 +85,24 @@ const ExperimentDetailsContent = styled(Typography)`
   line-height: ${(props) => `${props.theme.spacing(3)}`};
 `;
 
+const DeleteExperimentAlert = styled(Alert)`
+  padding: ${(props) => `${props.theme.spacing(0.5)}`} ${(props) => `${props.theme.spacing(1)}`} ${(props) => `${props.theme.spacing(0.5)}`} ${(props) => `${props.theme.spacing(1)}`};
+`;
+
+const DeleteExperimentBox = styled(Box)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.common.black
+      : props.theme.palette.common.white};
+  box-shadow: 24;
+  padding: ${(props) => props.theme.spacing(4)};
+`;
+
 interface ExperimentDetailsProps {
   experimentDetails: ExperimentDataType;
 }
@@ -92,7 +115,11 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: userInfo } = useGetCurrentUserInfo()
+  const [isDeleteExperimentModalOpen, setDeleteExperimentModalOpen] = useState(false);
+  const handleOpen = () => setDeleteExperimentModalOpen(true);
+  const handleCloseDeleteExperimentModal = () => setDeleteExperimentModalOpen(false);
   const isEditable = Boolean(userInfo && isUserAbleToEditExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
+  const isDeletable = Boolean(userInfo && isUserAbleToDeleteExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
 
   const handleTagUpdate = (updatedTagsList: TagType[]) => {
     if (selectedTags.length < updatedTagsList.length) {
@@ -135,6 +162,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const { loading: updateExperimentLoading, mutate: mutateExperiment } = useUpdateExperiment();
   const { loading: addTagLoading, mutate: mutateAddTag } = useAddTagToExperiment();
   const { loading: removeTagLoading, mutate: mutateRemoveTag } = useRemoveTagFromExperiment();
+  const { loading: removeExperimentLoading, mutate: mutateRemoveExperiment } = useRemoveExperiment();
 
   const handleExperimentTitleUpdate = (value: string) => {
     mutateExperiment({
@@ -238,6 +266,27 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         });
       },
     });
+  };
+
+  const handleDeleteExperiment = () => {
+    if (!removeExperimentLoading) {
+      mutateRemoveExperiment({
+        variables: {
+          experimentId: experimentDetails.id
+        },
+        onError(error) {
+          toast.error(error.message, {
+            id: "restore_error",
+          });
+        },
+        onCompleted() {
+          toast.success("Successfully deleted experiment", {
+            id: "restore_error",
+          });
+          navigate("/")
+        },
+      })
+    }
   };
 
   function handleCopyToClipboard() {
@@ -375,6 +424,46 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                 </BorderedButtonWithIcon>
               )}
             </Grid>
+            {isArchived(experimentDetails.tags) && <Grid item>
+              <BorderedButtonWithIcon
+                disabled={!isDeletable}
+                variant="outlined"
+                size="small"
+                color="error"
+                startIcon={<DeleteForeverOutlinedIcon color="error" />}
+                sx={{ ml: 1 }}
+                onClick={handleOpen}
+              >
+                Delete
+              </BorderedButtonWithIcon>
+              <Modal
+                open={isDeleteExperimentModalOpen}
+                onClose={handleCloseDeleteExperimentModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <DeleteExperimentBox>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Delete Experiment
+                  </Typography>
+                  <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1.5 }}>
+                    Are you sure you want to delete this experiment?
+                  </Typography>
+                  <DeleteExperimentAlert variant="outlined" severity="warning" icon={<WarningAmberIcon sx={{ mr: -0.5 }} fontSize="small" />} >
+                    This action cannot be undone.
+                  </DeleteExperimentAlert>
+                  <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                    <Grid item>
+                      <Button variant="contained" color="error" onClick={handleDeleteExperiment}>Confirm Deletion</Button>
+                    </Grid>
+                    <Grid item>
+                      <Button variant="contained" color="neutral" onClick={handleCloseDeleteExperimentModal}>Cancel</Button>
+                    </Grid>
+                    <Grid item></Grid>
+                  </Grid>
+                </DeleteExperimentBox>
+              </Modal>
+            </Grid>}
           </Box>
         </Grid>
       </Grid>
@@ -387,7 +476,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
             </ListItem>
             <ListItem sx={{ pl: 1, pr: 1 }}>
               <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
-              <ExperimentDetailsContent>{experimentDetails.createdAt}</ExperimentDetailsContent>
+              <ExperimentDetailsContent>{dateFormatter(new Date(experimentDetails.createdAt))}</ExperimentDetailsContent>
             </ListItem>
           </List>
         </Grid>

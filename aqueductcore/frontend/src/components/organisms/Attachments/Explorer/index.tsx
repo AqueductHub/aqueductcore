@@ -1,14 +1,17 @@
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
+import { Box, TableSortLabel, styled } from "@mui/material";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import TableContainer from "@mui/material/TableContainer";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Box, styled } from "@mui/material";
+import { useMemo, useState } from "react";
 import Table from "@mui/material/Table";
 
+import { SortOrder, selectedFileType } from "types/componentTypes";
+import { getComparator, stableSort } from "helper/functions";
 import { ExperimentFileType } from "types/globalTypes";
 import { dateFormatter } from "helper/formatters";
 
@@ -30,28 +33,38 @@ const ExplorerTableHead = styled(TableHead)`
       : props.theme.palette.background.paper};
 `;
 
+const HeaderCell = styled(TableCell)`
+  font-weight: 600;
+  padding: ${(props) => props.theme.spacing(1.5)} ${(props) => props.theme.spacing(1.25)};
+`;
+
 const FileNameCell = styled(TableCell)`
   font-weight: 600;
   padding: ${(props) => props.theme.spacing(1.5)} ${(props) => props.theme.spacing(1.25)};
   cursor: pointer;
 `;
 
-const FileNameHeaderCell = styled(TableCell)`
-  font-weight: 600;
-  padding: ${(props) => props.theme.spacing(1.5)} ${(props) => props.theme.spacing(1.25)};
-`;
-
 const DateAddedCell = styled(TableCell)`
   max-width: ${(props) => props.theme.spacing(6)};
   padding: ${(props) => props.theme.spacing(1.5)} ${(props) => props.theme.spacing(1.25)};
+  cursor: pointer;
 `;
 
-const DateAddedHeaderCell = styled(TableCell)`
-  max-width: ${(props) => props.theme.spacing(6)};
-  min-width: ${(props) => props.theme.spacing(6)};
-  padding: ${(props) => props.theme.spacing(1.5)} ${(props) => props.theme.spacing(1.25)};
-  font-weight: 600;
-`;
+interface HeadCell {
+  id: keyof ExperimentFileType;
+  label: string;
+}
+
+export const headCells: readonly HeadCell[] = [
+  {
+    id: 'name',
+    label: 'File name',
+  },
+  {
+    id: 'modifiedAt',
+    label: 'Date added',
+  }
+];
 
 function Explorer({
   files,
@@ -59,9 +72,12 @@ function Explorer({
   selectedItem,
 }: {
   files: ExperimentFileType[];
-  handleSelectFile: (fileIndex: number) => void;
-  selectedItem: number;
+  handleSelectFile: (fileId: ExperimentFileType['modifiedAt'] | undefined) => void;
+  selectedItem: selectedFileType;
 }) {
+  const [order, setOrder] = useState<SortOrder>('desc');
+  const [orderBy, setOrderBy] = useState<keyof ExperimentFileType>('modifiedAt');
+
   const getFileIcon = (name: string) => {
     switch (name.split(".").pop()) {
       case "png":
@@ -84,6 +100,18 @@ function Explorer({
     }
   };
 
+  const createSortHandler =
+    (property: keyof ExperimentFileType) => () => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
+    };
+
+  const visibleRows = useMemo(() =>
+    stableSort(files, getComparator(order, orderBy)),
+    [order, orderBy],
+  );
+
   return (
     <ExplorerBox>
       <TableContainer
@@ -92,24 +120,40 @@ function Explorer({
         <Table stickyHeader>
           <ExplorerTableHead>
             <TableRow>
-              <FileNameHeaderCell>File name</FileNameHeaderCell>
-              <DateAddedHeaderCell>Date added</DateAddedHeaderCell>
+              {headCells.map((headCell) => (
+                <HeaderCell
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
+                  sx={headCell.id === 'modifiedAt' ? {
+                    maxWidth: 6,
+                    minWidth: 6
+                  } : null}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : 'asc'}
+                    onClick={createSortHandler(headCell.id)}
+                  >
+                    {headCell.label}
+                  </TableSortLabel>
+                </HeaderCell>
+              ))}
             </TableRow>
           </ExplorerTableHead>
           <TableBody>
-            {files.map((row, index) => (
+            {visibleRows.map((row, index) => (
               <TableRow
                 hover={selectedItem !== index}
                 key={row.name}
-                onClick={() => handleSelectFile(index)}
+                onClick={() => handleSelectFile(row.modifiedAt)}
                 sx={
-                  selectedItem === index
+                  selectedItem === row.modifiedAt
                     ? { backgroundColor: "var(--mui-palette-fill-primaryFillPrimaryTransparent)" }
                     : null
                 }
               >
                 <FileNameCell>
-                  {getFileIcon(row.name)}
+                  {getFileIcon(String(row.name))}
                   {row.name}
                 </FileNameCell>
                 <DateAddedCell>{dateFormatter(new Date(row.modifiedAt))}</DateAddedCell>

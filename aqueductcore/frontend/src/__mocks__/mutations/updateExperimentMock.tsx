@@ -22,6 +22,7 @@ export const updateExperiment_mock = {
           },
         },
       },
+      maxUsageCount: Number.POSITIVE_INFINITY,
     },
   ],
 };

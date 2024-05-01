@@ -16,10 +16,10 @@
     "nuke": "rm package-lock.json && rm yarn.lock && rm -rf node_modules && rm -rf coverage && rm -rf build",
     "lint": "yarn lint:eslint && yarn lint:prettier",
     "format": "yarn format:eslint && yarn format:prettier",
-    "lint:eslint": "eslint --ext .js,.ts,.tsx,.html src/ --ignore-path .eslintignore",
-    "format:eslint": "eslint --ext .js,.ts,.tsx,.html src/ --fix --ignore-path .eslintignore",
-    "lint:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --check --ignore-path .eslintignore",
-    "format:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --write --ignore-path .eslintignore",
+    "lint:eslint": "eslint --ext .js,.ts,.tsx,.html src/",
+    "format:eslint": "eslint --ext .js,.ts,.tsx,.html src/ --fix",
+    "lint:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --check",
+    "format:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --write",
     "check-licenses": "license-report --output=html --only=prod,dev --fields=name --fields=installedVersion --fields=licenseType"
   },
   "dependencies": {

@@ -21,3 +21,16 @@ export function isUserAbleToEditExperiment(userInfo: UserInfo, createdBy: Experi
     }
     return false
 }
+
+export function isUserAbleToDeleteExperiment(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
+    for (const item of userInfo.scopes) {
+        if (
+            item === defined_scopes.EXPERIMENT_DELETE_ALL ||
+            item === defined_scopes.EXPERIMENT_DELETE_OWN && userInfo.username === createdBy
+        ) {
+            return true
+        }
+    }
+    return false
+}
+
