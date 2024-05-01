@@ -21,6 +21,7 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
 )
+from aqueductcore.backend.services.utils import generate_content_type
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
@@ -49,6 +50,8 @@ async def download_experiment_file(
             raise HTTPException(status_code=404, detail="The requested file is not found.")
 
         response = FileResponse(file_path, stat_result=os.stat(file_path))
+
+        response.headers["Content-Type"] = generate_content_type(file_name)
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
     except AQDDBExperimentNonExisting as error:
