@@ -53,19 +53,21 @@ class PluginParameter(yaml.YAMLObject):
     def __init__(
             self,
             name: str,
-            description: str,
             data_type: str,
+            display_name: str = "",
+            description: str = "",
             default_value: str = "",
             options: Optional[List[str]] = None,
     ):
         self.name = str(name)
+        self.display_name = str(display_name)
         self.description = str(description)
         self.data_type = str(data_type)
         self.default_value = str(default_value)
         self.options = list(map(str, options or []))
 
     def __str__(self):
-        return f"{self.description} ({self.name}: {self.data_type})"
+        return f"{self.display_name} ({self.name}: {self.data_type})"
 
     def __repr__(self):
         return f"<{str(self)}>"

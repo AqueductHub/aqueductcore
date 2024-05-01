@@ -9,9 +9,13 @@ class TestPluginExecutor:
         plugins = PluginExecutor.list_plugins()
         assert len(plugins) == 1
         var1 = plugins[0].functions[0].parameters[0]
-        assert var1.default_value == "1" and var1.name == "var1"
+        var2 = plugins[0].functions[0].parameters[1]
         var6 = plugins[0].functions[0].parameters[5]
+
+        assert var1.default_value == "1" and var1.name == "var1"
+        assert var2.display_name == "some display name"
         assert var6.default_value == "1" and var6.name == "var6"
+
 
     @pytest.mark.parametrize(
         "value",

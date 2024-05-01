@@ -26,6 +26,7 @@ functions:
           name: var2
           description: variable 2
           data_type: int
+          display_name: some display name
       - !!python/object/apply:aqueductcore.PluginParameter
         kwds:
           name: var3
