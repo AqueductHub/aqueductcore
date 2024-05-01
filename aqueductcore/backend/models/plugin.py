@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import yaml
 from pydantic import BaseModel
@@ -72,6 +72,7 @@ class PluginFunction(yaml.YAMLObject):
             PluginExecutionResult: OS process results.
         """
         my_env = os.environ.copy()
+        my_env.update({key: str(val) for key, val in (plugin.params or {}).items()})
         my_env.update(params)
         my_env["aqueduct_url"] = plugin.aqueduct_url
         if plugin.aqueduct_key is not None:
@@ -96,6 +97,7 @@ class PluginFunction(yaml.YAMLObject):
             )
 
 
+# pylint: disable=too-many-instance-attributes,too-many-arguments
 class Plugin(yaml.YAMLObject):
     """Class representing a plugin"""
 
@@ -104,7 +106,7 @@ class Plugin(yaml.YAMLObject):
 
     def __init__(
         self, name: str, description: str, authors: str, functions: List[PluginFunction],
-        aqueduct_url: str,
+        aqueduct_url: str, params: Dict[str, Any],
     ):
         super().__init__()
         self.name = name
@@ -112,6 +114,7 @@ class Plugin(yaml.YAMLObject):
         self.authors = authors
         self.functions = functions
         self.aqueduct_url = aqueduct_url
+        self.params = params
         self.manifest_file = None
         self.aqueduct_key = None
 

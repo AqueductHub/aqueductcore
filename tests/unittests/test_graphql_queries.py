@@ -908,7 +908,10 @@ async def test_plugins():
     schema = Schema(query=Query)
     resp = await schema.execute(all_plugins_query)
     assert resp.errors is None
-    assert len(resp.data["plugins"]) == 1
-    p_dummy = resp.data["plugins"][0]
+    assert len(resp.data["plugins"]) == 2
+    if resp.data["plugins"][0]["name"] == "Dummy plugin":
+        p_dummy = resp.data["plugins"][0]
+    else:
+        p_dummy = resp.data["plugins"][1]
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
     assert len(p_dummy["functions"]) == 2
