@@ -235,7 +235,7 @@ class Plugin(yaml.YAMLObject):
 
     def __init__(
         self, name: str, description: str, authors: str, functions: List[PluginFunction],
-        aqueduct_url: str, params: Dict[str, Any],
+        aqueduct_url: str, params: Dict[str, Any] = {},
     ):
         super().__init__()
         self.name = name

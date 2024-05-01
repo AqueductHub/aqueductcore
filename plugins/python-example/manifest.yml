@@ -41,15 +41,18 @@ functions:
 
     # arguments of the function
     parameters:
-      - !parameter
-        name: equation
-        description: equation to solve
-        data_type: str
-      - !parameter
-        name: experiment
-        description: experiment to store result
-        data_type: experiment
-      - !parameter
-        name: result_file
-        description: file name to store result
-        data_type: str
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: equation
+          description: equation to solve
+          data_type: str
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: experiment
+          description: experiment to store result
+          data_type: experiment
+      - !!python/object/apply:aqueductcore.PluginParameter
+        kwds:
+          name: result_file
+          description: file name to store result
+          data_type: str

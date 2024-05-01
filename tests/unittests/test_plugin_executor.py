@@ -3,9 +3,8 @@ import pytest
 from aqueductcore.backend.plugins import PluginExecutor
 from pathlib import Path
 
-from aqueductcore.backend.model.plugin import (
+from aqueductcore.backend.models.plugin import (
     Plugin,
-    PluginExecutor,
     PluginFunction,
     PluginParameter,
     SupportedTypes,
@@ -165,7 +164,7 @@ class TestPluginExecutor:
                             PluginParameter(
                                 name="var1",
                                 description="descr",
-                                data_type=SupportedTypes.MULTILINE.value,
+                                data_type=SupportedTypes.TEXTAREA.value,
                             )
                         ],
                     ),
@@ -175,7 +174,7 @@ class TestPluginExecutor:
         ],
     )
     def test_plugin_validation_ok(self, plugin):
-        PluginExecutor._validate_plugin(plugin)
+        plugin.validate()
 
     @pytest.mark.parametrize(
         "plugin",
@@ -246,7 +245,7 @@ class TestPluginExecutor:
     )
     def test_plugin_validation_raises(self, plugin):
         with pytest.raises(AQDValidationError):
-            PluginExecutor._validate_plugin(plugin)
+            plugin.validate()
 
     @pytest.mark.skip
     def test_plugin_wolfram_alpha(self):
