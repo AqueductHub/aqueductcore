@@ -5,9 +5,9 @@ import { Grid, Typography, styled } from "@mui/material";
 // import { Divider } from "@mui/material";
 import { useState } from "react";
 
+import { ExperimentFileType } from "types/globalTypes";
 import Explorer from "./Explorer";
 import Viewer from "./Viewer";
-import { ExperimentFileType } from "types/globalTypes";
 
 const SectionTitle = styled(Typography)`
   font-size: 1.15rem;
@@ -30,7 +30,7 @@ interface AttachmentProps {
 }
 
 function Attachments({ experimentsFiles }: AttachmentProps) {
-  const [selectedItem, setSelectedItem] = useState(-1);
+  const [selectedItem, setSelectedItem] = useState();
 
   return (
     <>
@@ -80,7 +80,7 @@ function Attachments({ experimentsFiles }: AttachmentProps) {
           />
         </Grid>
         <Grid item xs={12} lg={6}>
-          <Viewer file={experimentsFiles[selectedItem]} handleSelectFile={setSelectedItem} />
+          <Viewer file={selectedItem && experimentsFiles.find(item => item.modifiedAt === selectedItem)} handleSelectFile={setSelectedItem} />
         </Grid>
       </Grid>
     </>

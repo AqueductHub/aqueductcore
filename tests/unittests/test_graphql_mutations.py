@@ -604,6 +604,7 @@ async def test_execute_plugin_stdout_ok(
         "var5=some\nmultiline\n"
         "var6=1\n"
         "var7=string4\n"
+        "dummykey=dummyvalue\n"
     )
     assert res["stderr"] == ""
 
@@ -652,6 +653,7 @@ async def test_execute_plugin_stderr_ok(
         "var5=some\nmultiline\n"
         "var6=1\n"
         "var7=string4\n"
+        "dummykey=dummyvalue\n"
     )
 
 

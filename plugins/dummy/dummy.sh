@@ -6,3 +6,4 @@ echo var4=$var4
 printf "var5=$var5\n"
 echo var6=$var6
 echo var7=$var7
+echo dummykey=$dummykey

@@ -1,8 +1,10 @@
-import { PropsWithChildren, useState } from "react";
+import DescriptionIcon from '@mui/icons-material/Description';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ScienceIcon from "@mui/icons-material/Science";
 import { Link, useLocation } from "react-router-dom";
+import { PropsWithChildren, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box } from "@mui/system";
 import {
@@ -36,6 +38,7 @@ interface GroupDrawerItem {
   text: string;
   icon?: JSX.Element;
   url: string;
+  openInNewTab?: boolean;
 }
 interface DrawerItem extends GroupDrawerItem {
   isGroup?: false;
@@ -58,6 +61,7 @@ export const drawerItems: DrawerItemsType[] = [
       { text: "Archived", url: "/aqd/experiments/archived" },
     ],
   },
+  { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true},
   { text: "Settings", icon: <SettingsIcon />, url: "/settings" },
 ];
 
@@ -171,6 +175,7 @@ function DrawerLayout(props: PropsWithChildren) {
                 }}
                 selected={location.pathname === item.url}
                 to={item.url ?? ""}
+                target={item.openInNewTab ? "_blank" : ""}
                 component={Link}
               >
                 <ListItemIcon
@@ -190,6 +195,14 @@ function DrawerLayout(props: PropsWithChildren) {
                   )}
                 </ListItemIcon>
                 <ListItemText primary={item.text} />
+                {item.openInNewTab && <ListItemIcon
+                  sx={{
+                    mr: -4.5,
+                    alignItems: "flex-end"
+                  }}
+                >
+                  <OpenInNewIcon sx={{fontSize: '1rem'}} />
+                </ListItemIcon>}
               </ListItemButton>
             </ListItem>
           )

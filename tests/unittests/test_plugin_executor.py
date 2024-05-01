@@ -1,13 +1,22 @@
 import pytest
 
 from aqueductcore.backend.plugins import PluginExecutor
+from pathlib import Path
+
+from aqueductcore.backend.model.plugin import (
+    Plugin,
+    PluginExecutor,
+    PluginFunction,
+    PluginParameter,
+    SupportedTypes,
+)
 from aqueductcore.backend.errors import AQDValidationError
 
 
 class TestPluginExecutor:
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
-        assert len(plugins) == 1
+        assert len(plugins) == 2
         var1 = plugins[0].functions[0].parameters[0]
         var2 = plugins[0].functions[0].parameters[1]
         var6 = plugins[0].functions[0].parameters[5]
@@ -15,7 +24,6 @@ class TestPluginExecutor:
         assert var1.default_value == "1" and var1.name == "var1"
         assert var2.display_name == "some display name"
         assert var6.default_value == "1" and var6.name == "var6"
-
 
     @pytest.mark.parametrize(
         "value",
@@ -119,3 +127,138 @@ class TestPluginExecutor:
             plugin = plugins[1]
         with pytest.raises(AQDValidationError):
             plugin.functions[0].validate_values(value)
+
+    @pytest.mark.parametrize(
+        "plugin",
+        [
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                functions=[],
+                params={},
+                aqueduct_url="",
+            ),
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                aqueduct_url="",
+                functions=[
+                    PluginFunction(
+                        name="func1", description="descr", script="", parameters=[]
+                    ),
+                ],
+                params={},
+            ),
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                aqueduct_url="",
+                functions=[
+                    PluginFunction(
+                        name="func1",
+                        description="descr",
+                        script="",
+                        parameters=[
+                            PluginParameter(
+                                name="var1",
+                                description="descr",
+                                data_type=SupportedTypes.MULTILINE.value,
+                            )
+                        ],
+                    ),
+                ],
+                params={},
+            ),
+        ],
+    )
+    def test_plugin_validation_ok(self, plugin):
+        PluginExecutor._validate_plugin(plugin)
+
+    @pytest.mark.parametrize(
+        "plugin",
+        [
+            # short description
+            Plugin(
+                name="name",
+                description="sh",
+                authors="a@a.org",
+                functions=[],
+                aqueduct_url="",
+                params={},
+            ),
+            # empty name
+            Plugin(
+                name="",
+                description="long one",
+                authors="a@a.org",
+                functions=[],
+                aqueduct_url="",
+                params={},
+            ),
+            # short function description
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                aqueduct_url="",
+                functions=[
+                    PluginFunction(
+                        name="func1", description="sh", script="", parameters=[]
+                    ),
+                ],
+                params={},
+            ),
+            # empty function name
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                aqueduct_url="",
+                functions=[
+                    PluginFunction(name="", description="sh", script="", parameters=[]),
+                ],
+                params={},
+            ),
+            # unsupported type
+            Plugin(
+                name="name",
+                description="long descr",
+                authors="a@a.org",
+                aqueduct_url="",
+                functions=[
+                    PluginFunction(
+                        name="func1",
+                        description="descr",
+                        script="",
+                        parameters=[
+                            PluginParameter(
+                                name="var1", description="descr", data_type="something"
+                            )
+                        ],
+                    ),
+                ],
+                params={},
+            ),
+        ],
+    )
+    def test_plugin_validation_raises(self, plugin):
+        with pytest.raises(AQDValidationError):
+            PluginExecutor._validate_plugin(plugin)
+
+    @pytest.mark.skip
+    def test_plugin_wolfram_alpha(self):
+        wolfram_alpha = Plugin.from_folder(Path("plugins/python-example"))
+        result = wolfram_alpha.functions[0].execute(
+            wolfram_alpha,
+            {
+                "equation": "x^2 + 7 = 0",
+                "experiment": "20240229-5689864ffd94",
+                "result_file": "wolfram_solution.txt"
+            }
+        )
+        assert result.stderr == ""
+        assert result.return_code == 0
+        assert result.stdout == "x = -i sqrt(7)\nx = i sqrt(7)\n"
