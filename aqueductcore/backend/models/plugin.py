@@ -50,6 +50,7 @@ class PluginParameter(yaml.YAMLObject):
     yaml_tag = "!parameter"
     yaml_loader = yaml.UnsafeLoader
 
+    # pylint: disable=too-many-arguments
     def __init__(
             self,
             name: str,
@@ -235,7 +236,7 @@ class Plugin(yaml.YAMLObject):
 
     def __init__(
         self, name: str, description: str, authors: str, functions: List[PluginFunction],
-        aqueduct_url: str, params: Dict[str, Any] = {},
+        aqueduct_url: str, params: Optional[Dict[str, Any]] = None,
     ):
         super().__init__()
         self.name = name
@@ -245,7 +246,7 @@ class Plugin(yaml.YAMLObject):
         self.aqueduct_url = aqueduct_url
         self.manifest_file: Optional[str] = None
         self.aqueduct_key: Optional[str] = None
-        self.params = params
+        self.params = params or {}
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
