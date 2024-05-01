@@ -99,6 +99,7 @@ class PluginParameterType:
     """A single parameter of the plugin interface"""
 
     name: str
+    display_name: str
     description: str
     data_type: str
     default_value: str
@@ -145,6 +146,7 @@ class PluginInfo:
                 parameters.append(
                     PluginParameterType(
                         name=parameter.name,
+                        display_name=parameter.display_name,
                         description=parameter.description,
                         data_type=parameter.data_type,
                         default_value=parameter.default_value,

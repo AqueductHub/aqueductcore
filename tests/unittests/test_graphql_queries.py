@@ -291,7 +291,12 @@ all_plugins_query = """
   {
     plugins {
         authors, description, name
-        functions { description, name, experimentVariableName }
+        functions {
+            description, name, experimentVariableName,
+            parameters {
+                name, displayName, description, dataType, defaultValue
+            }
+        }
     }
   }
 """
@@ -913,4 +918,6 @@ async def test_plugins():
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
     assert len(p_dummy["functions"]) == 2
     print(p_dummy)
-    assert p_dummy["functions"][0]["experimentVariableName"] == "var4"
+    echo = p_dummy["functions"][0]
+    assert echo["experimentVariableName"] == "var4"
+    assert echo["parameters"][1]["displayName"] == "some display name"
