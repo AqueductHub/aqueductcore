@@ -83,8 +83,9 @@ def generate_content_type(file_name: str) -> str:
     # Override automatic content type generation for specific extentions
     if file_extention == "md":
         return "text/x-markdown"
-    elif file_extention == "stim":
+
+    if file_extention == "stim":
         return "text/plain"
-    else:
-        guessed_type, _ = guess_type(file_name)
-        return guessed_type or "application/octet-stream"
+
+    guessed_type, _ = guess_type(file_name)
+    return guessed_type or "application/octet-stream"
