@@ -51,7 +51,10 @@ async def download_experiment_file(
 
         response = FileResponse(file_path, stat_result=os.stat(file_path))
 
-        response.headers["Content-Type"] = generate_content_type(file_name)
+        file_extention = file_name.split(".")[-1]
+        if file_extention == "md":
+            response.media_type = "application/x-markdown"
+
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
     except AQDDBExperimentNonExisting as error:
