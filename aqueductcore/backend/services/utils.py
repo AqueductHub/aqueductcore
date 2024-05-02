@@ -1,7 +1,6 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
 
 from datetime import datetime, timezone
-from mimetypes import guess_type
 from re import compile as recompile
 from typing import Tuple
 from uuid import UUID, uuid4
@@ -74,18 +73,3 @@ def is_tag_valid(tag: str) -> bool:
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
-
-
-def generate_content_type(file_name: str) -> str:
-    """Generate mime type of a file based on it's name"""
-    file_extention = file_name.split(".")[-1]
-
-    # Override automatic content type generation for specific extentions
-    if file_extention == "md":
-        return "text/x-markdown"
-
-    if file_extention == "stim":
-        return "text/plain"
-
-    guessed_type, _ = guess_type(file_name)
-    return guessed_type or "application/octet-stream"

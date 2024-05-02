@@ -21,7 +21,6 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
 )
-from aqueductcore.backend.services.utils import generate_content_type
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
@@ -49,11 +48,9 @@ async def download_experiment_file(
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="The requested file is not found.")
 
-        response = FileResponse(file_path, stat_result=os.stat(file_path))
-
         file_extention = file_name.split(".")[-1]
-        if file_extention == "md":
-            response.media_type = "application/x-markdown"
+        media_type = "text/x-markdown" if file_extention == "md" else None
+        response = FileResponse(file_path, stat_result=os.stat(file_path), media_type=media_type)
 
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
