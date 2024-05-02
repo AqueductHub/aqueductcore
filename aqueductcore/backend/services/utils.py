@@ -81,11 +81,10 @@ def generate_content_type(file_name: str) -> str:
     file_extention = file_name.split(".")[-1]
 
     # Override automatic content type generation for specific extentions
-    match file_extention:
-        case "md":
-            return "text/x-markdown"
-        case "stim":
-            return "text/plain"
-        case _:
-            guessed_type, _ = guess_type(file_name)
-            return guessed_type or "application/octet-stream"
+    if file_extention == "md":
+        return "text/x-markdown"
+    elif file_extention == "stim":
+        return "text/plain"
+    else:
+        guessed_type, _ = guess_type(file_name)
+        return guessed_type or "application/octet-stream"
