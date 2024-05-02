@@ -13,6 +13,7 @@ from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
 from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.services.constants import MARKDOWN_EXTENTIONS
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
@@ -49,7 +50,7 @@ async def download_experiment_file(
             raise HTTPException(status_code=404, detail="The requested file is not found.")
 
         file_extention = file_name.split(".")[-1]
-        media_type = "text/x-markdown" if file_extention == "md" else None
+        media_type = "text/x-markdown" if file_extention in MARKDOWN_EXTENTIONS else None
         response = FileResponse(file_path, stat_result=os.stat(file_path), media_type=media_type)
 
         response.chunk_size = settings.download_chunk_size_KB * 1024
