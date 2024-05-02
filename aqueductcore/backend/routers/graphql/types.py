@@ -122,7 +122,7 @@ class PluginExecutionResult:
     return_code: int
     stdout: str
     stderr: str
-    log_exeperiment: str
+    log_experiment: str
     log_file: str
 
 
