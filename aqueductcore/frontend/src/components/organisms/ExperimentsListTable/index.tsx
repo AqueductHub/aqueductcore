@@ -41,7 +41,7 @@ function ExperimentsListTable({
   const [showActionId, setShowActionId] = useState("-1");
   const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
   const navigate = useNavigate();
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { mutate: mutateAddTag } = useAddTagToExperiment();
   const { mutate: mutateRemoveTag } = useRemoveTagFromExperiment();
 
@@ -55,7 +55,7 @@ function ExperimentsListTable({
   };
 
   useEffect(() => {
-    const newQueryParameters: URLSearchParams = new URLSearchParams();
+    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     newQueryParameters.set('rowsPerPage', String(rowsPerPage))
     newQueryParameters.set('page', String(page))
     setSearchParams(newQueryParameters)

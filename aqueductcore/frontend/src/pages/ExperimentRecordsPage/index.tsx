@@ -111,10 +111,10 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
   const [rowsPerPage, setRowsPerPage] = useState(Number(searchParams.get('rowsPerPage')) || experimentRecordsRowsPerPageOptions[0]);
   const [filters, setFilters] = useState<ExperimentFiltersType>({
-    startDate: null,
-    endDate: null,
-    tags: null,
-    title: "",
+    startDate: searchParams.get('startDate'),
+    endDate: searchParams.get('endDate'),
+    tags: JSON.parse(searchParams.get('tags') ?? ''),
+    title: searchParams.get('title'),
     shouldIncludeTags: null
   });
   const {
@@ -142,6 +142,8 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     setRowsPerPage,
     count: AllExperiments?.experiments?.totalExperimentsCount || 0,
   };
+
+  // TODO: This needs an API change to handle favourite and archive functionality as a new field
   // handle different categories based on different <Routes /> in App.tsx
   useDidUpdateEffect(() => {
     handleResetPagination();

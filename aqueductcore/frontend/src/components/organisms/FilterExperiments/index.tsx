@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { Grid, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
@@ -20,7 +21,8 @@ interface FilterExperimentsProps {
 }
 
 function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
-  const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedTags, setSelectedTags] = useState<TagType[]>(filters?.tags ?? []);
   const [searchString, setSearchString] = useState<string>(filters?.title ?? "");
   const [startDate, setStartDate] = useState<Dayjs | null>(
     filters?.startDate ? dayjs(filters.startDate) : null
@@ -44,21 +46,33 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   }, [selectedTags, searchString, startDate, endDate]);
 
   const handleTagUpdate = (value: TagType[]) => {
+    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+    newQueryParameters.set('tags', JSON.stringify(value))
+    setSearchParams(newQueryParameters)
     setSelectedTags(value);
   };
 
   const handleSearchStringUpdate = (value: string) => {
+    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+    newQueryParameters.set('title', value)
+    setSearchParams(newQueryParameters)
     setSearchString(value);
   };
 
   const handleStartDateUpdate = (value: Dayjs | null) => {
     if (value?.isValid() || value === null) {
+      const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+      newQueryParameters.set('startDate', (value?.toISOString()) ?? '')
+      setSearchParams(newQueryParameters)
       setStartDate(value);
     }
   };
 
   const handleEndDateUpdate = (value: Dayjs | null) => {
     if (value?.isValid() || value === null) {
+      const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+      newQueryParameters.set('endDate', (value?.toISOString()) ?? '')
+      setSearchParams(newQueryParameters)
       setEndDate(value);
     }
   };
