@@ -128,7 +128,7 @@ class Mutation:
             db_session=context.db_session,
             alias=exp_id
         )
-        now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+        now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         file_name = f"{plugin}-{function}-{now}.log"
         pathvalidate.validate_filename(file_name)
         experiment_dir = build_experiment_dir_absolute_path(
