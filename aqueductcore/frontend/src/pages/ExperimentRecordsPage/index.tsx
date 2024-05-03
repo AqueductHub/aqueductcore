@@ -113,7 +113,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   const [filters, setFilters] = useState<ExperimentFiltersType>({
     startDate: searchParams.get('startDate'),
     endDate: searchParams.get('endDate'),
-    tags: JSON.parse(searchParams.get('tags') ?? ''),
+    tags: JSON.parse(String(searchParams.get('tags')) ?? null),
     title: searchParams.get('title'),
     shouldIncludeTags: null
   });
