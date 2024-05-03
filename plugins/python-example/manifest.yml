@@ -1,4 +1,3 @@
---- !plugin
 name: "Wolfram alpha solution plugin"
 description: >
   This plugin solves mathematical problems
@@ -13,7 +12,7 @@ params:
 
 
 functions:
-  - !function
+  - 
     name: solve as text
     description: >
       solve an equation and return a text answer
@@ -41,18 +40,15 @@ functions:
 
     # arguments of the function
     parameters:
-      - !!python/object/apply:aqueductcore.PluginParameter
-        kwds:
-          name: equation
-          description: equation to solve
-          data_type: str
-      - !!python/object/apply:aqueductcore.PluginParameter
-        kwds:
-          name: experiment
-          description: experiment to store result
-          data_type: experiment
-      - !!python/object/apply:aqueductcore.PluginParameter
-        kwds:
-          name: result_file
-          description: file name to store result
-          data_type: str
+      - 
+        name: equation
+        description: equation to solve
+        data_type: str
+      -
+        name: experiment
+        description: experiment to store result
+        data_type: experiment
+      - 
+        name: result_file
+        description: file name to store result
+        data_type: str

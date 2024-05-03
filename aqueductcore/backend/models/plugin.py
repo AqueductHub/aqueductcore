@@ -44,28 +44,15 @@ class PluginExecutionResult(BaseModel):
     stderr: str
 
 
-class PluginParameter(yaml.YAMLObject):
+class PluginParameter(BaseModel):
     """Typed and named parameter of the plugin function"""
 
-    yaml_tag = "!parameter"
-    yaml_loader = yaml.UnsafeLoader
-
-    # pylint: disable=too-many-arguments
-    def __init__(
-            self,
-            name: str,
-            data_type: str,
-            display_name: str = "",
-            description: str = "",
-            default_value: str = "",
-            options: Optional[List[str]] = None,
-    ):
-        self.name = str(name)
-        self.display_name = str(display_name)
-        self.description = str(description)
-        self.data_type = str(data_type)
-        self.default_value = str(default_value)
-        self.options = list(map(str, options or []))
+    name: str
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    data_type: str
+    default_value: Optional[Any] = None
+    options: Optional[List[str]] = None
 
     def __str__(self):
         return f"{self.display_name} ({self.name}: {self.data_type})"
@@ -74,7 +61,7 @@ class PluginParameter(yaml.YAMLObject):
         return f"<{str(self)}>"
 
     # pylint: disable=too-many-return-statements,too-many-branches
-    def validate(self):
+    def validate_object(self):
         """Validate variable and its default value."""
         if not self.name:
             raise AQDValidationError("Parameter should have a name.")
@@ -93,14 +80,14 @@ class PluginParameter(yaml.YAMLObject):
         if self.data_type == SupportedTypes.INT.value:
             try:
                 int(value)
-                return value
+                return str(value)
             except Exception as exc:
                 raise AQDValidationError(f"{value} is not decimal.") from exc
 
         if self.data_type == SupportedTypes.FLOAT.value:
             try:
                 float(value)
-                return value
+                return str(value)
             except Exception as exc:
                 raise AQDValidationError(f"{value} is not a floating point number.") from exc
 
@@ -116,39 +103,31 @@ class PluginParameter(yaml.YAMLObject):
         if self.data_type == SupportedTypes.BOOL.value:
             if value == "":
                 return value
-            if value in ("0", "false", "False", "FALSE"):
+            if str(value) in ("0", "false", "False", "FALSE"):
                 return "0"
-            if value in ("1", "true", "True", "TRUE"):
+            if str(value) in ("1", "true", "True", "TRUE"):
                 return "1"
             raise AQDValidationError(f"{value} is not bool.")
 
         if self.data_type == SupportedTypes.SELECT.value:
-            if value in self.options:
-                return value
+            if self.options is not None:
+                if value in self.options:
+                    return str(value)
             raise AQDValidationError(f"{value} is not in {self.options}.")
 
         # for files, strings and textareas
-        return value
+        return str(value)
 
 
-class PluginFunction(yaml.YAMLObject):
+class PluginFunction(BaseModel):
     """Each plugin may have multiple functions. This class represents
     one function which may be executed."""
 
-    yaml_tag = "!function"
-    yaml_loader = yaml.UnsafeLoader
-
-    def __init__(
-        self,
-        name: str,
-        description: str,
-        script: str,
-        parameters: List[PluginParameter],
-    ):
-        self.name = name
-        self.description = description
-        self.script = script
-        self.parameters = parameters
+    name: str
+    description: Optional[str] = None
+    display_name: Optional[str] = None
+    script: str
+    parameters: List[PluginParameter]
 
     def execute(
             self,
@@ -203,14 +182,12 @@ class PluginFunction(yaml.YAMLObject):
                 return variable
         return None
 
-    def validate(self):
+    def validate_object(self):
         """Validate the instance of the function and its parameters."""
         if not self.name:
             raise AQDValidationError("Plugin function should have a name.")
-        if len(self.description) < 5:
-            raise AQDValidationError("Function should have a meaningful description")
         for param in self.parameters:
-            param.validate()
+            param.validate_object()
 
     def validate_values(self, params: Dict[str, str]):
         """Check params dict to agree with data types definition for the function"""
@@ -228,25 +205,18 @@ class PluginFunction(yaml.YAMLObject):
 
 
 # pylint: disable=too-many-instance-attributes,too-many-arguments
-class Plugin(yaml.YAMLObject):
+class Plugin(BaseModel):
     """Class representing a plugin"""
 
-    yaml_tag = "!plugin"
-    yaml_loader = yaml.UnsafeLoader
-
-    def __init__(
-        self, name: str, description: str, authors: str, functions: List[PluginFunction],
-        aqueduct_url: str, params: Optional[Dict[str, Any]] = None,
-    ):
-        super().__init__()
-        self.name = name
-        self.description = description
-        self.authors = authors
-        self.functions = functions
-        self.aqueduct_url = aqueduct_url
-        self.manifest_file: Optional[str] = None
-        self.aqueduct_key: Optional[str] = None
-        self.params = params or {}
+    name: str
+    description: Optional[str] = None
+    display_name: Optional[str] = None
+    authors: str
+    functions: List[PluginFunction]
+    aqueduct_url: str
+    manifest_file: Optional[str] = None
+    aqueduct_key: Optional[str] = None
+    params: Optional[Dict[str, Any]] = None
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
@@ -261,11 +231,12 @@ class Plugin(yaml.YAMLObject):
         with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
-            plugin: Plugin = yaml.load(manifest_stream, Loader=yaml.loader.UnsafeLoader)
+            plugin_as_dict = yaml.safe_load(manifest_stream)
+            plugin = Plugin(**plugin_as_dict)
             plugin.manifest_file = str(manifest.absolute())
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
-            plugin.validate()
+            plugin.validate_object()
             return plugin
 
     def get_function(self, name: str) -> PluginFunction:
@@ -282,11 +253,9 @@ class Plugin(yaml.YAMLObject):
             raise AQDValidationError(f"There should be exactly 1 function with name {name}")
         return functions[0]
 
-    def validate(self):
+    def validate_object(self):
         """Validate instance of the plugin and its functions."""
         if not self.name:
             raise AQDValidationError("Plugin should have a name.")
-        if len(self.description) < 5:
-            raise AQDValidationError("Plugin should have a meaningful description.")
         for func in self.functions:
-            func.validate()
+            func.validate_object()

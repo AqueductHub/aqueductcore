@@ -99,10 +99,10 @@ class PluginParameterType:
     """A single parameter of the plugin interface"""
 
     name: str
-    display_name: str
-    description: str
+    display_name: Optional[str]
+    description: Optional[str]
     data_type: str
-    default_value: str
+    default_value: Optional[str]
 
 
 @strawberry.type
@@ -111,7 +111,7 @@ class PluginFunctionInfo:
     may have multiple functions."""
 
     name: str
-    description: str
+    description: Optional[str]
     parameters: List[PluginParameterType]
     experiment_variable_name: Optional[str]
 
@@ -131,7 +131,7 @@ class PluginInfo:
     """Plugin information passed to the frontend"""
 
     name: str
-    description: str
+    description: Optional[str]
     authors: str = strawberry.field(description="Plugin authors' emails")
     functions: List[PluginFunctionInfo]
 

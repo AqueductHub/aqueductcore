@@ -29,7 +29,6 @@ class PluginExecutor:
             if directory.exists():
                 try:
                     plugin = Plugin.from_folder(directory)
-                    plugin.validate()
                     result.append(plugin)
                 except AQDValidationError as err:
                     logging.error(err)

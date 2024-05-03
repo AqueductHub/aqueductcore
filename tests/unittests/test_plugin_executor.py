@@ -13,6 +13,7 @@ from aqueductcore.backend.errors import AQDValidationError
 
 
 class TestPluginExecutor:
+
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
         assert len(plugins) == 2
@@ -174,20 +175,11 @@ class TestPluginExecutor:
         ],
     )
     def test_plugin_validation_ok(self, plugin):
-        plugin.validate()
+        plugin.validate_object()
 
     @pytest.mark.parametrize(
         "plugin",
         [
-            # short description
-            Plugin(
-                name="name",
-                description="sh",
-                authors="a@a.org",
-                functions=[],
-                aqueduct_url="",
-                params={},
-            ),
             # empty name
             Plugin(
                 name="",
@@ -195,19 +187,6 @@ class TestPluginExecutor:
                 authors="a@a.org",
                 functions=[],
                 aqueduct_url="",
-                params={},
-            ),
-            # short function description
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(
-                        name="func1", description="sh", script="", parameters=[]
-                    ),
-                ],
                 params={},
             ),
             # empty function name
@@ -245,7 +224,7 @@ class TestPluginExecutor:
     )
     def test_plugin_validation_raises(self, plugin):
         with pytest.raises(AQDValidationError):
-            plugin.validate()
+            plugin.validate_object()
 
     @pytest.mark.skip
     def test_plugin_wolfram_alpha(self):
