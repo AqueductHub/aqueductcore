@@ -148,6 +148,6 @@ class Mutation:
             return_code=result.return_code,
             stdout=result.stdout,
             stderr=result.stderr,
-            log_exeperiment=exp_id,
+            log_experiment=exp_id,
             log_file=file_name,
         )
