@@ -200,26 +200,6 @@ class TestPluginExecutor:
                 ],
                 params={},
             ),
-            # unsupported type
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(
-                        name="func1",
-                        description="descr",
-                        script="",
-                        parameters=[
-                            PluginParameter(
-                                name="var1", description="descr", data_type="something"
-                            )
-                        ],
-                    ),
-                ],
-                params={},
-            ),
         ],
     )
     def test_plugin_validation_raises(self, plugin):

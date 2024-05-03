@@ -7,7 +7,7 @@ from enum import Enum
 import os
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -17,7 +17,7 @@ from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
 MANIFEST_FILE = "manifest.yml"
 
 
-class SupportedTypes(Enum):
+class SupportedTypes(str, Enum):
     """This enum contains allowed data types, which may be passed from
     the GraphQL endpoint or specified in the manifest file."""
 
@@ -29,11 +29,6 @@ class SupportedTypes(Enum):
     FILE = "file"
     BOOL = "bool"
     SELECT = "select"
-
-    @staticmethod
-    def values() -> Set[str]:
-        """String values of the enum members."""
-        return set(map(str, SupportedTypes._value2member_map_))
 
 
 class PluginExecutionResult(BaseModel):
@@ -50,12 +45,12 @@ class PluginParameter(BaseModel):
     name: str
     display_name: Optional[str] = None
     description: Optional[str] = None
-    data_type: str
+    data_type: SupportedTypes
     default_value: Optional[Any] = None
     options: Optional[List[str]] = None
 
     def __str__(self):
-        return f"{self.display_name} ({self.name}: {self.data_type})"
+        return f"{self.display_name} ({self.name}: {self.data_type.name})"
 
     def __repr__(self):
         return f"<{str(self)}>"
@@ -67,9 +62,9 @@ class PluginParameter(BaseModel):
             raise AQDValidationError("Parameter should have a name.")
         if not self.description:
             raise AQDValidationError("Parameter should have a description.")
-        if self.data_type not in SupportedTypes.values():
+        if self.data_type not in SupportedTypes:
             raise AQDValidationError(
-                f"Type should be one of {SupportedTypes.values()}"
+                f"Type should be one of {set(SupportedTypes)}"
                 f"but was {self.data_type}"
         )
         if self.default_value:
@@ -77,21 +72,30 @@ class PluginParameter(BaseModel):
 
     def validate_value(self, value: str) -> str:
         """Validate value and return a normalised version, if possible."""
-        if self.data_type == SupportedTypes.INT.value:
-            try:
-                int(value)
-                return str(value)
-            except Exception as exc:
-                raise AQDValidationError(f"{value} is not decimal.") from exc
+        str_value = str(value)
 
-        if self.data_type == SupportedTypes.FLOAT.value:
+        if self.data_type == SupportedTypes.INT:
             try:
-                float(value)
-                return str(value)
+                int(str_value)
+                return str_value
             except Exception as exc:
-                raise AQDValidationError(f"{value} is not a floating point number.") from exc
+                raise AQDValidationError(f"{str_value} is not int") from exc
 
-        if self.data_type == SupportedTypes.EXPERIMENT.value:
+        if self.data_type == SupportedTypes.FLOAT:
+            try:
+                float(str_value)
+                return str_value
+            except Exception as exc:
+                raise AQDValidationError(f"{str_value} is not float") from exc
+
+        if self.data_type == SupportedTypes.BOOL:
+            if str_value.lower() in ("true", "1"):
+                return "1"
+            if str_value.lower() in ("false", "0"):
+                return "0"
+            raise AQDValidationError(f"{value} is not a valid boo.")
+
+        if self.data_type == SupportedTypes.EXPERIMENT:
             try:
                 prefix, postfix = value.split("-")
                 if not prefix.isdecimal() or not postfix.isalnum():
@@ -100,16 +104,7 @@ class PluginParameter(BaseModel):
             except Exception as exc:
                 raise AQDValidationError(f"{value} is not a valid experiment alias.") from exc
 
-        if self.data_type == SupportedTypes.BOOL.value:
-            if value == "":
-                return value
-            if str(value) in ("0", "false", "False", "FALSE"):
-                return "0"
-            if str(value) in ("1", "true", "True", "TRUE"):
-                return "1"
-            raise AQDValidationError(f"{value} is not bool.")
-
-        if self.data_type == SupportedTypes.SELECT.value:
+        if self.data_type == SupportedTypes.SELECT:
             if self.options is not None:
                 if value in self.options:
                     return str(value)
@@ -178,7 +173,7 @@ class PluginFunction(BaseModel):
             plugin parameter object.
         """
         for variable in self.parameters:
-            if variable.data_type == SupportedTypes.EXPERIMENT.value:
+            if variable.data_type == SupportedTypes.EXPERIMENT:
                 return variable
         return None
 

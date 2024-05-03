@@ -27,8 +27,8 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_alias,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
 from aqueductcore.backend.services.plugin_executor import PluginExecutor
+from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
 from aqueductcore.backend.settings import settings
 from aqueductcore.backend.errors import AQDValidationError
 

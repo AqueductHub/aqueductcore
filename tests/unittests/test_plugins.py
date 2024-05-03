@@ -45,7 +45,7 @@ class TestPluginModel:
                             PluginParameter(
                                 name="var1",
                                 description="descr",
-                                data_type=SupportedTypes.TEXTAREA.value,
+                                data_type=SupportedTypes.TEXTAREA,
                                 default_value="1",
                             )
                         ],
@@ -76,28 +76,6 @@ class TestPluginModel:
                 aqueduct_url="",
                 functions=[
                     PluginFunction(name="", description="sh", script="", parameters=[]),
-                ],
-            ),
-            # unsupported type
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(
-                        name="func1",
-                        description="descr",
-                        script="",
-                        parameters=[
-                            PluginParameter(
-                                name="var1",
-                                description="descr",
-                                data_type="something",
-                                default_value="some",
-                            )
-                        ],
-                    ),
                 ],
             ),
         ],
