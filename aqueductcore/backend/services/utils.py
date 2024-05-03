@@ -3,7 +3,6 @@
 from datetime import datetime, timezone
 from os.path import normpath
 from re import compile as recompile
-from re import match
 from typing import Tuple
 from uuid import UUID, uuid4
 
