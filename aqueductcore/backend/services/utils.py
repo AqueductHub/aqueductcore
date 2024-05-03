@@ -82,7 +82,7 @@ def is_file_path_valid(file_path: str) -> bool:
     if not file_path:
         return False
 
-    if "\\" in file_path:
+    if "\\" in file_path or ".." in file_path:
         return False
 
     try:
