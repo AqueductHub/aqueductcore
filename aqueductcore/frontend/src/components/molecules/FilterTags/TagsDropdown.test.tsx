@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { render } from "@testing-library/react";
 
 import FilterExperiments from "components/organisms/FilterExperiments";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
