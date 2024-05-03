@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 from re import compile as recompile
+from re import match
 from typing import Tuple
 from uuid import UUID, uuid4
 
@@ -73,3 +74,10 @@ def is_tag_valid(tag: str) -> bool:
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
+
+
+def is_file_name_valid(file_name: str) -> bool:
+    """Validate if the file name has only allowed characters"""
+    pattern = r"^[a-zA-Z0-9_.\- ]+$"
+
+    return bool(match(pattern, file_name))
