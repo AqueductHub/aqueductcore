@@ -1,7 +1,6 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
 
 from datetime import datetime, timezone
-from os.path import normpath
 from re import compile as recompile
 from typing import Tuple
 from uuid import UUID, uuid4
