@@ -1,6 +1,7 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
 
 from datetime import datetime, timezone
+from os.path import normpath
 from re import compile as recompile
 from re import match
 from typing import Tuple
@@ -81,3 +82,19 @@ def is_file_name_valid(file_name: str) -> bool:
     pattern = r"^[a-zA-Z0-9_.\- ]+$"
 
     return bool(match(pattern, file_name))
+
+
+def validate_file_path(file_path):
+    if not file_path:
+        return False
+
+    invalid_chars = '<>:"/\\|?*'
+    if any(char in invalid_chars for char in file_path):
+        return False
+
+    try:
+        _ = normpath(file_path)
+    except (ValueError, OSError):
+        return False
+
+    return True

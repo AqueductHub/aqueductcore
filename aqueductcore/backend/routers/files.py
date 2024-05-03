@@ -13,7 +13,7 @@ from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
 from aqueductcore.backend.context import ServerContext, context_dependency
-from aqueductcore.backend.services.utils import is_file_name_valid
+from aqueductcore.backend.services.utils import is_file_name_valid, validate_file_path
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENTIONS
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
@@ -46,6 +46,12 @@ async def download_experiment_file(
             str(settings.experiments_dir_path), experiment_id
         )
         file_path = os.path.join(experiment_dir, file_name)
+
+        if not validate_file_path(file_path):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File path is invalid.",
+            )
 
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="The requested file is not found.")
