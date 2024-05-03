@@ -201,7 +201,7 @@ async def get_experiment_by_alias(
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 def build_experiment_dir_absolute_path(experiments_root_dir: str, experiment_id: UUID) -> str:
     """Function to build experiment absolute path from root directory and experiment id."""
-    return os.path.join(experiments_root_dir, str(experiment_id))
+    return os.path.normpath(os.path.join(experiments_root_dir, str(experiment_id)))
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))

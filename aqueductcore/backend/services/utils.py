@@ -74,19 +74,3 @@ def is_tag_valid(tag: str) -> bool:
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
-
-
-def is_file_path_valid(file_path: str) -> bool:
-    """Validate if the file path is safe and valid"""
-    if not file_path:
-        return False
-
-    if "\\" in file_path or ".." in file_path:
-        return False
-
-    try:
-        _ = normpath(file_path)
-    except (ValueError, OSError):
-        return False
-
-    return True
