@@ -124,10 +124,6 @@ function Explorer({
                 <HeaderCell
                   key={headCell.id}
                   sortDirection={orderBy === headCell.id ? order : false}
-                  sx={headCell.id === 'modifiedAt' ? {
-                    maxWidth: 6,
-                    minWidth: 6
-                  } : null}
                 >
                   <TableSortLabel
                     active={orderBy === headCell.id}

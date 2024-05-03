@@ -85,6 +85,14 @@ const ImageView = styled("img")`
   object-fit: contain;
 `;
 
+const TextViewer = styled("textarea")`
+  width: 100%;
+  height: calc(100% - ${({ theme }) => theme.spacing(6.25)});
+  border: none;
+  outline: none;
+  resize: none;
+`;
+
 function Viewer({
   file,
   experimentId,
@@ -115,6 +123,13 @@ function Viewer({
             setInfo({
               data,
               type: "MARKDOWN",
+            });
+          });
+        } else if (contentType?.includes("text/plain")) {
+          response.text().then((data) => {
+            setInfo({
+              data,
+              type: "text/plain",
             });
           });
         } else if (contentType?.includes("image/jpeg")) {
@@ -164,6 +179,9 @@ function Viewer({
           <SpecialFilePreview>
             {info && <Markdown urlTransform={(url) => mdUrlTransformer(url, experimentId)}>{String(info?.data)}</Markdown>}
           </SpecialFilePreview>
+          /* TEXT */
+        ) : info?.type === "text/plain" ? (
+          <TextViewer readOnly>{String(info.data)}</TextViewer>
           /* IMAGES */
         ) : ["image/jpeg", "image/png"].includes(info?.type) ? (
           <FilePreviewImages>
