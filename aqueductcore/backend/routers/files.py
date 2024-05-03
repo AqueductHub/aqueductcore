@@ -37,7 +37,6 @@ async def download_experiment_file(
 
     try:
         pathvalidate.validate_filename(file_name)
-        UUID(str(experiment_id))
         # check if experiment exists with the specified ID, otherwise raises an exception.
         await get_experiment_by_uuid(
             user_info=context.user_info, db_session=context.db_session, experiment_id=experiment_id
@@ -46,12 +45,6 @@ async def download_experiment_file(
             str(settings.experiments_dir_path), experiment_id
         )
         file_path = os.path.join(experiment_dir, file_name)
-
-        if not os.path.normpath(file_path).startswith(experiment_dir):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="The requested file is not valid.",
-            )
 
         if not os.path.exists(file_path):
             raise HTTPException(
@@ -77,11 +70,7 @@ async def download_experiment_file(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid file name.",
         ) from error
-    except ValueError as error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error,
-        ) from error
+
     return response
 
 
