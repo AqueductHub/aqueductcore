@@ -24,5 +24,27 @@ export const updateExperiment_mock = {
       },
       maxUsageCount: Number.POSITIVE_INFINITY,
     },
+    {
+      request: {
+        query: UPDATE_EXPERIMENT,
+        variables: {
+          experimentId: ExperimentDataMock[0].id,
+          experimentUpdateInput: {
+            title: "",
+          },
+        },
+      },
+      result: {
+        data: {
+          updateExperiment: {
+            title: updatedTitle,
+            description: updatedDescription,
+            id: ExperimentDataMock[0].id,
+            alias: ExperimentDataMock[0].alias,
+          },
+        },
+      },
+      maxUsageCount: Number.POSITIVE_INFINITY,
+    },
   ],
 };

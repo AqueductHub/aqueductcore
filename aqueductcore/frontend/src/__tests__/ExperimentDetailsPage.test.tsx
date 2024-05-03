@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
@@ -57,7 +57,11 @@ test("render page when the edit is not allowed", async () => {
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
         </AppContextAQDMock >)
-    await new Promise((r) => setTimeout(r, 250)); //hint: 100 ms is not enough for the effect.
+
+    await act(async () => {
+        await new Promise((r) => setTimeout(r, 250)); //hint: 100 ms is not enough for the effect.
+    })
+
     await waitFor(() => {
         const experiment_edit_title = queryByTitle('Edit title');
         const tag_and_description_edit_buttons = queryAllByRole('button', {
