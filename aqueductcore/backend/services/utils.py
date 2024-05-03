@@ -77,19 +77,15 @@ def is_tag_valid(tag: str) -> bool:
     return bool(regex.match(tag))
 
 
-def is_file_name_valid(file_name: str) -> bool:
-    """Validate if the file name has only allowed characters"""
-    pattern = r"^[a-zA-Z0-9_.\- ]+$"
-
-    return bool(match(pattern, file_name))
-
-
-def validate_file_path(file_path):
+def is_file_path_valid(file_path: str) -> bool:
+    """Validate if the file path is safe and valid"""
     if not file_path:
         return False
 
-    invalid_chars = '<>:"/\\|?*'
-    if any(char in invalid_chars for char in file_path):
+    if file_path.count(".") > 1:
+        return False
+
+    if "/" in file_path or "\\" in file_path:
         return False
 
     try:
