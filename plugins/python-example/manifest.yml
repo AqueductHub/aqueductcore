@@ -8,7 +8,7 @@ authors: aqueduct@riverlane.com
 aqueduct_url: https://aqueduct-demo.azurewebsites.net/
 
 params:
-  wolfram_app_id: "KEY IS HERE"
+  wolfram_app_id: "EA9ALY-WWLG99V6L2"
 
 
 functions:

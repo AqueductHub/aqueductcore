@@ -23,7 +23,7 @@ from aqueductcore.backend.routers.graphql.types import (
     Tags,
     UserInfo,
 )
-from aqueductcore.backend.plugins.plugin_executor import PluginExecutor
+from aqueductcore.backend.services.plugin_executor import PluginExecutor
 
 
 @strawberry.input

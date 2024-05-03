@@ -1,6 +1,6 @@
 import pytest
 
-from aqueductcore.backend.plugins import PluginExecutor
+from aqueductcore.backend.services.plugin_executor import PluginExecutor
 from pathlib import Path
 
 from aqueductcore.backend.models.plugin import (

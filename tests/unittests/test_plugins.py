@@ -5,7 +5,7 @@ from aqueductcore.backend.models.plugin import (
     PluginParameter,
     SupportedTypes,
 )
-from aqueductcore.backend.plugins import PluginExecutor
+from aqueductcore.backend.services.plugin_executor import PluginExecutor
 from aqueductcore.backend.errors import AQDValidationError
 
 
