@@ -50,7 +50,7 @@ async def download_experiment_file(
         if not is_file_path_valid(file_path):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="File path is invalid.",
+                detail="The requested file is not found.",
             )
 
         if not os.path.exists(file_path):
