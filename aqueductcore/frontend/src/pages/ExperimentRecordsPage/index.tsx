@@ -113,6 +113,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     endDate: null,
     tags: null,
     title: "",
+    shouldIncludeTags: null
   });
   const {
     data: AllExperiments,

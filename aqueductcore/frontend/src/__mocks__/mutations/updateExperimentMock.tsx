@@ -1,5 +1,6 @@
 import { UPDATE_EXPERIMENT } from "API/graphql/mutations/Experiment/updateExperiment";
-import { experimentId, title, description } from "__mocks__/constants";
+import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { updatedTitle, updatedDescription } from "__mocks__/constants";
 
 export const updateExperiment_mock = {
   success: [
@@ -7,18 +8,42 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: experimentId,
+          experimentId: ExperimentDataMock[0].id,
           experimentUpdateInput: {
-            title: title,
-            description: description,
+            title: updatedTitle,
+            description: updatedDescription,
           },
         },
       },
       result: {
         data: {
           updateExperiment: {
-            title: title,
-            description: description,
+            title: updatedTitle,
+            description: updatedDescription,
+            id: ExperimentDataMock[0].id,
+            alias: ExperimentDataMock[0].alias,
+          },
+        },
+      },
+      maxUsageCount: Number.POSITIVE_INFINITY,
+    },
+    {
+      request: {
+        query: UPDATE_EXPERIMENT,
+        variables: {
+          experimentId: ExperimentDataMock[0].id,
+          experimentUpdateInput: {
+            description: "",
+          },
+        },
+      },
+      result: {
+        data: {
+          updateExperiment: {
+            title: updatedTitle,
+            description: updatedDescription,
+            id: ExperimentDataMock[0].id,
+            alias: ExperimentDataMock[0].alias,
           },
         },
       },
