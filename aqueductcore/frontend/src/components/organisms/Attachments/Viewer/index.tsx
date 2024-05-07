@@ -5,9 +5,11 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactJson from "@microlink/react-json-view";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
+import Markdown from "react-markdown";
 
-import { ExperimentFileType, PreviewFilesType } from "types/globalTypes";
+import { ExperimentDataType, ExperimentFileType, PreviewFilesType } from "types/globalTypes";
 import { selectedFileType } from "types/componentTypes";
+import { mdUrlTransformer } from "helper/formatters";
 import { AQD_FILE_URI } from "constants/api";
 
 const ViewerBox = styled(Box)`
@@ -46,7 +48,7 @@ const NoPreview = styled(Box)`
   justify-content: center;
 `;
 
-const FilePreviewJSON = styled(Box)`
+const SpecialFilePreview = styled(Box)`
   width: 100%;
   height: calc(100% - ${({ theme }) => theme.spacing(6.25)});
   padding: ${({ theme }) => `${theme.spacing(1)} ${theme.spacing(2)}`};
@@ -83,11 +85,22 @@ const ImageView = styled("img")`
   object-fit: contain;
 `;
 
+const TextViewer = styled("textarea")`
+  width: 100%;
+  height: calc(100% - ${({ theme }) => theme.spacing(6.25)});
+  padding: ${({ theme }) => theme.spacing(1.5)};
+  border: none;
+  outline: none;
+  resize: none;
+`;
+
 function Viewer({
   file,
+  experimentId,
   handleSelectFile,
 }: {
   file?: ExperimentFileType;
+  experimentId: ExperimentDataType['id'];
   handleSelectFile: (fileId: selectedFileType) => void;
 }) {
 
@@ -104,6 +117,20 @@ function Viewer({
             setInfo({
               data,
               type: "JSON",
+            });
+          });
+        } else if (contentType?.includes("text/x-markdown")) {
+          response.text().then((data) => {
+            setInfo({
+              data,
+              type: "MARKDOWN",
+            });
+          });
+        } else if (contentType?.includes("text/plain")) {
+          response.text().then((data) => {
+            setInfo({
+              data,
+              type: "text/plain",
             });
           });
         } else if (contentType?.includes("image/jpeg")) {
@@ -145,36 +172,46 @@ function Viewer({
       {file && info && info.data ? (
         /*  JSON */
         info?.type === "JSON" ? (
-          <FilePreviewJSON>
+          <SpecialFilePreview>
             <ReactJson src={info.data} theme={theme.palette.mode === 'dark' ? 'bright' : 'bright:inverted'} />
-          </FilePreviewJSON>
-        ) : /* IMAGES */
-          ["image/jpeg", "image/png"].includes(info?.type) ? (
-            <FilePreviewImages>
-              <ImageView alt={file.name} src={fileURL} />
-            </FilePreviewImages>
-          ) : /* No Preview */
-            info?.type === "file" ? (
-              <NoPreview>
-                <NoFileSelectedError>
-                  <InsertDriveFileIcon sx={{ fontSize: 36 }} />
-                  No preview available for this file.
-                  <Button
-                    href={fileURL}
-                    size="small"
-                    color="inherit"
-                    component="a"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{ mt: 1 }}
-                  >
-                    download
-                    <OpenInNewIcon fontSize="small" />
-                  </Button>
-                </NoFileSelectedError>
-              </NoPreview>
-            ) : null
+          </SpecialFilePreview>
+          /* MARKDOWN */
+        ) : info?.type === "MARKDOWN" ? (
+          <SpecialFilePreview>
+            {info && <Markdown urlTransform={(url) => mdUrlTransformer(url, experimentId)}>{String(info?.data)}</Markdown>}
+          </SpecialFilePreview>
+          /* TEXT */
+        ) : info?.type === "text/plain" ? (
+          <TextViewer readOnly>{String(info.data)}</TextViewer>
+          /* IMAGES */
+        ) : ["image/jpeg", "image/png"].includes(info?.type) ? (
+          <FilePreviewImages>
+            <ImageView alt={file.name} src={fileURL} />
+          </FilePreviewImages>
+          /* Files */
+        ) :
+          info?.type === "file" ? (
+            <NoPreview>
+              <NoFileSelectedError>
+                <InsertDriveFileIcon sx={{ fontSize: 36 }} />
+                No preview available for this file.
+                <Button
+                  href={fileURL}
+                  size="small"
+                  color="inherit"
+                  component="a"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ mt: 1 }}
+                >
+                  download
+                  <OpenInNewIcon fontSize="small" />
+                </Button>
+              </NoFileSelectedError>
+            </NoPreview>
+          ) : null
       ) : (
+        /* No Preview */
         <NoPreview>
           <NoFileSelectedError>
             <FileOpenOutlinedIcon sx={{ fontSize: 36, mb: 2 }} />
