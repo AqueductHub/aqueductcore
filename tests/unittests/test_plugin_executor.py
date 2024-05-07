@@ -1,10 +1,12 @@
 import pytest
 
+from pydantic import ValidationError
+
+from aqueductcore.backend.services.plugin_executor import PluginExecutor
 from pathlib import Path
 
-from aqueductcore.backend.plugins import (
+from aqueductcore.backend.models.plugin import (
     Plugin,
-    PluginExecutor,
     PluginFunction,
     PluginParameter,
     SupportedTypes,
@@ -13,9 +15,17 @@ from aqueductcore.backend.errors import AQDValidationError
 
 
 class TestPluginExecutor:
+
     def test_list_plugins_ok(self):
         plugins = PluginExecutor.list_plugins()
         assert len(plugins) == 2
+        var1 = plugins[0].functions[0].parameters[0]
+        var2 = plugins[0].functions[0].parameters[1]
+        var6 = plugins[0].functions[0].parameters[5]
+
+        assert var1.default_value == "1" and var1.name == "var1"
+        assert var2.display_name == "some display name"
+        assert var6.default_value == "1" and var6.name == "var6"
 
     @pytest.mark.parametrize(
         "value",
@@ -25,18 +35,27 @@ class TestPluginExecutor:
                 "var2": "1212312323",
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
+                "var5": "text\narea",
+                "var6": "False",
+                "var7": "string1",
             },
             {
                 "var1": "no text",
                 "var2": "0",
                 "var3": "1.0",
                 "var4": "20240229-5689864ffd94",
+                "var5": "text\narea",
+                "var6": "1",
+                "var7": "string2",
             },
             {
                 "var1": "text",
                 "var2": "-1",
                 "var3": "-1.4e-04",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
+                "var6": "True",
+                "var7": "string4",
             },
         ],
     )
@@ -47,7 +66,7 @@ class TestPluginExecutor:
         else:
             plugin = plugins[1]
         func = plugin.functions[0]
-        PluginExecutor._validate_values(func, value)
+        func.validate_values(value)
 
     @pytest.mark.parametrize(
         "value",
@@ -58,6 +77,8 @@ class TestPluginExecutor:
                 "var2": "2.2",
                 "var3": "1",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
+                "var6": "0",
             },
             # var3 non float
             {
@@ -65,6 +86,8 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "abc",
                 "var4": "20240229-5689864ffd94",
+                "var5": "",
+                "var6": "0",
             },
             # var4 non alias
             {
@@ -72,6 +95,8 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "3",
                 "var4": "±20240229-5689864ffd94",
+                "var5": "",
+                "var6": "0",
             },
             # not enough params
             {"var1": "text", "var2": "2", "var3": "3"},
@@ -81,16 +106,29 @@ class TestPluginExecutor:
                 "var2": "2",
                 "var3": "3",
                 "var4": "20240229-5689864ffd94",
-                "var5": "oops",
+                "var5": "",
+                "var6": "false",
+                "var7": "oops",
+            },
+            # var6 is not bool
+            {
+                "var1": "text",
+                "var2": "2",
+                "var3": "3",
+                "var4": "20240229-5689864ffd94",
+                "var5": "",
+                "var6": "not quite sure",
             },
         ],
     )
     def test_validate_values_raises(self, value):
         plugins = PluginExecutor.list_plugins()
-        plugin = plugins[0]
-        func = plugin.functions[0]
+        if plugins[0].name == "Dummy plugin":
+            plugin = plugins[0]
+        else:
+            plugin = plugins[1]
         with pytest.raises(AQDValidationError):
-            PluginExecutor._validate_values(func, value)
+            plugin.functions[0].validate_values(value)
 
     @pytest.mark.parametrize(
         "plugin",
@@ -129,7 +167,7 @@ class TestPluginExecutor:
                             PluginParameter(
                                 name="var1",
                                 description="descr",
-                                data_type=SupportedTypes.MULTILINE.value,
+                                data_type=SupportedTypes.TEXTAREA.value,
                             )
                         ],
                     ),
@@ -139,78 +177,7 @@ class TestPluginExecutor:
         ],
     )
     def test_plugin_validation_ok(self, plugin):
-        PluginExecutor._validate_plugin(plugin)
-
-    @pytest.mark.parametrize(
-        "plugin",
-        [
-            # short description
-            Plugin(
-                name="name",
-                description="sh",
-                authors="a@a.org",
-                functions=[],
-                aqueduct_url="",
-                params={},
-            ),
-            # empty name
-            Plugin(
-                name="",
-                description="long one",
-                authors="a@a.org",
-                functions=[],
-                aqueduct_url="",
-                params={},
-            ),
-            # short function description
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(
-                        name="func1", description="sh", script="", parameters=[]
-                    ),
-                ],
-                params={},
-            ),
-            # empty function name
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(name="", description="sh", script="", parameters=[]),
-                ],
-                params={},
-            ),
-            # unsupported type
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(
-                        name="func1",
-                        description="descr",
-                        script="",
-                        parameters=[
-                            PluginParameter(
-                                name="var1", description="descr", data_type="something"
-                            )
-                        ],
-                    ),
-                ],
-                params={},
-            ),
-        ],
-    )
-    def test_plugin_validation_raises(self, plugin):
-        with pytest.raises(AQDValidationError):
-            PluginExecutor._validate_plugin(plugin)
+        plugin.validate_object()
 
     @pytest.mark.skip
     def test_plugin_wolfram_alpha(self):

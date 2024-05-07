@@ -3,17 +3,32 @@
 
 from __future__ import annotations
 
+from enum import Enum
 import os
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from aqueductcore.backend.errors import AQDFilesPathError
+from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
 
 MANIFEST_FILE = "manifest.yml"
+
+
+class SupportedTypes(str, Enum):
+    """This enum contains allowed data types, which may be passed from
+    the GraphQL endpoint or specified in the manifest file."""
+
+    INT = "int"
+    STR = "str"
+    TEXTAREA = "textarea"
+    FLOAT = "float"
+    EXPERIMENT = "experiment"
+    FILE = "file"
+    BOOL = "bool"
+    SELECT = "select"
 
 
 class PluginExecutionResult(BaseModel):
@@ -24,36 +39,82 @@ class PluginExecutionResult(BaseModel):
     stderr: str
 
 
-class PluginParameter(yaml.YAMLObject):
+class PluginParameter(BaseModel):
     """Typed and named parameter of the plugin function"""
 
-    yaml_tag = "!parameter"
-    yaml_loader = yaml.SafeLoader
+    name: str = Field(min_length=1)
+    display_name: Optional[str] = None
+    description: str = Field(min_length=1)
+    data_type: SupportedTypes
+    default_value: Optional[Any] = None
+    options: Optional[List[str]] = None
 
-    def __init__(self, name: str, description: str, data_type: str):
-        self.name = name
-        self.description = description
-        self.data_type = data_type
+    def __str__(self):
+        return f"{self.display_name} ({self.name}: {self.data_type.name})"
+
+    def __repr__(self):
+        return f"<{str(self)}>"
+
+    # pylint: disable=too-many-return-statements,too-many-branches
+    def validate_object(self):
+        """Validate variable and its default value."""
+
+        if self.default_value:
+            self.default_value = self.validate_value(self.default_value)
+
+    def validate_value(self, value: str) -> str:
+        """Validate value and return a normalised version, if possible."""
+        str_value = str(value)
+
+        if self.data_type == SupportedTypes.INT:
+            try:
+                int(str_value)
+                return str_value
+            except Exception as exc:
+                raise AQDValidationError(f"{str_value} is not int") from exc
+
+        if self.data_type == SupportedTypes.FLOAT:
+            try:
+                float(str_value)
+                return str_value
+            except Exception as exc:
+                raise AQDValidationError(f"{str_value} is not float") from exc
+
+        if self.data_type == SupportedTypes.BOOL:
+            if str_value.lower() in ("true", "1"):
+                return "1"
+            if str_value.lower() in ("false", "0"):
+                return "0"
+            raise AQDValidationError(f"{value} is not a valid boo.")
+
+        if self.data_type == SupportedTypes.EXPERIMENT:
+            try:
+                prefix, postfix = value.split("-")
+                if not prefix.isdecimal() or not postfix.isalnum():
+                    raise AQDValidationError("Experiment alias has wrong format.")
+                return value
+            except Exception as exc:
+                raise AQDValidationError(f"{value} is not a valid experiment alias.") from exc
+
+        if self.data_type == SupportedTypes.SELECT:
+            if self.options is not None:
+                if value in self.options:
+                    return str(value)
+            raise AQDValidationError(f"{value} is not in {self.options}.")
+
+        # for files, strings and textareas
+        return str(value)
 
 
-class PluginFunction(yaml.YAMLObject):
+class PluginFunction(BaseModel):
     """Each plugin may have multiple functions. This class represents
     one function which may be executed."""
 
-    yaml_tag = "!function"
-    yaml_loader = yaml.SafeLoader
-
-    def __init__(
-        self,
-        name: str,
-        description: str,
-        script: str,
-        parameters: List[PluginParameter],
-    ):
-        self.name = name
-        self.description = description
-        self.script = script
-        self.parameters = parameters
+    name: str = Field(min_length=1)
+    description: Optional[str] = None
+    display_name: Optional[str] = None
+    script: str
+    parameters: List[PluginParameter]
 
     def execute(
             self,
@@ -72,6 +133,7 @@ class PluginFunction(yaml.YAMLObject):
             PluginExecutionResult: OS process results.
         """
         my_env = os.environ.copy()
+        self.validate_values(params)
         my_env.update({key: str(val) for key, val in (plugin.params or {}).items()})
         my_env.update(params)
         my_env["aqueduct_url"] = plugin.aqueduct_url
@@ -96,27 +158,51 @@ class PluginFunction(yaml.YAMLObject):
                 stderr=err.decode(),
             )
 
+    def get_default_experiment_parameter(self) -> Optional[PluginParameter]:
+        """Return first experiment variable defined in manifest.
+
+        Return:
+            plugin parameter object.
+        """
+        for variable in self.parameters:
+            if variable.data_type == SupportedTypes.EXPERIMENT:
+                return variable
+        return None
+
+    def validate_object(self):
+        """Validate the instance of the function and its parameters."""
+
+        for param in self.parameters:
+            param.validate_object()
+
+    def validate_values(self, params: Dict[str, str]):
+        """Check params dict to agree with data types definition for the function"""
+        # do keys coincide?
+        provided_keys = set(params)
+        expected_keys = set(param.name for param in self.parameters)
+        if expected_keys != provided_keys:
+            raise AQDValidationError(
+                "Parameters error: keys don't match expected set. "
+                f"Missing keys: {expected_keys - provided_keys}; "
+                f"Unexpected keys: {provided_keys - expected_keys}"
+            )
+        for arg in self.parameters:
+            params[arg.name] = arg.validate_value(params[arg.name])
+
 
 # pylint: disable=too-many-instance-attributes,too-many-arguments
-class Plugin(yaml.YAMLObject):
+class Plugin(BaseModel):
     """Class representing a plugin"""
 
-    yaml_tag = "!plugin"
-    yaml_loader = yaml.SafeLoader
-
-    def __init__(
-        self, name: str, description: str, authors: str, functions: List[PluginFunction],
-        aqueduct_url: str, params: Dict[str, Any],
-    ):
-        super().__init__()
-        self.name = name
-        self.description = description
-        self.authors = authors
-        self.functions = functions
-        self.aqueduct_url = aqueduct_url
-        self.params = params
-        self.manifest_file = None
-        self.aqueduct_key = None
+    name: str
+    description: Optional[str] = None
+    display_name: Optional[str] = None
+    authors: str
+    functions: List[PluginFunction]
+    aqueduct_url: str
+    manifest_file: Optional[str] = None
+    aqueduct_key: Optional[str] = None
+    params: Optional[Dict[str, Any]] = None
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
@@ -131,8 +217,31 @@ class Plugin(yaml.YAMLObject):
         with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
-            plugin = yaml.load(manifest_stream, Loader=yaml.loader.SafeLoader)
+            plugin_as_dict = yaml.safe_load(manifest_stream)
+            plugin = Plugin(**plugin_as_dict)
             plugin.manifest_file = str(manifest.absolute())
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
+            plugin.validate_object()
             return plugin
+
+    def get_function(self, name: str) -> PluginFunction:
+        """ Get plugin function by its name.
+
+        Args:
+            name: function name
+
+        Returns:
+            Plugin function object
+        """
+        functions = [f for f in self.functions if f.name == name]
+        if len(functions) != 1:
+            raise AQDValidationError(f"There should be exactly 1 function with name {name}")
+        return functions[0]
+
+    def validate_object(self):
+        """Validate instance of the plugin and its functions."""
+        if not self.name:
+            raise AQDValidationError("Plugin should have a name.")
+        for func in self.functions:
+            func.validate_object()
