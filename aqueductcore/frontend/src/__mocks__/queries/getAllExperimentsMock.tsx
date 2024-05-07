@@ -18,10 +18,36 @@ export const getAllExperiments_mock = {
           filters: {
             startDate: null,
             endDate: null,
+            title: null,
+            tags: null,
+            shouldIncludeTags: null,
+          }
+        },
+      },
+      result: {
+        data: {
+          experiments: {
+            experimentsData: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).slice(0, experimentRecordsRowsPerPageOptions[0]),
+            totalExperimentsCount: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).length,
+          },
+        },
+      },
+      maxUsageCount: Number.POSITIVE_INFINITY,
+    },
+    // with title: ""
+    {
+      request: {
+        ...request,
+        variables: {
+          offset: 0,
+          limit: experimentRecordsRowsPerPageOptions[0],
+          filters: {
+            startDate: null,
+            endDate: null,
             title: "",
             tags: null,
             shouldIncludeTags: null,
-          },
+          }
         },
       },
       result: {
@@ -43,7 +69,7 @@ export const getAllExperiments_mock = {
           filters: {
             startDate: null,
             endDate: null,
-            title: "",
+            title: null,
             tags: null,
             shouldIncludeTags: null,
           },
