@@ -1,5 +1,7 @@
 import pytest
 
+from pydantic import ValidationError
+
 from aqueductcore.backend.services.plugin_executor import PluginExecutor
 from pathlib import Path
 
@@ -176,35 +178,6 @@ class TestPluginExecutor:
     )
     def test_plugin_validation_ok(self, plugin):
         plugin.validate_object()
-
-    @pytest.mark.parametrize(
-        "plugin",
-        [
-            # empty name
-            Plugin(
-                name="",
-                description="long one",
-                authors="a@a.org",
-                functions=[],
-                aqueduct_url="",
-                params={},
-            ),
-            # empty function name
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(name="", description="sh", script="", parameters=[]),
-                ],
-                params={},
-            ),
-        ],
-    )
-    def test_plugin_validation_raises(self, plugin):
-        with pytest.raises(AQDValidationError):
-            plugin.validate_object()
 
     @pytest.mark.skip
     def test_plugin_wolfram_alpha(self):

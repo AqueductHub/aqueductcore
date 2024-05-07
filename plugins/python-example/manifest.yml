@@ -27,16 +27,16 @@ functions:
     # This thick allows to avoid `aqueductcore`
     # dependency on client library.
     #
-    # Plugin may cache some data and librarues
+    # Plugin may cache some data and libraries
     # for it's further usage, or, alternatively,
     # it may drop and recreate
     # its environment on each run.
     script: >
       if [ ! -d "./plugin-venv" ]; then
-          python -m venv plugin-venv;
-          ./plugin-venv/bin/pip install requests pyaqueduct --quiet;
+          python -m venv .plugin-venv;
+          ./.plugin-venv/bin/pip install requests pyaqueduct --quiet;
       fi;
-      ./plugin-venv/bin/python solve_alpha.py
+      ./.plugin-venv/bin/python solve_alpha.py
 
     # arguments of the function
     parameters:

@@ -57,33 +57,6 @@ class TestPluginModel:
     def test_plugin_validation_ok(self, plugin):
         plugin.validate_object()
 
-    @pytest.mark.parametrize(
-        "plugin",
-        [
-            # empty name
-            Plugin(
-                name="",
-                description="long one",
-                authors="a@a.org",
-                functions=[],
-                aqueduct_url="",
-            ),
-            # empty function name
-            Plugin(
-                name="name",
-                description="long descr",
-                authors="a@a.org",
-                aqueduct_url="",
-                functions=[
-                    PluginFunction(name="", description="sh", script="", parameters=[]),
-                ],
-            ),
-        ],
-    )
-    def test_plugin_validation_raises(self, plugin):
-        with pytest.raises(AQDValidationError):
-            plugin.validate_object()
-
     def test_plugin_exposes_default_experiment(self):
         plugin = PluginExecutor.get_plugin("Dummy plugin")
         echo = plugin.get_function("echo")

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
 
@@ -42,9 +42,9 @@ class PluginExecutionResult(BaseModel):
 class PluginParameter(BaseModel):
     """Typed and named parameter of the plugin function"""
 
-    name: str
+    name: str = Field(min_length=1)
     display_name: Optional[str] = None
-    description: Optional[str] = None
+    description: str = Field(min_length=1)
     data_type: SupportedTypes
     default_value: Optional[Any] = None
     options: Optional[List[str]] = None
@@ -58,15 +58,7 @@ class PluginParameter(BaseModel):
     # pylint: disable=too-many-return-statements,too-many-branches
     def validate_object(self):
         """Validate variable and its default value."""
-        if not self.name:
-            raise AQDValidationError("Parameter should have a name.")
-        if not self.description:
-            raise AQDValidationError("Parameter should have a description.")
-        if self.data_type not in SupportedTypes:
-            raise AQDValidationError(
-                f"Type should be one of {set(SupportedTypes)}"
-                f"but was {self.data_type}"
-        )
+
         if self.default_value:
             self.default_value = self.validate_value(self.default_value)
 
@@ -118,7 +110,7 @@ class PluginFunction(BaseModel):
     """Each plugin may have multiple functions. This class represents
     one function which may be executed."""
 
-    name: str
+    name: str = Field(min_length=1)
     description: Optional[str] = None
     display_name: Optional[str] = None
     script: str
@@ -179,8 +171,7 @@ class PluginFunction(BaseModel):
 
     def validate_object(self):
         """Validate the instance of the function and its parameters."""
-        if not self.name:
-            raise AQDValidationError("Plugin function should have a name.")
+
         for param in self.parameters:
             param.validate_object()
 
