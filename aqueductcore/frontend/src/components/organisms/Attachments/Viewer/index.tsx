@@ -88,6 +88,7 @@ const ImageView = styled("img")`
 const TextViewer = styled("textarea")`
   width: 100%;
   height: calc(100% - ${({ theme }) => theme.spacing(6.25)});
+  padding: ${({ theme }) => theme.spacing(1.5)};
   border: none;
   outline: none;
   resize: none;
