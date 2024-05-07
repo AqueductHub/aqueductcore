@@ -4,17 +4,22 @@ Depending on execution context, plugins may be implement in any language if they
 can read environment variables and print to stdout.
 """
 
+import os
 import logging
 from pathlib import Path
 from typing import List
 
 from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.models.plugin import (
     Plugin,
     PluginExecutionResult,
 )
 from aqueductcore.backend.settings import settings
-
+from aqueductcore.backend.services.experiment import (
+    build_experiment_dir_absolute_path,
+    get_experiment_by_alias,
+)
 
 class PluginExecutor:
     """Class to access plugins."""
@@ -66,3 +71,36 @@ class PluginExecutor:
         plugin_object = cls.get_plugin(plugin)
         function_object = plugin_object.get_function(function)
         return function_object.execute(plugin=plugin_object, params=params)
+
+    @classmethod
+    async def save_log_to_experiment(
+        cls,
+        context: ServerContext,
+        experiment_id: str,
+        result: PluginExecutionResult,
+        log_filename: str,
+    ):
+        """Saves result of plugin executions into a log file inside experiment.
+
+        context: server context with database connection.
+        experiment_id: alias of the experiment.
+        result: object with plugin execution results.
+        log_filename: name of the log file to which data is saved.
+        """
+        experiment = await get_experiment_by_alias(
+            user_info=context.user_info,
+            db_session=context.db_session,
+            alias=experiment_id
+        )
+        experiment_dir = build_experiment_dir_absolute_path(
+            str(settings.experiments_dir_path), experiment.id
+        )
+        # create experiment directory if it is its first file
+        if not os.path.exists(experiment_dir):
+            os.makedirs(experiment_dir)
+        destination = os.path.join(experiment_dir, log_filename)
+
+        with open(destination, "w", encoding="utf-8") as dest:
+            dest.write(f"result code:\n{result.return_code}\n======\n")
+            dest.write(f"stdout:\n{result.stdout}\n======\n")
+            dest.write(f"stderr:\n{result.stderr}\n")

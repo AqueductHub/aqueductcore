@@ -3,9 +3,7 @@
 from typing import List, cast
 from uuid import UUID
 
-import os
 import datetime
-import pathvalidate
 import strawberry
 from strawberry.types import Info
 
@@ -23,13 +21,8 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.services.experiment import (
-    build_experiment_dir_absolute_path,
-    get_experiment_by_alias,
-)
 from aqueductcore.backend.services.plugin_executor import PluginExecutor
 from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
-from aqueductcore.backend.settings import settings
 from aqueductcore.backend.errors import AQDValidationError
 
 @strawberry.type
@@ -122,32 +115,22 @@ class Mutation:
         if exp_parameter is None:
             raise AQDValidationError(f"Function {plugin}/{function} has no experiment parameters")
         exp_id = dict_params[exp_parameter.name]
-        result = function_object.execute(plugin_object, dict_params, timeout=600)
-        experiment = await get_experiment_by_alias(
-            user_info=context.user_info,
-            db_session=context.db_session,
-            alias=exp_id
-        )
+
         now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        file_name = f"{plugin}-{function}-{now}.log"
-        pathvalidate.validate_filename(file_name)
-        experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment.id
+        log_filename = f"{plugin}-{function}-{now}.log"
+
+        result = function_object.execute(plugin_object, dict_params, timeout=600)
+
+        await PluginExecutor.save_log_to_experiment(
+            context=context,
+            experiment_id=exp_id,
+            log_filename=log_filename,
+            result=result,
         )
-        # create experiment directory if it is its first file
-        if not os.path.exists(experiment_dir):
-            os.makedirs(experiment_dir)
-        destination = os.path.join(experiment_dir, file_name)
-
-        with open(destination, "w", encoding="utf-8") as dest:
-            dest.write(f"result code:\n{result.return_code}\n======\n")
-            dest.write(f"stdout:\n{result.stdout}\n======\n")
-            dest.write(f"stderr:\n{result.stderr}\n")
-
         return PluginExecutionResult(
             return_code=result.return_code,
             stdout=result.stdout,
             stderr=result.stderr,
             log_experiment=exp_id,
-            log_file=file_name,
+            log_file=log_filename,
         )
