@@ -390,12 +390,12 @@ async def add_tags_to_experiment(
             "Non-existing experiment with the specified ID for the user."
         )
 
-    unique_tags = set(tags)
-    if len(unique_tags) != len(tags):
+    new_tags = {tag.lower(): tag for tag in tags}
+
+    if len(set(new_tags.keys())) != len(tags):
         raise AQDValidationError("Duplicate tags are not allowed in the request.")
 
-    new_tags = {tag.lower(): tag for tag in unique_tags}
-    tag_statement = select(orm.Tag).filter(orm.Tag.key.in_(new_tags.keys())).filter()
+    tag_statement = select(orm.Tag).filter(orm.Tag.key.in_(new_tags.keys()))
     result = await db_session.execute(tag_statement)
 
     cur_db_tags = result.unique().scalars().all()

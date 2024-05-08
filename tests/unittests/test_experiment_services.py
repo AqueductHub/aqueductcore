@@ -444,19 +444,18 @@ async def test_add_db_unique_tags_to_experiment_pre_existing_tags(
 
     await db_session.commit()
 
-    expected_tags = ["test1", "test2", "test3", experiments_data[0].tags[0].name]
+    expected_tags = {"test1", "test2", "test3", experiments_data[0].tags[0].name}
     in_db_experiment = await add_tags_to_experiment(
         user_info=UserInfo(
             user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
-        tags=expected_tags,
+        tags=list(expected_tags),
     )
 
     in_db_experiment_tags = [tag.name for tag in in_db_experiment.tags]
-    for item in expected_tags:
-        assert item in in_db_experiment_tags
+    assert expected_tags.issubset(in_db_experiment_tags)
 
 
 @pytest.mark.asyncio

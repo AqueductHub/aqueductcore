@@ -543,11 +543,25 @@ async def test_add_tags_to_experiment(
             }
         },
     )
-
     assert resp.errors is not None
     assert resp.data is None
+    assert resp.errors[0].message == "Duplicate tags are not allowed in the request."
 
-    assert resp.errors[0].message == f"Duplicate tags are not allowed in the request."
+    # test duplicate tags returns error
+    expected_tags = ["test1", "tesT2", "test2"]
+    resp = await schema.execute(
+        add_tags_to_experiment_mutation,
+        context_value=context,
+        variable_values={
+            "experimentTagsInput": {
+                "experimentId": str(experiments_data[0].id),
+                "tags": expected_tags,
+            }
+        },
+    )
+    assert resp.errors is not None
+    assert resp.data is None
+    assert resp.errors[0].message == "Duplicate tags are not allowed in the request."
 
 
 @pytest.mark.asyncio

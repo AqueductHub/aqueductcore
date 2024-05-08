@@ -60,15 +60,15 @@ async def add_tag_to_experiment(
 
 
 async def add_tags_to_experiment(
-    context: ServerContext, experiment_tag_input: ExperimentTagsInput
+    context: ServerContext, experiment_tags_input: ExperimentTagsInput
 ) -> ExperimentData:
     """Add tag to experiment mutation"""
 
     experiment = await experiment_service.add_tags_to_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_tag_input.experiment_id,
-        tags=experiment_tag_input.tags,
+        experiment_id=experiment_tags_input.experiment_id,
+        tags=experiment_tags_input.tags,
     )
     return experiment_model_to_node(experiment)
 

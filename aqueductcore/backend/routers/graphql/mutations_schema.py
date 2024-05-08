@@ -75,7 +75,7 @@ class Mutation:
 
         context = cast(ServerContext, info.context)
         experiment = await add_tags_to_experiment(
-            context=context, experiment_tag_input=experiment_tags_input
+            context=context, experiment_tags_input=experiment_tags_input
         )
         return experiment
 
