@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script generates license html table that will be posted in comment on PR
+# This script generates license table in a markdown file.
 
 FULL_PATH=$(realpath $0)
 SCRIPT_DIR=$(dirname $FULL_PATH)
@@ -24,7 +24,6 @@ fi
 yarn install --cwd $FRONTEND_DIR
 
 export BACKEND_LICENSES=$(poetry run pip-licenses --format=markdown --order=license)
-# export FRONTEND_LICENSES=$(yarn --cwd $FRONTEND_DIR run check-licenses | sed -n '/<table>/,/<\/table>/p')
 export FRONTEND_LICENSES=$(yarn --cwd $FRONTEND_DIR run -s license-report --only=prod --config=$SCRIPT_DIR/license-report-config.json)
 
 cat $SCRIPT_DIR/license_report_template.md | envsubst > license_report.md
