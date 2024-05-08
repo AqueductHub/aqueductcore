@@ -20,7 +20,8 @@ if [[ -z $(which poetry) ]]; then
     poetry config virtualenvs.in-project false
 fi
 
-
+echo "Installing dependencies"
+poetry install
 yarn install --cwd $FRONTEND_DIR
 
 export BACKEND_LICENSES=$(poetry run pip-licenses --format=markdown --order=license)
