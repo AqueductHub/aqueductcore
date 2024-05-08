@@ -88,5 +88,34 @@ export const getAllExperiments_mock = {
       },
       maxUsageCount: Number.POSITIVE_INFINITY,
     },
+    // with title: ""
+    {
+      request: {
+        ...request,
+        variables: {
+          offset: experimentRecordsRowsPerPageOptions[0],
+          limit: experimentRecordsRowsPerPageOptions[0],
+          filters: {
+            startDate: null,
+            endDate: null,
+            title: "",
+            tags: null,
+            shouldIncludeTags: null,
+          },
+        },
+      },
+      result: {
+        data: {
+          experiments: {
+            experimentsData: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).slice(
+              experimentRecordsRowsPerPageOptions[0],
+              experimentRecordsRowsPerPageOptions[0] * 2
+            ),
+            totalExperimentsCount: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).length,
+          },
+        },
+      },
+      maxUsageCount: Number.POSITIVE_INFINITY,
+    },
   ],
 };
