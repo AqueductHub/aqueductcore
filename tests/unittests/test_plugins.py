@@ -6,7 +6,6 @@ from aqueductcore.backend.models.plugin import (
     SupportedTypes,
 )
 from aqueductcore.backend.services.plugin_executor import PluginExecutor
-from aqueductcore.backend.errors import AQDValidationError
 
 
 class TestPluginModel:    
@@ -61,4 +60,15 @@ class TestPluginModel:
         plugin = PluginExecutor.get_plugin("Dummy plugin")
         echo = plugin.get_function("echo")
         param = echo.get_default_experiment_parameter()
-        assert param.name == "var4" and param.data_type == SupportedTypes.EXPERIMENT.value
+        assert param.name == "var4" and param.data_type == SupportedTypes.EXPERIMENT
+
+    def test_plugin_execute(self):
+        plugin = PluginExecutor.get_plugin("Dummy plugin")
+        echo = plugin.get_function("echo")
+        result = echo.execute(
+            plugin=plugin,
+            params={"var1": "text", "var2": 1, "var3": 2.2,
+                    "var4": "20240229-5689864ffd94",
+                    "var5": "text\narea", "var6": 0, "var7": "string2"},
+        )
+        assert result.return_code == 0
