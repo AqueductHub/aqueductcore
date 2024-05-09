@@ -67,10 +67,11 @@ class PluginExecutor:
     def is_venv_present(cls, plugin: str) -> bool:
         """ Checks if inside plugin folder there is a venv folder
 
-        plugin: plugin name
+        Args:
+            plugin: plugin name
 
         Returns:
-            True if venv in present
+            True if virtual environment is present.
         """
         where = cls.get_plugin(plugin).folder
         if not where.exists() or where.is_file():
@@ -82,9 +83,20 @@ class PluginExecutor:
 
     @classmethod
     def ensure_venv_python(cls, plugin: str) -> Path:
+        """ If virtual environment is not present in plugin folder,
+        it is created and requirements are installed
+
+        Args:
+            plugin: plugin name.
+
+        Returns:
+            Path to a python executable inside a virtual environment.
+            This path will be substituted in the `script` section
+            of manifest file, if `$python` variable is used.
+        """
         plugin_dir = cls.get_plugin(plugin).folder
         venv_dir = plugin_dir / VENV_FOLDER
-        python_bin = venv_dir / PYTHON_BINARY
+        python_bin = (venv_dir / PYTHON_BINARY).absolute()
         if cls.is_venv_present(plugin=plugin):
             return python_bin
         venv.create(venv_dir, system_site_packages=True, with_pip=True)
@@ -94,6 +106,16 @@ class PluginExecutor:
 
     @classmethod
     def try_install_requirements_txt(cls, plugin: str, python: Path) -> bool:
+        """ Checks in requirements.txt file is present, and
+        installs requirements into a virtual environment.
+
+        Args:
+            plugin: name of the plugin.
+            python: python binary path inside a virtual environment.
+
+        Returns:
+            True if `requirements.txt` existed and was successfully installed.
+        """
         plugin_dir = cls.get_plugin(plugin).folder
         requirements = plugin_dir / "requirements.txt"
         if requirements.exists():
@@ -101,12 +123,23 @@ class PluginExecutor:
                 f"{python} -m pip install -r {requirements}",
                 shell=True,
                 cwd=plugin_dir,
+                check=False,
             )
             return result.returncode == 0
         return False
 
     @classmethod
     def try_install_pyproject_toml(cls, plugin: str, python: Path) -> bool:
+        """ Checks in pyproject.toml file is present, and
+        installs a plugin folder as a python module into a virtual environment.
+
+        Args:
+            plugin: name of the plugin.
+            python: python binary path inside a virtual environment.
+
+        Returns:
+            True if `pyproject.toml` existed and module was successfully installed.
+        """
         plugin_dir = cls.get_plugin(plugin).folder
         pyproject = plugin_dir / "pyproject.toml"
         if pyproject.exists():
@@ -114,6 +147,7 @@ class PluginExecutor:
                 f"{python} -m pip install .",
                 shell=True,
                 cwd=plugin_dir,
+                check=False,
             )
             return result.returncode == 0
         return False
@@ -124,12 +158,12 @@ class PluginExecutor:
         of parameters, runs the plugin and returns execution result
 
         Args:
-            plugin (str): plugin name.
-            function (str): function name inside plugin.
-            params (dict): parameter of values to pass to a plugin.
+            plugin: plugin name.
+            function: function name inside plugin.
+            params: parameter of values to pass to a plugin.
 
         Returns:
-            PluginExecutionResult: results of process execution
+            Results of process execution.
         """
         plugin_object = cls.get_plugin(plugin)
         function_object = plugin_object.get_function(function)
