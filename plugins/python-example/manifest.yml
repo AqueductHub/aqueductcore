@@ -32,7 +32,11 @@ functions:
     # it may drop and recreate
     # its environment on each run.
     script: >
-      $python solve_alpha.py
+      if [ ! -d "./plugin-venv" ]; then
+          python -m venv .plugin-venv;
+          ./.plugin-venv/bin/pip install requests pyaqueduct --quiet;
+      fi;
+      ./.plugin-venv/bin/python solve_alpha.py
 
     # arguments of the function
     parameters:
