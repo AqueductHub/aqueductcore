@@ -225,8 +225,6 @@ class TestPluginExecutor:
         assert (venv / PYTHON_BINARY).exists()
         # pip is there
         assert (venv / "bin/pip").exists()
-        # requests is there
-        assert (venv / "bin/pip").exists()
         # assert requests are installed
         assert list(venv.glob("lib*/python*/site-packages/requests"))
         # assert requests are installed
