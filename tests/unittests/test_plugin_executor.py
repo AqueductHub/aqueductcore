@@ -167,7 +167,7 @@ class TestPluginExecutor:
                             PluginParameter(
                                 name="var1",
                                 description="descr",
-                                data_type=SupportedTypes.TEXTAREA.value,
+                                data_type=SupportedTypes.TEXTAREA,
                             )
                         ],
                     ),
@@ -179,11 +179,21 @@ class TestPluginExecutor:
     def test_plugin_validation_ok(self, plugin):
         plugin.validate_object()
 
+    def test_plugin_echo(self):
+        plugin = PluginExecutor.get_plugin("Dummy plugin")
+        result = PluginExecutor.execute(
+            plugin="Dummy plugin",
+            function="echo",
+            params={"var1": "text", "var2": 1, "var3": 2.2, "var4": "20240229-5689864ffd94",
+             "var5": "text\narea", "var6": 0, "var7": "string2"},
+        )
+        assert result.return_code == 0
+
     @pytest.mark.skip
     def test_plugin_wolfram_alpha(self):
-        wolfram_alpha = Plugin.from_folder(Path("plugins/python-example"))
-        result = wolfram_alpha.functions[0].execute(
-            wolfram_alpha,
+        result = PluginExecutor.execute(
+            "Wolfram alpha solution plugin",
+            "solve as text",
             {
                 "equation": "x^2 + 7 = 0",
                 "experiment": "20240229-5689864ffd94",

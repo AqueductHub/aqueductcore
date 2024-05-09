@@ -120,6 +120,7 @@ class PluginFunction(BaseModel):
             self,
             plugin: Plugin,
             params: dict,
+            python: str | Path | None = None,
             timeout: int=60) -> PluginExecutionResult:
         """Passes parameters to the function code and awaits
         execution results
@@ -142,8 +143,12 @@ class PluginFunction(BaseModel):
         cwd = Path.home()
         if plugin.manifest_file:
             cwd = Path(plugin.manifest_file).parent
+
+        rich_script = self.script
+        if python:
+            rich_script = rich_script.replace("$python ", f"{python} ")
         with subprocess.Popen(
-            self.script,
+            rich_script,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -203,6 +208,7 @@ class Plugin(BaseModel):
     manifest_file: Optional[str] = None
     aqueduct_key: Optional[str] = None
     params: Optional[Dict[str, Any]] = None
+    folder: Path = Path.home()
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
@@ -223,6 +229,7 @@ class Plugin(BaseModel):
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
             plugin.validate_object()
+            plugin.folder = path
             return plugin
 
     def get_function(self, name: str) -> PluginFunction:
