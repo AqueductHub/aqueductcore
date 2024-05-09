@@ -2,25 +2,25 @@
 # mypy: ignore-errors
 from os.path import exists
 from typing import List
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+from strawberry import Schema
+
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
-from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.validators import (
     MAX_EXPERIMENT_DESCRIPTION_LENGTH,
     MAX_EXPERIMENT_TAGS_NUM,
     MAX_EXPERIMENT_TITLE_LENGTH,
 )
 from aqueductcore.backend.settings import settings
-from sqlalchemy.ext.asyncio import AsyncSession
-from strawberry import Schema
-
 from tests.unittests.initial_data import experiment_data
 
 
@@ -202,6 +202,23 @@ add_tag_to_experiment_mutation = """
     }
 """
 
+add_tags_to_experiment_mutation = """
+    mutation AddTagsToExperiment($experimentTagsInput: ExperimentTagsInput!) {
+        addTagsToExperiment(
+            experimentTagsInput: $experimentTagsInput
+        ) {
+            id
+            title
+            description
+            tags
+            createdAt
+            createdBy
+            updatedAt
+            alias
+        }
+    }
+"""
+
 remove_tag_from_experiment_mutation = """
     mutation RemoveTagFromExperiment {
         removeTagFromExperiment(
@@ -354,7 +371,10 @@ async def test_create_experiment_invalid_tags(
 
     assert resp.data is None
     assert resp.errors is not None
-    assert resp.errors[0].message == "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+    assert (
+        resp.errors[0].message
+        == "Tag can only contain alphanumeric characters, colons, hyphens, underscores and slashes"
+    )
 
 
 @pytest.mark.asyncio
@@ -463,6 +483,85 @@ async def test_add_tag_to_experiment(
 
     resp_data = resp.data["addTagToExperiment"]
     assert "quera" in resp_data["tags"]
+
+
+@pytest.mark.asyncio
+async def test_add_tags_to_experiment(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test add tag to experiment graphql mutation"""
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiments = []
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_experiments.append(db_experiment)
+        db_session.add(db_experiment)
+        await db_session.commit()
+        await db_session.refresh(db_experiment)
+
+    schema = Schema(query=Query, mutation=Mutation)
+
+    context = ServerContext(
+        db_session=db_session,
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+    )
+
+    expected_tags = ["test1", "test2", "test3"]
+    resp = await schema.execute(
+        add_tags_to_experiment_mutation,
+        context_value=context,
+        variable_values={
+            "experimentTagsInput": {
+                "experimentId": str(experiments_data[0].id),
+                "tags": expected_tags,
+            }
+        },
+    )
+
+    assert resp.errors is None
+    assert resp.data is not None
+
+    resp_data = resp.data["addTagsToExperiment"]
+    for tag in expected_tags:
+        assert tag in resp_data["tags"]
+
+    # test duplicate tags returns error
+    expected_tags = ["test1", "test2", "test2"]
+    resp = await schema.execute(
+        add_tags_to_experiment_mutation,
+        context_value=context,
+        variable_values={
+            "experimentTagsInput": {
+                "experimentId": str(experiments_data[0].id),
+                "tags": expected_tags,
+            }
+        },
+    )
+    assert resp.errors is not None
+    assert resp.data is None
+    assert resp.errors[0].message == "Duplicate tags are not allowed in the request."
+
+    # test duplicate tags returns error
+    expected_tags = ["test1", "tesT2", "test2"]
+    resp = await schema.execute(
+        add_tags_to_experiment_mutation,
+        context_value=context,
+        variable_values={
+            "experimentTagsInput": {
+                "experimentId": str(experiments_data[0].id),
+                "tags": expected_tags,
+            }
+        },
+    )
+    assert resp.errors is not None
+    assert resp.data is None
+    assert resp.errors[0].message == "Duplicate tags are not allowed in the request."
 
 
 @pytest.mark.asyncio

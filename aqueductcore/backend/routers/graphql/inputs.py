@@ -40,6 +40,14 @@ class ExperimentTagInput:
 
 
 @strawberry.input
+class ExperimentTagsInput:
+    """Input type to add or remove tags from experiment"""
+
+    experiment_id: UUID
+    tags: List[str]
+
+
+@strawberry.input
 class ExperimentCreateInput:
     """Input type to create experiemnt"""
 
