@@ -1,9 +1,10 @@
+import shutil
 import pytest
 
 from pydantic import ValidationError
 
-from aqueductcore.backend.services.plugin_executor import PluginExecutor
-from pathlib import Path
+from aqueductcore.backend.services.plugin_executor import (
+    PluginExecutor, VENV_FOLDER, PYTHON_BINARY)
 
 from aqueductcore.backend.models.plugin import (
     Plugin,
@@ -203,3 +204,30 @@ class TestPluginExecutor:
         assert result.stderr == ""
         assert result.return_code == 0
         assert result.stdout == "x = -i sqrt(7)\nx = i sqrt(7)\n"
+
+    def test_plugin_venv_is_created_execute(self):
+        plugin = PluginExecutor.get_plugin("Wolfram alpha solution plugin")
+        venv = plugin.folder / VENV_FOLDER
+        # make sure there is no venv
+        shutil.rmtree(venv, ignore_errors=True)
+        # it will fail, but after the venv creation
+        try:
+            PluginExecutor.execute(
+                "Wolfram alpha solution plugin",
+                "solve as text",
+                {}
+            )
+        except:
+            pass
+        # venv is created
+        assert venv.exists()
+        # python is there
+        assert (venv / PYTHON_BINARY).exists()
+        # pip is there
+        assert (venv / "bin/pip").exists()
+        # requests is there
+        assert (venv / "bin/pip").exists()
+        # assert requests are installed
+        assert list(venv.glob("lib*/python*/site-packages/requests"))
+        # assert requests are installed
+        assert list(venv.glob("lib*/python*/site-packages/pyaqueduct"))
