@@ -49,6 +49,7 @@ export const SearchBar = ({ searchString, handleSearchStringUpdate }: SearchBarP
       placeholder="Search by EID and Name"
       value={text}
       onChange={handleChange}
+      inputProps={{ title: 'Search Experiments input' }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

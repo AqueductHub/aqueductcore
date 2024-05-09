@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { filterByThisTitle } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
@@ -131,10 +131,48 @@ test("experiment table next page click", async () => {
 
 });
 
-test("experiment table remembering the previous state", async () => {
-  render(
-    <AppContextAQDMock browserRouter={true}>
+test("experiment table to keep the URL updated with pagination", async () => {
+  const { findByTitle } = render(
+    <AppContextAQDMock browserRouter>
       <ExperimentRecordsPage category="all" />
     </AppContextAQDMock>
   );
+
+  // 0- URL should be there by the first load
+  await waitFor(async () => {
+    expect(window.location.href).toMatch(/rowsPerPage=10&page=0/)
+  });
+
+  // 1- Click next page >
+  const nextPageIconButton = await findByTitle("Go to next page");
+  await act(async () => {
+    await userEvent.click(nextPageIconButton);
+  });
+
+  // 2- next page should be reflected in the new page URL
+  await waitFor(async () => {
+    expect(window.location.href).toMatch(/rowsPerPage=10&page=1/)
+  });
+
 });
+
+test("experiment table to keep the URL updated with filters - Search title", async () => {
+  const { getByTitle } = render(
+    <AppContextAQDMock browserRouter>
+      <ExperimentRecordsPage category="all" />
+    </AppContextAQDMock>
+  );
+  const searchBar = getByTitle("Search Experiments input");
+
+  await userEvent.click(searchBar);
+  await userEvent.type(searchBar, filterByThisTitle);
+
+  await waitFor(async () => {
+    expect(window.location.href).toMatch(/title=EXP_rabi/)
+  });
+
+  // Clean up the input
+  await userEvent.clear(searchBar);
+});
+
+//todo: start and end date with the URL

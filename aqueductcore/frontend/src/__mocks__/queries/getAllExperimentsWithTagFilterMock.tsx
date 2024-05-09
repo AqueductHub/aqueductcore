@@ -21,6 +21,7 @@ export const getAllExperimentsWithTagFilter_mock = {
             endDate: null,
             title: "",
             tags: [filterByThisTag],
+            shouldIncludeTags: null
           },
         },
       },
@@ -47,6 +48,7 @@ export const getAllExperimentsWithTagFilter_mock = {
             endDate: null,
             title: "",
             tags: [filterByThisTag],
+            shouldIncludeTags: null
           },
         },
       },
