@@ -6,6 +6,8 @@ can read environment variables and print to stdout.
 
 import os
 import logging
+import venv
+import subprocess
 from pathlib import Path
 from typing import List
 
@@ -20,6 +22,12 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_alias,
 )
+
+
+VENV_FOLDER = ".aqueduct-plugin-venv"
+PYTHON_BINARY = "bin/python"
+EXEC_TIMEOUT = 600
+
 
 class PluginExecutor:
     """Class to access plugins."""
@@ -56,21 +64,116 @@ class PluginExecutor:
         return plugins[0]
 
     @classmethod
+    def is_venv_present(cls, plugin: str) -> bool:
+        """ Checks if inside plugin folder there is a venv folder
+
+        Args:
+            plugin: plugin name
+
+        Returns:
+            True if virtual environment is present.
+        """
+        where = cls.get_plugin(plugin).folder
+        if not where.exists() or where.is_file():
+            raise AQDValidationError(f"Plugin folder `{where}` does not exist.")
+        venv_folder = where / VENV_FOLDER
+        if venv_folder.exists() and venv_folder.is_file():
+            raise AQDValidationError(f"Venv `{venv_folder}` is not a folder.")
+        return venv_folder.exists()
+
+    @classmethod
+    def create_venv_python_if_not_present(cls, plugin: str) -> Path:
+        """ If virtual environment is not present in plugin folder,
+        it is created and requirements are installed. The method
+        returns python executable inside this venv.
+
+        Args:
+            plugin: plugin name.
+
+        Returns:
+            Path to a python executable inside a virtual environment.
+            This path will be substituted in the `script` section
+            of manifest file, if `$python` variable is used.
+        """
+        plugin_dir = cls.get_plugin(plugin).folder
+        venv_dir = plugin_dir / VENV_FOLDER
+        python_bin = (venv_dir / PYTHON_BINARY).absolute()
+        if cls.is_venv_present(plugin=plugin):
+            return python_bin
+        venv.create(venv_dir, system_site_packages=False, with_pip=True)
+        cls.try_install_requirements_txt(plugin=plugin, python=python_bin)
+        cls.try_install_pyproject_toml(plugin=plugin, python=python_bin)
+        return python_bin
+
+    @classmethod
+    def try_install_requirements_txt(cls, plugin: str, python: Path) -> bool:
+        """ Checks in requirements.txt file is present, and
+        installs requirements into a virtual environment.
+
+        Args:
+            plugin: name of the plugin.
+            python: python binary path inside a virtual environment.
+
+        Returns:
+            True if `requirements.txt` existed and was successfully installed.
+        """
+        plugin_dir = cls.get_plugin(plugin).folder
+        requirements = plugin_dir / "requirements.txt"
+        if requirements.exists():
+            result = subprocess.run(
+                f"{python} -m pip install -r {requirements}",
+                shell=True,
+                cwd=plugin_dir,
+                check=False,
+            )
+            return result.returncode == 0
+        return False
+
+    @classmethod
+    def try_install_pyproject_toml(cls, plugin: str, python: Path) -> bool:
+        """ Checks in pyproject.toml file is present, and
+        installs a plugin folder as a python module into a virtual environment.
+
+        Args:
+            plugin: name of the plugin.
+            python: python binary path inside a virtual environment.
+
+        Returns:
+            True if `pyproject.toml` existed and module was successfully installed.
+        """
+        plugin_dir = cls.get_plugin(plugin).folder
+        pyproject = plugin_dir / "pyproject.toml"
+        if pyproject.exists():
+            result = subprocess.run(
+                f"{python} -m pip install .",
+                shell=True,
+                cwd=plugin_dir,
+                check=False,
+            )
+            return result.returncode == 0
+        return False
+
+    @classmethod
     def execute(cls, plugin: str, function: str, params: dict) -> PluginExecutionResult:
         """For a given plugin name, function name, and a dictionary
         of parameters, runs the plugin and returns execution result
 
         Args:
-            plugin (str): plugin name.
-            function (str): function name inside plugin.
-            params (dict): parameter of values to pass to a plugin.
+            plugin: plugin name.
+            function: function name inside plugin.
+            params: parameter of values to pass to a plugin.
 
         Returns:
-            PluginExecutionResult: results of process execution
+            Results of process execution.
         """
         plugin_object = cls.get_plugin(plugin)
         function_object = plugin_object.get_function(function)
-        return function_object.execute(plugin=plugin_object, params=params)
+        python = cls.create_venv_python_if_not_present(plugin=plugin)
+        return function_object.execute(
+            plugin=plugin_object,
+            params=params,
+            python=python,
+        )
 
     @classmethod
     async def save_log_to_experiment(
