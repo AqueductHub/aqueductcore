@@ -47,14 +47,22 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
 
   const handleTagUpdate = (value: TagType[]) => {
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-    newQueryParameters.set('tags', JSON.stringify(value))
+    if (value.length === 0) {
+      newQueryParameters.delete('tags')
+    } else {
+      newQueryParameters.set('tags', JSON.stringify(value))
+    }
     setSearchParams(newQueryParameters)
     setSelectedTags(value);
   };
 
   const handleSearchStringUpdate = (value: string) => {
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-    newQueryParameters.set('title', value)
+    if (!value) {
+      newQueryParameters.delete('title')
+    } else {
+      newQueryParameters.set('title', value)
+    }
     setSearchParams(newQueryParameters)
     setSearchString(value);
   };
@@ -62,7 +70,11 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   const handleStartDateUpdate = (value: Dayjs | null) => {
     if (value?.isValid() || value === null) {
       const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-      newQueryParameters.set('startDate', (value?.toISOString()) ?? '')
+      if (!value) {
+        newQueryParameters.delete('startDate')
+      } else {
+        newQueryParameters.set('startDate', (value?.toISOString()) ?? '')
+      }
       setSearchParams(newQueryParameters)
       setStartDate(value);
     }
@@ -71,7 +83,11 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   const handleEndDateUpdate = (value: Dayjs | null) => {
     if (value?.isValid() || value === null) {
       const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-      newQueryParameters.set('endDate', (value?.toISOString()) ?? '')
+      if (!value) {
+        newQueryParameters.delete('endDate')
+      } else {
+        newQueryParameters.set('endDate', (value?.toISOString()) ?? '')
+      }
       setSearchParams(newQueryParameters)
       setEndDate(value);
     }

@@ -308,8 +308,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
 
   function handleNavigateBack() {
     switch (location.state?.from) {
-      case "/aqd/experiments/favourites":
-      case "/aqd/experiments/archived":
+      case "/aqd/experiments":
         navigate(-1);
         break;
       default:
