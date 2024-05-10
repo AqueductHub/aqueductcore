@@ -255,6 +255,7 @@ class Plugin(BaseModel):
 
     @property
     def folder(self):
+        """ Folder with plugin specification. Raises if not initialised. """
         if self._folder is None:
             raise AQDFilesPathError(f"Plugin {self.name} folder is not known.")
         return self._folder
