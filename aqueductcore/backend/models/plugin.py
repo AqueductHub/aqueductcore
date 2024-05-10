@@ -208,7 +208,7 @@ class Plugin(BaseModel):
     manifest_file: Optional[str] = None
     aqueduct_key: Optional[str] = None
     params: Optional[Dict[str, Any]] = None
-    folder: Path = Path.home()
+    _folder: Optional[Path] = None
 
     @classmethod
     def from_folder(cls, path: Path) -> Plugin:
@@ -229,7 +229,7 @@ class Plugin(BaseModel):
             # TODO: somehow generate and pass it here
             plugin.aqueduct_key = ""
             plugin.validate_object()
-            plugin.folder = path
+            plugin._folder = path
             return plugin
 
     def get_function(self, name: str) -> PluginFunction:
@@ -252,3 +252,9 @@ class Plugin(BaseModel):
             raise AQDValidationError("Plugin should have a name.")
         for func in self.functions:
             func.validate_object()
+
+    @property
+    def folder(self):
+        if self._folder is None:
+            raise AQDFilesPathError(f"Plugin {self.name} folder is not known.")
+        return self._folder

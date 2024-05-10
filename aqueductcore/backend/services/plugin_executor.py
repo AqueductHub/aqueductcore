@@ -75,16 +75,17 @@ class PluginExecutor:
         """
         where = cls.get_plugin(plugin).folder
         if not where.exists() or where.is_file():
-            raise AQDValidationError(f"Plugin folder `{where}` does not exist")
+            raise AQDValidationError(f"Plugin folder `{where}` does not exist.")
         venv_folder = where / VENV_FOLDER
         if venv_folder.exists() and venv_folder.is_file():
-            raise AQDValidationError(f"Venv `{venv_folder}` is not a folder")
+            raise AQDValidationError(f"Venv `{venv_folder}` is not a folder.")
         return venv_folder.exists()
 
     @classmethod
-    def ensure_venv_python(cls, plugin: str) -> Path:
+    def create_venv_python_if_not_present(cls, plugin: str) -> Path:
         """ If virtual environment is not present in plugin folder,
-        it is created and requirements are installed
+        it is created and requirements are installed. The method
+        returns python executable inside this venv.
 
         Args:
             plugin: plugin name.
@@ -99,7 +100,7 @@ class PluginExecutor:
         python_bin = (venv_dir / PYTHON_BINARY).absolute()
         if cls.is_venv_present(plugin=plugin):
             return python_bin
-        venv.create(venv_dir, system_site_packages=True, with_pip=True)
+        venv.create(venv_dir, system_site_packages=False, with_pip=True)
         cls.try_install_requirements_txt(plugin=plugin, python=python_bin)
         cls.try_install_pyproject_toml(plugin=plugin, python=python_bin)
         return python_bin
@@ -167,7 +168,7 @@ class PluginExecutor:
         """
         plugin_object = cls.get_plugin(plugin)
         function_object = plugin_object.get_function(function)
-        python = cls.ensure_venv_python(plugin=plugin)
+        python = cls.create_venv_python_if_not_present(plugin=plugin)
         return function_object.execute(
             plugin=plugin_object,
             params=params,
