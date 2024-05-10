@@ -103,6 +103,7 @@ class PluginParameterType:
     description: Optional[str]
     data_type: str
     default_value: Optional[str]
+    options: Optional[List[str]]
 
 
 @strawberry.type
@@ -150,6 +151,7 @@ class PluginInfo:
                         description=parameter.description,
                         data_type=parameter.data_type,
                         default_value=parameter.default_value,
+                        options=parameter.options,
                     )
                 )
             var = function.get_default_experiment_parameter()
