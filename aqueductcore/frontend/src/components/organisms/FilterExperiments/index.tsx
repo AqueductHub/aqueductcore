@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 import { DateRangePicker } from "components/molecules/DateRangePicker";
-import { SearchBar } from "components/molecules/SearchBar";
-import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { ExperimentFiltersType, TagType } from "types/globalTypes";
+import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { FilterTags } from "components/molecules/FilterTags";
+import { SearchBar } from "components/molecules/SearchBar";
 
 const GridContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("lg")]: {
@@ -18,9 +18,10 @@ const GridContainer = styled(Grid)(({ theme }) => ({
 interface FilterExperimentsProps {
   filters?: ExperimentFiltersType;
   setFilters?: (filters: ExperimentFiltersType) => void;
+  handleResetPagination?: () => void;
 }
 
-function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
+function FilterExperiments({ filters, setFilters, handleResetPagination }: FilterExperimentsProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTags, setSelectedTags] = useState<TagType[]>(filters?.tags ?? []);
   const [searchString, setSearchString] = useState<string>(filters?.title ?? "");
@@ -46,6 +47,7 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   }, [selectedTags, searchString, startDate, endDate]);
 
   const handleTagUpdate = (value: TagType[]) => {
+    if (handleResetPagination) handleResetPagination()
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     if (value.length === 0) {
       newQueryParameters.delete('tags')
@@ -57,6 +59,7 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   };
 
   const handleSearchStringUpdate = (value: string) => {
+    if (handleResetPagination) handleResetPagination()
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     if (!value) {
       newQueryParameters.delete('title')
@@ -68,6 +71,7 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   };
 
   const handleStartDateUpdate = (value: Dayjs | null) => {
+    if (handleResetPagination) handleResetPagination()
     if (value?.isValid() || value === null) {
       const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
       if (!value) {
@@ -81,6 +85,8 @@ function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
   };
 
   const handleEndDateUpdate = (value: Dayjs | null) => {
+    if (handleResetPagination) handleResetPagination()
+    console.log('time changed')
     if (value?.isValid() || value === null) {
       const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
       if (!value) {
