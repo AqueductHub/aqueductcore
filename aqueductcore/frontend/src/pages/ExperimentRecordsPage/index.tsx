@@ -146,6 +146,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   // TODO: This needs an API change to handle favourite and archive functionality as a new field
   // handle different categories based on different <Routes /> in App.tsx
   useDidUpdateEffect(() => {
+    handleResetPagination()
     switch (category) {
       case "favourites":
         setFilters({
