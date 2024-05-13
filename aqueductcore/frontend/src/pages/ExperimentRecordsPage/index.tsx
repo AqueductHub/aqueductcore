@@ -168,15 +168,6 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     }
   }, [category]);
 
-  // Reset Pagination when filter is changed
-  useDidUpdateEffect(() => {
-    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-    newQueryParameters.set('rowsPerPage', String(rowsPerPage))
-    newQueryParameters.set('page', String(page))
-    setSearchParams(newQueryParameters)
-    handleResetPagination()
-  }, [filters])
-
   const handlePageName = (pageUrl: string) => {
     switch (pageUrl) {
       case "/aqd/experiments":
@@ -191,15 +182,20 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   };
 
   const handleResetPagination = () => {
+    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+    newQueryParameters.set('rowsPerPage', String(rowsPerPage))
+    newQueryParameters.set('page', String(page))
+    setSearchParams(newQueryParameters, { replace: true })
     setRowsPerPage(experimentRecordsRowsPerPageOptions[0]);
     setPage(0);
   };
+
   if (error) return <Error message={error.message} />;
   return (
     <Container>
       <Title>{handlePageName(location.pathname)}</Title>
       {/* //Guides would be added here */}
-      <FilterExperiments filters={filters} setFilters={setFilters} />
+      <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
       <Box sx={{ mt: 2 }}>
         {processedExperimentData && pageInfo.count && !loading ? (
           <ExperimentsListTable

@@ -58,7 +58,7 @@ function ExperimentsListTable({
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     newQueryParameters.set('rowsPerPage', String(rowsPerPage))
     newQueryParameters.set('page', String(page))
-    setSearchParams(newQueryParameters)
+    setSearchParams(newQueryParameters, { replace: true })
   }, [page, rowsPerPage])
 
   function handleToggleFavorite(
