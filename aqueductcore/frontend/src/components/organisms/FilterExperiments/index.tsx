@@ -54,7 +54,7 @@ function FilterExperiments({ filters, setFilters, handleResetPagination }: Filte
     } else {
       newQueryParameters.set('tags', JSON.stringify(value))
     }
-    setSearchParams(newQueryParameters)
+    setSearchParams(newQueryParameters, { replace: true })
     setSelectedTags(value);
   };
 
@@ -66,7 +66,7 @@ function FilterExperiments({ filters, setFilters, handleResetPagination }: Filte
     } else {
       newQueryParameters.set('title', value)
     }
-    setSearchParams(newQueryParameters)
+    setSearchParams(newQueryParameters, { replace: true })
     setSearchString(value);
   };
 
@@ -79,14 +79,13 @@ function FilterExperiments({ filters, setFilters, handleResetPagination }: Filte
       } else {
         newQueryParameters.set('startDate', (value?.toISOString()) ?? '')
       }
-      setSearchParams(newQueryParameters)
+      setSearchParams(newQueryParameters, { replace: true })
       setStartDate(value);
     }
   };
 
   const handleEndDateUpdate = (value: Dayjs | null) => {
     if (handleResetPagination) handleResetPagination()
-    console.log('time changed')
     if (value?.isValid() || value === null) {
       const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
       if (!value) {
@@ -94,7 +93,7 @@ function FilterExperiments({ filters, setFilters, handleResetPagination }: Filte
       } else {
         newQueryParameters.set('endDate', (value?.toISOString()) ?? '')
       }
-      setSearchParams(newQueryParameters)
+      setSearchParams(newQueryParameters, { replace: true })
       setEndDate(value);
     }
   };

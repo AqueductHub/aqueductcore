@@ -185,7 +185,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     newQueryParameters.set('rowsPerPage', String(rowsPerPage))
     newQueryParameters.set('page', String(page))
-    setSearchParams(newQueryParameters)
+    setSearchParams(newQueryParameters, { replace: true })
     setRowsPerPage(experimentRecordsRowsPerPageOptions[0]);
     setPage(0);
   };
