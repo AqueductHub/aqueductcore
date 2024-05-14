@@ -12,6 +12,7 @@ from strawberry.types import Info
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
+from aqueductcore.backend.models.plugin import Plugin
 
 
 async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
@@ -91,3 +92,83 @@ class Tags:
 
     tags_data: List[str] = strawberry.field(description="The list of tags.")
     total_tags_count: int = strawberry.field(description="Total number of tags.")
+
+
+@strawberry.type
+class PluginParameterType:
+    """A single parameter of the plugin interface"""
+
+    name: str
+    display_name: Optional[str]
+    description: Optional[str]
+    data_type: str
+    default_value: Optional[str]
+    options: Optional[List[str]]
+
+
+@strawberry.type
+class PluginFunctionInfo:
+    """Represents a function of the plugin. One plugin
+    may have multiple functions."""
+
+    name: str
+    description: Optional[str]
+    parameters: List[PluginParameterType]
+    experiment_variable_name: Optional[str]
+
+@strawberry.type
+class PluginExecutionResult:
+    """Result of OS process execution"""
+
+    return_code: int
+    stdout: str
+    stderr: str
+    log_experiment: str
+    log_file: str
+
+
+@strawberry.type
+class PluginInfo:
+    """Plugin information passed to the frontend"""
+
+    name: str
+    description: Optional[str]
+    authors: str = strawberry.field(description="Plugin authors' emails")
+    functions: List[PluginFunctionInfo]
+
+    @staticmethod
+    def from_plugin(plugin: Plugin):
+        """Generates a plugin information object for a plugin model."""
+
+        functions = []
+        for function in plugin.functions:
+            parameters = []
+            for parameter in function.parameters:
+                parameters.append(
+                    PluginParameterType(
+                        name=parameter.name,
+                        display_name=parameter.display_name,
+                        description=parameter.description,
+                        data_type=parameter.data_type,
+                        default_value=parameter.default_value,
+                        options=parameter.options,
+                    )
+                )
+            var = function.get_default_experiment_parameter()
+            varname = None
+            if var is not None:
+                varname = var.name
+            functions.append(
+                PluginFunctionInfo(
+                    name=function.name,
+                    description=function.description,
+                    parameters=parameters,
+                    experiment_variable_name=varname,
+                )
+            )
+        return PluginInfo(
+            name=plugin.name,
+            description=plugin.description,
+            authors=plugin.authors,
+            functions=functions,
+        )

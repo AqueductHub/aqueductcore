@@ -1,8 +1,9 @@
 """GraohQL Mutations Controller."""
 
-from typing import cast
+from typing import List, cast
 from uuid import UUID
 
+import datetime
 import strawberry
 from strawberry.types import Info
 
@@ -22,8 +23,9 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData
-
+from aqueductcore.backend.services.plugin_executor import PluginExecutor
+from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
+from aqueductcore.backend.errors import AQDValidationError
 
 @strawberry.type
 class Mutation:
@@ -97,3 +99,52 @@ class Mutation:
         """Mutation to remove experiment"""
         context = cast(ServerContext, info.context)
         await remove_experiment(context=context, experiment_remove_input=experiment_remove_input)
+
+
+    @strawberry.mutation
+    async def execute_plugin(
+            self,
+            info: Info,
+            plugin: str,
+            function: str,
+            params: List[List[str]],
+    ) -> PluginExecutionResult:
+        """The endpoint accepts plugin execution requests.
+
+        Args:
+            info (Info): context, which includes database connection.
+            plugin (str): plugin name.
+            function (str): function name.
+            params (List[List[str]]):
+                list of pairs: [[key1, value1], [key2, value2], ...].
+
+        Returns:
+            PluginExecutionResult: result of OS process execution.
+        """
+        dict_params = dict(params)
+        context = cast(ServerContext, info.context)
+        plugin_object = PluginExecutor.get_plugin(plugin)
+        function_object = plugin_object.get_function(function)
+        exp_parameter = function_object.get_default_experiment_parameter()
+        if exp_parameter is None:
+            raise AQDValidationError(f"Function {plugin}/{function} has no experiment parameters")
+        exp_id = dict_params[exp_parameter.name]
+
+        now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        log_filename = f"{plugin}-{function}-{now}.log"
+
+        result = function_object.execute(plugin_object, dict_params, timeout=600)
+
+        await PluginExecutor.save_log_to_experiment(
+            context=context,
+            experiment_id=exp_id,
+            log_filename=log_filename,
+            result=result,
+        )
+        return PluginExecutionResult(
+            return_code=result.return_code,
+            stdout=result.stdout,
+            stderr=result.stderr,
+            log_experiment=exp_id,
+            log_file=log_filename,
+        )

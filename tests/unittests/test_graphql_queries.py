@@ -6,32 +6,25 @@ from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 import pytest
+
 import pytz
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.experiment import (
-    ExperimentCreate,
-    ExperimentRead,
-    TagCreate,
-    TagRead,
-)
+from aqueductcore.backend.models.experiment import (ExperimentCreate,
+                                                    ExperimentRead, TagCreate,
+                                                    TagRead)
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
-from aqueductcore.backend.services.utils import (
-    experiment_model_to_orm,
-    experiment_orm_to_model,
-    tag_model_to_orm,
-)
+from aqueductcore.backend.services.utils import (experiment_model_to_orm,
+                                                 experiment_orm_to_model,
+                                                 tag_model_to_orm)
 from aqueductcore.backend.services.validators import (
-    MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER,
-    MAX_EXPERIMENT_TITLE_FILTER_LENGTH,
-    MAX_EXPERIMENTS_PER_REQUEST,
-    MAX_TAGS_PER_REQUEST,
-)
+    MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER, MAX_EXPERIMENT_TITLE_FILTER_LENGTH,
+    MAX_EXPERIMENTS_PER_REQUEST, MAX_TAGS_PER_REQUEST)
 from aqueductcore.backend.settings import settings
 
 single_experiment_query = """
@@ -293,6 +286,20 @@ filter_by_title_query = """
         totalExperimentsCount
         }
     }
+"""
+
+all_plugins_query = """
+  {
+    plugins {
+        authors, description, name
+        functions {
+            description, name, experimentVariableName,
+            parameters {
+                name, displayName, description, dataType, defaultValue
+            }
+        }
+    }
+  }
 """
 
 
@@ -900,3 +907,21 @@ async def test_query_pagination_tags(
             tag_res=item,
             sample_tag=tags[idx],
         )
+
+
+@pytest.mark.asyncio
+async def test_plugins():
+    schema = Schema(query=Query)
+    resp = await schema.execute(all_plugins_query)
+    assert resp.errors is None
+    assert len(resp.data["plugins"]) == 2
+    if resp.data["plugins"][0]["name"] == "Dummy plugin":
+        p_dummy = resp.data["plugins"][0]
+    else:
+        p_dummy = resp.data["plugins"][1]
+    assert p_dummy["authors"] == "aqueduct@riverlane.com"
+    assert len(p_dummy["functions"]) == 2
+    print(p_dummy)
+    echo = p_dummy["functions"][0]
+    assert echo["experimentVariableName"] == "var4"
+    assert echo["parameters"][1]["displayName"] == "some display name"
