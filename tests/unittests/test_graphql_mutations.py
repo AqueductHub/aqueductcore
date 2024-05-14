@@ -786,4 +786,4 @@ async def test_execute_plugin_failed_validation(
         query.replace("111", "non_number"),
         context_value=context,
     )
-    assert resp.errors[0].message == "non_number is not int"
+    assert resp.errors[0].message == "non_number is not int."
