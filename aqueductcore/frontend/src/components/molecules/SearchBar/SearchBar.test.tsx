@@ -1,9 +1,9 @@
-import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { render } from "@testing-library/react";
 
 import FilterExperiments from "components/organisms/FilterExperiments";
-import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { experimentsSearchString } from "__mocks__/constants";
+import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 
 test("enter a value in the search field change input field", async () => {
   const { findByPlaceholderText } = render(

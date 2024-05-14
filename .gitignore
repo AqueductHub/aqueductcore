@@ -134,3 +134,4 @@ dmypy.json
 # Other unneeded files
 .DS_Store
 frontend_build
+license_report.md

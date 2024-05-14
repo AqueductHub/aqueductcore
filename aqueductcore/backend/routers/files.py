@@ -17,6 +17,7 @@ from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
+from aqueductcore.backend.services.constants import MARKDOWN_EXTENTIONS
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
@@ -46,9 +47,16 @@ async def download_experiment_file(
         file_path = os.path.join(experiment_dir, file_name)
 
         if not os.path.exists(file_path):
-            raise HTTPException(status_code=404, detail="The requested file is not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="The requested file is not found."
+            )
 
-        response = FileResponse(file_path, stat_result=os.stat(file_path))
+        # override markdown media type to work in Python 3.8 as it doesn't recognize markdown.
+        file_extention = file_name.split(".")[-1]
+        media_type = "text/x-markdown" if file_extention in MARKDOWN_EXTENTIONS else None
+
+        response = FileResponse(file_path, stat_result=os.stat(file_path), media_type=media_type)
+
         response.chunk_size = settings.download_chunk_size_KB * 1024
 
     except AQDDBExperimentNonExisting as error:

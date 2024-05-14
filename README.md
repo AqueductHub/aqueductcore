@@ -114,7 +114,7 @@ Read this section if you want to set up the project as a contributor.
 
    1. Navigate to the project's root folder.
    2. `poetry install`.
-   3. `python scripts/start_ecs_service.py`.
+   3. `python scripts/start_aqueduct_core.py`.
    4. The server should be up and running on `localhost:8000`.
 
 4. Run the GUI

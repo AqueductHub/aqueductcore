@@ -2,26 +2,13 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import ExperimentDetails from "components/organisms/ExperimentDetails";
+import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
-import { ExperimentDataType } from "types/globalTypes";
-import { description } from "__mocks__/constants";
+import { updatedDescription } from "__mocks__/constants";
 
 function ExperimentDetailsWithinComponent() {
-  const experimentId = "fffbde3b-a066-4197-bd8b-f90ff3bc04b0";
-  const experimentData: ExperimentDataType = {
-    id: experimentId,
-    title: "Quantum experiment",
-    description: "Detailed Quantum experiment",
-    tags: [],
-    alias: "20231010-21",
-    createdAt: "",
-    createdBy: "admin",
-  };
-
   return (
-    <>
-      <ExperimentDetails experimentDetails={experimentData} />
-    </>
+    <ExperimentDetails experimentDetails={ExperimentDataMock[0]} />
   );
 }
 
@@ -42,7 +29,7 @@ test("clicking on edit button converts text to field", async () => {
   const editField = await findByTitle("Edit experiment description");
   expect(editField).toBeInTheDocument();
   await userEvent.clear(editField);
-  await userEvent.type(editField, description);
+  await userEvent.type(editField, updatedDescription);
 
   const descriptionText = await findByText("Description");
   expect(descriptionText).toBeInTheDocument();
@@ -50,5 +37,5 @@ test("clicking on edit button converts text to field", async () => {
 
   const descriptionTextFinal = await findByTitle("Experiment description");
   expect(descriptionTextFinal).toBeInTheDocument();
-  expect(descriptionTextFinal).toHaveTextContent(description);
+  expect(descriptionTextFinal).toHaveTextContent(updatedDescription);
 });

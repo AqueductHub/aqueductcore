@@ -181,7 +181,6 @@ class TestPluginExecutor:
         plugin.validate_object()
 
     def test_plugin_echo(self):
-        plugin = PluginExecutor.get_plugin("Dummy plugin")
         result = PluginExecutor.execute(
             plugin="Dummy plugin",
             function="echo",

@@ -39,7 +39,7 @@ function ExperimentDetailsPage() {
   return (
     <Container>
       <ExperimentDetails experimentDetails={experimentDetails} />
-      <Attachments experimentsFiles={experimentDetails.files} />
+      <Attachments experimentId={experimentDetails.id} experimentFiles={experimentDetails.files} />
     </Container>
   );
 }
