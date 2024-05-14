@@ -12,10 +12,12 @@ from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentRemoveInput,
     ExperimentTagInput,
+    ExperimentTagsInput,
     ExperimentUpdateInput,
 )
 from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import (
     add_tag_to_experiment,
+    add_tags_to_experiment,
     create_experiment,
     remove_experiment,
     remove_tag_from_experiment,
@@ -64,6 +66,18 @@ class Mutation:
         context = cast(ServerContext, info.context)
         experiment = await add_tag_to_experiment(
             context=context, experiment_tag_input=experiment_tag_input
+        )
+        return experiment
+
+    @strawberry.mutation
+    async def add_tags_to_experiment(
+        self, info: Info, experiment_tags_input: ExperimentTagsInput
+    ) -> ExperimentData:
+        """Mutation to add tag to experiment"""
+
+        context = cast(ServerContext, info.context)
+        experiment = await add_tags_to_experiment(
+            context=context, experiment_tags_input=experiment_tags_input
         )
         return experiment
 
