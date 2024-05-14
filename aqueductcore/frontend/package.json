@@ -19,8 +19,7 @@
     "lint:eslint": "eslint --ext .js,.ts,.tsx,.html src/",
     "format:eslint": "eslint --ext .js,.ts,.tsx,.html src/ --fix",
     "lint:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --check",
-    "format:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --write",
-    "check-licenses": "license-report --output=html --only=prod,dev --fields=name --fields=installedVersion --fields=licenseType"
+    "format:prettier": "prettier \"src/**/*.{js,ts,tsx,html}\" --write"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",

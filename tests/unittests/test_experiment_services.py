@@ -9,11 +9,11 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from aqueductcore.backend.context import UserInfo, UserScope
-from aqueductcore.backend.errors import AQDDBExperimentNonExisting
+from aqueductcore.backend.errors import AQDDBExperimentNonExisting, AQDValidationError
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.services.experiment import (
-    add_tag_to_experiment,
+    add_tags_to_experiment,
     build_experiment_dir_absolute_path,
     create_experiment,
     generate_experiment_id_and_alias,
@@ -384,18 +384,106 @@ async def test_add_db_tag_to_experiment(
 
     await db_session.commit()
 
-    in_db_experiment = await add_tag_to_experiment(
+    in_db_experiment = await add_tags_to_experiment(
         user_info=UserInfo(
             user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
         db_session=db_session,
         experiment_id=experiments_data[0].id,
-        tag="important",
+        tags=["important"],
     )
-    await db_session.commit()
 
     in_db_experiment_tags = [tag.name for tag in in_db_experiment.tags]
     assert "important" in in_db_experiment_tags
+
+
+@pytest.mark.asyncio
+async def test_add_db_unique_tags_to_experiment(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test update_db_experiment operation"""
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_session.add(db_experiment)
+
+    await db_session.commit()
+
+    expected_tags = ["test1", "test2", "test3"]
+    in_db_experiment = await add_tags_to_experiment(
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+        db_session=db_session,
+        experiment_id=experiments_data[0].id,
+        tags=expected_tags,
+    )
+
+    in_db_experiment_tags = [tag.name for tag in in_db_experiment.tags]
+    for item in expected_tags:
+        assert item in in_db_experiment_tags
+
+
+@pytest.mark.asyncio
+async def test_add_db_unique_tags_to_experiment_pre_existing_tags(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test update_db_experiment operation"""
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_session.add(db_experiment)
+
+    await db_session.commit()
+
+    expected_tags = {"test1", "test2", "test3", experiments_data[0].tags[0].name}
+    in_db_experiment = await add_tags_to_experiment(
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+        db_session=db_session,
+        experiment_id=experiments_data[0].id,
+        tags=list(expected_tags),
+    )
+
+    in_db_experiment_tags = [tag.name for tag in in_db_experiment.tags]
+    assert expected_tags.issubset(in_db_experiment_tags)
+
+
+@pytest.mark.asyncio
+async def test_add_db_duplicate_tags_in_request_to_experiment(
+    db_session: AsyncSession, experiments_data: List[ExperimentCreate]
+):
+    """Test update_db_experiment operation"""
+
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_session.add(db_experiment)
+
+    await db_session.commit()
+
+    expected_tags = ["test1", "test1"]
+    with pytest.raises(AQDValidationError):
+        await add_tags_to_experiment(
+            user_info=UserInfo(
+                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+            db_session=db_session,
+            experiment_id=experiments_data[0].id,
+            tags=expected_tags,
+        )
 
 
 @pytest.mark.asyncio

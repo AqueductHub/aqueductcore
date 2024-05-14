@@ -1,19 +1,20 @@
+import { useLocation, useSearchParams } from "react-router-dom";
 import { Typography, styled } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
+import { useState } from "react";
 
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
-import FilterExperiments from "components/organisms/FilterExperiments";
-import { Error } from "components/atoms/Error";
+import { useGetAllExperiments } from "API/graphql/queries/getAllExperiments";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";
+import FilterExperiments from "components/organisms/FilterExperiments";
+import { useDidUpdateEffect } from "helper/functions";
+import { Error } from "components/atoms/Error";
 import {
   dateFormatter,
   processExperimentTableData,
   removeFavouriteAndArchivedTag,
 } from "helper/formatters";
-import { useGetAllExperiments } from "API/graphql/queries/getAllExperiments";
 import {
   experimentRecordsRowsPerPageOptions,
   MAX_TAGS_VISIBLE_LENGTH,
@@ -106,13 +107,14 @@ const ExperimentRecordsColumnsWithFavColumn: readonly ExperimentRecordsColumnsTy
 ];
 
 function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageType }) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(experimentRecordsRowsPerPageOptions[0]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
+  const [rowsPerPage, setRowsPerPage] = useState(Number(searchParams.get('rowsPerPage')) || experimentRecordsRowsPerPageOptions[0]);
   const [filters, setFilters] = useState<ExperimentFiltersType>({
-    startDate: null,
-    endDate: null,
-    tags: null,
-    title: "",
+    startDate: searchParams.get('startDate'),
+    endDate: searchParams.get('endDate'),
+    tags: JSON.parse(String(searchParams.get('tags')) ?? null),
+    title: searchParams.get('title') ?? '',
     shouldIncludeTags: null
   });
   const {
@@ -140,9 +142,11 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     setRowsPerPage,
     count: AllExperiments?.experiments?.totalExperimentsCount || 0,
   };
+
+  // TODO: This needs an API change to handle favourite and archive functionality as a new field
   // handle different categories based on different <Routes /> in App.tsx
-  useEffect(() => {
-    handleResetPagination();
+  useDidUpdateEffect(() => {
+    handleResetPagination()
     switch (category) {
       case "favourites":
         setFilters({
@@ -179,15 +183,20 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   };
 
   const handleResetPagination = () => {
+    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
+    newQueryParameters.set('rowsPerPage', String(rowsPerPage))
+    newQueryParameters.set('page', String(page))
+    setSearchParams(newQueryParameters, { replace: true })
     setRowsPerPage(experimentRecordsRowsPerPageOptions[0]);
     setPage(0);
   };
+
   if (error) return <Error message={error.message} />;
   return (
     <Container>
       <Title>{handlePageName(location.pathname)}</Title>
       {/* //Guides would be added here */}
-      <FilterExperiments filters={filters} setFilters={setFilters} />
+      <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
       <Box sx={{ mt: 2 }}>
         {processedExperimentData && pageInfo.count && !loading ? (
           <ExperimentsListTable

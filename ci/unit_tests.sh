@@ -23,4 +23,3 @@ poetry install
 
 echo "Build coverage report"
 poetry run $PROJECT_ROOT/scripts/run_unit_tests.sh
-
