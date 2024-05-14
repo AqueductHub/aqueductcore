@@ -71,21 +71,21 @@ class PluginParameter(BaseModel):
                 int(str_value)
                 return str_value
             except Exception as exc:
-                raise AQDValidationError(f"{str_value} is not int") from exc
+                raise AQDValidationError(f"{str_value} is not int.") from exc
 
         if self.data_type == SupportedTypes.FLOAT:
             try:
                 float(str_value)
                 return str_value
             except Exception as exc:
-                raise AQDValidationError(f"{str_value} is not float") from exc
+                raise AQDValidationError(f"{str_value} is not float.") from exc
 
         if self.data_type == SupportedTypes.BOOL:
             if str_value.lower() in ("true", "1"):
                 return "1"
             if str_value.lower() in ("false", "0"):
                 return "0"
-            raise AQDValidationError(f"{value} is not a valid boo.")
+            raise AQDValidationError(f"{value} is not a valid bool.")
 
         if self.data_type == SupportedTypes.EXPERIMENT:
             try:
@@ -94,7 +94,7 @@ class PluginParameter(BaseModel):
                     raise AQDValidationError("Experiment alias has wrong format.")
                 return value
             except Exception as exc:
-                raise AQDValidationError(f"{value} is not a valid experiment alias.") from exc
+                raise AQDValidationError(f"{value} is not a valid experiment id.") from exc
 
         if self.data_type == SupportedTypes.SELECT:
             if self.options is not None:
