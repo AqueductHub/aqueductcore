@@ -7,7 +7,6 @@ from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentRemoveInput,
     ExperimentTagInput,
-    ExperimentTagsInput,
     ExperimentUpdateInput,
 )
 from aqueductcore.backend.routers.graphql.types import ExperimentData
@@ -50,25 +49,11 @@ async def add_tag_to_experiment(
 ) -> ExperimentData:
     """Add tag to experiment mutation"""
 
-    experiment = await experiment_service.add_tags_to_experiment(
+    experiment = await experiment_service.add_tag_to_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
         experiment_id=experiment_tag_input.experiment_id,
-        tags=[experiment_tag_input.tag],
-    )
-    return experiment_model_to_node(experiment)
-
-
-async def add_tags_to_experiment(
-    context: ServerContext, experiment_tags_input: ExperimentTagsInput
-) -> ExperimentData:
-    """Add tag to experiment mutation"""
-
-    experiment = await experiment_service.add_tags_to_experiment(
-        user_info=context.user_info,
-        db_session=context.db_session,
-        experiment_id=experiment_tags_input.experiment_id,
-        tags=experiment_tags_input.tags,
+        tag=experiment_tag_input.tag,
     )
     return experiment_model_to_node(experiment)
 

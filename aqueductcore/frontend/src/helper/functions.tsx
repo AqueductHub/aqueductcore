@@ -1,4 +1,4 @@
-import { DependencyList, FocusEvent, useEffect, useRef } from "react";
+import { FocusEvent } from "react";
 import dayjs from "dayjs";
 
 import { SortOrder } from "types/componentTypes";
@@ -20,23 +20,6 @@ export const focusInCurrentTarget = ({
 
   return false;
 };
-
-// Function from https://stackoverflow.com/a/53180013/10597542
-export function useDidUpdateEffect(fn: () => void, inputs: DependencyList) {
-  const isMountingRef = useRef(false);
-
-  useEffect(() => {
-    isMountingRef.current = true;
-  }, []);
-
-  useEffect(() => {
-    if (!isMountingRef.current) {
-      return fn();
-    } else {
-      isMountingRef.current = false;
-    }
-  }, inputs);
-}
 
 // ################## Sort functions ################## //
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {

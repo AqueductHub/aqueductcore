@@ -320,7 +320,8 @@ async def create_experiment(
     )
     db_session.add(db_experiment)
 
-    db_experiment.tags.extend(tags_in_db)
+    for db_tag in tags_in_db:
+        db_experiment.tags.append(db_tag)
 
     await db_session.commit()
 
@@ -368,8 +369,8 @@ async def update_experiment(
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def add_tags_to_experiment(
-    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tags: List[ExperimentTag]
+async def add_tag_to_experiment(
+    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""
 
@@ -390,25 +391,21 @@ async def add_tags_to_experiment(
             "Non-existing experiment with the specified ID for the user."
         )
 
-    new_tags = {tag.lower(): tag for tag in tags}
+    tag_key = tag.lower()
+    experiment_tags = [tag.key for tag in db_experiment.tags]
 
-    if len(set(new_tags.keys())) != len(tags):
-        raise AQDValidationError("Duplicate tags are not allowed in the request.")
+    if tag_key in experiment_tags:
+        raise AQDDBError("DB query failed due to pre-existing tag with the Experiment.")
 
-    tag_statement = select(orm.Tag).filter(orm.Tag.key.in_(new_tags.keys()))
+    tag_statement = select(orm.Tag).filter(orm.Tag.key == tag_key)
+
     result = await db_session.execute(tag_statement)
-
-    cur_db_tags = result.unique().scalars().all()
-    for db_tag in cur_db_tags:
-        if db_tag.key in new_tags:
-            del new_tags[db_tag.key]
-            if db_tag not in db_experiment.tags:
-                db_experiment.tags.append(db_tag)
-
-    for key, value in new_tags.items():
-        db_tag = orm.Tag(name=value, key=key)
+    db_tag = result.scalars().first()
+    if db_tag is None:
+        db_tag = orm.Tag(name=tag, key=tag_key)
         db_session.add(db_tag)
-        db_experiment.tags.append(db_tag)
+
+    db_experiment.tags.append(db_tag)
 
     await db_session.commit()
 

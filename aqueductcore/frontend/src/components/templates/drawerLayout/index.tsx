@@ -1,9 +1,9 @@
-import { Link, useLocation, useSearchParams } from "react-router-dom";
 import DescriptionIcon from '@mui/icons-material/Description';
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ScienceIcon from "@mui/icons-material/Science";
+import { Link, useLocation } from "react-router-dom";
 import { PropsWithChildren, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box } from "@mui/system";
@@ -38,7 +38,6 @@ interface GroupDrawerItem {
   text: string;
   icon?: JSX.Element;
   url: string;
-  withSearchParams?: boolean
   openInNewTab?: boolean;
 }
 interface DrawerItem extends GroupDrawerItem {
@@ -57,12 +56,12 @@ export const drawerItems: DrawerItemsType[] = [
     icon: <ScienceIcon />,
     isGroup: true,
     subItems: [
-      { text: "Recents", url: "/aqd/experiments", withSearchParams: true },
-      { text: "Favourites", url: "/aqd/experiments/favourites", withSearchParams: true },
-      { text: "Archived", url: "/aqd/experiments/archived", withSearchParams: true },
+      { text: "Recents", url: "/aqd/experiments" },
+      { text: "Favourites", url: "/aqd/experiments/favourites" },
+      { text: "Archived", url: "/aqd/experiments/archived" },
     ],
   },
-  { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true },
+  { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true},
   { text: "Settings", icon: <SettingsIcon />, url: "/settings" },
 ];
 
@@ -84,7 +83,6 @@ const LogoContainer = styled(Box)`
 `;
 
 function DrawerLayout(props: PropsWithChildren) {
-  const [searchParams] = useSearchParams();
   const location = useLocation();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -136,7 +134,7 @@ function DrawerLayout(props: PropsWithChildren) {
                 <List component="div" disablePadding>
                   {item.subItems.map((subItem) => (
                     <Link
-                      to={`${subItem.url}${subItem.withSearchParams ? "?" + searchParams : ''}` ?? ""}
+                      to={subItem.url ?? ""}
                       key={subItem.text}
                       style={{
                         textDecoration: "none",
@@ -176,7 +174,7 @@ function DrawerLayout(props: PropsWithChildren) {
                   px: 2.5,
                 }}
                 selected={location.pathname === item.url}
-                to={`${item.url}${item.withSearchParams ? "?" + searchParams : ''}` ?? ""}
+                to={item.url ?? ""}
                 target={item.openInNewTab ? "_blank" : ""}
                 component={Link}
               >
@@ -203,7 +201,7 @@ function DrawerLayout(props: PropsWithChildren) {
                     alignItems: "flex-end"
                   }}
                 >
-                  <OpenInNewIcon sx={{ fontSize: '1rem' }} />
+                  <OpenInNewIcon sx={{fontSize: '1rem'}} />
                 </ListItemIcon>}
               </ListItemButton>
             </ListItem>

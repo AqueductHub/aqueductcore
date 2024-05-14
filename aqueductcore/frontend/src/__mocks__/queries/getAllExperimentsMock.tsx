@@ -21,7 +21,7 @@ export const getAllExperiments_mock = {
             title: "",
             tags: null,
             shouldIncludeTags: null,
-          }
+          },
         },
       },
       result: {

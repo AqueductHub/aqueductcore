@@ -308,13 +308,10 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
 
   function handleNavigateBack() {
     switch (location.state?.from) {
-      //if user have chosen the experiment from the experiment records
       case "/aqd/experiments/favourites":
       case "/aqd/experiments/archived":
-      case "/aqd/experiments":
         navigate(-1);
         break;
-      //if the link is copied or other states
       default:
         navigate("..", { relative: "path" });
     }

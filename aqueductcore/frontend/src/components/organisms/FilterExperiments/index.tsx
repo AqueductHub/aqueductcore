@@ -1,13 +1,12 @@
-import { useSearchParams } from "react-router-dom";
 import { Grid, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 import { DateRangePicker } from "components/molecules/DateRangePicker";
-import { ExperimentFiltersType, TagType } from "types/globalTypes";
-import { useGetAllTags } from "API/graphql/queries/getAllTags";
-import { FilterTags } from "components/molecules/FilterTags";
 import { SearchBar } from "components/molecules/SearchBar";
+import { useGetAllTags } from "API/graphql/queries/getAllTags";
+import { ExperimentFiltersType, TagType } from "types/globalTypes";
+import { FilterTags } from "components/molecules/FilterTags";
 
 const GridContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("lg")]: {
@@ -18,12 +17,10 @@ const GridContainer = styled(Grid)(({ theme }) => ({
 interface FilterExperimentsProps {
   filters?: ExperimentFiltersType;
   setFilters?: (filters: ExperimentFiltersType) => void;
-  handleResetPagination?: () => void;
 }
 
-function FilterExperiments({ filters, setFilters, handleResetPagination }: FilterExperimentsProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedTags, setSelectedTags] = useState<TagType[]>(filters?.tags ?? []);
+function FilterExperiments({ filters, setFilters }: FilterExperimentsProps) {
+  const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
   const [searchString, setSearchString] = useState<string>(filters?.title ?? "");
   const [startDate, setStartDate] = useState<Dayjs | null>(
     filters?.startDate ? dayjs(filters.startDate) : null
@@ -47,53 +44,21 @@ function FilterExperiments({ filters, setFilters, handleResetPagination }: Filte
   }, [selectedTags, searchString, startDate, endDate]);
 
   const handleTagUpdate = (value: TagType[]) => {
-    if (handleResetPagination) handleResetPagination()
-    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-    if (value.length === 0) {
-      newQueryParameters.delete('tags')
-    } else {
-      newQueryParameters.set('tags', JSON.stringify(value))
-    }
-    setSearchParams(newQueryParameters, { replace: true })
     setSelectedTags(value);
   };
 
   const handleSearchStringUpdate = (value: string) => {
-    if (handleResetPagination) handleResetPagination()
-    const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-    if (!value) {
-      newQueryParameters.delete('title')
-    } else {
-      newQueryParameters.set('title', value)
-    }
-    setSearchParams(newQueryParameters, { replace: true })
     setSearchString(value);
   };
 
   const handleStartDateUpdate = (value: Dayjs | null) => {
-    if (handleResetPagination) handleResetPagination()
     if (value?.isValid() || value === null) {
-      const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-      if (!value) {
-        newQueryParameters.delete('startDate')
-      } else {
-        newQueryParameters.set('startDate', (value?.toISOString()) ?? '')
-      }
-      setSearchParams(newQueryParameters, { replace: true })
       setStartDate(value);
     }
   };
 
   const handleEndDateUpdate = (value: Dayjs | null) => {
-    if (handleResetPagination) handleResetPagination()
     if (value?.isValid() || value === null) {
-      const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
-      if (!value) {
-        newQueryParameters.delete('endDate')
-      } else {
-        newQueryParameters.set('endDate', (value?.toISOString()) ?? '')
-      }
-      setSearchParams(newQueryParameters, { replace: true })
       setEndDate(value);
     }
   };

@@ -1,13 +1,13 @@
-import { act, render, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
+import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import { filterByThisTitle } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
 import { filterByThisTag } from "__mocks__/queries/getAllExperimentsWithTagFilterMock";
-import { ARCHIVED, experimentRecordsRowsPerPageOptions } from "constants/constants";
-import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
 import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
-import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
+import { ARCHIVED, experimentRecordsRowsPerPageOptions } from "constants/constants";
 
 // Experiment table
 test("render page with no error", () => {
@@ -99,80 +99,3 @@ test("render filtered experiments based on Tags", async () => {
 });
 
 //todo: start and end date
-
-test("experiment table next page click", async () => {
-  const { findByTitle, findByText } = render(
-    <AppContextAQDMock>
-      <ExperimentRecordsPage category="all" />
-    </AppContextAQDMock>
-  );
-
-  // 0- Just page loaded. ex: 1–10 of 14
-  const length_of_all_active_experiments = ExperimentDataMock.filter((item) => !item.tags.includes(ARCHIVED)).length
-  const firstNumberInPaginationRange = 1
-  const secondNumberInPaginationRange = Math.min(length_of_all_active_experiments, experimentRecordsRowsPerPageOptions[0])
-  const paginationString = `${firstNumberInPaginationRange}–${secondNumberInPaginationRange} of ${length_of_all_active_experiments}`
-  const pageInfo = await findByText(paginationString);
-  expect(pageInfo).toBeInTheDocument()
-
-  // 1- Click next page >
-  const nextPageIconButton = await findByTitle("Go to next page");
-  await act(async () => {
-    await userEvent.click(nextPageIconButton);
-  });
-
-  // 2- What we expect in the next page. ex: 11-14 of 14
-  const firstNumberInPaginationRangeAfterClick = experimentRecordsRowsPerPageOptions[0] + 1
-  const secondNumberInPaginationRangeAfterClick = Math.min(length_of_all_active_experiments, 2 * experimentRecordsRowsPerPageOptions[0])
-  const paginationStringAfterClick = `${firstNumberInPaginationRangeAfterClick}–${secondNumberInPaginationRangeAfterClick} of ${length_of_all_active_experiments}`
-  const pageInfoAfterClick = await findByText(paginationStringAfterClick);
-
-  expect(pageInfoAfterClick).toBeInTheDocument()
-
-});
-
-test("experiment table to keep the URL updated with pagination", async () => {
-  const { findByTitle } = render(
-    <AppContextAQDMock browserRouter>
-      <ExperimentRecordsPage category="all" />
-    </AppContextAQDMock>
-  );
-
-  // 0- URL should be there by the first load
-  await waitFor(async () => {
-    expect(window.location.href).toMatch(/rowsPerPage=10&page=0/)
-  });
-
-  // 1- Click next page >
-  const nextPageIconButton = await findByTitle("Go to next page");
-  await act(async () => {
-    await userEvent.click(nextPageIconButton);
-  });
-
-  // 2- next page should be reflected in the new page URL
-  await waitFor(async () => {
-    expect(window.location.href).toMatch(/rowsPerPage=10&page=1/)
-  });
-
-});
-
-test("experiment table to keep the URL updated with filters - Search title", async () => {
-  const { getByTitle } = render(
-    <AppContextAQDMock browserRouter>
-      <ExperimentRecordsPage category="all" />
-    </AppContextAQDMock>
-  );
-  const searchBar = getByTitle("Search Experiments input");
-
-  await userEvent.click(searchBar);
-  await userEvent.type(searchBar, filterByThisTitle);
-
-  await waitFor(async () => {
-    expect(window.location.href).toMatch(/title=EXP_rabi/)
-  });
-
-  // Clean up the input
-  await userEvent.clear(searchBar);
-});
-
-//todo: start and end date with the URL

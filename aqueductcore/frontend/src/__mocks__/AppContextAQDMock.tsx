@@ -1,6 +1,6 @@
 import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
-import { BrowserRouter, MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
+import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import CssBaseline from "@mui/material/CssBaseline";
 import { PropsWithChildren } from "react";
@@ -32,7 +32,6 @@ interface AppContextAQDMockProps {
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
-  browserRouter?: boolean;
   memoryRouterProps?: MemoryRouterProps
 }
 
@@ -49,7 +48,6 @@ function AppContextAQDMock({
   getUserInformation_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
   memoryRouterProps,
-  browserRouter,
   children,
 }: AppContextAQDMockProps) {
   Object.defineProperty(window, "matchMedia", {
@@ -94,24 +92,16 @@ function AppContextAQDMock({
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     getExperiment_mock[getExperiment_mockMockMode],
   ];
-
-  const App =
-    <>
-      <CssBaseline />
-      {children}
-      <Toaster />
-    </>
   return (
     <MockedProvider mocks={mocks} addTypename={false}>
       <CssVarsProvider theme={themeConfig}>
-        {browserRouter ?
-          <BrowserRouter>
-            {App}
-          </BrowserRouter> :
-          <MemoryRouter {...memoryRouterProps}>
-            {App}
-          </MemoryRouter>
-        }
+        {/* <BrowserRouter> */}
+        <MemoryRouter {...memoryRouterProps}>
+          <CssBaseline />
+          {children}
+          <Toaster />
+        </MemoryRouter>
+        {/* </BrowserRouter> */}
       </CssVarsProvider>
     </MockedProvider>
   );
