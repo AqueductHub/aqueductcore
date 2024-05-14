@@ -111,10 +111,10 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   const [page, setPage] = useState(Number(searchParams.get('page')) || 0);
   const [rowsPerPage, setRowsPerPage] = useState(Number(searchParams.get('rowsPerPage')) || experimentRecordsRowsPerPageOptions[0]);
   const [filters, setFilters] = useState<ExperimentFiltersType>({
-    startDate: searchParams.get('startDate'),
-    endDate: searchParams.get('endDate'),
-    tags: JSON.parse(String(searchParams.get('tags')) ?? null),
-    title: searchParams.get('title') ?? '',
+    startDate: null,
+    endDate: null,
+    tags: null,
+    title: "",
     shouldIncludeTags: null
   });
   const {
