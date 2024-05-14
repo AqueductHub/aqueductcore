@@ -16,7 +16,7 @@ from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import (ExperimentCreate,
                                                     ExperimentRead, TagCreate,
                                                     TagRead)
-from aqueductcore.backend.plugins import PluginExecutor
+
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
