@@ -38,6 +38,9 @@ class PluginExecutor:
     def list_plugins(cls) -> List[Plugin]:
         """List all valid plugins which are present in the folder"""
         result = []
+        if settings.plugins_dir_path is None:
+            logging.warning("Plugin directory is not set is PLUGINS_DIR_PATH environment variable.")
+            return []
         for directory in Path(settings.plugins_dir_path).iterdir():
             if directory.exists():
                 try:
