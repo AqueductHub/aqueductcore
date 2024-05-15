@@ -1,4 +1,4 @@
-name: Update Repository Variable
+name: Enable/Disable automated release
 
 on:
   workflow_dispatch:
@@ -18,16 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update Repository Variable
+      - name: Update Environment Variable
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_OWNER: AqueductHub
           REPO_NAME: aqueducthub/aqueductcore
-          VARIABLE_NAME: 'allow_automated_release'
-          VARIABLE_VALUE: ${{ inputs.debug_mode == 'true' }}
+          ENVIRONMENT_NAME: 'automated-release'
+          ENVIRONMENT_VARIABLE_NAME: 'ALLOW_AUTOMATED_RELEASE'
+          ENVIRONMENT_VARIABLE_VALUE: ${{ inputs.debug_mode == 'true' }}
         run: |
           curl -X PATCH \
-          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Authorization: token $PAT" \
           -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$REPO_OWNER/$REPO_NAME \
-          -d "{\"name\":\"$REPO_NAME\",\"repository\":{\"config\":{\"YOUR_VARIABLE_NAME\":\"$VARIABLE_VALUE\"}}}"
+          https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/environments/$ENVIRONMENT_NAME/secrets \
+          -d "{\"name\":\"$ENVIRONMENT_VARIABLE_NAME\",\"value\":\"$ENVIRONMENT_VARIABLE_VALUE\"}"
