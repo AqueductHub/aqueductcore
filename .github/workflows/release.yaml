@@ -1,13 +1,9 @@
 name: Release Aqueductcore
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Aqueduct Version"
-        required: true
-        type: string
-        default: "MAJOR.MINOR.PATCH"
+  schedule:
+    - cron: "0 10 * * 1"
+
 jobs:
   build:
     runs-on: ubuntu-20.04
