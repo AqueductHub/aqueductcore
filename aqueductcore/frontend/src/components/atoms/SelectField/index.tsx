@@ -1,46 +1,25 @@
-import { Box, Select, Grid, Typography, styled, MenuItem } from "@mui/material";
+import { Box, Select, Grid, styled, MenuItem } from "@mui/material";
 
-const FieldTitle = styled(Typography)`
-    font-size: 1rem;
-    font-weight: bold;
-    display: inline;
-    margin-right: ${(props) => props.theme.spacing(0.5)};
-`;
-
-const FieldType = styled(Typography)`
-    font-size: 0.8rem;
-    display: inline;
-    font-family: monospace;
-    color: #999;
-`;
-
-const FieldDescription = styled(Typography)`
-  font-size: 0.8rem;
-  font-style: italic;
-  border-left: 2px solid #999;
-  color: #555;
-  height: 100%;
-`;
+import { PluginFieldBase } from "types/globalTypes";
+import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
 
 const DropDown = styled(Select)`
-  width: calc(100% - 8px);
-  height: ${(props) => props.theme.spacing(4.5)};
+  width: calc(100% - ${(props) => props.theme.spacing(1)});
+  height: ${(props) => props.theme.spacing(5)};
+  font-size: 0.9rem;
 `;
 
-interface SelectProps {
-  title: string,
-  field: string,
-  description?: string,
+interface SelectProps extends PluginFieldBase {
   defaultValue?: string;
 }
 
 export function SelectField({
-  title = "",
-  field = "",
+  title,
+  field,
   description = "",
   defaultValue = ""
 }: SelectProps) {
-  const names = ["a", "b", "c"]
+  const names = ["Classical Block Codes", "Presence Versus Minimal Distance", "Implicit-Input Explicit-Output Model"]
 
   return (
     <Box>
@@ -48,7 +27,7 @@ export function SelectField({
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
-            <DropDown defaultValue={defaultValue} inputProps={{}}>
+            <DropDown defaultValue={defaultValue}>
               {names.map((name) => (
                 <MenuItem key={name} value={name}>{name}</MenuItem>
               ))}

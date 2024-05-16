@@ -1,20 +1,22 @@
 import { Box, Grid, Typography, styled } from "@mui/material";
 
-const FieldTitle = styled(Typography)`
+import { PluginFieldBase } from "types/globalTypes";
+
+export const FieldTitle = styled(Typography)`
     font-size: 1rem;
     font-weight: bold;
     display: inline;
     margin-right: ${(props) => props.theme.spacing(0.5)};
 `;
 
-const FieldType = styled(Typography)`
+export const FieldType = styled(Typography)`
     font-size: 0.8rem;
     display: inline;
     font-family: monospace;
     color: #999;
 `;
 
-const FieldDescription = styled(Typography)`
+export const FieldDescription = styled(Typography)`
   font-size: 0.8rem;
   font-style: italic;
   border-left: 2px solid #999;
@@ -38,10 +40,9 @@ const ExperimentAlias = styled(Typography)`
   font-style: italic;
 `;
 
-interface ExperimentProps {
+interface ExperimentProps extends PluginFieldBase {
   experiment_title: string,
   experiment_alias: string,
-  description: string,
 }
 
 export function ExperimentField({
