@@ -13,6 +13,14 @@ const NumberInput = styled(TextField)`
   line-height: ${(props) => props.theme.spacing(2.5)};
   border-radius: ${(props) => props.theme.spacing(0.5)};
   min-height: ${(props) => props.theme.spacing(3)};
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
 `;
 
 interface NumberProps extends PluginFieldBase {
@@ -31,7 +39,11 @@ export function NumberField({
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
-            <NumberInput type="number" size="small" defaultValue={defaultValue} />
+            <NumberInput
+              type="number"
+              size="small"
+              defaultValue={defaultValue}
+            />
           </Box>
         </Grid>
         <Grid item xs={6}>
