@@ -12,20 +12,16 @@ const FileInput = styled(TextField)`
 `;
 
 interface FileProps extends PluginFieldBase {
+  options: string[];
   defaultValue?: string;
 }
 
 export function FileField({
   title,
   field,
+  options,
   description = ""
 }: FileProps) {
-
-  const options = [
-    "First Option",
-    "Second Option",
-    "Third Option"
-  ]
   return (
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>

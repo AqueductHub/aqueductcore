@@ -11,15 +11,16 @@ const DropDown = styled(Select)`
 
 interface SelectProps extends PluginFieldBase {
   defaultValue?: string;
+  options: string[];
 }
 
 export function SelectField({
   title,
   field,
+  options,
   description = "",
   defaultValue = ""
 }: SelectProps) {
-  const names = ["Classical Block Codes", "Presence Versus Minimal Distance", "Implicit-Input Explicit-Output Model"]
 
   return (
     <Box>
@@ -28,8 +29,8 @@ export function SelectField({
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
             <DropDown defaultValue={defaultValue}>
-              {names.map((name) => (
-                <MenuItem key={name} value={name}>{name}</MenuItem>
+              {options.map((option) => (
+                <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
             </DropDown>
           </Box>
