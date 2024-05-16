@@ -15,7 +15,6 @@ from aqueductcore import __version__
 from aqueductcore.backend.errors import AQDFilesPathError
 from aqueductcore.backend.models import orm
 from aqueductcore.cli.models import AqueductData, AqueductVariant, Experiment, Tag, User
-from aqueductcore.cli.session import Session
 
 
 class Exporter:
@@ -71,8 +70,8 @@ class Exporter:
 
         """
         total = 0
-        with os.scandir(experiments_dir) as it:
-            for entry in it:
+        with os.scandir(experiments_dir) as iterator:
+            for entry in iterator:
                 if entry.is_file():
                     total += entry.stat().st_size
                 elif entry.is_dir():

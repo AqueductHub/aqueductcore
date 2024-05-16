@@ -44,6 +44,8 @@ class AqueductVariant(str, Enum):
 
 
 class AqueductData(BaseModel):
+    """Aqueduct metadata model."""
+
     version: str
     variant: AqueductVariant
     users: List[User]
