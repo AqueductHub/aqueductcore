@@ -28,12 +28,6 @@ import {
 
 import { AqueductLogo } from "components/atoms/AqueductLogo";
 import { WithOptional } from "types/globalTypes";
-import { CheckboxField } from "components/atoms/CheckboxField";
-import { TextAreaField } from "components/atoms/TextAreaField";
-import { SelectField } from "components/atoms/SelectField";
-import { ExperimentField } from "components/atoms/ExperimentField";
-import { FileField } from "components/atoms/FileField";
-import { NumberField } from "components/atoms/NumberField";
 
 export const drawerWidth = 264;
 export const drawerTopOffset = 100;
