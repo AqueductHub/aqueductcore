@@ -7,7 +7,7 @@ const TextAreaInput = styled(TextareaAutosize)`
   resize: none;
   width: 100%;
   border-width: 1px;
-  border-color: #ccc;
+  border-color: ${({ theme }) => theme.palette.neutral.main};
   font-size: 0.9rem;;
   line-height: ${(props) => props.theme.spacing(2.5)};
   border-radius: ${(props) => props.theme.spacing(0.5)};

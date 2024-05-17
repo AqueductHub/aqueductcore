@@ -1,25 +1,9 @@
-import { Box, Checkbox, Grid, Typography, styled } from "@mui/material";
+import { Box, Checkbox, Grid, styled } from "@mui/material";
+import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
 
-const FieldTitle = styled(Typography)`
-    font-size: 1rem;
-    font-weight: bold;
-    display: inline;
-    margin-right: ${(props) => props.theme.spacing(0.5)};
-`;
-
-const FieldType = styled(Typography)`
-    font-size: 0.8rem;
-    display: inline;
-    font-family: monospace;
-    color: #999;
-`;
-
-const FieldDescription = styled(Typography)`
-  font-size: 0.8rem;
-  font-style: italic;
-  border-left: 2px solid #999;
-  color: #555;
-  height: 100%;
+const CheckboxInput = styled(Checkbox)`
+  padding: ${({ theme }) => theme.spacing(0.5)});
+  border-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.white : theme.palette.grey[600]};
 `;
 
 interface CheckboxProps {
@@ -41,7 +25,7 @@ export function CheckboxField({
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box>
-            <Checkbox defaultValue={defaultValue} sx={{ p: 0.5, borderColor: "#999" }} />
+            <CheckboxInput defaultValue={defaultValue} />
           </Box>
         </Grid>
         <Grid item xs={6}>

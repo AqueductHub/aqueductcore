@@ -7,8 +7,9 @@ const FileInput = styled(TextField)`
   resize: none;
   width: 100%;
   border-width: 1px;
-  border-color: #ccc;
+  border-color: ${({ theme }) => theme.palette.neutral.main};
   padding: 0;
+  background-color: transparent;
 `;
 
 interface FileProps extends PluginFieldBase {
@@ -31,7 +32,7 @@ export function FileField({
             <Autocomplete
               disablePortal
               options={options}
-              renderInput={(params) => <FileInput {...params} size="small" />}
+              renderInput={(params) => <FileInput {...params} InputProps={{ inputProps: { style: { backgroundColor: "transparent" } } }} size="small" />}
             />
           </Box>
         </Grid>

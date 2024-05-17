@@ -13,19 +13,19 @@ export const FieldType = styled(Typography)`
     font-size: 0.8rem;
     display: inline;
     font-family: monospace;
-    color: #999;
+    color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.white : theme.palette.grey[600]};
 `;
 
 export const FieldDescription = styled(Typography)`
   font-size: 0.8rem;
   font-style: italic;
-  border-left: 2px solid #999;
+  border-left: 2px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.white : theme.palette.grey[600]};
   color: #555;
   height: 100%;
 `;
 
 const ExperimentBox = styled(Box)`
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.palette.neutral.main};
   border-radius: ${(props) => props.theme.spacing(0.5)};
   width: calc(100% - ${(props) => props.theme.spacing(1)});
   padding: ${(props) => props.theme.spacing(1)};

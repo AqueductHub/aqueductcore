@@ -7,6 +7,7 @@ const DropDown = styled(Select)`
   width: calc(100% - ${(props) => props.theme.spacing(1)});
   height: ${(props) => props.theme.spacing(5)};
   font-size: 0.9rem;
+  border-color: ${({ theme }) => theme.palette.neutral.main};
 `;
 
 interface SelectProps extends PluginFieldBase {
@@ -30,7 +31,7 @@ export function SelectField({
           <Box sx={{ p: 1 }}>
             <DropDown defaultValue={defaultValue}>
               {options.map((option) => (
-                <MenuItem key={option} value={option}>{option}</MenuItem>
+                <MenuItem key={option} value={option} sx={{ borderColor: "#E0E0E0" }}>{option}</MenuItem>
               ))}
             </DropDown>
           </Box>
