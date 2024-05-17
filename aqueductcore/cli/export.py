@@ -42,10 +42,11 @@ class Exporter:
 
         data = AqueductData(version=__version__, variant=AqueductVariant.CORE, users=[])
         for user in result.unique().scalars().all():
-            user_data = User(uid=user.id, username=user.username, experiments=[])
+            user_data = User(uuid=user.id, username=user.username, experiments=[])
             for experiment in user.experiments:
                 user_data.experiments.append(
                     Experiment(
+                        uuid=experiment.id,
                         eid=experiment.alias,
                         title=experiment.title,
                         description=experiment.description,
@@ -75,7 +76,7 @@ class Exporter:
                 if entry.is_file():
                     total += entry.stat().st_size
                 elif entry.is_dir():
-                    total += Exporter._get_dir_size(entry.path)
+                    total += cls._get_dir_size(entry.path)
         return total
 
     @classmethod
@@ -116,17 +117,13 @@ class Exporter:
                                 entry_size = entry.stat().st_size
                                 tar.add(
                                     name=entry.path,
-                                    arcname=os.path.join(
-                                        Exporter.EXPERIMENTS_BASE_DIR_NAME, entry.name
-                                    ),
+                                    arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
                                 )
                             elif entry.is_dir(follow_symlinks=False):
-                                entry_size = Exporter._get_dir_size(entry.path)
+                                entry_size = cls._get_dir_size(entry.path)
                                 tar.add(
                                     name=entry.path,
-                                    arcname=os.path.join(
-                                        Exporter.EXPERIMENTS_BASE_DIR_NAME, entry.name
-                                    ),
+                                    arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
                                 )
                             if progress:
                                 progress(entry_size)

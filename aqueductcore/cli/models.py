@@ -20,6 +20,7 @@ class Tag(BaseModel):
 class Experiment(BaseModel):
     """Experiment data model."""
 
+    uuid: UUID
     eid: str
     title: str
     description: Optional[str] = None
@@ -31,7 +32,7 @@ class Experiment(BaseModel):
 class User(BaseModel):
     """User data model."""
 
-    uid: UUID
+    uuid: UUID
     username: str
     experiments: List[Experiment]
 
