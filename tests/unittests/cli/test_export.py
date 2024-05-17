@@ -65,7 +65,7 @@ def test_export_experiments_metadata(db_session: Session, experiments_data: List
     assert metadata.version == aqueductcore.__version__
     assert metadata.variant == AqueductVariant.CORE.value
     assert len(metadata.users) == 1
-    assert metadata.users[0].uid == user_id
+    assert metadata.users[0].uuid == user_id
     assert metadata.users[0].username == settings.default_username
 
     # TODO: Add assertions for data equality.
