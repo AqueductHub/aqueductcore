@@ -2,14 +2,15 @@ name: Generate license report of dependencies.
 
 on:
   workflow_dispatch:
-    debug_mode:
-      description: 'Allow automated release for Aqueduct Core ?'
-      type: choice
-      required: true
-      default: 'true'
-      options:
-        - true
-        - false
+    inputs:
+      debug_mode:
+        description: 'Allow automated release for Aqueduct Core ?'
+        type: choice
+        required: true
+        default: 'true'
+        options:
+          - true
+          - false
 
 jobs:
   update_variable:
