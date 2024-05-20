@@ -1,34 +1,48 @@
-name: Enable/Disable automated release
+name: Docs latest and released versions
 
 on:
-  workflow_dispatch:
-    debug_mode:
-      description: 'Allow automated release for Aqueduct Core ?'
-      type: choice
-      required: true
-      default: 'true'
-      options:
-        - true
-        - false
+  push:
+    branches:
+      - "v*.*"
+      - main
 
 jobs:
-  update_variable:
+  build_docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    name: Build and Deploy Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Update Environment Variable
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: AqueductHub
-          REPO_NAME: aqueducthub/aqueductcore
-          ENVIRONMENT_NAME: 'automated-release'
-          ENVIRONMENT_VARIABLE_NAME: 'ALLOW_AUTOMATED_RELEASE'
-          ENVIRONMENT_VARIABLE_VALUE: ${{ inputs.debug_mode == 'true' }}
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.6
+        with:
+          poetry-version: 1.5.1
+
+      - name: Install packages
         run: |
-          curl -X PATCH \
-          -H "Authorization: token $PAT" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/environments/$ENVIRONMENT_NAME/secrets \
-          -d "{\"name\":\"$ENVIRONMENT_VARIABLE_NAME\",\"value\":\"$ENVIRONMENT_VARIABLE_VALUE\"}"
+          poetry install
+
+      - name: Configure Git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Build docs
+        run: |
+          poetry run mike deploy --push ${{ steps.extract_branch.outputs.branch }}
