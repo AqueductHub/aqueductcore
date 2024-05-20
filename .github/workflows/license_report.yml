@@ -11,6 +11,11 @@ on:
         options:
           - true
           - false
+
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   update_variable:
     runs-on: ubuntu-latest
