@@ -7,19 +7,28 @@ jobs:
   licenses:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.10"
+
+      # - name: Create a markdown file with contents
+      #   id: sets-licenses
+      #   run: |
+      #     ci/generate_license_report.sh
+
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: License Report
+      #     path: license_report.md
+
+      - uses: wemogy/next-version-action@2.0.2
+        id: release-version
         with:
-          python-version: "3.10"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: 'main'
+          projects: 'Single'
 
-      - name: Create a markdown file with contents
-        id: sets-licenses
-        run: |
-          ci/generate_license_report.sh
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: License Report
-          path: license_report.md
+      - run: echo ${{ steps.release-version.outputs.next-version }}
