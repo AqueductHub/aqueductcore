@@ -1,10 +1,10 @@
-name: Generate license report of dependencies.
+name: Generate license report of dependencies
 
 on:
   workflow_dispatch:
     inputs:
       debug_mode:
-        description: 'Allow automated release for Aqueduct Core ?'
+        description: 'Allow automated release for Aqueduct Core?'
         type: choice
         required: true
         default: 'true'
@@ -26,10 +26,10 @@ jobs:
           REPO_NAME: aqueducthub/aqueductcore
           ENVIRONMENT_NAME: 'automated-release'
           ENVIRONMENT_VARIABLE_NAME: 'ALLOW_AUTOMATED_RELEASE'
-          ENVIRONMENT_VARIABLE_VALUE: ${{ inputs.debug_mode == 'true' }}
+          ENVIRONMENT_VARIABLE_VALUE: ${{ github.event.inputs.debug_mode }}
         run: |
           curl -X PATCH \
-          -H "Authorization: token $PAT" \
+          -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/environments/$ENVIRONMENT_NAME/secrets \
-          -d "{\"name\":\"$ENVIRONMENT_VARIABLE_NAME\",\"value\":\"$ENVIRONMENT_VARIABLE_VALUE\"}"
+          https://api.github.com/repos/${{ env.REPO_OWNER }}/${{ env.REPO_NAME }}/environments/${{ env.ENVIRONMENT_NAME }}/secrets \
+          -d "{\"name\":\"${{ env.ENVIRONMENT_VARIABLE_NAME }}\",\"value\":\"${{ env.ENVIRONMENT_VARIABLE_VALUE }}\"}"
