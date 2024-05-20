@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_OWNER: AqueductHub
-          REPO_NAME: aqueducthub/aqueductcore
+          REPO_NAME: aqueductcore
           ENVIRONMENT_NAME: 'automated-release'
           ENVIRONMENT_VARIABLE_NAME: 'ALLOW_AUTOMATED_RELEASE'
           ENVIRONMENT_VARIABLE_VALUE: ${{ github.event.inputs.debug_mode }}
