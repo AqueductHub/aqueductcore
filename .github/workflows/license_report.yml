@@ -29,6 +29,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: 'main'
+          prefix: ''
           projects: 'Single'
 
       - run: echo ${{ steps.release-version.outputs.next-version }}
