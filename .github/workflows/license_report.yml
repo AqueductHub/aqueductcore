@@ -12,13 +12,13 @@ on:
           - true
           - false
 
-permissions:
-  contents: write
-  actions: write
 
 jobs:
   update_variable:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
