@@ -1,18 +1,25 @@
-name: Generate license report of dependencies
+name: Generate license report of dependencies.
 
 on:
   workflow_dispatch:
 
 jobs:
-  update_variable:
+  licenses:
     runs-on: ubuntu-latest
     steps:
-      - name: "✏️ Generate release changelog"
-        id: generate_changelog
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-      - name: "Write changelog to file"
-        run: echo "${{ steps.generate_changelog.outputs.changelog }}" > changelog.txt
-      - name: "Print output"
-        run: cat changelog.txt
+          python-version: "3.10"
+
+      - name: Create a markdown file with contents
+        id: sets-licenses
+        run: |
+          ci/generate_license_report.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: License Report
+          path: license_report.md
