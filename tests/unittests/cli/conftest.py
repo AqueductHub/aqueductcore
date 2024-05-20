@@ -13,7 +13,7 @@ from aqueductcore.backend.models import orm
 
 sync_engine = create_engine("sqlite:///:memory:")
 
-sync_session = sessionmaker(bind=sync_engine, expire_on_commit=False)
+sync_session = sessionmaker(bind=sync_engine, expire_on_commit=False, autoflush=False)
 
 
 @contextmanager

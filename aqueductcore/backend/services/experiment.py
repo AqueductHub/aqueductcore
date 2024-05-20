@@ -273,10 +273,11 @@ async def create_experiment(
     tags_in_db_statement = select(orm.Tag).filter(orm.Tag.key.in_(input_tag_keys))
     tags_in_db = (await db_session.execute(tags_in_db_statement)).scalars().all()
 
-    tags_orm = []
-    key_list = [item.key for item in tags_in_db]
+    tags_orm: List[orm.Tag] = []
+    tags_orm.extend(tags_in_db)
+    db_key_list = [item.key for item in tags_in_db]
     for tag in set(tags):
-        if tag.lower() not in key_list:
+        if tag.lower() not in db_key_list:
             tags_orm.append(orm.Tag(name=tag, key=tag.lower()))
 
     # get last created experiment of the day
@@ -318,9 +319,8 @@ async def create_experiment(
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
     )
-    db_session.add(db_experiment)
 
-    db_experiment.tags.extend(tags_in_db)
+    db_session.add(db_experiment)
 
     await db_session.commit()
 

@@ -36,3 +36,7 @@ class AQDFilesPathError(AQDError):
 
 class AQDCouldNotRemoveExperiment(AQDError):
     """Exception raised when experiment-tag-map rows could not be deleted"""
+
+
+class AQDImportError(AQDError):
+    """Exception raised when there is an error with import."""

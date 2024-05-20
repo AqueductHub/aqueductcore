@@ -2,73 +2,57 @@
 
 import os
 import tarfile
-from datetime import datetime, timezone
+from datetime import datetime
 from io import BytesIO
 from tempfile import TemporaryDirectory
 from typing import List
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
 import aqueductcore
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
-from aqueductcore.backend.services.utils import experiment_model_to_orm
+from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.settings import settings
-from aqueductcore.cli.export import Exporter
-from aqueductcore.cli.models import AqueductVariant
-
-user_id = uuid4()
-experiment_data = [
-    ExperimentCreate(
-        id=UUID("b7038e5a-c93d-4cac-8d3d-b5a95ead0963"),
-        title="Entangling Possibilities: Quantum Computing Explorations",
-        description="Description for entangling possibilities: quantum computing explorations experiment",
-        tags=[
-            TagCreate(key="tag1", name="Tag1"),
-            TagCreate(key="tag2", name="Tag2"),
-            TagCreate(key="tag3", name="Tag3"),
-        ],
-        alias=f"{datetime.now(timezone.utc).strftime('%Y%m%d')}-1",
-    ),
-    ExperimentCreate(
-        id=UUID("94d7d1a5-0840-481c-8f46-d9873f5fafa4"),
-        title="Shifting Realities: Quantum Computing Challenges",
-        description="Description for shifting realities: quantum computing challenges experiment",
-        tags=[],
-        alias=f"{datetime.now(timezone.utc).strftime('%Y%m%d')}-2",
-    ),
-    ExperimentCreate(
-        id=UUID("852b81bb-ced4-4c8d-8176-9c7184206638"),
-        title="Beyond Bits: Quantum Computing Frontier",
-        description="Description for beyond bits: quantum computing frontier experiment",
-        tags=[],
-        alias=f"{datetime.now(timezone.utc).strftime('%Y%m%d')}-3",
-    ),
-]
+from aqueductcore.cli.exporter import Exporter
+from aqueductcore.cli.models import AqueductData, AqueductVariant, Experiment, Tag, User
 
 
 def test_export_experiments_metadata(db_session: Session, experiments_data: List[ExperimentCreate]):
-    """Test get_all_experiments operation"""
-    db_user = orm.User(id=user_id, username=settings.default_username)
-    db_session.add(db_user)
 
-    for experiment in experiments_data:
-        db_experiment = experiment_model_to_orm(experiment)
-        db_experiment.created_by_user = db_user
-        db_session.add(db_experiment)
+    expected_metadata = AqueductData(
+        version=aqueductcore.__version__, variant=AqueductVariant.CORE, users=[]
+    )
+    for _ in range(10):  ## TODO
+        metauser = User(uuid=uuid4(), username=settings.default_username, experiments=[])
+        db_user = orm.User(id=metauser.uuid, username=metauser.username)
+        for experiment in experiments_data:
+            new_experiment = Experiment(
+                uuid=uuid4(),
+                title=experiment.title,
+                eid=str(uuid4()),
+                description=experiment.description,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                tags=[Tag(key=item.key, name=item.name) for item in experiment.tags],
+            )
+            metauser.experiments.append(new_experiment)
+            db_experiment = orm.Experiment(
+                id=new_experiment.uuid,
+                title=new_experiment.title,
+                description=new_experiment.description,
+                alias=new_experiment.eid,
+            )
+            db_experiment.tags.extend(
+                [orm.Tag(key=item.key, name=item.name) for item in new_experiment.tags]
+            )
+            db_user.experiments.append(db_experiment)
 
     db_session.commit()
 
     metadata = Exporter.export_experiments_metadata(db_session=db_session)
 
-    assert metadata.version == aqueductcore.__version__
-    assert metadata.variant == AqueductVariant.CORE.value
-    assert len(metadata.users) == 1
-    assert metadata.users[0].uuid == user_id
-    assert metadata.users[0].username == settings.default_username
-
-    # TODO: Add assertions for data equality.
+    assert expected_metadata == metadata
 
 
 def test_get_dir_size():
@@ -112,14 +96,13 @@ def test_export_artifact():
                 total_size += test_file_size
 
         export_tarfile = BytesIO()
-        metadata_filename = "metadata.json"
-        test_files[os.path.join(tmpdirname, metadata_filename)] = "test".encode()
-        Exporter.export_artifact(
-            metadata="test".encode(),
-            output_fileobj=export_tarfile,
-            metadata_filename=metadata_filename,
-            experiments_root=tmpdirname,
-        )
+        test_files[os.path.join(tmpdirname, Exporter.METADATA_FILENAME)] = "test".encode()
+        with tarfile.open(mode="w:gz", fileobj=export_tarfile) as tar:
+            Exporter.export_artifact(
+                metadata="test".encode(),
+                tar=tar,
+                experiments_root=tmpdirname,
+            )
 
         export_tarfile.seek(0)
         with tarfile.open(fileobj=export_tarfile, mode="r:gz") as tar:

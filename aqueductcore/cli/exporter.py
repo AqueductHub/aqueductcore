@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import errno
 import os.path
-import tarfile
 from io import BytesIO
+from tarfile import TarFile, TarInfo
 from typing import Any, Callable, Optional
 
 from sqlalchemy import select
@@ -21,6 +21,7 @@ class Exporter:
     """Aqueduct exporter class."""
 
     EXPERIMENTS_BASE_DIR_NAME = "experiments_files"
+    METADATA_FILENAME = "metadata.json"
 
     @classmethod
     def export_experiments_metadata(
@@ -83,8 +84,7 @@ class Exporter:
     def export_artifact(
         cls,
         metadata: bytes,
-        output_fileobj: BytesIO,
-        metadata_filename="metadata.json",
+        tar: TarFile,
         experiments_root: Optional[str] = None,
         progress: Optional[Callable[[int], Any]] = None,
     ) -> None:
@@ -100,33 +100,33 @@ class Exporter:
 
         """
         try:
-            with tarfile.open(mode="w:gz", fileobj=output_fileobj) as tar:
-                metadata_tarinfo = tarfile.TarInfo(metadata_filename)
-                metadata_tarinfo.size = len(metadata)
-                tar.addfile(
-                    tarinfo=metadata_tarinfo,
-                    fileobj=BytesIO(metadata),
-                )
-                if progress:
-                    progress(metadata_tarinfo.size)
-                if experiments_root:
-                    with os.scandir(experiments_root) as dir_iterator:
-                        for entry in dir_iterator:
-                            entry_size = 0
-                            if entry.is_file(follow_symlinks=False):
-                                entry_size = entry.stat().st_size
-                                tar.add(
-                                    name=entry.path,
-                                    arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                                )
-                            elif entry.is_dir(follow_symlinks=False):
-                                entry_size = cls._get_dir_size(entry.path)
-                                tar.add(
-                                    name=entry.path,
-                                    arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                                )
-                            if progress:
-                                progress(entry_size)
+
+            metadata_tarinfo = TarInfo(cls.METADATA_FILENAME)
+            metadata_tarinfo.size = len(metadata)
+            tar.addfile(
+                tarinfo=metadata_tarinfo,
+                fileobj=BytesIO(metadata),
+            )
+            if progress:
+                progress(metadata_tarinfo.size)
+            if experiments_root:
+                with os.scandir(experiments_root) as dir_iterator:
+                    for entry in dir_iterator:
+                        entry_size = 0
+                        if entry.is_file(follow_symlinks=False):
+                            entry_size = entry.stat().st_size
+                            tar.add(
+                                name=entry.path,
+                                arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
+                            )
+                        elif entry.is_dir(follow_symlinks=False):
+                            entry_size = cls._get_dir_size(entry.path)
+                            tar.add(
+                                name=entry.path,
+                                arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
+                            )
+                        if progress:
+                            progress(entry_size)
 
         except OSError as error:
             if error.errno in (errno.EACCES, errno.EPERM):  # Permission denied
