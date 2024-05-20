@@ -21,14 +21,11 @@ jobs:
       - name: Update Environment Variable
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: AqueductHub
-          REPO_NAME: aqueductcore
-          ENVIRONMENT_NAME: 'automated-release'
-          ENVIRONMENT_VARIABLE_NAME: 'ALLOW_AUTOMATED_RELEASE'
-          ENVIRONMENT_VARIABLE_VALUE: ${{ github.event.inputs.debug_mode }}
         run: |
-          curl -X PATCH \
-          -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ env.REPO_OWNER }}/${{ env.REPO_NAME }}/environments/${{ env.ENVIRONMENT_NAME }}/secrets \
-          -d "{\"name\":\"${{ env.ENVIRONMENT_VARIABLE_NAME }}\",\"value\":\"${{ env.ENVIRONMENT_VARIABLE_VALUE }}\"}"
+          curl -L \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/AqueductHub/aqueductcore/environments/automated-release/variables/ALLOW_AUTOMATED_RELEASE \
+          -d '{"name":"ALLOW_AUTOMATED_RELEASE","value":"${{ github.event.inputs.debug_mode }}"}'
