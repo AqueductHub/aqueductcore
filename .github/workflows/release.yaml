@@ -25,9 +25,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      
+      - name: Get current release version and calculate next patch version
+        id: next_version
+        run: |
+          git fetch --tags
+          CURRENT_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          NEXT_VERSION=$(echo $CURRENT_VERSION | awk -F. '{ printf "%d.%d.%d", $1, $2, $3+1 }')
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build Release Images
-        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
+        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ steps.next_version.outputs.version }}
 
       - name: Build final archived file
         run: |
@@ -35,7 +43,7 @@ jobs:
           && cp scripts/release/install.sh ./build \
           && cp scripts/release/uninstall.sh ./build
 
-          cd build && tar -cvzf aqueduct_v${{ inputs.version }}.tar.gz \
+          cd build && tar -cvzf aqueduct_v${{ steps.next_version.outputs.version }}.tar.gz \
           aqueductcore.tar \
           docker-compose.yaml \
           install.sh \
@@ -44,9 +52,9 @@ jobs:
       - name: Create release and upload artifacts
         uses: ncipollo/release-action@v1.12.0
         with:
-          tag: ${{ inputs.version }}
-          name: "${{ inputs.version }}"
+          tag: ${{ steps.next_version.outputs.version }}
+          name: "${{ steps.next_version.outputs.version }}"
           allowUpdates: true
           generateReleaseNotes: true
-          artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
+          artifacts: "build/aqueduct_v${{ steps.next_version.outputs.version }}.tar.gz"
           token: ${{ secrets.GITHUB_TOKEN }}

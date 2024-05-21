@@ -24,12 +24,11 @@ jobs:
       #     name: License Report
       #     path: license_report.md
 
-      - uses: wemogy/next-version-action@2.0.2
-        id: release-version
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: 'main'
-          prefix: ''
-          projects: 'Single'
-
-      - run: echo ${{ steps.release-version.outputs.next-version }}
+      - name: Get current release version and calculate next patch version
+        id: next_version
+        run: |
+          git fetch --tags
+          CURRENT_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          NEXT_VERSION=$(echo $CURRENT_VERSION | awk -F. '{ printf "%d.%d.%d", $1, $2, $3+1 }')
+          echo "version=$NEXT_VERSION"
+          echo $NEXT_VERSION
