@@ -92,9 +92,8 @@ class Exporter:
         gzip compression.
 
         Args:
-            metadata: Aqueduct metadata as bytes.
-            output_fileobj: Output file object for the generated tar file.
-            metadata_filename: Metadata file name to get into the generated tar file.
+            metadata_bytes: Aqueduct metadata encoded as bytes.
+            tar: Tar file to generate the archive.
             experiments_root: Experiments rood directory of the Aqueduct instance.
             progress: Call back with processed data information to show progress.
 

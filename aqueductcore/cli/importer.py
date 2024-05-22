@@ -134,8 +134,7 @@ class Importer:
 
         Args:
             metadata: Aqueduct metadata as bytes.
-            output_fileobj: Output file object for the generated tar file.
-            metadata_filename: Metadata file name to get into the generated tar file.
+            tar: Tar file to read the archive.
             experiments_root: Experiments rood directory of the Aqueduct instance.
             progress: Call back with processed data information to show progress.
 
