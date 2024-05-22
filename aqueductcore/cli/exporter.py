@@ -61,7 +61,7 @@ class Exporter:
         return data
 
     @classmethod
-    def _get_dir_size(cls, experiments_dir: str) -> int:
+    def get_dir_size(cls, experiments_dir: str) -> int:
         """Get the directory size in bytes given the path.
 
         Args:
@@ -77,13 +77,13 @@ class Exporter:
                 if entry.is_file():
                     total += entry.stat().st_size
                 elif entry.is_dir():
-                    total += cls._get_dir_size(entry.path)
+                    total += cls.get_dir_size(entry.path)
         return total
 
     @classmethod
-    def export_artifact(
+    def export_archive(
         cls,
-        metadata: bytes,
+        metadata_bytes: bytes,
         tar: TarFile,
         experiments_root: Optional[str] = None,
         progress: Optional[Callable[[int], Any]] = None,
@@ -102,10 +102,10 @@ class Exporter:
         try:
 
             metadata_tarinfo = TarInfo(cls.METADATA_FILENAME)
-            metadata_tarinfo.size = len(metadata)
+            metadata_tarinfo.size = len(metadata_bytes)
             tar.addfile(
                 tarinfo=metadata_tarinfo,
-                fileobj=BytesIO(metadata),
+                fileobj=BytesIO(metadata_bytes),
             )
             if progress:
                 progress(metadata_tarinfo.size)
@@ -120,7 +120,7 @@ class Exporter:
                                 arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
                             )
                         elif entry.is_dir(follow_symlinks=False):
-                            entry_size = cls._get_dir_size(entry.path)
+                            entry_size = cls.get_dir_size(entry.path)
                             tar.add(
                                 name=entry.path,
                                 arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),

@@ -71,7 +71,7 @@ def test_get_dir_size():
                     file_writer.write(test_data)
                 total_size += test_file_size
 
-        assert Exporter._get_dir_size(tmpdirname) == total_size
+        assert Exporter.get_dir_size(tmpdirname) == total_size
 
 
 def test_export_artifact():
@@ -98,8 +98,8 @@ def test_export_artifact():
         export_tarfile = BytesIO()
         test_files[os.path.join(tmpdirname, Exporter.METADATA_FILENAME)] = "test".encode()
         with tarfile.open(mode="w:gz", fileobj=export_tarfile) as tar:
-            Exporter.export_artifact(
-                metadata="test".encode(),
+            Exporter.export_archive(
+                metadata_bytes="test".encode(),
                 tar=tar,
                 experiments_root=tmpdirname,
             )

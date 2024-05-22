@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from aqueductcore import __version__
 from aqueductcore.backend.errors import AQDImportError
 from aqueductcore.backend.models import orm
+from aqueductcore.cli.exporter import Exporter
 from aqueductcore.cli.models import AqueductData, Experiment, Tag
 
 
@@ -122,7 +123,7 @@ class Importer:
                 db_user.experiments.append(db_experiment)
 
     @classmethod
-    def import_artifact(
+    def import_experiment_files(
         cls,
         tar: TarFile,
         experiments_root: str,
@@ -140,10 +141,16 @@ class Importer:
 
         """
 
-        def experiments_filter(member: tarfile.TarInfo, _) -> tarfile.TarInfo:
+        def experiments_filter(member: tarfile.TarInfo, _) -> Optional[tarfile.TarInfo]:
             """Extraction filter for progress bar."""
+
             if progress:
                 progress(member.size)
+
+            if member.path == Exporter.METADATA_FILENAME:
+                return None
+            elif member.path.startswith(Exporter.EXPERIMENTS_BASE_DIR_NAME):
+                member.path = member.path.replace(f"{Exporter.EXPERIMENTS_BASE_DIR_NAME}/", "")
             return member
 
         tar.extractall(path=experiments_root, filter=experiments_filter)

@@ -120,7 +120,6 @@ def test_import_artifact():
                         test_files[
                             os.path.join(
                                 tmprootdir,
-                                Exporter.EXPERIMENTS_BASE_DIR_NAME,
                                 f"{eid}",
                                 test_file_name,
                             )
@@ -136,7 +135,7 @@ def test_import_artifact():
             test_tarfile.seek(0)
 
             with tarfile.open(fileobj=test_tarfile, mode="r:gz") as tar:
-                Importer.import_artifact(tar=tar, experiments_root=tmprootdir)
+                Importer.import_experiment_files(tar=tar, experiments_root=tmprootdir)
 
                 for filename, content in test_files.items():
                     with open(filename, mode="rb") as file_reader:
