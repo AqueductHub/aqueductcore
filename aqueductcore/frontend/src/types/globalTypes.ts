@@ -1,5 +1,6 @@
 import {
   ExperimentFiltersInput,
+  PluginFunctionInfo,
   ExperimentData,
   ExperimentFile,
   Experiments,
@@ -42,6 +43,14 @@ export type GET_ALL_TAGS_TYPE = {
     tagsData: Array<TagType>;
     __typename?: Tags["__typename"];
   };
+};
+
+export type GET_ALL_PLUGINS_TYPE = {
+  plugins: {
+    authors: PluginInfo["authors"];
+    description: PluginInfo["description"];
+    functions: Array<PluginFunctionInfoType>;
+  }
 };
 
 export type GET_EXPERIMENT_BY_ID_TYPE = {
@@ -196,4 +205,13 @@ export interface ExperimentRecordsColumnsType {
   align?: "right" | "center";
   ellipsis?: boolean;
   format?: (value?: unknown) => string | React.ReactNode;
+}
+
+//############### Plugin types ###############//
+
+export type PluginFunctionInfoType = {
+  description: PluginFunctionInfo["description"];
+  experimentVariableName: PluginFunctionInfo["experimentVariableName"];
+  name: PluginFunctionInfo["name"];
+  parameters: PluginFunctionInfo["parameters"];
 }
