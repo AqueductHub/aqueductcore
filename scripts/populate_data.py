@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import asyncio
+import os
 import random
 from datetime import datetime, timedelta, timezone
 from random import randrange
@@ -9,6 +10,7 @@ from uuid import UUID, uuid4
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.orm import Experiment, Tag, User
 from aqueductcore.backend.session import async_engine, get_session
+from aqueductcore.backend.settings import settings
 
 
 def random_date(start: datetime, end: datetime):
@@ -31,8 +33,10 @@ async def create_tables():
 async def populate():
     tags = []
 
-    start_date = datetime(2020, 5, 17)
+    start_date = datetime.now(timezone.utc) - timedelta(weeks=52)
     now = datetime.now(timezone.utc)
+
+    await create_tables()
 
     async with get_session() as db_session:
         for _ in range(10):
@@ -55,6 +59,15 @@ async def populate():
             )
             experiment.tags.extend(random.choices(tags, k=4))
             admin_user.experiments.append(experiment)
+            experiment_dir = os.path.join(str(settings.experiments_dir_path), f"{experiment.id}")
+            os.mkdir(experiment_dir)
+            file_size = 1024 * 1024 * 1  # 10 MB
+            for file_idx in range(10):
+                file_name = f"test_file_{file_idx}"
+                file_path = os.path.join(experiment_dir, file_name)
+                data = bytes(bytearray(os.urandom(file_size)))
+                with open(file_path, mode="wb") as file_writer:
+                    file_writer.write(data)
 
         db_session.add(admin_user)
         await db_session.commit()
