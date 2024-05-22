@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Grid, TextField, styled } from "@mui/material";
 
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
-import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
 
 const FileInput = styled(TextField)`
   resize: none;

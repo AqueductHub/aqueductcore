@@ -1,7 +1,7 @@
 import { Box, Grid, Typography, styled } from "@mui/material";
 
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
-import { FieldDescription, FieldTitle, FieldType } from "../sharedStyledComponents";
 
 const ExperimentBox = styled(Box)`
   border: 1px solid ${({ theme }) => theme.palette.neutral.main};

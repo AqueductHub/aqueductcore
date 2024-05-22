@@ -1,7 +1,7 @@
 import { Box, Grid, TextareaAutosize, styled } from "@mui/material";
 
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
-import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
 
 const TextAreaInput = styled(TextareaAutosize)`
   resize: none;

@@ -1,5 +1,6 @@
 import { Box, Checkbox, Grid, styled } from "@mui/material";
-import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
+
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 
 const CheckboxInput = styled(Checkbox)`
   padding: ${({ theme }) => theme.spacing(0.5)});

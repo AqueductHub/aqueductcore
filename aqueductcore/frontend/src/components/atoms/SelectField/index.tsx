@@ -1,7 +1,7 @@
 import { Box, Select, Grid, styled, MenuItem } from "@mui/material";
 
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
-import { FieldDescription, FieldTitle, FieldType } from "../ExperimentField";
 
 const DropDown = styled(Select)`
   width: calc(100% - ${(props) => props.theme.spacing(1)});
