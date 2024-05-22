@@ -5,7 +5,7 @@ on:
     - cron: "30 11 * * 1"
 
 jobs:
-  generage-next-patch-version:
+  confirm-action-execution:
     runs-on: ubuntu-latest
     steps:
       - name: Confirm action execution
@@ -15,8 +15,8 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [generage-next-patch-version]
-    if: ${{ env.ALLOW_AUTOMATED_RELEASE == 'true' }} && ${{ needs.generage-next-patch-version.steps.is_release_allowed_check.outputs.is_release_allowed }}
+    needs: [confirm-action-execution]
+    if: ${{ env.ALLOW_AUTOMATED_RELEASE == 'true' }} && ${{ needs.confirm-action-execution.steps.is_release_allowed_check.outputs.is_release_allowed }}
     steps:
       - name: Get current release version and calculate next patch version
         id: next_version

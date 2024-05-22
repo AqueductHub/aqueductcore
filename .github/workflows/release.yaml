@@ -10,12 +10,12 @@ on:
         default: "MAJOR.MINOR.PATCH"
   workflow_call:
     inputs:
-      main:
+      version:
         description: "Aqueduct Version"
         required: true
         type: string
-        default: "main"
-    
+        default: "MAJOR.MINOR.PATCH"
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -37,9 +37,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      
+
       - name: Build Release Images
-        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ steps.next_version.outputs.version }}
+        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
 
       - name: Build final archived file
         run: |
@@ -47,7 +47,7 @@ jobs:
           && cp scripts/release/install.sh ./build \
           && cp scripts/release/uninstall.sh ./build
 
-          cd build && tar -cvzf aqueduct_v${{ steps.next_version.outputs.version }}.tar.gz \
+          cd build && tar -cvzf aqueduct_v${{ inputs.version }}.tar.gz \
           aqueductcore.tar \
           docker-compose.yaml \
           install.sh \
@@ -56,9 +56,8 @@ jobs:
       - name: Create release and upload artifacts
         uses: ncipollo/release-action@v1.12.0
         with:
-          tag: ${{ steps.next_version.outputs.version }}
-          name: "${{ steps.next_version.outputs.version }}"
+          tag: ${{ inputs.version }}
+          name: "${{ inputs.version }}"
           allowUpdates: true
-          generateReleaseNotes: true
-          artifacts: "build/aqueduct_v${{ steps.next_version.outputs.version }}.tar.gz"
+          artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
           token: ${{ secrets.GITHUB_TOKEN }}
