@@ -1,5 +1,7 @@
 import {
+  MutationExecutePluginArgs,
   ExperimentFiltersInput,
+  PluginExecutionResult,
   PluginFunctionInfo,
   ExperimentData,
   ExperimentFile,
@@ -115,6 +117,11 @@ export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
 export type REMOVE_EXPERIMENT_TYPE = {
   id: ExperimentDataType["id"];
 }
+export type EXECUTE_PLUGIN_TYPE = {
+  function: MutationExecutePluginArgs["function"];
+  params: MutationExecutePluginArgs["params"];
+  plugin: MutationExecutePluginArgs["plugin"];
+}
 
 //############### Experiment types ###############//
 export type TagType = string;
@@ -214,4 +221,12 @@ export type PluginFunctionInfoType = {
   experimentVariableName: PluginFunctionInfo["experimentVariableName"];
   name: PluginFunctionInfo["name"];
   parameters: PluginFunctionInfo["parameters"];
+}
+
+export type PluginExecutionResultType = {
+  logExperiment: PluginExecutionResult["logExperiment"];
+  logFile: PluginExecutionResult["logFile"];
+  returnCode: PluginExecutionResult["returnCode"];
+  stderr: PluginExecutionResult["stderr"];
+  stdout: PluginExecutionResult["stdout"];
 }
