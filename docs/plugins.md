@@ -13,25 +13,24 @@ On this page we provide information related to plugin development, deployment an
 
 ## What is Plugin
 
-Plugin is a piece of software, which adds functionality to the server instance 
+Plugin is a piece of software, which adds custom functionality to the server instance 
 (`aqueductcore` or `aqueductpro`) without server update or restart.
-One plugin may include multiple functions, connected by presets and area of responsibility.
+One plugin may include multiple functions, connected by common settings or area of responsibility.
 For example, a set of graph plotting functions, integration with a 3rd-party service, or
 a collection of quantum circuit simulation methods.
 
-Plugins may be implemented in any language if this language or binary architecture is supported
-by an executing machine.
+Plugins may be implemented in any programming language if this language interpreter 
+or binary architecture is supported by an executing machine.
 Current implementation of plugins run their code at the aqueduct server machine 
-(within container, if you use containerised version). By default `python3` and `bash` scripting 
-are supported.
+(within server container, if you use containerised version). By default, `python3` and `bash` scripting  are supported.
 
-From the technical point of view, plugins are folders with files, which follow a plugin convenition.
+Technically, plugins are folders with files, which follow a plugin convention.
 This convention is described in the chapters below.
 
 ## Writing a Manifest File
 
-Each plugin folder must contain a YAML file `manifest.yml`. This file defines information about the plugin 
-and its functions. Minimal example of the plugin with two functions is given below:
+Plugin folder may have and arbitrary name. Each plugin folder must contain a YAML file called `manifest.yml`. This file defines information about the plugin and its functions. 
+Minimal example of the plugin with  two functions is given below:
 
 ```yaml
 name: "Plugin name"
@@ -46,14 +45,15 @@ params:
   common_shared_key: "common value"
   common_shared_key_2: some other common value
 
-# list of fuctions and their definitions
+# list of functions and their definitions
 functions:
   - 
     name: example python function
     description: runs a python script
-    # we use "$python" here to enable usage of 
-    # virtual environments. Writing "python"
-    # without "$" will use the global python interpreter.
+    # use "$python" here to enable  
+    # virtual environment. Writing "python"
+    # without "$" will use the global python 
+    # interpreter.
     script: >
       $python script.py
 
@@ -157,8 +157,34 @@ ping $remote_service
 
 ## Running a Plugin Function
 
+Plugin execution may be triggered in one of two ways:
+1. User interface for plugins is present inside Experiment interface of web application.
+2. User may call a plugin function from `pyaqueduct` client API.
+
+Plugin execution flow in its current implementation is described below:
+
+1. Plugin manifest is parsed and methods are loaded into memory.
+2. Conditional. If inside the plugin folder python virtual environment is not present, it will be created.
+   1. Conditional. If `requirements.txt` file is present, dependencies are installed in the new virtual environment.
+   2. Conditional. If `pyproject.toml` file is present, folder content is installed as a python module in the new virtual environment together with its dependencies.
+3. `script` section is executed. If `$python` variable is present, it is replaced with python executable of the virtual environment. Variables and constants are passed as environment variables of operating system.
+4. Standard output, standard error, and process result code are written into a log file, which is saved inside the experiment.
+
+### Plugin Development in Progress
+
+If you update code of plugin functions, or its dependencies, delete `.aqueduct-plugin-dev/` 
+subfolder to enforce virtual environment re-creation.
 
 ## Deploying a Plugin
 
+TBD
 
 ## Plugin Setup
+
+Plugin may require final adjustment after deployment. Here are potential places for these:
+
+* In the manifest file update the `aqueduct_url` field. By default your plugin will access aqueduct
+at the same machine on port `8000`, but if you decide to run server application in a different port,
+or set it to use HTTPS, this should be reflected in the plugin manifest.
+* `params` section, which defines constants for the whole plugin, may hold customisable string, for example, access keys or remote service URLs. Define correct values for these constants.
+* Function parameters are allowed to have `select` type. If necessary, update `options` list for such fields with respect configuration needs.

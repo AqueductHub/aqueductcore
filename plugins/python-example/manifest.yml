@@ -5,7 +5,7 @@ description: >
   plugin, please obtain an App ID at
   https://developer.wolframalpha.com/access
 authors: aqueduct@riverlane.com
-aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+aqueduct_url: https://localhost:8000/
 
 params:
   wolfram_app_id: "KEY HERE"

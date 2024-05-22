@@ -3,7 +3,7 @@ description: >
   This plugin prints environment variables
   passed to it. No requests to Aqueduct sent.
 authors: aqueduct@riverlane.com
-aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+aqueduct_url: http://localhost:8000/
 
 # global variables for all functions of the plugin
 params:
