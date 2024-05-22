@@ -11,7 +11,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aqueductcore import __version__
-from aqueductcore.backend.errors import AQDImportError
 from aqueductcore.backend.models import orm
 from aqueductcore.cli.exporter import Exporter
 from aqueductcore.cli.models import AqueductData, Experiment, Tag
@@ -66,13 +65,6 @@ class Importer:
             metadata: Aqueduct metadata object.
 
         """
-        if not cls.check_version_compatible(
-            aqueduct_version=__version__, metadata_version=metadata.version
-        ):
-            raise AQDImportError(
-                f"Version of the imported archive, {metadata.version}, is not "
-                "compatible with current version of Aqueduct instance."
-            )
 
         cur_users_statement = select(orm.User).where(
             orm.User.id.in_([item.uuid for item in metadata.users])
@@ -148,7 +140,8 @@ class Importer:
 
             if member.path == Exporter.METADATA_FILENAME:
                 return None
-            elif member.path.startswith(Exporter.EXPERIMENTS_BASE_DIR_NAME):
+
+            if member.path.startswith(Exporter.EXPERIMENTS_BASE_DIR_NAME):
                 member.path = member.path.replace(f"{Exporter.EXPERIMENTS_BASE_DIR_NAME}/", "")
             return member
 

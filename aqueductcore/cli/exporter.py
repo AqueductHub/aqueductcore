@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import errno
 import os.path
 from io import BytesIO
 from tarfile import TarFile, TarInfo
@@ -12,7 +11,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aqueductcore import __version__
-from aqueductcore.backend.errors import AQDFilesPathError
 from aqueductcore.backend.models import orm
 from aqueductcore.cli.models import AqueductData, AqueductVariant, Experiment, Tag, User
 
@@ -98,37 +96,30 @@ class Exporter:
             progress: Call back with processed data information to show progress.
 
         """
-        try:
 
-            metadata_tarinfo = TarInfo(cls.METADATA_FILENAME)
-            metadata_tarinfo.size = len(metadata_bytes)
-            tar.addfile(
-                tarinfo=metadata_tarinfo,
-                fileobj=BytesIO(metadata_bytes),
-            )
-            if progress:
-                progress(metadata_tarinfo.size)
-            if experiments_root:
-                with os.scandir(experiments_root) as dir_iterator:
-                    for entry in dir_iterator:
-                        entry_size = 0
-                        if entry.is_file(follow_symlinks=False):
-                            entry_size = entry.stat().st_size
-                            tar.add(
-                                name=entry.path,
-                                arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                            )
-                        elif entry.is_dir(follow_symlinks=False):
-                            entry_size = cls.get_dir_size(entry.path)
-                            tar.add(
-                                name=entry.path,
-                                arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                            )
-                        if progress:
-                            progress(entry_size)
-
-        except OSError as error:
-            if error.errno in (errno.EACCES, errno.EPERM):  # Permission denied
-                raise AQDFilesPathError("Error in reading the files: Permission denied.") from error
-
-            raise AQDFilesPathError("Unknown Error in accessing the file system.") from error
+        metadata_tarinfo = TarInfo(cls.METADATA_FILENAME)
+        metadata_tarinfo.size = len(metadata_bytes)
+        tar.addfile(
+            tarinfo=metadata_tarinfo,
+            fileobj=BytesIO(metadata_bytes),
+        )
+        if progress:
+            progress(metadata_tarinfo.size)
+        if experiments_root:
+            with os.scandir(experiments_root) as dir_iterator:
+                for entry in dir_iterator:
+                    entry_size = 0
+                    if entry.is_file(follow_symlinks=False):
+                        entry_size = entry.stat().st_size
+                        tar.add(
+                            name=entry.path,
+                            arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
+                        )
+                    elif entry.is_dir(follow_symlinks=False):
+                        entry_size = cls.get_dir_size(entry.path)
+                        tar.add(
+                            name=entry.path,
+                            arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
+                        )
+                    if progress:
+                        progress(entry_size)
