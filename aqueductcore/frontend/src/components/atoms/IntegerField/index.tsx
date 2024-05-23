@@ -34,7 +34,7 @@ export function IntegerField({
 }: IntegerFieldProps) {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === '.' || event.key === 'e' || event.key === '+' || event.key === '-') {
+    if (event.key === '.' || event.key === 'e' || event.key === '+') {
       event.preventDefault();
     }
   };
