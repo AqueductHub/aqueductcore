@@ -1,8 +1,6 @@
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useLocation, useNavigate } from "react-router-dom";
-import Modal from '@mui/material/Modal';
-import { useState } from "react";
 import {
   CircularProgress,
   Typography,
@@ -18,7 +16,7 @@ import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExpe
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
 import { ExperimentDataType } from "types/globalTypes";
-import DropdownIcon from "components/molecules/DropdownIcon";
+import ExtensionsList from "components/molecules/ExtensionsList";
 
 import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
@@ -53,9 +51,6 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const location = useLocation();
   const { data: userInfo } = useGetCurrentUserInfo()
 
-  const [isExtentionOpen, setIsExtentionOpen] = useState(false);
-  const handleOpenExtensionModal = () => setIsExtentionOpen(true);
-  const handleCloseExtensionModal = () => setIsExtentionOpen(false);
   const isEditable = Boolean(userInfo && isUserAbleToEditExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
   const isDeletable = Boolean(userInfo && isUserAbleToDeleteExperiment(userInfo.getCurrentUserInfo, experimentDetails.createdBy))
 
@@ -137,7 +132,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   <CircularProgress size="1.2rem" sx={{ mr: 5 }} />
                 )}
               </Grid>}
-            <DropdownIcon handleOpen={handleOpenExtensionModal} />
+            <ExtensionsList />
             <ExperimentDetailsActionButtons
               isEditable={isEditable}
               isDeletable={isDeletable}
@@ -155,16 +150,6 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         experimentDescription={experimentDetails.description ? experimentDetails.description : ""}
         handleExperimentDescriptionUpdate={handleExperimentDescriptionUpdate}
       />
-      <Modal
-        open={isExtentionOpen}
-        onClose={handleCloseExtensionModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div>
-          test
-        </div>
-      </Modal>
     </>
   );
 }

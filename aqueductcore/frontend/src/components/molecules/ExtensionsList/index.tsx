@@ -9,17 +9,23 @@ import Paper from '@mui/material/Paper';
 import Grow from '@mui/material/Grow';
 
 import { BorderedButtonWithIcon } from 'components/atoms/sharedStyledComponents/BorderedButtonWithIcon';
+import ExtensionModal from 'components/organisms/ExtensionModal';
 
-const options = ['extention_1', 'extention_2', 'extention_3'];
+const options = ['extension_1', 'extension_2', 'extension_3'];
 
-function DropdownIcon({ handleOpen }: { handleOpen: () => void }) {
+function ExtensionsList() {
 
+    const [isExtensionOpen, setIsExtensionOpen] = useState(false);
+    const [selectedExtension, setSelectedExtension] = useState('')
+    const handleOpenExtensionModal = () => setIsExtensionOpen(true);
+    const handleCloseExtensionModal = () => setIsExtensionOpen(false);
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
 
     const handleClick = (option: string) => {
+        setSelectedExtension(option)
         console.info(`You clicked ${option}`);
-        handleOpen()
+        handleOpenExtensionModal()
         setOpen(false);
     };
 
@@ -52,7 +58,7 @@ function DropdownIcon({ handleOpen }: { handleOpen: () => void }) {
                     startIcon={<AutoAwesomeIcon />}
                     endIcon={<ArrowDropDownIcon />}
                 >
-                    Extentions
+                    Extensions
                 </BorderedButtonWithIcon>
             </div>
             <Popper
@@ -91,8 +97,13 @@ function DropdownIcon({ handleOpen }: { handleOpen: () => void }) {
                     </Grow>
                 )}
             </Popper>
+            <ExtensionModal
+                isOpen={isExtensionOpen}
+                handleClose={handleCloseExtensionModal}
+                selectedExtension={selectedExtension}
+            />
         </>
     );
 }
 
-export default DropdownIcon;
+export default ExtensionsList;
