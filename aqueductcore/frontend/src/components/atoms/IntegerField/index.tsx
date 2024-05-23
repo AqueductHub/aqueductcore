@@ -3,7 +3,7 @@ import { Box, Grid, TextField, TextFieldProps, styled } from "@mui/material";
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
 
-const NumberInput = styled(TextField)`
+const IntegerInput = styled(TextField)`
   resize: none;
   width: 100%;
   border-width: 1px;
@@ -20,18 +20,18 @@ const NumberInput = styled(TextField)`
   }
 `;
 
-interface NumberFieldProps extends PluginFieldBase {
+interface IntegerFieldProps extends PluginFieldBase {
   defaultValue?: string;
-  numberFieldProps?: TextFieldProps
+  integerFieldProps?: TextFieldProps
 }
 
-export function NumberField({
+export function IntegerField({
   title,
   field,
   description,
   defaultValue,
-  numberFieldProps
-}: NumberFieldProps) {
+  integerFieldProps
+}: IntegerFieldProps) {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === '.' || event.key === 'e' || event.key === '+' || event.key === '-') {
@@ -45,8 +45,8 @@ export function NumberField({
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
-            <NumberInput
-              {...numberFieldProps}
+            <IntegerInput
+              {...integerFieldProps}
               type="number"
               size="small"
               defaultValue={defaultValue}
