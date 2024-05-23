@@ -1,7 +1,10 @@
-import { Autocomplete, Box, Grid, TextField, styled } from "@mui/material";
+import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@mui/material";
 
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
+import { useGetExperimentFilesById } from "API/graphql/queries/getExperimentFilesById";
 import { PluginFieldBase } from "types/globalTypes";
+import { Error } from "components/atoms/Error";
+import { Loading } from "../Loading";
 
 const FileInput = styled(TextField)`
   resize: none;
@@ -12,17 +15,40 @@ const FileInput = styled(TextField)`
   background-color: transparent;
 `;
 
-interface FileProps extends PluginFieldBase {
-  options: string[];
-  defaultValue?: string;
+interface FileFieldProps extends PluginFieldBase {
+  experimentIdentifier: string;
+  fileFieldProps?: AutocompleteProps<string, false, true, false>;
 }
 
 export function FileField({
   title,
   field,
-  options,
-  description = ""
-}: FileProps) {
+  description,
+  experimentIdentifier,
+  fileFieldProps,
+}: FileFieldProps) {
+
+  const {
+    loading,
+    data: experimentData,
+    error,
+  } = useGetExperimentFilesById({
+    variables: {
+      experimentIdentifier: {
+        type: experimentIdentifier?.split("-").length === 2 ? "ALIAS" : "UUID",
+        value: experimentIdentifier,
+      },
+    },
+  });
+
+  const experimentDetails = experimentData?.experiment;
+
+  if (loading) return <Loading />
+  if (error) return <Error message={error.message} />;
+  if (!experimentDetails) return <></>;
+
+  const experimentFilesList = experimentData?.experiment.files.map((item) => item.name);
+
   return (
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>
@@ -30,9 +56,11 @@ export function FileField({
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
             <Autocomplete
-              disablePortal
-              options={options}
-              renderInput={(params) => <FileInput {...params} InputProps={{ inputProps: { style: { backgroundColor: "transparent" } } }} size="small" />}
+              {...fileFieldProps}
+              size="small"
+              forcePopupIcon={false}
+              options={experimentFilesList}
+              renderInput={(params) => <FileInput {...params} />}
             />
           </Box>
         </Grid>

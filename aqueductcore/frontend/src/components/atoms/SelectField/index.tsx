@@ -11,16 +11,16 @@ const DropDown = styled(Select)`
 `;
 
 interface SelectProps extends PluginFieldBase {
-  defaultValue?: string;
   options: string[];
+  selectFieldProps?: SelectProps
 }
 
 export function SelectField({
   title,
   field,
+  description,
   options,
-  description = "",
-  defaultValue = ""
+  selectFieldProps
 }: SelectProps) {
 
   return (
@@ -29,7 +29,9 @@ export function SelectField({
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
-            <DropDown defaultValue={defaultValue}>
+            <DropDown
+              {...selectFieldProps}
+            >
               {options.map((option) => (
                 <MenuItem key={option} value={option} sx={{ borderColor: "#E0E0E0" }}>{option}</MenuItem>
               ))}

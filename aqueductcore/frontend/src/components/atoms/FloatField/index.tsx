@@ -3,7 +3,7 @@ import { Box, Grid, TextField, TextFieldProps, styled } from "@mui/material";
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { PluginFieldBase } from "types/globalTypes";
 
-const NumberInput = styled(TextField)`
+const FloatInput = styled(TextField)`
   resize: none;
   width: 100%;
   border-width: 1px;
@@ -20,38 +20,29 @@ const NumberInput = styled(TextField)`
   }
 `;
 
-interface NumberFieldProps extends PluginFieldBase {
+interface FloatFieldProps extends PluginFieldBase {
   defaultValue?: string;
-  numberFieldProps?: TextFieldProps
+  floatFieldProps?: TextFieldProps
 }
 
-export function NumberField({
+export function FloatField({
   title,
   field,
   description,
   defaultValue,
-  numberFieldProps
-}: NumberFieldProps) {
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === '.' || event.key === 'e' || event.key === '+' || event.key === '-') {
-      event.preventDefault();
-    }
-  };
-
+  floatFieldProps
+}: FloatFieldProps) {
   return (
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>
         <Grid item xs={6}>
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
-            <NumberInput
-              {...numberFieldProps}
+            <FloatInput
+              {...floatFieldProps}
               type="number"
               size="small"
               defaultValue={defaultValue}
-              onKeyDown={handleKeyDown}
-              InputProps={{ inputProps: { step: 1, inputMode: 'numeric', pattern: '[0-9]*' } }}
             />
           </Box>
         </Grid>

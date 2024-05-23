@@ -25,15 +25,17 @@ interface ExperimentProps extends PluginFieldBase {
 }
 
 export function ExperimentField({
+  title,
+  field,
+  description,
   experiment_title,
-  experiment_alias,
-  description = "",
+  experiment_alias
 }: ExperimentProps) {
   return (
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>
         <Grid item xs={6}>
-          <FieldTitle>Experiment</FieldTitle><FieldType>experiment_eid</FieldType>
+          <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
             <ExperimentBox>
               <ExperimentTitle>{experiment_title}</ExperimentTitle>
