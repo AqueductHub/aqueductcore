@@ -3,8 +3,6 @@ import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
 import { useGetExperimentFilesById } from "API/graphql/queries/getExperimentFilesById";
 import { PluginFieldBase } from "types/globalTypes";
-import { Error } from "components/atoms/Error";
-import { Loading } from "../Loading";
 
 const FileInput = styled(TextField)`
   resize: none;
@@ -43,8 +41,8 @@ export function FileField({
 
   const experimentDetails = experimentData?.experiment;
 
-  if (loading) return <Loading />
-  if (error) return <Error message={error.message} />;
+  if (loading) return <></>
+  if (error) return <></>
   if (!experimentDetails) return <></>;
 
   const experimentFilesList = experimentData?.experiment.files.map((item) => item.name);
