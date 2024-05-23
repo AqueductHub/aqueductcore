@@ -14,10 +14,13 @@ const TextAreaInput = styled(TextareaAutosize)`
   border-radius: ${(props) => props.theme.spacing(0.5)};
   min-height: ${(props) => props.theme.spacing(3)};
   padding: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1.5)};
-  &.MuiOutlinedInput-root {
-    &.Mui-focused fieldset {
-      border-color: white;
-    }
+  
+  &:focus {
+    border: 2px solid ${(props) => props.theme.palette.primary.main};
+  }
+
+  &:focus-visible {
+    outline: 0;
   }
 `;
 

@@ -33,7 +33,7 @@ export function SelectField({
               {...selectFieldProps}
             >
               {options.map((option) => (
-                <MenuItem key={option} value={option} sx={{ borderColor: "#E0E0E0" }}>{option}</MenuItem>
+                <MenuItem key={option} value={option}>{option}</MenuItem>
               ))}
             </DropDown>
           </Box>
