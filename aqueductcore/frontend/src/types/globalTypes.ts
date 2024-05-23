@@ -3,6 +3,7 @@ import {
   ExperimentData,
   ExperimentFile,
   Experiments,
+  PluginInfo,
   UserInfo,
   Tags,
 } from "./graphql/__GENERATED__/graphql";
@@ -77,6 +78,12 @@ export type GET_USER_INFO_TYPE = {
     username: UserInfo["username"]
     __typename?: UserInfo["__typename"];
   };
+};
+export type GET_ALL_EXTENSIONS_NAME_TYPE = {
+  plugins: Array<{
+    name: PluginInfo['name']
+    __typename?: PluginInfo["__typename"];
+  }>;
 };
 
 //############### Mutation types ###############//

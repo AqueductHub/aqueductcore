@@ -7,11 +7,11 @@ import Popper from '@mui/material/Popper';
 import { useRef, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Grow from '@mui/material/Grow';
+import toast from 'react-hot-toast';
 
 import { BorderedButtonWithIcon } from 'components/atoms/sharedStyledComponents/BorderedButtonWithIcon';
+import { useGetAllExtensions } from 'API/graphql/queries/getAllExtensions';
 import ExtensionModal from 'components/organisms/ExtensionModal';
-
-const options = ['extension_1', 'extension_2', 'extension_3'];
 
 function ExtensionsList() {
 
@@ -22,6 +22,9 @@ function ExtensionsList() {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
 
+    const { data } = useGetAllExtensions()
+    const extensions = data?.plugins
+
     const handleClick = (option: string) => {
         setSelectedExtension(option)
         console.info(`You clicked ${option}`);
@@ -30,7 +33,14 @@ function ExtensionsList() {
     };
 
     const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
+        if (!extensions?.length) {
+            toast("No extension available", {
+                id: "extension_error",
+                duration: 2000
+            })
+        } else {
+            setOpen((prevOpen) => !prevOpen);
+        }
     };
 
     const handleClose = (event: Event) => {
@@ -61,7 +71,7 @@ function ExtensionsList() {
                     Extensions
                 </BorderedButtonWithIcon>
             </div>
-            <Popper
+            {extensions?.length ? <Popper
                 sx={{
                     zIndex: 1,
                 }}
@@ -82,13 +92,13 @@ function ExtensionsList() {
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
-                                    {options.map((option, index) => (
+                                    {extensions.map((extension, index) => (
                                         <MenuItem
-                                            key={option}
+                                            key={extension.name}
                                             disabled={index === 2}
-                                            onClick={() => handleClick(option)}
+                                            onClick={() => handleClick(extension.name)}
                                         >
-                                            {option}
+                                            {extension.name}
                                         </MenuItem>
                                     ))}
                                 </MenuList>
@@ -96,7 +106,7 @@ function ExtensionsList() {
                         </Paper>
                     </Grow>
                 )}
-            </Popper>
+            </Popper> : null}
             <ExtensionModal
                 isOpen={isExtensionOpen}
                 handleClose={handleCloseExtensionModal}
