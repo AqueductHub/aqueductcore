@@ -11,15 +11,14 @@ import {
 } from "@mui/material";
 
 import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
+import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
 import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
-import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-import { ExperimentDataType } from "types/globalTypes";
-import ExtensionsList from "components/molecules/ExtensionsList";
-
-import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
+import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
+import ExtensionsList from "components/organisms/ExtensionsList";
+import { ExperimentDataType } from "types/globalTypes";
 
 const BackButton = styled(Button)`
   border-color: ${(props) => props.theme.palette.neutral.main};
