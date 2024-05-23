@@ -1,6 +1,6 @@
 import { Box, Checkbox, CheckboxProps, Grid, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
 import { PluginFieldBase } from "types/globalTypes";
 
 const CheckboxInput = styled(Checkbox)`

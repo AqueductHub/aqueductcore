@@ -1,6 +1,6 @@
 import { Box, Grid, Typography, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
 import { PluginFieldBase } from "types/globalTypes";
 
 const ExperimentBox = styled(Box)`

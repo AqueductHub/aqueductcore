@@ -1,6 +1,6 @@
 import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents"
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
 import { useGetExperimentFilesById } from "API/graphql/queries/getExperimentFilesById";
 import { PluginFieldBase } from "types/globalTypes";
 
