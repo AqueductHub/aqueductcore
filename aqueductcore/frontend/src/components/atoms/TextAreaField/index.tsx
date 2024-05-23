@@ -16,7 +16,7 @@ const TextAreaInput = styled(TextareaAutosize)`
   padding: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1.5)};
   
   &:focus {
-    border: 2px solid ${(props) => props.theme.palette.primary.main};
+    border: 1px solid ${(props) => props.theme.palette.primary.main};
   }
 
   &:focus-visible {
