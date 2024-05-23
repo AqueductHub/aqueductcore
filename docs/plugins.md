@@ -177,7 +177,11 @@ subfolder to enforce virtual environment re-creation.
 
 ## Deploying a Plugin
 
-TBD
+Plugins are folders, distributed in a form or archives. At the start of the server, 
+bind mount host folder to a container, it should point to `/workspace/plugins` inside a container.
+Unpack a plugin folder into a host folder, and the container will immediately see the changes.
+
+For examples, you map host folder `/usr/data/plugins` to `/workspace/plugins`, and then `/usr/data/plugins/dummy/manifest.yml` with become available inside a container as `/workspace/plugins/dummy/manifest.yml`.
 
 ## Plugin Setup
 

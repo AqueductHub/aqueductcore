@@ -6,8 +6,10 @@ FULL_PATH=$(realpath $0)
 SCRIPT_DIR=$(dirname $FULL_PATH)
 
 export EXPERIMENTS_DIR=$HOME/aqueduct_experiments
+export PLUGINS_DIR=$HOME/plugins
 
 mkdir -p $EXPERIMENTS_DIR
+mkdir -p $PLUGINS_DIR
 
 # load Aqueduct docker image
 docker load -i $SCRIPT_DIR/aqueductcore.tar

@@ -53,6 +53,7 @@ services:
       - postgres
     environment:
       EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+      PLUGINS_DIR_PATH: /workspace/plugins
       POSTGRES_USERNAME: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres
@@ -60,6 +61,10 @@ services:
       POSTGRES_DB: aqueduct
     volumes:
       - /tmp/aqueduct_experiments:/tmp/aqueduct_experiments
+      - type: bind
+        # define your host folder with plugins
+        source: /aqueductcore/plugins
+        target: /workspace/plugins
     ports:
       - 80:8000
 
