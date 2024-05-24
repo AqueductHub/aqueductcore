@@ -138,7 +138,7 @@ Please, note, that purpose of plugins is to interact with an experiment. They ma
 ## Writing Plugin Code
 
 Plugin may be fully written inside the `script` section of the manifest. But it is convenient to 
-dedicate it's code into a separate file. Input values and constants are passed to this script file
+separate its code into a dedicated file. Input values and constants are passed to this script file
 using environment variables (strings). To access these strings in python this code snippet may be used:
 
 ```python
