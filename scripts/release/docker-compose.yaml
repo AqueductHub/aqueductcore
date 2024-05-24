@@ -17,8 +17,8 @@ services:
     volumes:
       - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
       - type: bind
-        source: ${PLUGINS_DIR}
-        target: /workspace/plugins
+        source: ${EXTENSIONS_DIR}
+        target: /workspace/extensions
     ports:
       - 80:8000
 

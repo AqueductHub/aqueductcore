@@ -29,6 +29,10 @@ services:
       POSTGRES_DB: aqueduct
     volumes:
       - /tmp/aqueduct_experiments:/tmp/aqueduct_experiments
+      - type: bind
+        # host folder for extensions
+        source: /aqueductcode/extensions
+        target: /workspace/extensions
     ports:
       - 80:8000
 
@@ -108,6 +112,7 @@ Before running the application, you need to set the required environment variabl
     export POSTGRES_HOST=<your_postgres_host>
     export POSTGRES_PORT=<your_postgres_port>
     export POSTGRES_DB=<your_postgres_database_name>
+    export EXTENSIONS_DIR_PATH=<your_extensions_directory_path>
     ```
 
 6. Configure PostgreSQL: Ensure that your PostgreSQL database is properly configured and accessible with the provided credentials.
