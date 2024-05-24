@@ -150,6 +150,12 @@ export interface ExperimentsListTableProps extends ExperimentDataType {
   star: boolean;
 }
 
+export interface PluginFieldBase {
+  title: string,
+  field: string,
+  description?: string,
+}
+
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
   label: string;
