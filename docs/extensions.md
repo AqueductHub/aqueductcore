@@ -72,6 +72,10 @@ actions:
         name: input_filename
         description: file from the experiment to take as an input
         data_type: file
+      - 
+        name: output_filename
+        description: file which will be created inside experiment
+        data_type: str
   - 
     name: example bash action
     description: runs a bash script
@@ -80,10 +84,23 @@ actions:
     script: >
       sh example.sh
     parameters:
+      - 
+        name: string_value
+        description: some string value entered in a textbox.
+        data_type: str
+        default_value: default string
       -
         name: experiment
         description: extension works with the data from this experiment
         data_type: experiment
+      - 
+        name: input_filename
+        description: file from the experiment to take as an input
+        data_type: file
+      - 
+        name: output_filename
+        description: file which will be created inside experiment
+        data_type: str
 ```
 
 Each manifest starts with a header with general extension information 
@@ -149,12 +166,19 @@ from pyaqueduct import API
 
 aq_url = os.environ.get("aqueduct_url", "")
 value = os.environ.get("input_value", "")
+input_file = os.environ.get("input_filename", "")
+output_file = os.environ.get("output_filename", "")
 experiment_id = os.environ.get("experiment", "")
 
 api = API(aq_url)
 api.get_experiment(experiment_id)
 with TemporaryDirectory() as directory:
-    filename = f"{directory}/file.txt"
+    experiment.download_file(
+      file_name=input_file, 
+      destination_dir=directory
+    )
+    ...
+    filename = f"{directory}/{output_file}"
     with open(filename, "w") as file:
       file.write(value)
     experiment.upload_file(filename)
@@ -167,6 +191,7 @@ cat $input_filename | sort
 # printing a variable
 echo $string_value
 curl "$aqueduct_url/aqd/experiments/$experiment"
+...
 ```
 
 ## Running an Extension Action
