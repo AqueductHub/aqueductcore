@@ -1,18 +1,20 @@
 import shutil
-import pytest
 
+import pytest
 from pydantic import ValidationError
 
-from aqueductcore.backend.services.plugin_executor import (
-    PluginExecutor, VENV_FOLDER, PYTHON_BINARY)
-
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.models.plugin import (
     Plugin,
     PluginFunction,
     PluginParameter,
     SupportedTypes,
 )
-from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.services.plugin_executor import (
+    PYTHON_BINARY,
+    VENV_FOLDER,
+    PluginExecutor,
+)
 
 
 class TestPluginExecutor:
@@ -148,9 +150,7 @@ class TestPluginExecutor:
                 authors="a@a.org",
                 aqueduct_url="",
                 functions=[
-                    PluginFunction(
-                        name="func1", description="descr", script="", parameters=[]
-                    ),
+                    PluginFunction(name="func1", description="descr", script="", parameters=[]),
                 ],
                 params={},
             ),
@@ -185,8 +185,15 @@ class TestPluginExecutor:
         result = PluginExecutor.execute(
             plugin="Dummy plugin",
             function="echo",
-            params={"var1": "text", "var2": 1, "var3": 2.2, "var4": "20240229-5689864ffd94",
-             "var5": "text\narea", "var6": 0, "var7": "string2"},
+            params={
+                "var1": "text",
+                "var2": 1,
+                "var3": 2.2,
+                "var4": "20240229-5689864ffd94",
+                "var5": "text\narea",
+                "var6": 0,
+                "var7": "string2",
+            },
         )
         assert result.return_code == 0
 
@@ -198,8 +205,8 @@ class TestPluginExecutor:
             {
                 "equation": "x^2 + 7 = 0",
                 "experiment": "20240229-5689864ffd94",
-                "result_file": "wolfram_solution.txt"
-            }
+                "result_file": "wolfram_solution.txt",
+            },
         )
         assert result.stderr == ""
         assert result.return_code == 0
@@ -212,11 +219,7 @@ class TestPluginExecutor:
         shutil.rmtree(venv, ignore_errors=True)
         # it will fail, but after the venv creation
         try:
-            PluginExecutor.execute(
-                "Wolfram alpha solution plugin",
-                "solve as text",
-                {}
-            )
+            PluginExecutor.execute("Wolfram alpha solution plugin", "solve as text", {})
         except:
             pass
         # venv is created
