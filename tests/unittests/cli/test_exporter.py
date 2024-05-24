@@ -38,7 +38,7 @@ def test_get_dir_size():
                     file_writer.write(test_data)
                 total_size += test_file_size
 
-        assert Exporter.get_dir_size(tmpdirname) == total_size
+        assert Exporter.get_size(tmpdirname) == total_size
 
 
 def test_export_artifact(db_session: Session, experiments_data: List[ExperimentCreate]):
