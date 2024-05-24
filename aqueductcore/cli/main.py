@@ -25,7 +25,7 @@ sync_engine = create_engine(
 )
 
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
 
 
 err_console = Console(stderr=True, style="red")
