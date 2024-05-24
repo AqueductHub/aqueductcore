@@ -1,6 +1,7 @@
 version: '3'
 services:
   aqueduct:
+    platform: linux/amd64
     image: aqueducthub/aqueductcore:latest
     restart: always
     depends_on:
@@ -22,6 +23,7 @@ services:
       - 80:8000
 
   postgres:
+    platform: linux/amd64
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
