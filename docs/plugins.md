@@ -20,11 +20,11 @@ For example, a set of graph plotting functions, integration with a 3rd-party ser
 a collection of quantum circuit simulation methods.
 
 Plugins may be implemented in any programming language if this language interpreter 
-or binary architecture is supported by an executing machine.
-Current implementation of plugins run their code at the aqueduct server machine 
+or binary architecture is supported by the executing (virtual) machine.
+In the current implementation of plugins, their code is run on the Aqueduct server machine 
 (within server container, if you use containerised version). By default, `python3` and `bash` scripting  are supported.
 
-Technically, plugins are folders with files, which follow a plugin convention.
+Technically, plugins are folders with files which follow a plugin convention.
 This convention is described in the chapters below.
 
 ## Writing a Manifest File
@@ -89,14 +89,13 @@ functions:
 Each manifest starts with a header with general plugin information (`name`, `description`,
 `authors`). This information is used to generate the user interface.
 The `aqueduct_url` mandatory parameter is used to make the plugin aware of the instance of Aqueduct
-it should interact with. In current implementation plugins assumed to run at the same machine 
+it should interact with. In the current implementation, plugins are assumed to run on the same machine 
 as the server application, so this address will be a `http://localhost:8000/` or similar.
 
-Optional `params` section allows to define key-value pairs for constants, shared across 
-all plugin function executions. Good example for this may be a third party service 
-credentials, or a database connection string,
+Optional `params` section allows the defintion key-value pairs for constants shared across all plugin function executions. 
+Examples of this may include third-party service credentials, or a database connection string,
 which are shared among all service installation users. If your users need to use such services
-with different credentials, we encourage you you define a separate function parameter for 
+with different credentials, we encourage you to define a separate function parameter for 
 this purpose.
 
 The section `functions` defines a list of function a plugin may perform. Each item starts with
@@ -173,15 +172,16 @@ Plugin execution flow in its current implementation is described below:
 ### Plugin Development in Progress
 
 If you update code of plugin functions, or its dependencies, delete `.aqueduct-plugin-dev/` 
-subfolder to enforce virtual environment re-creation.
+subfolder to force virtual environment re-creation.
 
 ## Deploying a Plugin
 
-Plugins are folders, distributed in a form or archives. At the start of the server, 
-bind mount host folder to a container, it should point to `/workspace/plugins` inside a container.
-Unpack a plugin folder into a host folder, and the container will immediately see the changes.
+Plugins are folders which could be distributed in the form of archives. When starting the server using Docker, 
+bind mount a host folder to the Aqueduct container at `/workspace/plugins`.
+Unpack a plugin folder into the host folder, and the container will immediately see the changes.
 
-For examples, you map host folder `/usr/data/plugins` to `/workspace/plugins`, and then `/usr/data/plugins/dummy/manifest.yml` with become available inside a container as `/workspace/plugins/dummy/manifest.yml`.
+For example, if you map host folder `/usr/data/plugins` to `/workspace/plugins`, 
+then `/usr/data/plugins/dummy/manifest.yml` within will become available inside the container as `/workspace/plugins/dummy/manifest.yml`.
 
 ## Plugin Setup
 
@@ -191,4 +191,4 @@ Plugin may require final adjustment after deployment. Here are potential places 
 at the same machine on port `8000`, but if you decide to run server application in a different port,
 or set it to use HTTPS, this should be reflected in the plugin manifest.
 * `params` section, which defines constants for the whole plugin, may hold customisable string, for example, access keys or remote service URLs. Define correct values for these constants.
-* Function parameters are allowed to have `select` type. If necessary, update `options` list for such fields with respect configuration needs.
+* Function parameters are allowed to have `select` type. If necessary, update `options` list for such fields with respect to your configuration needs.
