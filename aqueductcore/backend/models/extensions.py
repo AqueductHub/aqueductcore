@@ -197,7 +197,7 @@ class ExtensionAction(BaseModel):
 
 # pylint: disable=too-many-instance-attributes,too-many-arguments
 class Extension(BaseModel):
-    """Class representing a extension"""
+    """Class representing an extension"""
 
     name: str
     description: Optional[str] = None

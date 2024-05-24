@@ -133,7 +133,7 @@ class ExtensionsExecutor:
     @classmethod
     def try_install_pyproject_toml(cls, extension: str, python: Path) -> bool:
         """ Checks in pyproject.toml file is present, and
-        installs a extension folder as a python module into a virtual environment.
+        installs an extension folder as a python module into a virtual environment.
 
         Args:
             extension: name of the extension.
