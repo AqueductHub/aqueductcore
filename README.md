@@ -63,7 +63,7 @@ services:
       - /tmp/aqueduct_experiments:/tmp/aqueduct_experiments
       - type: bind
         # define your host folder with plugins
-        source: aqueductcore/plugins
+        source: /aqueductcore/plugins
         target: /workspace/plugins
     ports:
       - 80:8000

@@ -7,7 +7,7 @@ On this page we provide information related to extension development, deployment
 - [What is Extension](#what-is-extension)  
 - [Writing a Manifest File](#writing-a-manifest-file) 
 - [Writing Extension Code](#writing-extension-code) 
-- [Running an Extension Function](#running-an-extension-action)
+- [Running an Extension Action](#running-an-extension-action)
 - [Deploying an Extension](#deploying-an-extension)
 - [Extension Setup](#extension-setup)
 
@@ -169,9 +169,7 @@ echo $string_value
 curl "$aqueduct_url/aqd/experiments/$experiment"
 ```
 
-string_value, input_filename
-
-## Running an Extension Function
+## Running an Extension Action
 
 Extension execution may be triggered in one of two ways:
 1. User interface for extensions is present inside Experiment interface of web application.
@@ -207,5 +205,5 @@ Extension may require final adjustment after deployment. Here are potential plac
 * In the manifest file update the `aqueduct_url` field. By default your extension will access aqueduct
 at the same machine on port `8000`, but if you decide to run server application in a different port,
 or set it to use HTTPS, this should be reflected in the extension manifest.
-* `params` section, which defines constants for the whole extension, may hold customisable string, for example, access keys or remote service URLs. Define correct values for these constants.
-* Function parameters are allowed to have `select` type. If necessary, update `options` list for such fields with respect to your configuration needs.
+* `constants` section, which defines constants for the whole extension, may hold customisable string, for example, access keys or remote service URLs. Define correct values for these constants.
+* Action parameters are allowed to have `select` type. If necessary, update `options` list for such fields with respect to your configuration needs.
