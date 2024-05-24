@@ -12,10 +12,14 @@ from aqueductcore.backend.settings import settings
 async def clean_up():
     async with async_engine.begin() as conn:
         await conn.run_sync(orm.Base.metadata.drop_all)
-    await async_engine.dispose()
 
     rmtree(str(settings.experiments_dir_path))
     os.mkdir(str(settings.experiments_dir_path))
+
+    async with async_engine.begin() as conn:
+        await conn.run_sync(orm.Base.metadata.create_all)
+
+    await async_engine.dispose()
 
 
 if __name__ == "__main__":
