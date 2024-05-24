@@ -62,7 +62,7 @@ def exporter(
         path = Path(f"{path}{tar_suffix}")
 
     with path.open(mode="wb") as file:
-        console.print(f"Adding experiments' metadata to '{file.name}' to the '{file.name}'...")
+        console.print(f"Adding experiments' metadata to '{file.name}'...")
         with get_session(sync_engine) as db_session:
             orm.Base.metadata.create_all(sync_engine)  # create relations if database is empty
             metadata = Exporter.export_experiments_metadata(db_session=db_session)
@@ -74,7 +74,7 @@ def exporter(
             total = Exporter.get_size(dir_path) + len(json_str.encode())
             console.print(
                 f"Adding experiments' files in '{settings.experiments_dir_path}'"
-                f" to the '{file.name}' ..."
+                f" to '{file.name}' ..."
             )
         else:
             total = len(json_str.encode())
