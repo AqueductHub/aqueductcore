@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     keycloak_client_id: Optional[str] = None
     """Keycloak client ID (used in Aqueduct Pro only)"""
 
-    plugins_dir_path: Optional[str] = None
-    """Plugin directory where plugins are saved"""
+    extensions_dir_path: Optional[str] = None
+    """Name of the container directory where extensions are saved"""
 
 settings = Settings()

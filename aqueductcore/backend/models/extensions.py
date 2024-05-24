@@ -1,4 +1,4 @@
-"""Classes to parse plugin declarations, and execute them.
+"""Classes to parse extensions declarations, and execute them.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ class SupportedTypes(str, Enum):
     SELECT = "select"
 
 
-class PluginExecutionResult(BaseModel):
+class ExtensionExecutionResult(BaseModel):
     """OS process execution result"""
 
     return_code: int
@@ -39,8 +39,8 @@ class PluginExecutionResult(BaseModel):
     stderr: str
 
 
-class PluginParameter(BaseModel):
-    """Typed and named parameter of the plugin function"""
+class ExtensionParameter(BaseModel):
+    """Typed and named parameter of the extension action"""
 
     name: str = Field(min_length=1)
     display_name: Optional[str] = None
@@ -106,43 +106,43 @@ class PluginParameter(BaseModel):
         return str(value)
 
 
-class PluginFunction(BaseModel):
-    """Each plugin may have multiple functions. This class represents
-    one function which may be executed."""
+class ExtensionAction(BaseModel):
+    """Each extension may have multiple actions. This class represents
+    one action which may be executed."""
 
     name: str = Field(min_length=1)
     description: Optional[str] = None
     display_name: Optional[str] = None
     script: str
-    parameters: List[PluginParameter]
+    parameters: List[ExtensionParameter]
 
     def execute(
             self,
-            plugin: Plugin,
+            extension: Extension,
             params: dict,
             python: str | Path | None = None,
-            timeout: int=60) -> PluginExecutionResult:
-        """Passes parameters to the function code and awaits
+            timeout: int=60) -> ExtensionExecutionResult:
+        """Passes parameters to the action code and awaits
         execution results
 
         Args:
-            plugin (Plugin): plugin instance to access settings.
-            params (dict): dictionary of names params.
-            timeout (int): time to wait until process finishes.
+            extension: extension instance to access settings.
+            params: dictionary of names params.
+            timeout: time to wait until process finishes.
 
         Returns:
-            PluginExecutionResult: OS process results.
+            ExtensionExecutionResult: OS process results.
         """
         my_env = os.environ.copy()
         self.validate_values(params)
-        my_env.update({key: str(val) for key, val in (plugin.params or {}).items()})
+        my_env.update({key: str(val) for key, val in (extension.constants or {}).items()})
         my_env.update(params)
-        my_env["aqueduct_url"] = plugin.aqueduct_url
-        if plugin.aqueduct_key is not None:
-            my_env["aqueduct_key"] = plugin.aqueduct_key
+        my_env["aqueduct_url"] = extension.aqueduct_url
+        if extension.aqueduct_key is not None:
+            my_env["aqueduct_key"] = extension.aqueduct_key
         cwd = Path.home()
-        if plugin.manifest_file:
-            cwd = Path(plugin.manifest_file).parent
+        if extension.manifest_file:
+            cwd = Path(extension.manifest_file).parent
 
         rich_script = self.script
         if python:
@@ -157,17 +157,17 @@ class PluginFunction(BaseModel):
         ) as proc:
             out, err = proc.communicate(timeout=timeout)
             code = proc.returncode
-            return PluginExecutionResult(
+            return ExtensionExecutionResult(
                 return_code=code,
                 stdout=out.decode(),
                 stderr=err.decode(),
             )
 
-    def get_default_experiment_parameter(self) -> Optional[PluginParameter]:
+    def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
         """Return first experiment variable defined in manifest.
 
         Return:
-            plugin parameter object.
+            Extension parameter object.
         """
         for variable in self.parameters:
             if variable.data_type == SupportedTypes.EXPERIMENT:
@@ -175,13 +175,13 @@ class PluginFunction(BaseModel):
         return None
 
     def validate_object(self):
-        """Validate the instance of the function and its parameters."""
+        """Validate the instance of the actions and its parameters."""
 
         for param in self.parameters:
             param.validate_object()
 
     def validate_values(self, params: Dict[str, str]):
-        """Check params dict to agree with data types definition for the function"""
+        """Check params dict to agree with data types definition for the actions"""
         # do keys coincide?
         provided_keys = set(params)
         expected_keys = set(param.name for param in self.parameters)
@@ -196,23 +196,23 @@ class PluginFunction(BaseModel):
 
 
 # pylint: disable=too-many-instance-attributes,too-many-arguments
-class Plugin(BaseModel):
-    """Class representing a plugin"""
+class Extension(BaseModel):
+    """Class representing a extension"""
 
     name: str
     description: Optional[str] = None
     display_name: Optional[str] = None
     authors: str
-    functions: List[PluginFunction]
+    actions: List[ExtensionAction]
     aqueduct_url: str
     manifest_file: Optional[str] = None
     aqueduct_key: Optional[str] = None
-    params: Optional[Dict[str, Any]] = None
+    constants: Optional[Dict[str, Any]] = None
     _folder: Optional[Path] = None
 
     @classmethod
-    def from_folder(cls, path: Path) -> Plugin:
-        """Given a folder, parses a plugin definition"""
+    def from_folder(cls, path: Path) -> Extension:
+        """Given a folder, parses a extension definition"""
         if not path.exists() or path.is_file():
             raise AQDFilesPathError(f"{path} should be an existing folder.")
 
@@ -223,39 +223,39 @@ class Plugin(BaseModel):
         with open(manifest, "r", encoding="utf-8") as manifest_stream:
             # load of the first document in the yaml file.
             # if there are more documents, they will be ignored
-            plugin_as_dict = yaml.safe_load(manifest_stream)
-            plugin = Plugin(**plugin_as_dict)
-            plugin.manifest_file = str(manifest.absolute())
+            extension_as_dict = yaml.safe_load(manifest_stream)
+            extension = Extension(**extension_as_dict)
+            extension.manifest_file = str(manifest.absolute())
             # TODO: somehow generate and pass it here
-            plugin.aqueduct_key = ""
-            plugin.validate_object()
-            plugin._folder = path
-            return plugin
+            extension.aqueduct_key = ""
+            extension.validate_object()
+            extension._folder = path
+            return extension
 
-    def get_function(self, name: str) -> PluginFunction:
-        """ Get plugin function by its name.
+    def get_action(self, name: str) -> ExtensionAction:
+        """ Get extension action by its name.
 
         Args:
-            name: function name
+            name: action name
 
         Returns:
-            Plugin function object
+            Extension action object
         """
-        functions = [f for f in self.functions if f.name == name]
-        if len(functions) != 1:
-            raise AQDValidationError(f"There should be exactly 1 function with name {name}")
-        return functions[0]
+        actions = [f for f in self.actions if f.name == name]
+        if len(actions) != 1:
+            raise AQDValidationError(f"There should be exactly 1 action with name {name}")
+        return actions[0]
 
     def validate_object(self):
-        """Validate instance of the plugin and its functions."""
+        """Validate instance of the extension and its actions."""
         if not self.name:
-            raise AQDValidationError("Plugin should have a name.")
-        for func in self.functions:
+            raise AQDValidationError("Extension should have a name.")
+        for func in self.actions:
             func.validate_object()
 
     @property
     def folder(self):
-        """ Folder with plugin specification. Raises if not initialised. """
+        """ Folder with extension specification. Raises if not initialised. """
         if self._folder is None:
-            raise AQDFilesPathError(f"Plugin {self.name} folder is not known.")
+            raise AQDFilesPathError(f"Extension {self.name} folder is not known.")
         return self._folder
