@@ -13,13 +13,12 @@ from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.routers.graphql.mutations_schema import Mutation
 from aqueductcore.backend.routers.graphql.query_schema import Query
-from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
+from aqueductcore.backend.services.experiment import \
+    build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.services.validators import (
-    MAX_EXPERIMENT_DESCRIPTION_LENGTH,
-    MAX_EXPERIMENT_TAGS_NUM,
-    MAX_EXPERIMENT_TITLE_LENGTH,
-)
+    MAX_EXPERIMENT_DESCRIPTION_LENGTH, MAX_EXPERIMENT_TAGS_NUM,
+    MAX_EXPERIMENT_TITLE_LENGTH)
 from aqueductcore.backend.settings import settings
 from tests.unittests.initial_data import experiment_data
 
@@ -269,6 +268,27 @@ remove_experiment_mutation = """
             }
         )
     }
+"""
+
+
+execute_plugin = """
+  mutation ExecutePlugin {
+        executePlugin(
+            plugin: "Dummy plugin"
+            function: "echo"
+            params: [
+                ["var1", "abc"],
+                ["var2", "111"],
+                ["var3", "1.33e+03"],
+                ["var4", "PLACEHOLDER"],
+                ["var5", "some\\nmultiline"],
+                ["var6", "TRUE"],
+                ["var7", "string4"],
+            ]
+    ) {
+        returnCode, stderr, stdout
+    }
+  }
 """
 
 
@@ -634,3 +654,136 @@ async def test_remove_experiment(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment.id
     )
     assert exists(experiment_files_path) == False
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_stdout_ok(
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
+):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiments = []
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_experiments.append(db_experiment)
+        db_session.add(db_experiment)
+        await db_session.commit()
+        await db_session.refresh(db_experiment)
+
+    exp_alias = experiment_data[0].alias
+    query = execute_plugin.replace("PLACEHOLDER", exp_alias)
+
+    schema = Schema(query=Query, mutation=Mutation)
+    context = ServerContext(
+        db_session=db_session,
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+    )
+    resp = await schema.execute(
+        query,
+        context_value=context,
+    )
+    assert resp.errors is None
+    res = resp.data["executePlugin"]
+    assert res["returnCode"] == 0
+    assert res["stdout"] == (
+        "var1=abc\n"
+        "var2=111\n"
+        "var3=1.33e+03\n"
+        f"var4={exp_alias}\n"
+        "var5=some\nmultiline\n"
+        "var6=1\n"
+        "var7=string4\n"
+        "dummykey=dummyvalue\n"
+    )
+    assert res["stderr"] == ""
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_stderr_ok(
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
+):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiments = []
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_experiments.append(db_experiment)
+        db_session.add(db_experiment)
+        await db_session.commit()
+        await db_session.refresh(db_experiment)
+
+    exp_alias = experiment_data[0].alias
+    query = execute_plugin.replace("PLACEHOLDER", exp_alias)
+    schema = Schema(query=Query, mutation=Mutation)
+    context = ServerContext(
+        db_session=db_session,
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+    )
+    resp = await schema.execute(
+        query.replace("echo", "echo_stderr"),
+        context_value=context,
+    )
+    assert resp.errors is None
+    res = resp.data["executePlugin"]
+    assert res["returnCode"] == 13
+    assert res["stdout"] == ""
+    assert res["stderr"] == (
+        "var1=abc\n"
+        "var2=111\n"
+        "var3=1.33e+03\n"
+        f"var4={exp_alias}\n"
+        "var5=some\nmultiline\n"
+        "var6=1\n"
+        "var7=string4\n"
+        "dummykey=dummyvalue\n"
+    )
+
+
+@pytest.mark.asyncio
+async def test_execute_plugin_failed_validation(
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+    # fixture is here to ensure that files are cleaned after execution
+    temp_experiment_files,
+):
+    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiments = []
+    for experiment in experiments_data:
+        db_experiment = experiment_model_to_orm(experiment)
+        db_experiment.created_by_user = db_user
+        db_experiments.append(db_experiment)
+        db_session.add(db_experiment)
+        await db_session.commit()
+        await db_session.refresh(db_experiment)
+
+    exp_alias = experiment_data[0].alias
+    query = execute_plugin.replace("PLACEHOLDER", exp_alias)
+
+    schema = Schema(query=Query, mutation=Mutation)
+    context = ServerContext(
+        db_session=db_session,
+        user_info=UserInfo(
+            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+        ),
+    )
+    resp = await schema.execute(
+        query.replace("111", "non_number"),
+        context_value=context,
+    )
+    assert resp.errors[0].message == "non_number is not int."

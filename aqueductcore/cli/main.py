@@ -66,7 +66,7 @@ def exporter(
         dir_path = str(settings.experiments_dir_path)
 
         if include_experiment_files:
-            total = Exporter.get_dir_size(dir_path) + len(json_str.encode())
+            total = Exporter.get_size(dir_path) + len(json_str.encode())
             console.print(
                 f"Adding experiments' files in '{settings.experiments_dir_path}'"
                 f" to the '{file.name}' ..."
@@ -141,7 +141,7 @@ def importer(
             Importer.import_experiments_metadata(db_session=db_session, metadata=metadata)
 
             dir_path = str(settings.experiments_dir_path)
-            total = Exporter.get_dir_size(dir_path)
+            total = Exporter.get_size(dir_path)
             console.print(
                 f"Importing experiments' files from '{file.name}'"
                 f" to '{settings.experiments_dir_path}'..."

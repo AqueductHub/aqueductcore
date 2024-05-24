@@ -1,0 +1,79 @@
+name: "Dummy plugin"
+description: >
+  This plugin prints environment variables
+  passed to it. No requests to Aqueduct sent.
+authors: aqueduct@riverlane.com
+aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+
+# global variables for all functions of the plugin
+params:
+  dummykey: dummyvalue
+
+functions:
+  - name: echo
+    description: "Print values to stdout"
+    script: >
+      sh dummy.sh
+
+    # arguments of the function
+    parameters:
+      - name: var1
+        description: variable 1
+        data_type: str
+        default_value: 1
+      - name: var2
+        description: variable 2
+        data_type: int
+        display_name: some display name
+      - name: var3
+        description: variable 3
+        data_type: float
+      - name: var4
+        description: variable 4
+        data_type: experiment
+      - name: var5
+        description: variable 5 multiline
+        data_type: textarea
+      - name: var6
+        description: boolean variable
+        data_type: bool
+        default_value: true
+      - name: var7
+        description: select / combobox
+        data_type: select
+        default_value: "string three"
+        options: [ string1, string2, string three, string4 ]
+
+  - name: echo_stderr
+    description: "Print values to stdout"
+    script: >
+      >&2 sh dummy.sh; exit 13
+
+    # arguments of the function
+    parameters:
+      - name: var1
+        description: variable 1
+        data_type: str
+        default_value: 1
+      - name: var2
+        description: variable 2
+        data_type: int
+        display_name: some display name
+      - name: var3
+        description: variable 3
+        data_type: float
+      - name: var4
+        description: variable 4
+        data_type: experiment
+      - name: var5
+        description: variable 5 multiline
+        data_type: textarea
+      - name: var6
+        description: boolean variable
+        data_type: bool
+        default_value: true
+      - name: var7
+        description: select / combobox
+        data_type: select
+        default_value: "string three"
+        options: [ string1, string2, string three, string4 ]

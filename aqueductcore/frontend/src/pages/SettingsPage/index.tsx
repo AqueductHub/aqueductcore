@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { Grid, styled } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -6,10 +6,18 @@ import Box from "@mui/material/Box";
 
 import ColorMode from "components/molecules/ColorMode";
 
-export const settingItems = [
+export type settingItemType = {
+  id: string
+  title: string
+  component: ReactNode
+}
+
+export const settingItems: settingItemType[] = [
   {
+    id: 'Appearance',
     title: "Appearance",
-  },
+    component: <ColorMode />
+  }
 ];
 
 interface TabPanelProps {
@@ -31,7 +39,7 @@ const Container = styled("div")`
   border-radius: 5px;
 `;
 
-function SettingsPage() {
+export function tabPanelMaker(settingItems: settingItemType[]) {
   const [value, setValue] = useState(0);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -51,32 +59,32 @@ function SettingsPage() {
             <Tab
               key={item.title}
               label={item.title}
-              disabled={
-                item.title !== settingItems[settingItems.length - 1].title
-              }
             />
           ))}
         </Tabs>
       </Box>
       <Container>
-        {/* Other */}
-        <TabPanel value={value} index={0}>
-          {/* general other section */}
-          <Grid
-            container
-            justifyContent="center"
-            direction="column"
-            sx={{ boxShadow: 1, borderRadius: "4px", backgroundColor: "background.paper", mb: 2 }}
-          >
-            {/* Theme picker */}
-            <Grid item>
-              <ColorMode />
+        {settingItems.map((item, index) => (
+          <TabPanel value={value} index={index} key={item.id}>
+            <Grid
+              container
+              justifyContent="center"
+              direction="column"
+              sx={{ boxShadow: 1, borderRadius: "4px", backgroundColor: "background.paper", mb: 2 }}
+            >
+              <Grid item sx={{ minHeight: "60vh", position: "relative" }}>
+                {item.component}
+              </Grid>
             </Grid>
-          </Grid>
-        </TabPanel>
+          </TabPanel>
+        ))}
       </Container>
     </Box>
   );
+}
+
+function SettingsPage() {
+  return tabPanelMaker(settingItems)
 }
 
 export default SettingsPage;

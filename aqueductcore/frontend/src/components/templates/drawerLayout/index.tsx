@@ -1,29 +1,29 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { PropsWithChildren, ReactNode, useState } from "react";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SettingsIcon from "@mui/icons-material/Settings";
 import ScienceIcon from "@mui/icons-material/Science";
-import { PropsWithChildren, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box } from "@mui/system";
 import {
-  AppBar,
-  Badge,
-  BadgeProps,
-  Collapse,
-  Drawer,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
-  Toolbar,
+  ListItemIcon,
+  BadgeProps,
   Typography,
-  styled,
+  IconButton,
+  ListItem,
   useTheme,
+  Collapse,
+  Toolbar,
+  AppBar,
+  Drawer,
+  styled,
+  Badge,
+  Grid,
+  List,
 } from "@mui/material";
 
 import { AqueductLogo } from "components/atoms/AqueductLogo";
@@ -33,7 +33,7 @@ export const drawerWidth = 264;
 export const drawerTopOffset = 100;
 export const mainPadding = 24;
 
-interface GroupDrawerItem {
+export interface GroupDrawerItem {
   alpha?: boolean;
   text: string;
   icon?: JSX.Element;
@@ -41,17 +41,17 @@ interface GroupDrawerItem {
   withSearchParams?: boolean
   openInNewTab?: boolean;
 }
-interface DrawerItem extends GroupDrawerItem {
+export interface DrawerItem extends GroupDrawerItem {
   isGroup?: false;
 }
-interface DrawerItemWithSubitems extends WithOptional<GroupDrawerItem, "url"> {
+export interface DrawerItemWithSubitems extends WithOptional<GroupDrawerItem, "url"> {
   isGroup: true;
   subItems?: GroupDrawerItem[] | [] | null;
 }
 
-type DrawerItemsType = DrawerItem | DrawerItemWithSubitems;
+export type DrawerItemType = DrawerItem | DrawerItemWithSubitems;
 
-export const drawerItems: DrawerItemsType[] = [
+export const drawerItems: DrawerItemType[] = [
   {
     text: "Experiment Records",
     icon: <ScienceIcon />,
@@ -76,142 +76,136 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
-const LogoContainer = styled(Box)`
+export const LogoContainer = styled(Box)`
   display: flex;
   justify-content: flex-start;
   margin-top: ${(props) => props.theme.spacing(3)};
   margin-left: ${(props) => props.theme.spacing(2)};
 `;
 
-function DrawerLayout(props: PropsWithChildren) {
+export function drawerListMaker(drawerItems: DrawerItemType[]) {
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
   const [open, setOpen] = useState(true);
 
   const handleClick = () => {
     setOpen(!open);
   };
+  return (
+    <List>
+      {drawerItems.map((item) =>
+        item.isGroup && item.subItems?.length ? (
+          <Box key={item.text}>
+            <ListItemButton
+              onClick={handleClick}
+              key={item.text}
+              sx={{
+                minHeight: 48,
+                justifyContent: "initial",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: 3,
+                  marginRight: 1.75,
+                  justifyContent: "center",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} />
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {item.subItems.map((subItem) => (
+                  <Link
+                    to={`${subItem.url}${subItem.withSearchParams ? "?" + searchParams : ''}` ?? ""}
+                    key={subItem.text}
+                    style={{
+                      textDecoration: "none",
+                      color: theme.palette.text.primary,
+                    }}
+                  >
+                    <ListItemButton sx={{ pl: 4 }} selected={location.pathname === subItem.url}>
+                      {subItem.icon && (
+                        <ListItemIcon>
+                          {item.alpha ? (
+                            <StyledBadge badgeContent="alpha" color="secondary">
+                              {subItem.icon}
+                            </StyledBadge>
+                          ) : (
+                            subItem.icon
+                          )}
+                        </ListItemIcon>
+                      )}
+                      <ListItemText
+                        primary={subItem.text}
+                        sx={{
+                          marginLeft: 4,
+                        }}
+                      />
+                    </ListItemButton>
+                  </Link>
+                ))}
+              </List>
+            </Collapse>
+          </Box>
+        ) : (
+          <ListItem disablePadding sx={{ display: "block" }} key={item.text}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: "initial",
+                px: 2.5,
+              }}
+              selected={location.pathname === item.url}
+              to={`${item.url}${item.withSearchParams ? "?" + searchParams : ''}` ?? ""}
+              target={item.openInNewTab ? "_blank" : ""}
+              component={Link}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: 3,
+                  marginRight: 1.75,
+                  justifyContent: "center",
+                }}
+              >
+                {item.alpha ? (
+                  <StyledBadge badgeContent="alpha" color="secondary">
+                    {item.icon}
+                  </StyledBadge>
+                ) : (
+                  item.icon
+                )}
+              </ListItemIcon>
+              <ListItemText primary={item.text} />
+              {item.openInNewTab && <ListItemIcon
+                sx={{
+                  mr: -4.5,
+                  alignItems: "flex-end"
+                }}
+              >
+                <OpenInNewIcon sx={{ fontSize: '1rem' }} />
+              </ListItemIcon>}
+            </ListItemButton>
+          </ListItem>
+        )
+      )}
+    </List>
+  )
+}
+
+export function DrawerLayoutMaker(drawer: ReactNode, children: ReactNode) {
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-
-  const drawer = (
-    <div>
-      {/****** Logo *******/}
-      <LogoContainer>
-        <AqueductLogo theme={theme.palette.mode} />
-      </LogoContainer>
-      {/****** List *******/}
-      <List>
-        {drawerItems.map((item) =>
-          item.isGroup && item.subItems?.length ? (
-            <Box key={item.text}>
-              <ListItemButton
-                onClick={handleClick}
-                key={item.text}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: "initial",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 3,
-                    marginRight: 1.75,
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-                {open ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-              <Collapse in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  {item.subItems.map((subItem) => (
-                    <Link
-                      to={`${subItem.url}${subItem.withSearchParams ? "?" + searchParams : ''}` ?? ""}
-                      key={subItem.text}
-                      style={{
-                        textDecoration: "none",
-                        color: theme.palette.text.primary,
-                      }}
-                    >
-                      <ListItemButton sx={{ pl: 4 }} selected={location.pathname === subItem.url}>
-                        {subItem.icon && (
-                          <ListItemIcon>
-                            {item.alpha ? (
-                              <StyledBadge badgeContent="alpha" color="secondary">
-                                {subItem.icon}
-                              </StyledBadge>
-                            ) : (
-                              subItem.icon
-                            )}
-                          </ListItemIcon>
-                        )}
-                        <ListItemText
-                          primary={subItem.text}
-                          sx={{
-                            marginLeft: 4,
-                          }}
-                        />
-                      </ListItemButton>
-                    </Link>
-                  ))}
-                </List>
-              </Collapse>
-            </Box>
-          ) : (
-            <ListItem disablePadding sx={{ display: "block" }} key={item.text}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: "initial",
-                  px: 2.5,
-                }}
-                selected={location.pathname === item.url}
-                to={`${item.url}${item.withSearchParams ? "?" + searchParams : ''}` ?? ""}
-                target={item.openInNewTab ? "_blank" : ""}
-                component={Link}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 3,
-                    marginRight: 1.75,
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.alpha ? (
-                    <StyledBadge badgeContent="alpha" color="secondary">
-                      {item.icon}
-                    </StyledBadge>
-                  ) : (
-                    item.icon
-                  )}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-                {item.openInNewTab && <ListItemIcon
-                  sx={{
-                    mr: -4.5,
-                    alignItems: "flex-end"
-                  }}
-                >
-                  <OpenInNewIcon sx={{ fontSize: '1rem' }} />
-                </ListItemIcon>}
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
-      </List>
-    </div>
-  );
 
   return (
     <Grid container justifyContent="flex-end">
@@ -275,9 +269,27 @@ function DrawerLayout(props: PropsWithChildren) {
           marginTop: `${drawerTopOffset}px`,
         }}
       >
-        {props.children}
+        {children}
       </Box>
     </Grid>
   );
+}
+
+function DrawerLayout(props: PropsWithChildren) {
+  const theme = useTheme();
+
+
+  const drawer = (
+    <div>
+      {/****** Logo *******/}
+      <LogoContainer>
+        <AqueductLogo theme={theme.palette.mode} />
+      </LogoContainer>
+
+      {/****** List *******/}
+      {drawerListMaker(drawerItems)}
+    </div>
+  );
+  return DrawerLayoutMaker(drawer, props.children)
 }
 export default DrawerLayout;
