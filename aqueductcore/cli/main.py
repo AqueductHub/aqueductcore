@@ -59,7 +59,8 @@ def exporter(
     tar_suffix = ".tar.gz"
     if not path.name.endswith(tar_suffix):
         console.print(
-            f"[bold yellow]Warning[/bold yellow]: Archive path '{path}' doesn't end with '{tar_suffix}'."
+            f"[bold yellow]Warning[/bold yellow]: Archive path '{path}'"
+            f" doesn't end with '{tar_suffix}'."
         )
 
     with path.open(mode="wb") as file:
