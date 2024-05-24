@@ -164,9 +164,9 @@ Plugin execution may be triggered in one of two ways:
 Plugin execution flow in its current implementation is described below:
 
 1. Plugin manifest is parsed and methods are loaded into memory.
-2. Conditional. If inside the plugin folder python virtual environment is not present, it will be created.
-   1. Conditional. If `requirements.txt` file is present, dependencies are installed in the new virtual environment.
-   2. Conditional. If `pyproject.toml` file is present, folder content is installed as a python module in the new virtual environment together with its dependencies.
+2. Conditional: If inside the plugin folder python virtual environment is not present, it will be created.
+   1. Conditional: If `requirements.txt` file is present, dependencies are installed in the new virtual environment.
+   2. Conditional: If `pyproject.toml` file is present, folder content is installed as a python module in the new virtual environment together with its dependencies.
 3. `script` section is executed. If `$python` variable is present, it is replaced with python executable of the virtual environment. Variables and constants are passed as environment variables of operating system.
 4. Standard output, standard error, and process result code are written into a log file, which is saved inside the experiment.
 
