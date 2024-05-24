@@ -2,6 +2,7 @@
 
 import os
 import tarfile
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 
@@ -32,9 +33,6 @@ err_console = Console(stderr=True, style="red")
 console = Console()
 
 
-DEFAULT_ARCHIVE_NAME = "aqueduct-data.tar.gz"
-
-
 @app.command(name="export")
 def exporter(
     path: Annotated[
@@ -46,20 +44,23 @@ def exporter(
             dir_okay=False,
             writable=True,
         ),
-    ] = Path(os.path.join(os.getcwd(), DEFAULT_ARCHIVE_NAME)),
+    ] = Path(os.path.join(os.getcwd(), f"aqueduct_data_{datetime.now(timezone.utc)}.tar.gz")),
     include_experiment_files: Annotated[
         bool,
         typer.Option(
-            "--experiment-files", "-e", help="Flag to include experiments' files in the archive."
+            "--experiment-files",
+            "-e",
+            help="Flag to include experiments' files in the archive.",
         ),
     ] = False,
 ):
-    """Command for exporting Aqueduct experiments' data into archive."""
+    """Command for exporting Aqueduct experiments' data into GZIP compressed tar archive."""
 
-    _, tail = os.path.splitext(path)
     tar_suffix = ".tar.gz"
-    if not tail or tail != tar_suffix:
-        path = Path(f"{path}{tar_suffix}")
+    if not path.name.endswith(tar_suffix):
+        console.print(
+            f"[bold yellow]Warning[/bold yellow]: Archive path '{path}' doesn't end with '{tar_suffix}'."
+        )
 
     with path.open(mode="wb") as file:
         console.print(f"Adding experiments' metadata to '{file.name}'...")
@@ -104,7 +105,7 @@ def importer(
         ),
     ],
 ):
-    """Command for importing Aqueduct experiments' data from archive."""
+    """Command for importing Aqueduct experiments' data from GZIP compressed tar archive."""
 
     console.print(f"Reading {file.name}...")
     with tarfile.open(mode="r:gz", fileobj=file) as tar:
