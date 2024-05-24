@@ -59,7 +59,7 @@ class Exporter:
         return data
 
     @classmethod
-    def get_dir_size(cls, experiments_dir: str) -> int:
+    def get_size(cls, path: str) -> int:
         """Get the directory size in bytes given the path.
 
         Args:
@@ -69,13 +69,15 @@ class Exporter:
             Size of the directory including its files recursively in bytes.
 
         """
+        if os.path.isfile(path):
+            return os.path.getsize(path)
         total = 0
-        with os.scandir(experiments_dir) as iterator:
+        with os.scandir(path) as iterator:
             for entry in iterator:
                 if entry.is_file():
                     total += entry.stat().st_size
                 elif entry.is_dir():
-                    total += cls.get_dir_size(entry.path)
+                    total += cls.get_size(entry.path)
         return total
 
     @classmethod
@@ -108,18 +110,10 @@ class Exporter:
         if experiments_root:
             with os.scandir(experiments_root) as dir_iterator:
                 for entry in dir_iterator:
-                    entry_size = 0
-                    if entry.is_file(follow_symlinks=False):
-                        entry_size = entry.stat().st_size
-                        tar.add(
-                            name=entry.path,
-                            arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                        )
-                    elif entry.is_dir(follow_symlinks=False):
-                        entry_size = cls.get_dir_size(entry.path)
-                        tar.add(
-                            name=entry.path,
-                            arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
-                        )
+                    entry_size = cls.get_size(entry.path)
+                    tar.add(
+                        name=entry.path,
+                        arcname=os.path.join(cls.EXPERIMENTS_BASE_DIR_NAME, entry.name),
+                    )
                     if progress:
                         progress(entry_size)
