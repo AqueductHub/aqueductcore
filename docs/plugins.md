@@ -88,7 +88,7 @@ functions:
 
 Each manifest starts with a header with general plugin information (`name`, `description`,
 `authors`). This information is used to generate user interface.
-`aqueduct_url` mandatory parameter is used to make plugin aware about the instance of Aqueduct
+The `aqueduct_url` mandatory parameter is used to make the plugin aware of the instance of Aqueduct
 it should interact with. In current implementation plugins assumed to run at the same machine 
 as the server application, so this address will be a `http://localhost:8000/` or similar.
 
