@@ -25,7 +25,7 @@ def test_cli_export_without_experiment_files(
 ):
     sync_engine = test_sync_engine
 
-    with tempfile.NamedTemporaryFile() as tmp_archive:
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz") as tmp_archive:
         with temp_experiments(
             db_session=db_session, experiments_data=experiments_data
         ) as mock_data:
@@ -52,7 +52,7 @@ def test_cli_export_with_experiment_files_default_export_file(
 ):
     sync_engine = test_sync_engine
 
-    with tempfile.NamedTemporaryFile() as tmp_archive:
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz") as tmp_archive:
         with temp_experiments(
             db_session=db_session, experiments_data=experiments_data
         ) as mock_data:

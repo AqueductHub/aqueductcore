@@ -54,7 +54,12 @@ def exporter(
         ),
     ] = False,
 ):
-    """Command for exporting Aqueduct experiments' data into an archived file."""
+    """Command for exporting Aqueduct experiments' data into archive."""
+
+    _, tail = os.path.splitext(path)
+    tar_suffix = ".tar.gz"
+    if not tail or tail != tar_suffix:
+        path = Path(f"{path}{tar_suffix}")
 
     with path.open(mode="wb") as file:
         console.print(f"Adding experiments' metadata to '{file.name}' to the '{file.name}'...")
@@ -99,7 +104,7 @@ def importer(
         ),
     ],
 ):
-    """Command for importing Aqueduct experiments' data from an archived file."""
+    """Command for importing Aqueduct experiments' data from archive."""
 
     console.print(f"Reading {file.name}...")
     with tarfile.open(mode="r:gz", fileobj=file) as tar:
