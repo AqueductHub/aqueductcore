@@ -41,7 +41,7 @@ authors: ada.lovelace@gmail.com
 aqueduct_url: http://localhost:8000/
 
 # constants, common for all actions:
-params:
+constants:
   common_shared_key: "common value"
   common_shared_key_2: some other common value
 
@@ -86,17 +86,18 @@ actions:
         data_type: experiment
 ```
 
-Each manifest starts with a header with general extension information (`name`, `description`,
-`authors`). This information is used to generate the user interface.
-The `aqueduct_url` mandatory parameter is used to make the extension aware of the instance of Aqueduct
-it should interact with. In the current implementation, extensions are assumed to run on the same machine 
+Each manifest starts with a header with general extension information 
+(`name`, `description`, `authors`). This information is used to generate 
+the user interface. The `aqueduct_url` mandatory parameter is used to make 
+the extension aware of the instance of Aqueduct it should interact with. 
+In the current implementation, extensions are assumed to run on the same machine 
 as the server application, so this address will be a `http://localhost:8000/` or similar.
 
-Optional `params` section allows the defintion key-value pairs for constants shared across all extension action executions. 
-Examples of this may include third-party service credentials, or a database connection string,
-which are shared among all service installation users. If your users need to use such services
-with different credentials, we encourage you to define a separate action parameter for 
-this purpose.
+Optional `params` section allows the definition key-value pairs for constants shared across
+all extension action executions.  Examples of this may include third-party service credentials,
+or a database connection string, which are shared among all service installation users.
+If your users need to use such services with different credentials, we encourage you to
+define a separate action parameter for this purpose.
 
 The section `actions` defines a list of action an extension may perform. Each item starts with
 name and description used to build user interface.
@@ -138,21 +139,37 @@ Please, note, that purpose of extensions is to interact with an experiment. They
 
 Extension may be fully written inside the `script` section of the manifest. But it is convenient to 
 separate its code into a dedicated file. Input values and constants are passed to this script file
-using environment variables (strings). To access these strings in python this code snippet may be used:
+using environment variables (strings). To access these strings in python this code snippet 
+may be used:
 
 ```python
 import os
+from tempfile import TemporaryDirectory
+from pyaqueduct import API
 
 aq_url = os.environ.get("aqueduct_url", "")
-aq_key = os.environ.get("aqueduct_key", "")
-experiment_alias = os.environ.get("experiment", "")
+value = os.environ.get("input_value", "")
+experiment_id = os.environ.get("experiment", "")
+
+api = API(aq_url)
+api.get_experiment(experiment_id)
+with TemporaryDirectory() as directory:
+    filename = f"{directory}/file.txt"
+    with open(filename, "w") as file:
+      file.write(value)
+    experiment.upload_file(filename)
 ```
 
 In a shell script:
 ```bash
-echo $aqueduct_url > url.txt
-ping $remote_service
+# this will printed and reported into the log file
+cat $input_filename | sort
+# printing a variable
+echo $string_value
+curl "$aqueduct_url/aqd/experiments/$experiment"
 ```
+
+string_value, input_filename
 
 ## Running an Extension Function
 
