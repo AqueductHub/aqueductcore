@@ -67,6 +67,7 @@ function ExtensionsList() {
                     variant="outlined"
                     startIcon={<AutoAwesomeIcon />}
                     endIcon={<ArrowDropDownIcon />}
+                    title='extensions'
                 >
                     Extensions
                 </BorderedButtonWithIcon>

@@ -6,6 +6,8 @@ import {
   PluginInfo,
   UserInfo,
   Tags,
+  PluginFunctionInfo,
+  PluginParameterType,
 } from "./graphql/__GENERATED__/graphql";
 
 type NonNullish<T> = Exclude<T, null | undefined>; // Remove null and undefined from T
@@ -81,7 +83,7 @@ export type GET_USER_INFO_TYPE = {
 };
 export type GET_ALL_EXTENSIONS_NAME_TYPE = {
   plugins: Array<{
-    name: PluginInfo['name']
+    name: ExtensionType['name']
     __typename?: PluginInfo["__typename"];
   }>;
 };
@@ -148,6 +150,29 @@ export type ExperimentFileType = {
   name: ExperimentFile["name"];
   path: ExperimentFile["path"];
   modifiedAt: ExperimentFile["modifiedAt"];
+};
+
+export type ExtensionType = {
+  name: PluginInfo['name']
+  authors: PluginInfo['authors'],
+  description: PluginInfo['description']
+  functions: Array<ExtensionFunctionType>
+};
+
+export type ExtensionFunctionType = {
+  name: PluginFunctionInfo['name']
+  description: PluginFunctionInfo['description'],
+  experimentVariableName: PluginFunctionInfo['experimentVariableName'],
+  parameters: Array<ExtensionParameterType>,
+};
+
+export type ExtensionParameterType = {
+  dataType: PluginParameterType['dataType']
+  defaultValue: PluginParameterType['defaultValue']
+  description: PluginParameterType['description']
+  displayName: PluginParameterType['displayName']
+  name: PluginParameterType['name']
+  options: PluginParameterType['options']
 };
 
 export type PreviewFilesType = "JSON" | "MARKDOWN" | "text/plain" | "image/png" | "image/jpeg" | "file";

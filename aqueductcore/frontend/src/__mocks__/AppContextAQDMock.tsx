@@ -10,6 +10,7 @@ import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/getAllExp
 import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/getAllExperimentsWithStartTimeMock";
 import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/getAllExperimentsWithEndTimeMock";
 import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
+import { getAllExtensionNames_mock } from "__mocks__/queries/getAllExtensionsMock";
 import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
 import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
 import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock";
@@ -32,6 +33,7 @@ interface AppContextAQDMockProps {
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
+  getAllExtensionNames_mockMockMode?: keyof typeof getAllExtensionNames_mock;
   browserRouter?: boolean;
   memoryRouterProps?: MemoryRouterProps
 }
@@ -48,6 +50,7 @@ function AppContextAQDMock({
   getExperimentFiles_mockMockMode = "success",
   getUserInformation_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
+  getAllExtensionNames_mockMockMode = "success",
   memoryRouterProps,
   browserRouter,
   children,
@@ -92,6 +95,7 @@ function AppContextAQDMock({
     ...updateExperiment_mock[updateExperiment_mockMockMode],
     ...removeExperiment_mock[removeExperiment_mockMockMode],
     ...getUserInformation_mock[getUserInformation_mockMockMode],
+    ...getAllExtensionNames_mock[getAllExtensionNames_mockMockMode],
     getExperiment_mock[getExperiment_mockMockMode],
   ];
 
