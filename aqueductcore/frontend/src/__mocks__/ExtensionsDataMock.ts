@@ -3,6 +3,8 @@ import { ExtensionType } from "types/globalTypes";
 export const extensions: ExtensionType[] = [
     {
         "name": "Dummy plugin",
+        "description": "This plugin prints environment variables passed to it. No requests to Aqueduct sent.\n",
+        "authors": "aqueduct@riverlane.com",
         "functions": [
             {
                 "description": "Print values to stdout",
@@ -141,11 +143,11 @@ export const extensions: ExtensionType[] = [
                 ]
             }
         ],
-        "description": "This plugin prints environment variables passed to it. No requests to Aqueduct sent.\n",
-        "authors": "aqueduct@riverlane.com"
     },
     {
         "name": "Wolfram alpha solution plugin",
+        "description": "This plugin solves mathematical problems using Wolfram|Alpha cloud engine. To run the plugin, please obtain an App ID at https://developer.wolframalpha.com/access\n",
+        "authors": "aqueduct@riverlane.com",
         "functions": [
             {
                 "description": "solve an equation and return a text answer\n",
@@ -179,7 +181,5 @@ export const extensions: ExtensionType[] = [
                 ]
             }
         ],
-        "description": "This plugin solves mathematical problems using Wolfram|Alpha cloud engine. To run the plugin, please obtain an App ID at https://developer.wolframalpha.com/access\n",
-        "authors": "aqueduct@riverlane.com"
     }
 ]
