@@ -44,12 +44,11 @@ def save_to_aqueduct(
     """
     api = API(url=aqueduct_url, timeout=10)
     exp = api.get_experiment(experiment_alias)
-
     with TemporaryDirectory() as directory:
         fullname = Path(directory) / filename
         with open(fullname, "w") as file:
             file.write(content)
-        exp.upload_file(fullname)
+        exp.upload_file(str(fullname))
 
 
 if __name__ == "__main__":

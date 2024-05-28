@@ -23,8 +23,8 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.services.plugin_executor import PluginExecutor
-from aqueductcore.backend.routers.graphql.types import ExperimentData, PluginExecutionResult
+from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
+from aqueductcore.backend.routers.graphql.types import ExperimentData, ExtensionExecutionResult
 from aqueductcore.backend.errors import AQDValidationError
 
 @strawberry.type
@@ -102,46 +102,46 @@ class Mutation:
 
 
     @strawberry.mutation
-    async def execute_plugin(
+    async def execute_extension(
             self,
             info: Info,
-            plugin: str,
-            function: str,
+            extension: str,
+            action: str,
             params: List[List[str]],
-    ) -> PluginExecutionResult:
-        """The endpoint accepts plugin execution requests.
+    ) -> ExtensionExecutionResult:
+        """The endpoint accepts extension execution requests.
 
         Args:
-            info (Info): context, which includes database connection.
-            plugin (str): plugin name.
-            function (str): function name.
-            params (List[List[str]]):
+            info: context, which includes database connection.
+            extension: extension name.
+            action: action name.
+            params:
                 list of pairs: [[key1, value1], [key2, value2], ...].
 
         Returns:
-            PluginExecutionResult: result of OS process execution.
+            ExtensionExecutionResult: result of OS process execution.
         """
         dict_params = dict(params)
         context = cast(ServerContext, info.context)
-        plugin_object = PluginExecutor.get_plugin(plugin)
-        function_object = plugin_object.get_function(function)
-        exp_parameter = function_object.get_default_experiment_parameter()
+        extension_object = ExtensionsExecutor.get_extension(extension)
+        action_object = extension_object.get_action(action)
+        exp_parameter = action_object.get_default_experiment_parameter()
         if exp_parameter is None:
-            raise AQDValidationError(f"Function {plugin}/{function} has no experiment parameters")
+            raise AQDValidationError(f"Action {extension}:{action} has no experiment parameters")
         exp_id = dict_params[exp_parameter.name]
 
         now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        log_filename = f"{plugin}-{function}-{now}.log"
+        log_filename = f"{extension}-{action}-{now}.log"
 
-        result = function_object.execute(plugin_object, dict_params, timeout=600)
+        result = action_object.execute(extension_object, dict_params, timeout=600)
 
-        await PluginExecutor.save_log_to_experiment(
+        await ExtensionsExecutor.save_log_to_experiment(
             context=context,
             experiment_id=exp_id,
             log_filename=log_filename,
             result=result,
         )
-        return PluginExecutionResult(
+        return ExtensionExecutionResult(
             return_code=result.return_code,
             stdout=result.stdout,
             stderr=result.stderr,
