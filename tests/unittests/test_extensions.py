@@ -1,47 +1,47 @@
 import pytest
-from aqueductcore.backend.models.plugin import (
-    Plugin,
-    PluginFunction, 
-    PluginParameter,
+from aqueductcore.backend.models.extensions import (
+    Extension,
+    ExtensionAction, 
+    ExtensionParameter,
     SupportedTypes,
 )
-from aqueductcore.backend.services.plugin_executor import PluginExecutor
+from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
 
 
-class TestPluginModel:    
+class TestExtensionModel:    
     @pytest.mark.parametrize(
-        "plugin",
+        "extension",
         [
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
-                functions=[],
+                actions=[],
                 aqueduct_url="",
             ),
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
                 aqueduct_url="",
-                functions=[
-                    PluginFunction(
+                actions=[
+                    ExtensionAction(
                         name="func1", description="descr", script="", parameters=[]
                     ),
                 ],
             ),
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
                 aqueduct_url="",
-                functions=[
-                    PluginFunction(
+                actions=[
+                    ExtensionAction(
                         name="func1",
                         description="descr",
                         script="",
                         parameters=[
-                            PluginParameter(
+                            ExtensionParameter(
                                 name="var1",
                                 description="descr",
                                 data_type=SupportedTypes.TEXTAREA,
@@ -53,20 +53,20 @@ class TestPluginModel:
             ),
         ],
     )
-    def test_plugin_validation_ok(self, plugin):
-        plugin.validate_object()
+    def test_extension_validation_ok(self, extension):
+        extension.validate_object()
 
-    def test_plugin_exposes_default_experiment(self):
-        plugin = PluginExecutor.get_plugin("Dummy plugin")
-        echo = plugin.get_function("echo")
+    def test_extension_exposes_default_experiment(self):
+        extension = ExtensionsExecutor.get_extension("Dummy extension")
+        echo = extension.get_action("echo")
         param = echo.get_default_experiment_parameter()
         assert param.name == "var4" and param.data_type == SupportedTypes.EXPERIMENT
 
-    def test_plugin_execute(self):
-        plugin = PluginExecutor.get_plugin("Dummy plugin")
-        echo = plugin.get_function("echo")
+    def test_extension_execute(self):
+        extension = ExtensionsExecutor.get_extension("Dummy extension")
+        echo = extension.get_action("echo")
         result = echo.execute(
-            plugin=plugin,
+            extension=extension,
             params={"var1": "text", "var2": 1, "var3": 2.2,
                     "var4": "20240229-5689864ffd94",
                     "var5": "text\narea", "var6": 0, "var7": "string2"},

@@ -1,21 +1,21 @@
-name: "Dummy plugin"
+name: "Dummy extension"
 description: >
-  This plugin prints environment variables
+  This extension prints environment variables
   passed to it. No requests to Aqueduct sent.
 authors: aqueduct@riverlane.com
 aqueduct_url: http://localhost:8000/
 
-# global variables for all functions of the plugin
-params:
+# global variables for all actions of the extension
+constants:
   dummykey: dummyvalue
 
-functions:
+actions:
   - name: echo
     description: "Print values to stdout"
     script: >
       sh dummy.sh
 
-    # arguments of the function
+    # arguments of the action
     parameters:
       - name: var1
         description: variable 1
@@ -49,7 +49,7 @@ functions:
     script: >
       >&2 sh dummy.sh; exit 13
 
-    # arguments of the function
+    # arguments of the action
     parameters:
       - name: var1
         description: variable 1

@@ -288,11 +288,11 @@ filter_by_title_query = """
     }
 """
 
-all_plugins_query = """
+all_extensions_query = """
   {
-    plugins {
+    extensions {
         authors, description, name
-        functions {
+        actions {
             description, name, experimentVariableName,
             parameters {
                 name, displayName, description, dataType, defaultValue
@@ -910,18 +910,18 @@ async def test_query_pagination_tags(
 
 
 @pytest.mark.asyncio
-async def test_plugins():
+async def test_extensions():
     schema = Schema(query=Query)
-    resp = await schema.execute(all_plugins_query)
+    resp = await schema.execute(all_extensions_query)
     assert resp.errors is None
-    assert len(resp.data["plugins"]) == 2
-    if resp.data["plugins"][0]["name"] == "Dummy plugin":
-        p_dummy = resp.data["plugins"][0]
+    assert len(resp.data["extensions"]) == 2
+    if resp.data["extensions"][0]["name"] == "Dummy extension":
+        p_dummy = resp.data["extensions"][0]
     else:
-        p_dummy = resp.data["plugins"][1]
+        p_dummy = resp.data["extensions"][1]
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
-    assert len(p_dummy["functions"]) == 2
+    assert len(p_dummy["actions"]) == 2
     print(p_dummy)
-    echo = p_dummy["functions"][0]
+    echo = p_dummy["actions"][0]
     assert echo["experimentVariableName"] == "var4"
     assert echo["parameters"][1]["displayName"] == "some display name"
