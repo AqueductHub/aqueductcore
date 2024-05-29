@@ -39,7 +39,11 @@ def exporter(
             dir_okay=False,
             writable=True,
         ),
-    ] = Path(os.path.join(os.getcwd(), f"aqueduct_data_{datetime.now(timezone.utc)}.tar.gz")),
+    ] = Path(
+        os.path.join(
+            os.getcwd(), f"aqueduct_data_{datetime.now(timezone.utc).strftime('%Y_%m_%d')}.tar.gz"
+        )
+    ),
     include_experiment_files: Annotated[
         bool,
         typer.Option(
