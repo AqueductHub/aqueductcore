@@ -4,7 +4,7 @@ const request = {
   query: GET_ALL_PLUGINS,
 };
 
-export const getAllTags_mock = {
+export const getAllPlugins_mock = {
   success: {
     request,
     result: {
