@@ -51,7 +51,7 @@ export type GET_ALL_EXTENSIONS_TYPE = {
   plugins: {
     authors: PluginInfo["authors"];
     description: PluginInfo["description"];
-    functions: Array<PluginFunctionInfoType>;
+    functions: Array<PluginFunctionInfo>;
   }
 };
 
