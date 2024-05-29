@@ -3,11 +3,11 @@ import os
 import tarfile
 import tempfile
 from typing import List
-from unittest.mock import patch
 
 from sqlalchemy.orm import Session
 from typer.testing import CliRunner
 
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.settings import settings
 from aqueductcore.cli import app, main
@@ -97,13 +97,11 @@ def is_same(dir1, dir2):
     return True
 
 
-@patch("aqueductcore.cli.main.sync_engine")
 def test_cli_import_from_archive(
-    sync_engine,
     db_session: Session,
     experiments_data: List[ExperimentCreate],
 ):
-    sync_engine = test_sync_engine
+    main.sync_engine = test_sync_engine
 
     with tempfile.NamedTemporaryFile(suffix=".tar.gz") as tmp_archive:
         with temp_experiments(
@@ -114,6 +112,8 @@ def test_cli_import_from_archive(
             settings.experiments_dir_path = tmpdirname
             result = runner.invoke(app, ["export", tmp_archive.name, "-e"])
             assert result.exit_code == 0
+
+            orm.Base.metadata.drop_all(main.sync_engine)
 
             with tempfile.TemporaryDirectory() as import_tmpdirname:
                 settings.experiments_dir_path = import_tmpdirname
