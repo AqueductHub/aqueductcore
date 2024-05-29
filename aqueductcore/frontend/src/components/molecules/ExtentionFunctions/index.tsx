@@ -83,7 +83,7 @@ function ExtentionFunctions({
                     onChange={handleSelectedFunctionChange}
                 >
                     {extension?.functions.map(functionInfo => (
-                        <FormControlLabel sx={{mt: 2.5}} key={functionInfo.name} value={functionInfo.name} control={<HiddenRadio />} label={
+                        <FormControlLabel sx={{ mt: 2.5 }} key={functionInfo.name} value={functionInfo.name} control={<HiddenRadio />} label={
                             <ExtentionFunctionBox>
                                 <FunctionHeader style={{ backgroundColor: selectedFunction?.name == functionInfo.name ? "#3dcbda" : "transparent" }}>
                                     <FunctionName>{functionInfo.name}</FunctionName>
