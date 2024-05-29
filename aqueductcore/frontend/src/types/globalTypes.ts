@@ -1,13 +1,14 @@
 import {
+  MutationExecutePluginArgs,
   ExperimentFiltersInput,
+  PluginParameterType,
+  PluginFunctionInfo,
   ExperimentData,
   ExperimentFile,
   Experiments,
   PluginInfo,
   UserInfo,
   Tags,
-  PluginFunctionInfo,
-  PluginParameterType,
 } from "./graphql/__GENERATED__/graphql";
 
 type NonNullish<T> = Exclude<T, null | undefined>; // Remove null and undefined from T
@@ -112,6 +113,12 @@ export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
 };
 export type REMOVE_EXPERIMENT_TYPE = {
   id: ExperimentDataType["id"];
+}
+//### EXTENSION ###
+export type EXECUTE_EXTENSION_TYPE = {
+  plugin: MutationExecutePluginArgs['plugin'];
+  function: MutationExecutePluginArgs['function'];
+  params: MutationExecutePluginArgs['params'];
 }
 
 //############### Experiment types ###############//

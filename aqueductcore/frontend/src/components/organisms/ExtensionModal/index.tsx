@@ -79,7 +79,7 @@ const ModalStepGrid = styled(Grid)`
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
     const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
-    
+
     // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
 
     const defaultFunctionOption: ExtensionFunctionType | undefined = selectedExtensionItem?.functions[0];
@@ -108,7 +108,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                         <ExtentionName>{selectedExtension}</ExtentionName>
                     </Grid>
                     <Grid item>
-                        <CloseIcon onClick={handleClose} sx={{cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle"}} />
+                        <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
                     </Grid>
                 </ModalHeader>
                 <Grid container>
