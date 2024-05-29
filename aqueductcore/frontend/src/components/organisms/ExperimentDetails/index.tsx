@@ -13,8 +13,8 @@ import {
 import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper/auth/userScope";
 import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
-import { useUpdateExperiment } from "API/graphql/mutations/Experiment/updateExperiment";
-import { useGetCurrentUserInfo } from "API/graphql/queries/getUserInformation";
+import { useUpdateExperiment } from "API/graphql/mutations/experiments/updateExperiment";
+import { useGetCurrentUserInfo } from "API/graphql/queries/users/getUserInformation";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
 import ExtensionsList from "components/organisms/ExtensionsList";

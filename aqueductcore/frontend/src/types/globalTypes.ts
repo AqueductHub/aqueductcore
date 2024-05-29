@@ -20,7 +20,7 @@ export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>
 
 
 //############### Query types ###############//
-export type GET_ALL_EXPERIMENTS__TYPE = {
+export type GET_ALL_EXPERIMENTS_TYPE = {
   experiments: {
     experimentsData: Array<{
       id: ExperimentDataType["id"];

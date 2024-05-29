@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
-import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
-import { useRemoveExperiment } from "API/graphql/mutations/Experiment/removeExperiment";
+import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiments/removeTagFromExperiment";
+import { useAddTagToExperiment } from "API/graphql/mutations/experiments/addTagToExperiment";
+import { useRemoveExperiment } from "API/graphql/mutations/experiments/removeExperiment";
 import { isArchived, isFavourite } from "helper/formatters"
 import { ARCHIVED, FAVOURITE } from "constants/constants";
 import { ExperimentDataType } from "types/globalTypes";

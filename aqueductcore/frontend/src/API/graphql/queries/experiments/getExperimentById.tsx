@@ -1,4 +1,5 @@
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
+
 import { GET_EXPERIMENT_BY_ID_TYPE } from "types/globalTypes";
 
 export const GET_EXPERIMENT_BY_ID = gql`

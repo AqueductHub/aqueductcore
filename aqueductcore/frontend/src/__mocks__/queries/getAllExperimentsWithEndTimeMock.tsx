@@ -1,7 +1,9 @@
-import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/getAllExperiments";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
-import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import dayjs from "dayjs";
+
+import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiments/getAllExperiments";
+import { experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+
 
 export const filterByThisEndDate = "11/11/2022";
 

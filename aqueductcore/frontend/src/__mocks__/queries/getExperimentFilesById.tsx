@@ -1,4 +1,4 @@
-import { GET_EXPERIMENT_FILES_BY_ID } from "API/graphql/queries/getExperimentFilesById";
+import { GET_EXPERIMENT_FILES_BY_ID } from "API/graphql/queries/experiments/getExperimentFilesById";
 import { ExperimentDataMock, alias } from "__mocks__/ExperimentDataMock";
 
 const request = {

@@ -1,6 +1,6 @@
-import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/getAllExperiments";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiments/getAllExperiments";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 import { isArchived } from "helper/formatters";
 
 const request = {

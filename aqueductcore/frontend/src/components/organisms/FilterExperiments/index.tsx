@@ -3,9 +3,9 @@ import { Grid, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
+import { useGetAllTags } from "API/graphql/queries/experiments/getAllTags";
 import { DateRangePicker } from "components/molecules/DateRangePicker";
 import { ExperimentFiltersType, TagType } from "types/globalTypes";
-import { useGetAllTags } from "API/graphql/queries/getAllTags";
 import { FilterTags } from "components/molecules/FilterTags";
 import { SearchBar } from "components/molecules/SearchBar";
 

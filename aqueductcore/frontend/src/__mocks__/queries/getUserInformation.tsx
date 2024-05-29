@@ -1,4 +1,4 @@
-import { GET_CURRENT_USER_INFO } from "API/graphql/queries/getUserInformation";
+import { GET_CURRENT_USER_INFO } from "API/graphql/queries/users/getUserInformation";
 
 const request = {
     query: GET_CURRENT_USER_INFO,
