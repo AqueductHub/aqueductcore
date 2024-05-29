@@ -10,7 +10,6 @@ from packaging.version import Version
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aqueductcore import __version__
 from aqueductcore.backend.models import orm
 from aqueductcore.cli.exporter import Exporter
 from aqueductcore.cli.models import AqueductData, Experiment, Tag

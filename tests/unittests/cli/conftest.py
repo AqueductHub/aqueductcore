@@ -45,8 +45,6 @@ def db_session():
 
         orm.Base.metadata.drop_all(sync_engine)
 
-    sync_engine.dispose()
-
 
 @contextmanager
 def temp_experiments(
@@ -69,8 +67,8 @@ def temp_experiments(
                     title=experiment.title,
                     eid=str(uuid4()),
                     description=experiment.description,
-                    created_at=datetime.now(),
-                    updated_at=datetime.now(),
+                    created_at=datetime.now().replace(microsecond=0),
+                    updated_at=datetime.now().replace(microsecond=0),
                     tags=[Tag(key=item.key, name=item.name) for item in experiment.tags],
                 )
                 metauser.experiments.append(new_experiment)
@@ -102,9 +100,11 @@ def temp_experiments(
                     with open(test_file_path, mode="wb") as file_writer:
                         file_writer.write(test_data)
                     total_size += test_file_size
-
+            db_session.add(db_user)
+            db_session.commit()
+            expected_metadata.users.append(metauser)
         tar_files_expected[Exporter.METADATA_FILENAME] = expected_metadata.model_dump_json(
             indent=2
         ).encode(encoding="utf-8")
-        db_session.commit()
+
         yield (expected_metadata, tar_files_expected, tmpdirname)

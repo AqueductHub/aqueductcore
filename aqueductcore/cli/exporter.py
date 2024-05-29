@@ -10,7 +10,6 @@ from typing import Any, Callable, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aqueductcore import __version__
 from aqueductcore.backend.models import orm
 from aqueductcore.cli.models import AqueductData, AqueductVariant, Experiment, Tag, User
 
@@ -23,8 +22,7 @@ class Exporter:
 
     @classmethod
     def export_experiments_metadata(
-        cls,
-        db_session: Session,
+        cls, db_session: Session, version: str, variant: AqueductVariant
     ) -> AqueductData:
         """Export instance data as an object.
 
@@ -39,7 +37,7 @@ class Exporter:
 
         result = db_session.execute(statement)
 
-        data = AqueductData(version=__version__, variant=AqueductVariant.CORE, users=[])
+        data = AqueductData(version=version, variant=variant, users=[])
         for user in result.unique().scalars().all():
             user_data = User(uuid=user.id, username=user.username, experiments=[])
             for experiment in user.experiments:

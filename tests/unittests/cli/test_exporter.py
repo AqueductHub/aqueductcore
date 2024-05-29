@@ -8,8 +8,10 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
+import aqueductcore
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.cli.exporter import Exporter
+from aqueductcore.cli.models import AqueductVariant
 from tests.unittests.cli.conftest import temp_experiments
 
 
@@ -17,7 +19,9 @@ def test_export_experiments_metadata(db_session: Session, experiments_data: List
 
     with temp_experiments(db_session=db_session, experiments_data=experiments_data) as mock_data:
         expected_metadata, _, _ = mock_data
-        metadata = Exporter.export_experiments_metadata(db_session=db_session)
+        metadata = Exporter.export_experiments_metadata(
+            db_session=db_session, version=aqueductcore.__version__, variant=AqueductVariant.CORE
+        )
 
         assert expected_metadata == metadata
 
