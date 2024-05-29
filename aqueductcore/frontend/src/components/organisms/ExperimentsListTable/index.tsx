@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import Paper from "@mui/material/Paper";
 
-import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiments/removeTagFromExperiment";
-import { useAddTagToExperiment } from "API/graphql/mutations/experiments/addTagToExperiment";
+import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
+import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { FAVOURITE, experimentRecordsRowsPerPageOptions } from "constants/constants";
 import {
   ExperimentRecordsColumnsType,

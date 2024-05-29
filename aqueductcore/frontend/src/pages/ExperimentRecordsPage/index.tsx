@@ -3,7 +3,7 @@ import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
-import { useGetAllExperiments } from "API/graphql/queries/experiments/getAllExperiments";
+import { useGetAllExperiments } from "API/graphql/queries/experiment/getAllExperiments";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";

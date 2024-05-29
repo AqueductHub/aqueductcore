@@ -1,4 +1,4 @@
-import { REMOVE_EXPERIMENT } from "API/graphql/mutations/experiments/removeExperiment";
+import { REMOVE_EXPERIMENT } from "API/graphql/mutations/experiment/removeExperiment";
 import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
 
 export const removeExperiment_mock = {

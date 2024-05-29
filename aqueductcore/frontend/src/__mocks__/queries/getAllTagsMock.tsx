@@ -1,4 +1,4 @@
-import { GET_ALL_TAGS } from "API/graphql/queries/experiments/getAllTags";
+import { GET_ALL_TAGS } from "API/graphql/queries/experiment/getAllTags";
 import { tagOptions } from "__mocks__/ExperimentDataMock";
 
 const request = {

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiments/getAllExperiments";
+import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 

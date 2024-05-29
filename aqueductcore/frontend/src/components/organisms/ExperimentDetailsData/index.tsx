@@ -1,10 +1,10 @@
 import { Box, Chip, Grid, List, ListItem, Typography, styled } from "@mui/material"
-import { useGetAllTags } from "API/graphql/queries/experiments/getAllTags";
+import { useGetAllTags } from "API/graphql/queries/experiment/getAllTags";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiments/removeTagFromExperiment";
-import { useAddTagToExperiment } from "API/graphql/mutations/experiments/addTagToExperiment";
+import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
+import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { dateFormatter, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";

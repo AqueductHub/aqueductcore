@@ -1,7 +1,7 @@
 import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@mui/material";
 
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { useGetExperimentFilesById } from "API/graphql/queries/experiments/getExperimentFilesById";
+import { useGetExperimentFilesById } from "API/graphql/queries/experiment/getExperimentFilesById";
 import { PluginFieldBase } from "types/globalTypes";
 
 const FileInput = styled(TextField)`

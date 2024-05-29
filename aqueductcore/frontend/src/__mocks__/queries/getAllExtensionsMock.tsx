@@ -1,4 +1,4 @@
-import { GET_ALL_EXTENSIONS_NAME } from "API/graphql/queries/extensions/getAllExtensions";
+import { GET_ALL_EXTENSIONS_NAME } from "API/graphql/queries/extension/getAllExtensions";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 
 const request = {

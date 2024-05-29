@@ -1,4 +1,4 @@
-import { GET_EXPERIMENT_BY_ID } from "API/graphql/queries/experiments/getExperimentById";
+import { GET_EXPERIMENT_BY_ID } from "API/graphql/queries/experiment/getExperimentById";
 import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 
 export const selected_experiment = ExperimentDataMock[0]
