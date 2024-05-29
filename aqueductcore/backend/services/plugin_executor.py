@@ -4,25 +4,21 @@ Depending on execution context, plugins may be implement in any language if they
 can read environment variables and print to stdout.
 """
 
-import os
 import logging
-import venv
+import os
 import subprocess
+import venv
 from pathlib import Path
 from typing import List
 
-from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.models.plugin import (
-    Plugin,
-    PluginExecutionResult,
-)
-from aqueductcore.backend.settings import settings
+from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.models.plugin import Plugin, PluginExecutionResult
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_alias,
 )
-
+from aqueductcore.backend.settings import settings
 
 VENV_FOLDER = ".aqueduct-plugin-venv"
 PYTHON_BINARY = "bin/python"
@@ -49,17 +45,17 @@ class PluginExecutor:
                 except AQDValidationError as err:
                     logging.error(err)
                     # TODO: raise again here?
-        return result
+        return sorted(result, key=lambda plugin: plugin.name)
 
     @classmethod
     def get_plugin(cls, plugin: str) -> Plugin:
         """Returns plugin instance given its name.
-        
+
         Args:
             plugin: plugin name.
 
         Returns:
-            Plugin instance. 
+            Plugin instance.
         """
         plugins = [p for p in cls.list_plugins() if p.name == plugin]
         if len(plugins) != 1:
@@ -68,7 +64,7 @@ class PluginExecutor:
 
     @classmethod
     def is_venv_present(cls, plugin: str) -> bool:
-        """ Checks if inside plugin folder there is a venv folder
+        """Checks if inside plugin folder there is a venv folder
 
         Args:
             plugin: plugin name
@@ -86,7 +82,7 @@ class PluginExecutor:
 
     @classmethod
     def create_venv_python_if_not_present(cls, plugin: str) -> Path:
-        """ If virtual environment is not present in plugin folder,
+        """If virtual environment is not present in plugin folder,
         it is created and requirements are installed. The method
         returns python executable inside this venv.
 
@@ -110,7 +106,7 @@ class PluginExecutor:
 
     @classmethod
     def try_install_requirements_txt(cls, plugin: str, python: Path) -> bool:
-        """ Checks in requirements.txt file is present, and
+        """Checks in requirements.txt file is present, and
         installs requirements into a virtual environment.
 
         Args:
@@ -134,7 +130,7 @@ class PluginExecutor:
 
     @classmethod
     def try_install_pyproject_toml(cls, plugin: str, python: Path) -> bool:
-        """ Checks in pyproject.toml file is present, and
+        """Checks in pyproject.toml file is present, and
         installs a plugin folder as a python module into a virtual environment.
 
         Args:
@@ -194,9 +190,7 @@ class PluginExecutor:
         log_filename: name of the log file to which data is saved.
         """
         experiment = await get_experiment_by_alias(
-            user_info=context.user_info,
-            db_session=context.db_session,
-            alias=experiment_id
+            user_info=context.user_info, db_session=context.db_session, alias=experiment_id
         )
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment.id

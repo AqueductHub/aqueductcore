@@ -6,7 +6,7 @@ import tarfile
 from datetime import datetime
 from io import BytesIO
 from tempfile import TemporaryDirectory
-from typing import Dict, List
+from typing import List
 from uuid import uuid4
 
 from sqlalchemy import select
