@@ -47,7 +47,7 @@ export type GET_ALL_TAGS_TYPE = {
   };
 };
 
-export type GET_ALL_PLUGINS_TYPE = {
+export type GET_ALL_EXTENSIONS_TYPE = {
   plugins: {
     authors: PluginInfo["authors"];
     description: PluginInfo["description"];

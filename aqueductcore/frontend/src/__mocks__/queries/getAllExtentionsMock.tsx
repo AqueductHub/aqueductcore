@@ -1,10 +1,10 @@
-import { GET_ALL_PLUGINS } from "API/graphql/queries/getAllPlugins";
+import { GET_ALL_EXTENTIONS } from "API/graphql/queries/getAllExtentions";
 
 const request = {
-  query: GET_ALL_PLUGINS,
+  query: GET_ALL_EXTENTIONS,
 };
 
-export const getAllPlugins_mock = {
+export const getAllExtension_mock = {
   success: {
     request,
     result: {
