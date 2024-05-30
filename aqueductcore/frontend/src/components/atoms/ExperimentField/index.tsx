@@ -9,7 +9,6 @@ const ExperimentBox = styled(Box)`
   width: calc(100% - ${(props) => props.theme.spacing(1)});
   border-radius: ${(props) => props.theme.spacing(0.5)};
   padding: ${(props) => props.theme.spacing(1)};
-  background-color: #f4f4f4;
 `;
 
 const ExperimentTitle = styled(Typography)`

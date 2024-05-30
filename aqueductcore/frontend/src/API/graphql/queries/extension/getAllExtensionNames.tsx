@@ -1,8 +1,8 @@
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 
-import { GET_ALL_EXTENSIONS_NAME_TYPE } from "types/globalTypes";
+import { GET_ALL_EXTENSIONS_TYPE } from "types/globalTypes";
 
-export const GET_ALL_EXTENSION_NAMES = gql`
+export const GET_ALL_EXTENSIONS = gql`
   query getAllPlugins {
     plugins {
         name
@@ -26,8 +26,8 @@ export const GET_ALL_EXTENSION_NAMES = gql`
 `;
 
 export function useGetAllExtensions(options?: QueryHookOptions) {
-  const extensionNames = useQuery<GET_ALL_EXTENSIONS_NAME_TYPE>(GET_ALL_EXTENSION_NAMES, {
+  const extensions = useQuery<GET_ALL_EXTENSIONS_TYPE>(GET_ALL_EXTENSIONS, {
     ...options
   });
-  return extensionNames;
+  return extensions;
 }
