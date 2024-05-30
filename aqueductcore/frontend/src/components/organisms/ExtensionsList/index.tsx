@@ -27,7 +27,6 @@ function ExtensionsList() {
 
     const handleClick = (option: string) => {
         setSelectedExtension(option)
-        console.info(`You clicked ${option}`);
         handleOpenExtensionModal()
         setOpen(false);
     };

@@ -1,4 +1,4 @@
-import { Box, Select, Grid, styled, MenuItem } from "@mui/material";
+import { Box, Select, Grid, styled, MenuItem, SelectProps } from "@mui/material";
 
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
 import { PluginFieldBase } from "types/globalTypes";
@@ -10,7 +10,7 @@ const DropDown = styled(Select)`
   border-color: ${({ theme }) => theme.palette.neutral.main};
 `;
 
-interface SelectProps extends PluginFieldBase {
+interface SelectFieldProps extends PluginFieldBase {
   options: string[];
   selectFieldProps?: SelectProps
 }
@@ -21,7 +21,7 @@ export function SelectField({
   description,
   options,
   selectFieldProps
-}: SelectProps) {
+}: SelectFieldProps) {
 
   return (
     <Box>

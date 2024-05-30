@@ -6,6 +6,21 @@ export const GET_ALL_EXTENSIONS_NAME = gql`
   query getAllPlugins {
     plugins {
         name
+        authors
+        description
+        functions {
+            description
+            experimentVariableName
+            name
+            parameters {
+                dataType
+                defaultValue
+                description
+                displayName
+                name
+                options
+            }
+        }
     }
   }
 `;

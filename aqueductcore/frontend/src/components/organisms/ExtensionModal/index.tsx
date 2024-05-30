@@ -1,9 +1,11 @@
-import { Box, Button, Grid, Modal, Typography, styled } from "@mui/material"
+import { Box, Grid, Modal, Typography, styled } from "@mui/material";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { CheckboxField } from "components/atoms/CheckboxField";
-import { ExperimentField } from "components/atoms/ExperimentField";
-import { TextAreaField } from "components/atoms/TextAreaField";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
+import FunctionForm from "components/molecules/FunctionForm";
+
+import { extensions } from "__mocks__/ExtensionsDataMock";
+import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
+import { useState } from "react";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -50,25 +52,24 @@ const ModalStepGrid = styled(Grid)`
     height: 100%;
     background-color: white;
     height: 560px;
-    padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
     position: relative;
 `;
 
-const ModalFooter = styled(Box)`
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
-`;
 
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
+
+    const selectedExtensionItem: ExtensionType | undefined = extensions.find(extension => extension.name == selectedExtension);
+    
+    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(selectedExtensionItem?.functions[0]);
+
+    const updateSelectedFunctionHandler = (option: string) => {
+        setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
+    };
+
     return (
         <Modal
             open={isOpen}
             onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
         >
             <ModalContainer>
                 <ModalHeader>
@@ -77,37 +78,10 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                 </ModalHeader>
                 <Grid container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtentionFunctions />
+                        <ExtentionFunctions extension={selectedExtensionItem} selectedFunction={selectedFunction} updateSelectedFunction={updateSelectedFunctionHandler} />
                     </ModalOptionsGrid>
                     <ModalStepGrid item xs={8}>
-                        <ExperimentField
-                            title="Experiment"
-                            field="experiment_eid"
-                            description="Experiment to run this extension on"
-                            experiment_title="Quantum Memory - Rotated Planar"
-                            experiment_alias="03062024-3"
-                        />
-                        <TextAreaField
-                            title="Output File"
-                            field="output_file"
-                            description="Destination for the file output within this Experiment after extension is run. This field should include the file extension, if required."
-                            textareaFieldProps={{
-                                defaultValue: "output.stim"
-                            }}
-                        />
-                        <CheckboxField
-                            title="Enable Debugging"
-                            field="debugging"
-                            description="If debugging is enabled, logs from Qiskit will be appended to the file automatically. Note that this can decrease performance."
-                            checkboxFieldProps={{
-                                defaultChecked: true
-                            }}
-                        />
-                        <ModalFooter>
-                            <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                                <Button size="small" variant="contained">Run Extention</Button>
-                            </Box>
-                        </ModalFooter>
+                        <FunctionForm selectedFunction={selectedFunction} />
                     </ModalStepGrid>
                 </Grid>
             </ModalContainer>
