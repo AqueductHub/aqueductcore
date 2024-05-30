@@ -5,7 +5,7 @@ import { CheckboxField } from "components/atoms/CheckboxField";
 import { TextAreaField } from "components/atoms/TextAreaField";
 import { IntegerField } from "components/atoms/IntegerField";
 import { SelectField } from "components/atoms/SelectField";
-import { ExtensionFunctionType } from "types/globalTypes";
+import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
 
 
@@ -25,12 +25,16 @@ const FunctionsForm = styled(Box)`
     `;
 
 interface FunctionFormProps {
+    selectedExtension?: ExtensionType;
     selectedFunction?: ExtensionFunctionType;
 }
 
 function FunctionForm ({
+    selectedExtension,
     selectedFunction,
 }: FunctionFormProps) {
+
+    console.log(selectedExtension);
 
     return (
         <>
@@ -73,6 +77,7 @@ function FunctionForm ({
                                 title={parameterInfo?.displayName || ""}
                                 description={parameterInfo?.description || ""}
                                 field={parameterInfo.name}
+                                // TODO: update logic to set experiment_title and experiment_alias from query
                                 experiment_title="Quantum Teleportation: Entangled Particle Communication"
                                 experiment_alias="20240502-1"
                             />

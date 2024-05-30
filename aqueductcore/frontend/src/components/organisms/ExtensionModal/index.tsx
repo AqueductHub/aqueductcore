@@ -32,6 +32,12 @@ const ModalHeader = styled(Box)`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
 `;
 
+const HeaderIcon = styled(AutoAwesomeIcon)`
+    display: inline;
+    font-size: 1.5rem;
+    vertical-align: middle;
+`;
+
 const ExtentionName = styled(Typography)`
     line-height: 3.25rem;
     font-size: 1.1rem;
@@ -72,7 +78,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         >
             <ModalContainer>
                 <ModalHeader>
-                    <AutoAwesomeIcon sx={{ display: "inline", fontSize: "1.5rem", verticalAlign: "middle" }} />
+                    <HeaderIcon />
                     <ExtentionName>{selectedExtension}</ExtentionName>
                 </ModalHeader>
                 <Grid container>
