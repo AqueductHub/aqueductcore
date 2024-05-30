@@ -30,7 +30,7 @@ interface FunctionFormProps {
     selectedFunction?: ExtensionFunctionType;
 }
 
-function FunctionForm ({
+function FunctionForm({
     selectedExtension,
     selectedFunction,
 }: FunctionFormProps) {
@@ -40,94 +40,94 @@ function FunctionForm ({
     return (
         <>
             <FunctionsForm>
-                <Box sx={{pt: 1.5, pb: 2}}>
-                {selectedFunction?.parameters.map(parameterInfo => (
-                    <Box key={parameterInfo.name}>
-                        {parameterInfo.dataType == "str" && <>
-                            <TextAreaField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                textareaFieldProps={{
-                                    defaultValue: parameterInfo.defaultValue || ""
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "int" && <>
-                            <IntegerField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                integerFieldProps={{
-                                    defaultValue: parameterInfo.defaultValue || ""
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "float" && <>
-                            <FloatField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                floatFieldProps={{
-                                    defaultValue: parameterInfo.defaultValue || ""
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "experiment" && <>
-                            <ExperimentField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                // TODO: update logic to set experiment_title and experiment_alias from query
-                                experiment_title="Quantum Teleportation: Entangled Particle Communication"
-                                experiment_alias="20240502-1"
-                            />
-                        </>}
-                        {parameterInfo.dataType == "textarea" && <>
-                            <TextAreaField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                textareaFieldProps={{
-                                    defaultValue: parameterInfo.defaultValue || ""
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "bool" && <>
-                            <CheckboxField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                checkboxFieldProps={{
-                                    defaultChecked: parameterInfo.defaultValue == "1"
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "select" && <>
-                            <SelectField
-                                title={parameterInfo?.displayName || ""}
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                                options={parameterInfo.options || []}
-                                selectFieldProps={{
-                                    defaultValue: parameterInfo?.defaultValue
-                                }}
-                            />
-                        </>}
-                        {parameterInfo.dataType == "file" && <>
-                            <FileField
-                                title={parameterInfo?.displayName || ""}
-                                experimentIdentifier="20240502-1"
-                                description={parameterInfo?.description || ""}
-                                field={parameterInfo.name}
-                            />
-                        </>}
-                    </Box>
-                ))}
+                <Box sx={{ pt: 1.5, pb: 2 }}>
+                    {selectedFunction?.parameters.map(parameterInfo => (
+                        <Box key={parameterInfo.name}>
+                            {parameterInfo.dataType == "str" && <>
+                                <TextAreaField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    textareaFieldProps={{
+                                        defaultValue: parameterInfo.defaultValue || ""
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "int" && <>
+                                <IntegerField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    integerFieldProps={{
+                                        defaultValue: parameterInfo.defaultValue || ""
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "float" && <>
+                                <FloatField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    floatFieldProps={{
+                                        defaultValue: parameterInfo.defaultValue || ""
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "experiment" && <>
+                                <ExperimentField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    // TODO: update logic to set experiment_title and experiment_alias from query
+                                    experiment_title="Quantum Teleportation: Entangled Particle Communication"
+                                    experiment_alias="20240502-1"
+                                />
+                            </>}
+                            {parameterInfo.dataType == "textarea" && <>
+                                <TextAreaField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    textareaFieldProps={{
+                                        defaultValue: parameterInfo.defaultValue || ""
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "bool" && <>
+                                <CheckboxField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    checkboxFieldProps={{
+                                        defaultChecked: parameterInfo.defaultValue == "1"
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "select" && <>
+                                <SelectField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    options={parameterInfo.options || []}
+                                    selectFieldProps={{
+                                        defaultValue: parameterInfo?.defaultValue
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == "file" && <>
+                                <FileField
+                                    title={parameterInfo?.displayName || ""}
+                                    experimentIdentifier="20240502-1"
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                />
+                            </>}
+                        </Box>
+                    ))}
                 </Box>
             </FunctionsForm>
             <ModalFooter>
-                <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button size="small" variant="contained">Run Extention</Button>
                 </Box>
             </ModalFooter>
