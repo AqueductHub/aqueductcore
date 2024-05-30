@@ -1,8 +1,8 @@
-import { GET_ALL_EXTENSIONS_NAME } from "API/graphql/queries/extension/getAllExtensions";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
+import { GET_ALL_EXTENSION_NAMES } from "API/graphql/queries/getAllExtensionNames";
 
 const request = {
-    query: GET_ALL_EXTENSIONS_NAME,
+    query: GET_ALL_EXTENSION_NAMES,
 };
 
 export const getAllExtensionNames_mock = {

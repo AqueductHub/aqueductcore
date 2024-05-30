@@ -1,11 +1,11 @@
 import { Box, Grid, Modal, Typography, styled } from "@mui/material";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import ExtentionFunctions from "components/molecules/ExtentionFunctions";
-import FunctionForm from "components/molecules/FunctionForm";
-
-import { extensions } from "__mocks__/ExtensionsDataMock";
-import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import { useState } from "react";
+
+import ExtentionFunctions from "components/molecules/ExtentionFunctions";
+import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
+import FunctionForm from "components/molecules/FunctionForm";
+import { extensions } from "__mocks__/ExtensionsDataMock";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -25,15 +25,15 @@ const ModalContainer = styled(Box)`
 `;
 
 const ModalHeader = styled(Box)`
-    background-color: #e7e7e7;
+    background-color: ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1)} 0 0;
-    line-height: 52px;
-    border-bottom: 1px solid #BBBBBB;
+    line-height: 3.25rem;
+    border-bottom: 1px solid ${({ theme }) => theme.palette.grey[400]};
     padding: 0 ${(props) => props.theme.spacing(1.5)};
 `;
 
 const ExtentionName = styled(Typography)`
-    line-height: 52px;
+    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
     margin-left: ${(props) => props.theme.spacing(1.2)};
@@ -41,17 +41,16 @@ const ExtentionName = styled(Typography)`
 
 
 const ModalOptionsGrid = styled(Grid)`
-    height: 560px;
-    background-color: #f5f5f5;
+    height: 620px;
+    background-color: ${({ theme }) => theme.palette.grey[200]};
     border-right: 1px solid rgba(0,0,0,0.3);
     padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
 `;
 
 
 const ModalStepGrid = styled(Grid)`
-    height: 100%;
-    background-color: white;
-    height: 560px;
+    background-color: ${(props) => props.theme.palette.common.white};
+    height: 620px;
     position: relative;
 `;
 
@@ -60,7 +59,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
 
     const selectedExtensionItem: ExtensionType | undefined = extensions.find(extension => extension.name == selectedExtension);
     
-    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(selectedExtensionItem?.functions[0]);
+    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>();
 
     const updateSelectedFunctionHandler = (option: string) => {
         setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));

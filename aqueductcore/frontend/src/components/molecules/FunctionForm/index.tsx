@@ -1,24 +1,25 @@
 import { Box, Button, styled } from "@mui/material";
-import { CheckboxField } from "components/atoms/CheckboxField";
+
 import { ExperimentField } from "components/atoms/ExperimentField";
-import { FloatField } from "components/atoms/FloatField";
+import { CheckboxField } from "components/atoms/CheckboxField";
+import { TextAreaField } from "components/atoms/TextAreaField";
 import { IntegerField } from "components/atoms/IntegerField";
 import { SelectField } from "components/atoms/SelectField";
-
-import { TextAreaField } from "components/atoms/TextAreaField";
 import { ExtensionFunctionType } from "types/globalTypes";
+import { FloatField } from "components/atoms/FloatField";
+
 
 const ModalFooter = styled(Box)`
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    border-top: 1px solid #CCCCCC;
+    border-top: 1px solid ${({ theme }) => theme.palette.grey[400]};
     padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
 `;
 
 const FunctionsForm = styled(Box)`
-    height: 497px;
+    height: 557px;
     padding: 0 ${(props) => props.theme.spacing(1)};
     overflow-y: auto;
     `;
@@ -30,8 +31,6 @@ interface FunctionFormProps {
 function FunctionForm ({
     selectedFunction,
 }: FunctionFormProps) {
-
-    // const currentFunction = extension?.functions.find(item => item.name == selectedFunction);
 
     return (
         <>

@@ -5,10 +5,10 @@ import { PluginFieldBase } from "types/globalTypes";
 
 const ExperimentBox = styled(Box)`
   border: 1px solid ${({ theme }) => theme.palette.neutral.main};
-  border-radius: ${(props) => props.theme.spacing(0.5)};
+  background-color: ${({ theme }) => theme.palette.grey[200]};;
   width: calc(100% - ${(props) => props.theme.spacing(1)});
+  border-radius: ${(props) => props.theme.spacing(0.5)};
   padding: ${(props) => props.theme.spacing(1)};
-  background-color: #f4f4f4;
 `;
 
 const ExperimentTitle = styled(Typography)`

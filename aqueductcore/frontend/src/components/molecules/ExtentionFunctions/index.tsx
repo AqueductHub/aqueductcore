@@ -1,11 +1,11 @@
 import { Box, FormControl, FormControlLabel, Grid, Radio, RadioGroup, Typography, styled } from "@mui/material"
+
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 
 const ExtentionFunctionBox = styled(Box)`
     width: 100%;
-    border: 1px solid #E0E0E0;
+    border: 1px solid ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)};
-    margin-top: ${(props) => props.theme.spacing(2.5)};
 `;
 
 const ExtentionDescription = styled(Typography)`
@@ -18,8 +18,8 @@ const HiddenRadio = styled(Radio)`
 
 const FunctionHeader = styled(Grid)`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
-    background-color: #efefef;
-    border-bottom: 1px solid #E0E0E0;
+    background-color: ${({ theme }) => theme.palette.grey[500]};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)} 0 0;
     &:after{clear: both;display: block;content: "";}
 `;
@@ -37,19 +37,19 @@ const FunctionsFormControl = styled(FormControl)`
 const FunctionName = styled(Typography)`
     font-size: 0.9rem;
     font-weight: bold;
-    line-height: 36px;
+    line-height: 2.37rem;
     float: left;
 `;
 
 const FunctionCheckbox = styled(Box)`
     float: right;
-    line-height: 36px;
+    line-height: 2.37rem;
 `;
 
 const FunctionDescription = styled(Typography)`
     font-size: 0.8rem;
     padding: ${(props) => props.theme.spacing(0.75)} ${(props) => props.theme.spacing(1.5)};
-    background-color: #FFFFFF;
+    background-color: ${(props) => props.theme.palette.common.white};
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 
@@ -78,7 +78,7 @@ function ExtentionFunctions({
                     onChange={handleSelectedFunctionChange}
                 >
                     {extension?.functions.map(functionInfo => (
-                        <FormControlLabel key={functionInfo.name} value={functionInfo.name} control={<HiddenRadio />} label={
+                        <FormControlLabel sx={{mt: 2.5}} key={functionInfo.name} value={functionInfo.name} control={<HiddenRadio />} label={
                             <ExtentionFunctionBox>
                                 <FunctionHeader style={{ backgroundColor: selectedFunction?.name == functionInfo.name ? "#3dcbda" : "transparent" }}>
                                     <FunctionName>{functionInfo.name}</FunctionName>
