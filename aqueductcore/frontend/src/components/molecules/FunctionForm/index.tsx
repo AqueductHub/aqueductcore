@@ -41,7 +41,7 @@ function FunctionForm ({
             <FunctionsForm>
                 <Box sx={{pt: 1.5, pb: 2}}>
                 {selectedFunction?.parameters.map(parameterInfo => (
-                    <>
+                    <Box key={parameterInfo.name}>
                         {parameterInfo.dataType == "str" && <>
                             <TextAreaField
                                 title={parameterInfo?.displayName || ""}
@@ -108,9 +108,12 @@ function FunctionForm ({
                                 description={parameterInfo?.description || ""}
                                 field={parameterInfo.name}
                                 options={parameterInfo.options || []}
+                                selectFieldProps={{
+                                    defaultValue: parameterInfo?.defaultValue
+                                }}
                             />
                         </>}
-                    </>
+                    </Box>
                 ))}
                 </Box>
             </FunctionsForm>

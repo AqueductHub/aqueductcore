@@ -1,5 +1,7 @@
 import { Box, Grid, Modal, Typography, styled } from "@mui/material";
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CloseIcon from '@mui/icons-material/Close';
 import { useState } from "react";
 
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
@@ -24,12 +26,12 @@ const ModalContainer = styled(Box)`
     border-radius: ${(props) => props.theme.spacing(1)};
 `;
 
-const ModalHeader = styled(Box)`
+const ModalHeader = styled(Grid)`
     background-color: ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1)} 0 0;
     line-height: 3.25rem;
     border-bottom: 1px solid ${({ theme }) => theme.palette.grey[400]};
-    padding: 0 ${(props) => props.theme.spacing(1.5)};
+    padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
 const HeaderIcon = styled(AutoAwesomeIcon)`
@@ -42,9 +44,23 @@ const ExtentionName = styled(Typography)`
     line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
-    margin-left: ${(props) => props.theme.spacing(1.2)};
 `;
 
+const HeaderRightIcon = styled(ChevronRightIcon)`
+    font-size: 3.25rem;
+    line-height: 3.25rem;
+    vertical-align: top;
+    padding: ${(props) => props.theme.spacing(1.25)};
+    margin: 0 ${(props) => props.theme.spacing(-0.5)};
+`;
+
+const AuthorName = styled(Typography)`
+    line-height: 3.25rem;
+    font-size: 1.1rem;
+    display: inline;
+    font-weight: bold;
+    margin-left: ${(props) => props.theme.spacing(1.5)};
+`;
 
 const ModalOptionsGrid = styled(Grid)`
     height: 620px;
@@ -65,7 +81,10 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
 
     const selectedExtensionItem: ExtensionType | undefined = extensions.find(extension => extension.name == selectedExtension);
     
-    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>();
+    // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
+
+    const defaultFunctionOption: ExtensionFunctionType | undefined = selectedExtensionItem?.functions[0];
+    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(defaultFunctionOption);
 
     const updateSelectedFunctionHandler = (option: string) => {
         setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
@@ -77,13 +96,29 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
             onClose={handleClose}
         >
             <ModalContainer>
-                <ModalHeader>
-                    <HeaderIcon />
-                    <ExtentionName>{selectedExtension}</ExtentionName>
+                <ModalHeader
+                    container
+                    sx={{
+                        justifyContent: "space-between"
+                    }}
+                >
+                    <Grid item>
+                        <HeaderIcon />
+                        <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
+                        <HeaderRightIcon />
+                        <ExtentionName>{selectedExtension}</ExtentionName>
+                    </Grid>
+                    <Grid item>
+                        <CloseIcon onClick={handleClose} sx={{cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle"}} />
+                    </Grid>
                 </ModalHeader>
                 <Grid container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtentionFunctions extension={selectedExtensionItem} selectedFunction={selectedFunction} updateSelectedFunction={updateSelectedFunctionHandler} />
+                        <ExtentionFunctions
+                            extension={selectedExtensionItem}
+                            selectedFunction={selectedFunction}
+                            updateSelectedFunction={updateSelectedFunctionHandler}
+                        />
                     </ModalOptionsGrid>
                     <ModalStepGrid item xs={8}>
                         <FunctionForm selectedFunction={selectedFunction} />

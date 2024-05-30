@@ -1,5 +1,4 @@
 import { Box, FormControl, FormControlLabel, Grid, Radio, RadioGroup, Typography, styled } from "@mui/material"
-import { useEffect } from "react";
 
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 
@@ -69,10 +68,6 @@ function ExtentionFunctions({
     const handleSelectedFunctionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         updateSelectedFunction(event.target.value);
     };
-
-    useEffect(() => {
-        updateSelectedFunction(extension?.functions[0].name || "");
-    }, [selectedFunction]);
 
     return (
         <>
