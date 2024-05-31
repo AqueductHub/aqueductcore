@@ -1,13 +1,14 @@
 import { Box, Chip, Grid, List, ListItem, Typography, styled } from "@mui/material"
-import { useGetAllTags } from "API/graphql/queries/getAllTags";
-import { EditTags } from "components/molecules/EditTags";
-import { MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
-import { dateFormatter, removeFavouriteAndArchivedTag } from "helper/formatters";
-import { useState } from "react";
+import { useGetAllTags } from "API/graphql/queries/experiment/getAllTags";
 import toast from "react-hot-toast";
+import { useState } from "react";
+
+import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
+import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
+import { dateFormatter, removeFavouriteAndArchivedTag } from "helper/formatters";
 import { ExperimentDataType, TagType } from "types/globalTypes";
-import { useAddTagToExperiment } from "API/graphql/mutations/Experiment/addTagToExperiment";
-import { useRemoveTagFromExperiment } from "API/graphql/mutations/Experiment/removeTagFromExperiment";
+import { MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
+import { EditTags } from "components/molecules/EditTags";
 
 const ExperimentDetailsTitle = styled(Typography)`
   font-weight: 400;

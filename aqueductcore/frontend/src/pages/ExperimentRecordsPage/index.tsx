@@ -3,9 +3,9 @@ import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
+import { useGetAllExperiments } from "API/graphql/queries/experiment/getAllExperiments";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
-import { useGetAllExperiments } from "API/graphql/queries/getAllExperiments";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";
 import FilterExperiments from "components/organisms/FilterExperiments";
 import { useDidUpdateEffect } from "helper/functions";

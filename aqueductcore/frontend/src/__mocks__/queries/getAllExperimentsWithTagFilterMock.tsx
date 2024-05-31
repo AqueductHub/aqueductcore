@@ -1,4 +1,4 @@
-import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/getAllExperiments";
+import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
 import { ExperimentDataMock, tagOptions } from "__mocks__/ExperimentDataMock";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 

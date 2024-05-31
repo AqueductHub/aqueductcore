@@ -1,8 +1,8 @@
 import Attachments from "components/organisms/Attachments";
 import { Box, styled } from "@mui/material";
 
+import { useGetExperimentById } from "API/graphql/queries/experiment/getExperimentById";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
-import { useGetExperimentById } from "API/graphql/queries/getExperimentById";
 import ExperimentDetails from "components/organisms/ExperimentDetails";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";

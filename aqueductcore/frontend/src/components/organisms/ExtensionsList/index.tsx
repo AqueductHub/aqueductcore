@@ -10,7 +10,7 @@ import Grow from '@mui/material/Grow';
 import toast from 'react-hot-toast';
 
 import { BorderedButtonWithIcon } from 'components/atoms/sharedStyledComponents/BorderedButtonWithIcon';
-import { useGetAllExtensions } from 'API/graphql/queries/getAllExtensions';
+import { useGetAllExtensions } from 'API/graphql/queries/extension/getAllExtensions';
 import ExtensionModal from 'components/organisms/ExtensionModal';
 
 function ExtensionsList() {

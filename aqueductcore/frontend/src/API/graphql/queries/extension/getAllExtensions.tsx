@@ -11,8 +11,8 @@ export const GET_ALL_EXTENSIONS_NAME = gql`
 `;
 
 export function useGetAllExtensions(options?: QueryHookOptions) {
-  const extensions = useQuery<GET_ALL_EXTENSIONS_NAME_TYPE>(GET_ALL_EXTENSIONS_NAME, {
+  const extensionNames = useQuery<GET_ALL_EXTENSIONS_NAME_TYPE>(GET_ALL_EXTENSIONS_NAME, {
     ...options
   });
-  return extensions;
+  return extensionNames;
 }

@@ -1,4 +1,4 @@
-import { UPDATE_EXPERIMENT } from "API/graphql/mutations/Experiment/updateExperiment";
+import { UPDATE_EXPERIMENT } from "API/graphql/mutations/experiment/updateExperiment";
 import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 import { updatedTitle, updatedDescription } from "__mocks__/constants";
 

@@ -1,6 +1,6 @@
 import { ExtensionType } from "types/globalTypes";
 
-export const extensions: ExtensionType[] = [
+export const ExtensionsDataMock: ExtensionType[] = [
     {
         "name": "Dummy plugin",
         "description": "This plugin prints environment variables passed to it. No requests to Aqueduct sent.\n",

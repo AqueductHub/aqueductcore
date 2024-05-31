@@ -1,5 +1,6 @@
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
-import { GET_ALL_EXPERIMENTS__TYPE } from "types/globalTypes";
+
+import { GET_ALL_EXPERIMENTS_TYPE } from "types/globalTypes";
 
 export const GET_ALL_EXPERIMENTS = gql`
   query getAllExperiments($offset: Int!, $limit: Int!, $filters: ExperimentFiltersInput) {
@@ -19,7 +20,7 @@ export const GET_ALL_EXPERIMENTS = gql`
 `;
 
 export function useGetAllExperiments(options?: QueryHookOptions) {
-  const experiments = useQuery<GET_ALL_EXPERIMENTS__TYPE>(GET_ALL_EXPERIMENTS, {
+  const experiments = useQuery<GET_ALL_EXPERIMENTS_TYPE>(GET_ALL_EXPERIMENTS, {
     ...options
   });
   return experiments;
