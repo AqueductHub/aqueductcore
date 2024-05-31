@@ -1,13 +1,14 @@
-import { Box, Grid, Modal, Typography, styled } from "@mui/material";
+import { Box, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from "react";
 
+// import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
-import FunctionForm from "components/molecules/FunctionForm";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
+import FunctionForm from "components/molecules/FunctionForm";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -78,6 +79,17 @@ const ModalStepGrid = styled(Grid)`
 
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
+    // const { loading, mutate } = useExecuteExtension();
+
+    // function handleExecuteExtension() {
+    //     mutate({
+    //         variables: {
+    //             plugin: "Dummy plugin",
+    //             function: "echo",
+    //             params: [["var1", "abc"], ["var2", "111"], ["var3", "1.33e+03"], ["var4", "20240523-1"], ["var5", "some\\nmultiline"], ["var6", "TRUE"], ["var7", "string4"]]
+    //         },
+    //     })
+    // }
     const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
 
     // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
