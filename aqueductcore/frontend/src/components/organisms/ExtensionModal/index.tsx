@@ -1,13 +1,14 @@
-import { Box, Grid, Modal, Typography, styled } from "@mui/material"
+import { Box, Button, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
+import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
+import { functionInExtensionsType } from "types/componentTypes";
 import FunctionForm from "components/molecules/FunctionForm";
 
 interface ExtensionModalProps {
@@ -77,25 +78,44 @@ const ModalStepGrid = styled(Grid)`
     position: relative;
 `;
 
+const ModalFooter = styled(Box)`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-top: 1px solid ${({ theme }) => theme.palette.grey[400]};
+    padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
+`;
+
+
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
-    // const { loading, mutate } = useExecuteExtension();
-
-    // function handleExecuteExtension() {
-    //     mutate({
-    //         variables: {
-    //             plugin: "Dummy plugin",
-    //             function: "echo",
-    //             params: [["var1", "abc"], ["var2", "111"], ["var3", "1.33e+03"], ["var4", "20240523-1"], ["var5", "some\\nmultiline"], ["var6", "TRUE"], ["var7", "string4"]]
-    //         },
-    //     })
-    // }
     const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
 
     // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
 
     const defaultFunctionOption: ExtensionFunctionType | undefined = selectedExtensionItem?.functions[0];
     const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(defaultFunctionOption);
+
+    const { loading, mutate } = useExecuteExtension();
+    const [inputParams, setInputParams] = useState<Array<functionInExtensionsType>>()
+
+
+    //initiate input params when selected extension changes
+    useEffect(() => {
+        setInputParams(selectedFunction?.parameters.map(item => ({ name: item.name, value: item.defaultValue })))
+    }, [selectedExtension, selectedFunction])
+
+    function handleExecuteExtension() {
+        mutate({
+            variables: {
+                plugin: selectedExtension,
+                function: selectedFunction,
+                // params: [["var1", "abc"], ["var2", "111"], ["var3", "1.33e+03"], ["var4", "20240523-1"], ["var5", "some\\nmultiline"], ["var6", "TRUE"], ["var7", "string4"]]
+                params: inputParams
+            },
+        })
+    }
 
     const updateSelectedFunctionHandler = (option: string) => {
         setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
@@ -131,9 +151,14 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                             updateSelectedFunction={updateSelectedFunctionHandler}
                         />
                     </ModalOptionsGrid>
-                    <ModalStepGrid item xs={8}>
-                        <FunctionForm selectedFunction={selectedFunction} />
-                    </ModalStepGrid>
+                    {inputParams ? <ModalStepGrid item xs={8}>
+                        <FunctionForm selectedFunction={selectedFunction} inputParams={inputParams} setInputParams={setInputParams} />
+                    </ModalStepGrid> : null}
+                    <ModalFooter>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button size="small" variant="contained" onClick={() => handleExecuteExtension()}>{loading ? 'running' : 'Run Extention'}</Button>
+                        </Box>
+                    </ModalFooter>
                 </Grid>
             </ModalContainer>
         </Modal>

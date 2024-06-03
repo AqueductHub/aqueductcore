@@ -1,23 +1,14 @@
-import { Box, Button, styled } from "@mui/material";
+import { Box, styled } from "@mui/material";
 
+import { ExtensionFunctionType } from "types/globalTypes";
 import { ExperimentField } from "components/atoms/ExperimentField";
 import { CheckboxField } from "components/atoms/CheckboxField";
 import { TextAreaField } from "components/atoms/TextAreaField";
 import { IntegerField } from "components/atoms/IntegerField";
 import { SelectField } from "components/atoms/SelectField";
-import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
-import { FileField } from "components/atoms/FileField";
-
-
-const ModalFooter = styled(Box)`
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    border-top: 1px solid ${({ theme }) => theme.palette.grey[400]};
-    padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
-`;
+import { functionInExtensionsType } from "types/componentTypes";
+// import { MutationExecutePluginArgs } from "types/graphql/__GENERATED__/graphql";
 
 const FunctionsForm = styled(Box)`
     height: 557px;
@@ -26,17 +17,16 @@ const FunctionsForm = styled(Box)`
     `;
 
 interface FunctionFormProps {
-    selectedExtension?: ExtensionType;
     selectedFunction?: ExtensionFunctionType;
+    setInputParams: (inputParam: functionInExtensionsType[]) => void
+    inputParams: functionInExtensionsType[];
 }
 
 function FunctionForm({
-    selectedExtension,
     selectedFunction,
+    setInputParams,
+    inputParams
 }: FunctionFormProps) {
-
-    console.log(selectedExtension);
-
     return (
         <>
             <FunctionsForm>
@@ -49,7 +39,8 @@ function FunctionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     textareaFieldProps={{
-                                        defaultValue: parameterInfo.defaultValue || ""
+                                        value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
+                                        onChange: ((e) => setInputParams([...inputParams, { name: parameterInfo.name, value: e.target.value }]))
                                     }}
                                 />
                             </>}
@@ -59,7 +50,9 @@ function FunctionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     integerFieldProps={{
-                                        defaultValue: parameterInfo.defaultValue || ""
+                                        defaultValue: parameterInfo.defaultValue || "",
+                                        // eslint-disable-next-line
+                                        onChange: ((e) => setInputParams([...inputParams, { name: parameterInfo.name, value: e.target.value }]))
                                     }}
                                 />
                             </>}
@@ -69,7 +62,9 @@ function FunctionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     floatFieldProps={{
-                                        defaultValue: parameterInfo.defaultValue || ""
+                                        defaultValue: parameterInfo.defaultValue || "",
+                                        // eslint-disable-next-line
+                                        onChange: ((e) => setInputParams([...inputParams, { name: parameterInfo.name, value: e.target.value }]))
                                     }}
                                 />
                             </>}
@@ -89,7 +84,9 @@ function FunctionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     textareaFieldProps={{
-                                        defaultValue: parameterInfo.defaultValue || ""
+                                        defaultValue: parameterInfo.defaultValue || "",
+                                        // eslint-disable-next-line
+                                        onChange: ((e) => setInputParams([...inputParams, { name: parameterInfo.name, value: e.target.value }]))
                                     }}
                                 />
                             </>}
@@ -99,7 +96,9 @@ function FunctionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     checkboxFieldProps={{
-                                        defaultChecked: parameterInfo.defaultValue == "1"
+                                        defaultChecked: parameterInfo.defaultValue == "1",
+                                        // eslint-disable-next-line
+                                        onChange: ((e) => setInputParams([...inputParams, { name: parameterInfo.name, value: e.target.value }]))
                                     }}
                                 />
                             </>}
@@ -110,27 +109,16 @@ function FunctionForm({
                                     field={parameterInfo.name}
                                     options={parameterInfo.options || []}
                                     selectFieldProps={{
-                                        defaultValue: parameterInfo?.defaultValue
+                                        defaultValue: parameterInfo?.defaultValue,
+                                        // eslint-disable-next-line
+                                        // onChange: ((e) => setInputParams([{name: parameterInfo.name , value: e.target.value}]))
                                     }}
-                                />
-                            </>}
-                            {parameterInfo.dataType == "file" && <>
-                                <FileField
-                                    title={parameterInfo?.displayName || ""}
-                                    experimentIdentifier="20240502-1"
-                                    description={parameterInfo?.description || ""}
-                                    field={parameterInfo.name}
                                 />
                             </>}
                         </Box>
                     ))}
                 </Box>
             </FunctionsForm>
-            <ModalFooter>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button size="small" variant="contained">Run Extention</Button>
-                </Box>
-            </ModalFooter>
         </>
     );
 }

@@ -1,4 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
+import toast from "react-hot-toast";
 
 import { EXECUTE_EXTENSION_TYPE } from "types/globalTypes";
 
@@ -22,6 +23,9 @@ export function useExecuteExtension() {
   }>(EXECUTE_EXTENSION, {
     onError(error) {
       console.log("Execute Extension failed", error);
+      toast.error(error.message, {
+        id: "execution_error",
+      })
     }
   });
   return { mutate, loading, data, error };
