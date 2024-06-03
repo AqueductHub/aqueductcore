@@ -2,14 +2,17 @@ import { Box, Button, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
+import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
-import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
-import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
+import { ExtensionParameterDataTypes } from "constants/constants";
 import { functionInExtensionsType } from "types/componentTypes";
+import { formatExtensionParameters } from "helper/formatters";
 import FunctionForm from "components/molecules/FunctionForm";
+import { ExtensionFunctionType } from "types/globalTypes";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -90,37 +93,40 @@ const ModalFooter = styled(Box)`
 
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
-    const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
-
-    // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
-
-    const defaultFunctionOption: ExtensionFunctionType | undefined = selectedExtensionItem?.functions[0];
-    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(defaultFunctionOption);
-
+    const { experimentIdentifier } = useParams();
+    const { data } = useGetAllExtensions()
+    const extensions = data?.plugins
+    const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
+    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
     const [inputParams, setInputParams] = useState<Array<functionInExtensionsType>>()
 
-
     //initiate input params when selected extension changes
     useEffect(() => {
-        setInputParams(selectedFunction?.parameters.map(item => ({ name: item.name, value: item.defaultValue })))
+        setInputParams(selectedFunction?.parameters.map(
+            item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
+                ? { name: item.name, value: experimentIdentifier }
+                : { name: item.name, value: item.defaultValue }
+            ))
+        )
     }, [selectedExtension, selectedFunction])
 
+
     function handleExecuteExtension() {
-        mutate({
-            variables: {
-                plugin: selectedExtension,
-                function: selectedFunction,
-                // params: [["var1", "abc"], ["var2", "111"], ["var3", "1.33e+03"], ["var4", "20240523-1"], ["var5", "some\\nmultiline"], ["var6", "TRUE"], ["var7", "string4"]]
-                params: inputParams
-            },
-        })
+        if (selectedFunction) {
+            mutate({
+                variables: {
+                    plugin: selectedExtension,
+                    function: selectedFunction.name,
+                    params: formatExtensionParameters(inputParams)
+                },
+            })
+        }
     }
 
     const updateSelectedFunctionHandler = (option: string) => {
         setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
     };
-
     return (
         <Modal
             open={isOpen}
@@ -165,4 +171,4 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     )
 }
 
-export default ExtensionModal;
+export default ExtensionModal

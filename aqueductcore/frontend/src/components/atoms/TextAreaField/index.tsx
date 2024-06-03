@@ -1,7 +1,7 @@
 import { Box, Grid, TextareaAutosize, TextareaAutosizeProps, styled } from "@mui/material";
 
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { PluginFieldBase } from "types/globalTypes";
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const TextAreaInput = styled(TextareaAutosize)`
   resize: none;
@@ -24,7 +24,7 @@ const TextAreaInput = styled(TextareaAutosize)`
   }
 `;
 
-interface TextAreaFieldProps extends PluginFieldBase {
+interface TextAreaFieldProps extends ExtensionFieldBase {
   textareaFieldProps: TextareaAutosizeProps
 }
 

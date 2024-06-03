@@ -1,7 +1,7 @@
 import { Box, Grid, Typography, styled } from "@mui/material";
 
 import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { PluginFieldBase } from "types/globalTypes";
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const ExperimentBox = styled(Box)`
   border: 1px solid ${({ theme }) => theme.palette.neutral.main};
@@ -20,7 +20,7 @@ const ExperimentAlias = styled(Typography)`
   font-style: italic;
 `;
 
-interface ExperimentProps extends PluginFieldBase {
+interface ExperimentProps extends ExtensionFieldBase {
   experiment_title: string,
   experiment_alias: string,
 }
