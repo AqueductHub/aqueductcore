@@ -138,7 +138,11 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     return (
         <Modal
             open={isOpen}
-            onClose={handleClose}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick') {
+                    handleClose();
+                }
+            }}
         >
             <ModalContainer>
                 <ModalHeader
