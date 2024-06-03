@@ -1,5 +1,7 @@
 FROM python:3.10-slim-buster
 
+WORKDIR /app
+
 # expects docker build to be run from the root of the repository
 COPY containers/release-azure/entrypoint.sh ./
 COPY containers/release-azure/sshd_config /etc/ssh/
@@ -14,8 +16,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     echo "root:Docker!" | chpasswd && \
     chmod u+x ./entrypoint.sh
-
-WORKDIR /app
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir $(ls dist/*.whl)
