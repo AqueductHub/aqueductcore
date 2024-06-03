@@ -64,6 +64,7 @@ plugins:
 
 nav:
   - "index.md"
+  - "cli.md"
   - "setup.md"
   - "getting-started.md"
   - "Python Client": "https://aqueducthub.github.io/pyaqueduct/"
