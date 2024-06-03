@@ -4,15 +4,16 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
+import { EXECUTE_EXTENSION_TYPE, ExtensionFunctionType } from "types/globalTypes";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import { functionInExtensionsType } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import FunctionForm from "components/molecules/FunctionForm";
-import { ExtensionFunctionType } from "types/globalTypes";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -111,6 +112,12 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         )
     }, [selectedExtension, selectedFunction])
 
+    function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
+        console.log("after exec data", executeExtension)
+        handleClose()
+        toast.success("Execution Finished", { id: "exec_extension" })
+    }
+
 
     function handleExecuteExtension() {
         if (selectedFunction) {
@@ -120,6 +127,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     function: selectedFunction.name,
                     params: formatExtensionParameters(inputParams)
                 },
+                onCompleted: (data) => handleOnCompletedExtensionExecution(data.executePlugin)
             })
         }
     }

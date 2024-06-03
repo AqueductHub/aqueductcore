@@ -19,7 +19,7 @@ export const EXECUTE_EXTENSION = gql`
 
 export function useExecuteExtension() {
   const [mutate, { loading, data, error }] = useMutation<{
-    executeExtension: EXECUTE_EXTENSION_TYPE;
+    executePlugin: EXECUTE_EXTENSION_TYPE;
   }>(EXECUTE_EXTENSION, {
     onError(error) {
       console.log("Execute Extension failed", error);
