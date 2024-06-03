@@ -1,6 +1,6 @@
 import { Box, Select, Grid, styled, MenuItem, SelectProps } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { ExtensionFieldBase } from "types/globalTypes";
 
 const DropDown = styled(Select)`

@@ -3,7 +3,7 @@ import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 import { GET_ALL_EXTENSIONS_TYPE } from "types/globalTypes";
 
 export const GET_ALL_EXTENSIONS = gql`
-  query getAllPlugins {
+  query getAllExtensions {
     plugins {
         name
         authors
