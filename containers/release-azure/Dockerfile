@@ -1,8 +1,8 @@
 FROM python:3.10-slim-buster
 
 # expects docker build to be run from the root of the repository
-COPY containers/release/entrypoint.sh ./
-COPY containers/release/sshd_config /etc/ssh/
+COPY containers/release-azure/entrypoint.sh ./
+COPY containers/release-azure/sshd_config /etc/ssh/
 
 COPY dist ./dist
 COPY frontend_build ./frontend_build
