@@ -13,17 +13,19 @@ set -o pipefail
 
 tag="dev"
 push="false"
+docker_file=$PROJECT_ROOT/containers/release/Dockerfile
 
-while getopts "t:p:i:" flag
+while getopts "t:p:i:d:" flag
 do 
     case "${flag}" in
         t) tag=${OPTARG};;
         i) image_name=${OPTARG};;
         p) push=${OPTARG};;
+        d) docker_file=${OPTARG};;
     esac
 done
 
-mkdir build
+rm -rf build && mkdir build
 
 if [[ -z $(which poetry) ]]; then
 echo "Installing poetry"
@@ -45,7 +47,7 @@ docker run --rm -v ${PROJECT_ROOT}:/app node:20.11.1-bullseye bash -c \
 echo "Build docker image"
 
 docker buildx create --use
-docker buildx build -f $PROJECT_ROOT/containers/release/Dockerfile \
+docker buildx build -f $docker_file \
     -t aqueducthub/$image_name:$tag -t aqueducthub/$image_name:latest \
     -o type=docker,dest=$PROJECT_ROOT/build/$image_name.tar $PROJECT_ROOT
 

@@ -25,5 +25,8 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Build Release Test Containers
+      - name: Build and Push Dev Container
         run: ci/build_docker_image.sh -i aqueductcore-dev -p true -t ${{ github.sha }}
+
+      - name: Build and Push Dev Container SSH Server for Azure
+        run: ci/build_docker_image.sh -i aqueductcore-dev-azure -p true -t ${{ github.sha }} -d containers/release-azure/Dockerfile
