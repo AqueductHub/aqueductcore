@@ -7,6 +7,7 @@ import { IntegerField } from "components/atoms/IntegerField";
 import { SelectField } from "components/atoms/SelectField";
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
+import { FileField } from "components/atoms/FileField";
 
 
 const ModalFooter = styled(Box)`
@@ -111,6 +112,14 @@ function FunctionForm ({
                                 selectFieldProps={{
                                     defaultValue: parameterInfo?.defaultValue
                                 }}
+                            />
+                        </>}
+                        {parameterInfo.dataType == "file" && <>
+                            <FileField
+                                title={parameterInfo?.displayName || ""}
+                                experimentIdentifier="20240502-1"
+                                description={parameterInfo?.description || ""}
+                                field={parameterInfo.name}
                             />
                         </>}
                     </Box>
