@@ -41,8 +41,9 @@ export function TextAreaField({
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
             <TextAreaInput
-              {...textareaFieldProps}
+              title={field}
               color="primary"
+              {...textareaFieldProps}
             />
           </Box>
         </Grid>
