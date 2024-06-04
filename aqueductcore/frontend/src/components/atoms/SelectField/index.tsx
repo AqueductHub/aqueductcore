@@ -30,6 +30,7 @@ export function SelectField({
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
             <DropDown
+              title={field}
               {...selectFieldProps}
             >
               {options.map((option) => (
