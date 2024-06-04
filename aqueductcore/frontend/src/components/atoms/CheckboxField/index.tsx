@@ -25,6 +25,7 @@ export function CheckboxField({
           <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
           <Box>
             <CheckboxInput
+              title={field}
               {...checkboxFieldProps}
             />
           </Box>
