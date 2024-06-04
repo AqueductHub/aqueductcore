@@ -1,6 +1,7 @@
 import shutil
 
 import pytest
+from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.services.extensions_executor import (
     ExtensionsExecutor, VENV_FOLDER, PYTHON_BINARY)
 
