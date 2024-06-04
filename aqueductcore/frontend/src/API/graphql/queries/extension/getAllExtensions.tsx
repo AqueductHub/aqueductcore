@@ -1,26 +1,11 @@
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 
-import { GET_ALL_EXTENSIONS_TYPE } from "types/globalTypes";
+import { GET_ALL_EXTENSIONS_NAME_TYPE } from "types/globalTypes";
 
-export const GET_ALL_EXTENSIONS = gql`
+export const GET_ALL_EXTENSIONS_NAME = gql`
   query getAllPlugins {
     plugins {
         name
-        authors
-        description
-        functions {
-            description
-            experimentVariableName
-            name
-            parameters {
-                dataType
-                defaultValue
-                description
-                displayName
-                name
-                options
-            }
-        }
     }
   }
 `;
