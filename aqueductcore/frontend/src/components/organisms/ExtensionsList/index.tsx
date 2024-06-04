@@ -92,10 +92,10 @@ function ExtensionsList() {
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
-                                    {extensions.map((extension, index) => (
+                                    {extensions.map((extension) => (
                                         <MenuItem
                                             key={extension.name}
-                                            disabled={index === 2}
+                                            disabled={!extension.functions.length}
                                             onClick={() => handleClick(extension.name)}
                                         >
                                             {extension.name}
