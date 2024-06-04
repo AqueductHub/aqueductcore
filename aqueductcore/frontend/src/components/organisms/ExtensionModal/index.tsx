@@ -113,9 +113,18 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     }, [selectedExtension, selectedFunction])
 
     function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
-        console.log("after exec data", executeExtension)
         handleClose()
-        toast.success("Execution Finished", { id: "exec_extension" })
+        if (executeExtension.stderr) {
+            toast.error(
+                `Execution finished with the erorr: ${executeExtension.stderr} `,
+                { id: "exec_extension_error" }
+            )
+        } else {
+            toast.success(
+                "Execution finished successfully",
+                { id: "exec_extension_success" }
+            )
+        }
     }
 
 

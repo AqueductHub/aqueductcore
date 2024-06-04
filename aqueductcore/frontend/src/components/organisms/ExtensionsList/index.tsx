@@ -22,7 +22,7 @@ function ExtensionsList() {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
 
-    const { data } = useGetAllExtensions()
+    const { data, error } = useGetAllExtensions()
     const extensions = data?.plugins
 
     const handleClick = (option: string) => {
@@ -32,7 +32,12 @@ function ExtensionsList() {
     };
 
     const handleToggle = () => {
-        if (!extensions?.length) {
+        if (error) {
+            toast.error(error?.message, {
+                id: "extension_error"
+            })
+        }
+        else if (!extensions?.length) {
             toast("No extension available", {
                 id: "extension_error",
                 duration: 2000

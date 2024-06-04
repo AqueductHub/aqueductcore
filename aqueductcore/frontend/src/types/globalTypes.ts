@@ -1,6 +1,6 @@
 import {
-  MutationExecutePluginArgs,
   ExperimentFiltersInput,
+  PluginExecutionResult,
   PluginParameterType,
   PluginFunctionInfo,
   ExperimentData,
@@ -114,9 +114,9 @@ export type REMOVE_EXPERIMENT_TYPE = {
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
-  plugin: MutationExecutePluginArgs['plugin'];
-  function: MutationExecutePluginArgs['function'];
-  params: MutationExecutePluginArgs['params'];
+  returnCode: PluginExecutionResult['returnCode']
+  stderr: PluginExecutionResult['stderr']
+  stdout: PluginExecutionResult['stdout']
 }
 
 //############### Other types ###############//
