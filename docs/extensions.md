@@ -80,7 +80,11 @@ actions:
     name: example bash action
     description: runs a bash script
     # this may include calling other binaries or
-    # running other language interpreters
+    # running other language interpreters.
+    # Note, we use `sh` here to run a shell script.
+    # If you want to call it as `./example.sh`, you
+    # should give the file rights to execute: 
+    # `chmod +x example.sh`.
     script: >
       sh example.sh
     parameters:
@@ -110,7 +114,7 @@ the extension aware of the instance of Aqueduct it should interact with.
 In the current implementation, extensions are assumed to run on the same machine 
 as the server application, so this address will be a `http://localhost:8000/` or similar.
 
-Optional `params` section allows the definition key-value pairs for constants shared across
+Optional `constants` section allows the definition key-value pairs for constants shared across
 all extension action executions.  Examples of this may include third-party service credentials,
 or a database connection string, which are shared among all service installation users.
 If your users need to use such services with different credentials, we encourage you to
@@ -194,6 +198,52 @@ curl "$aqueduct_url/aqd/experiments/$experiment"
 ...
 ```
 
+### Starting to Write a New Python Extension From Scratch
+
+Start it simple. First, create three files on your local files system where `python` is installed, not necessarily the same machine as aqueduct.
+1. An extension action script, e.g. `action.py` with the following content.
+    ```python
+    import os
+    import requests
+
+
+    if __name__ == "__main__":
+        aqueduct_url = os.environ.get("aqueduct_url", "")
+        aqueduct_key = os.environ.get("aqueduct_key", "")
+        var = os.environ.get("varname", "")
+        print(f"varname = {var}")
+        response = requests.get(aqueduct_url + "api/graphql", timeout=3)
+        print(f"URL: {aqueduct_url}, ok: {response.ok}")
+    ```
+2. A `requirements.txt` file, where you will collect your dependencies.
+    ```
+    requests>=2.0.0
+    ```
+3. A `test.sh` with the following content:
+    ```sh
+    venv=.aqueduct-extension-dev
+    # recreate and populate a clean virtual env
+    # comment these 3 lines if requirements are stable
+    rm -r $venv
+    python -m venv $venv
+    $venv/bin/pip install -r requirements.txt
+
+    # add here your parameters, constants
+    export aqueduct_url="http://localhost:8000/"
+    export aqueduct_key=""
+    export varname=123
+
+    # run
+    $venv/bin/python action.py
+    echo "Result code: $?"
+    ```
+
+Now, you may run and test your plugin action as `sh test.sh`. Do changes on which variables and constants you need by adding them to the `test.sh` file, and reading them with `os.environ.get("name")` in python. As soon as you finish programming and testing, transfer these constants and varibles to corresponding sections of `manifest.yml`. Note, that `aqueduct_url` string
+is always defined in the header of the file and shared among the actions. `aqueduct_key` variables is set by the AqueductCore, you don't have to specify it.
+
+If you update code of extension actions, or its dependencies, deleting `.aqueduct-extension-dev/` 
+will force virtual environment re-creation. If your dependencies are already stable, you may keep this folder to speed up test runs.
+
 ## Running an Extension Action
 
 Extension execution may be triggered in one of two ways:
@@ -208,11 +258,6 @@ Extension execution flow in its current implementation is described below:
    2. Conditional: If `pyproject.toml` file is present, folder content is installed as a python module in the new virtual environment together with its dependencies.
 3. `script` section is executed. If `$python` variable is present, it is replaced with python executable of the virtual environment. Variables and constants are passed as environment variables of operating system.
 4. Standard output, standard error, and process result code are written into a log file, which is saved inside the experiment.
-
-### Extension Development in Progress
-
-If you update code of extension actions, or its dependencies, delete `.aqueduct-extension-dev/` 
-subfolder to force virtual environment re-creation.
 
 ## Deploying an Extension
 
