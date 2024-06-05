@@ -42,6 +42,7 @@ export function FloatField({
               {...floatFieldProps}
               type="number"
               size="small"
+              title={field}
               defaultValue={defaultValue}
             />
           </Box>

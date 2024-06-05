@@ -55,6 +55,7 @@ export function FileField({
           <Box sx={{ p: 1, pr: 2 }}>
             <Autocomplete
               {...fileFieldProps}
+              title={field}
               size="small"
               forcePopupIcon={false}
               options={experimentFilesList}

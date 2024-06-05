@@ -48,6 +48,7 @@ export function IntegerField({
             <IntegerInput
               {...integerFieldProps}
               type="number"
+              title={field}
               size="small"
               defaultValue={defaultValue}
               onKeyDown={handleKeyDown}

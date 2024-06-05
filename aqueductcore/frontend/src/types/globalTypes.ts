@@ -74,6 +74,7 @@ export type GET_EXPERIMENT_FILES_BY_ID_TYPE = {
     __typename?: ExperimentData["__typename"];
   };
 };
+
 export type GET_USER_INFO_TYPE = {
   getCurrentUserInfo: {
     scopes: UserInfo["scopes"]
@@ -81,11 +82,17 @@ export type GET_USER_INFO_TYPE = {
     __typename?: UserInfo["__typename"];
   };
 };
+
 export type GET_ALL_EXTENSIONS_NAME_TYPE = {
   plugins: Array<{
     name: ExtensionType['name']
     __typename?: PluginInfo["__typename"];
   }>;
+};
+
+
+export type GET_ALL_EXTENSIONS_TYPE = {
+  plugins: Array<ExtensionType>;
 };
 
 //############### Mutation types ###############//

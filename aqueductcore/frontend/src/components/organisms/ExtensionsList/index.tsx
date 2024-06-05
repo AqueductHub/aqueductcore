@@ -10,7 +10,7 @@ import Grow from '@mui/material/Grow';
 import toast from 'react-hot-toast';
 
 import { BorderedButtonWithIcon } from 'components/atoms/sharedStyledComponents/BorderedButtonWithIcon';
-import { useGetAllExtensions } from 'API/graphql/queries/extension/getAllExtensions';
+import { useGetAllExtensions } from 'API/graphql/queries/extension/getAllExtensionNames';
 import ExtensionModal from 'components/organisms/ExtensionModal';
 
 function ExtensionsList() {
@@ -27,7 +27,6 @@ function ExtensionsList() {
 
     const handleClick = (option: string) => {
         setSelectedExtension(option)
-        console.info(`You clicked ${option}`);
         handleOpenExtensionModal()
         setOpen(false);
     };
