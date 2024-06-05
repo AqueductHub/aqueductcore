@@ -10,26 +10,28 @@
         <meta name="author" content="Riverlane Ltd.">
       
       
-        <link rel="canonical" href="https://aqueducthub.github.io/aqueductcore/main/">
+        <link rel="canonical" href="https://aqueducthub.github.io/aqueductcore/main/cli/">
       
       
+        <link rel="prev" href="..">
       
-        <link rel="next" href="cli/">
+      
+        <link rel="next" href="../setup/">
       
       
-      <link rel="icon" href="images/favicon.png">
+      <link rel="icon" href="../images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
     
     
       
-        <title>Aqueduct Experiment Control Software</title>
+        <title>Command Line Interface (CLI) - Aqueduct Experiment Control Software</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,9 +50,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-aqueduct" class="md-skip">
+        <a href="#global-options" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Aqueduct Experiment Control Software" class="md-header__button md-logo" aria-label="Aqueduct Experiment Control Software" data-md-component="logo">
+    <a href=".." title="Aqueduct Experiment Control Software" class="md-header__button md-logo" aria-label="Aqueduct Experiment Control Software" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16V0M4 24h16v-2H4v2M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17Z"/></svg>
@@ -116,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Welcome to Aqueduct
+              Command Line Interface (CLI)
             
           </span>
         </div>
@@ -226,7 +228,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Aqueduct Experiment Control Software" class="md-nav__button md-logo" aria-label="Aqueduct Experiment Control Software" data-md-component="logo">
+    <a href=".." title="Aqueduct Experiment Control Software" class="md-nav__button md-logo" aria-label="Aqueduct Experiment Control Software" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 0H4v2h16V0M4 24h16v-2H4v2M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m-8 2.75A2.25 2.25 0 0 1 14.25 9 2.25 2.25 0 0 1 12 11.25 2.25 2.25 0 0 1 9.75 9 2.25 2.25 0 0 1 12 6.75M17 17H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17Z"/></svg>
@@ -241,6 +243,26 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome to Aqueduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -250,31 +272,19 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
       
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
   
   <span class="md-ellipsis">
-    Welcome to Aqueduct
+    Command Line Interface (CLI)
   </span>
   
 
-      </a>
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="cli/" class="md-nav__link">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -283,6 +293,51 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -294,7 +349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="setup/" class="md-nav__link">
+      <a href="../setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -314,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -362,31 +417,64 @@
                   
 
 
-<h1 id="welcome-to-aqueduct">Welcome to Aqueduct<a class="headerlink" href="#welcome-to-aqueduct" title="Permanent link">&para;</a></h1>
-<p>Aqueduct is the open platform that simplifies quantum experiment management.</p>
-<p>We are building Aqueduct to be a user-friendly, reliable, and well-supported solution for the emerging use-cases of quantum computing. 
-While qubit labs and companies focus on building better qubits, Aqueduct is here to assist in the bring-up, calibration, maintenance, and operation of quantum computers.</p>
-<p>In this current version of Aqueduct, we provide a user-friendly GUI and backend for storing, browsing, and searching for experiment results. 
-Your experiment data can be saved into Aqueduct with simple Python APIs which do not disrupt existing workflows. 
-We provide easy sorting and filtering of experiments, and quick previews of text and plots so you can easily find the data that you need. 
-Aqueduct is easy to try and easy to adopt.</p>
-<p>Upcoming features including support for multiple users, automation, and plug-ins.</p>
-<p>Quantum computers may be shared between users. 
-Aqueduct will support authentication and authorisation, so users can be assigned permissions to read and write data, and to have access to system functions.</p>
-<p>Calibration routines are often rerun regularly. 
-We will provide an automation solution for the scheduling of these jobs, as well as user experiments.</p>
-<p>A powerful plug-in SDK will allow for easy extensibility, allowing users to easily build additional functionality and integrations which can be private for their specific systems or public to be shared with the greater community. </p>
-<p>We welcome engagement from the community. 
-We would love to hear your ideas and needs for Aqueduct and we look forward to building new features together.</p>
-<p>Aqueduct will be a freemium product. 
-The core product will always be open source and free-to-use. 
-We reserve the right to charge for features not included in the core product and for non-community support. </p>
+  <h1>Command Line Interface (CLI)</h1>
+
+<p>Aqueduct provides its Command Line Interface (CLI), <code>aqueduct</code>, with two main commands: <code>export</code> and <code>import</code>. These commands are used to export experiments data and files from the current Aqueduct instance into a <code>.tar.gz</code> file. This file can be later imported. This document provides a brief overview of how to use the Aqueduct CLI. For each command, it lists the usage, arguments, and options.</p>
+<h2 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>--help</code>: Show the help message and exit.</li>
+</ul>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+<h3 id="export">Export<a class="headerlink" href="#export" title="Permanent link">&para;</a></h3>
+<p>The <code>export</code> command is used to export Aqueduct experiments' data into a GZIP compressed tar archive.</p>
+<h4 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h4>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>aqueduct<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>PATH<span class="o">]</span>
+</span></code></pre></div>
+<h5 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>PATH</code>: [Optional] File path for the exported archive. Default is <code>/workspace/aqueduct_data_[YYYY_MM_DD].tar.gz</code>.</li>
+</ul>
+<p>Note:</p>
+<ol>
+<li>If the provided file path doesn't have a <code>.tar.gz</code> suffix, a warning message will be printed, but the file will be created with gzipped compressed tarball content.</li>
+</ol>
+<h5 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>--experiment-files</code> (<code>-e</code>): Include experiments' files in the archive.</li>
+<li><code>--help</code>: Show the help message and exit.</li>
+</ul>
+<h3 id="import">Import<a class="headerlink" href="#import" title="Permanent link">&para;</a></h3>
+<p>The <code>import</code> command is used to import Aqueduct experiments' data from a GZIP compressed tar archive.</p>
+<h4 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h4>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>aqueduct<span class="w"> </span>import<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>FILE
+</span></code></pre></div>
+<h5 id="arguments_1">Arguments<a class="headerlink" href="#arguments_1" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>FILE</code>: [Required] Tar file path of the archive to import. This argument is required.</li>
+</ul>
+<h5 id="options_1">Options<a class="headerlink" href="#options_1" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>--help</code>: Show the help message and exit.</li>
+</ul>
+<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Aqueduct CLI is installed alongside the web application. When using the official docker image of Aqueduct, the CLI is available inside the container and can be executed via <code>docker exec</code> command. For example:</li>
+</ol>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;container_name&gt;<span class="w"> </span>aqueduct<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>ARCHIVE_PATH<span class="o">]</span>
+</span></code></pre></div>
+<p>To download the archive from the container, you can use <code>docker cp</code> command. For example:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker<span class="w"> </span>cp<span class="w"> </span>&lt;container_name&gt;:<span class="o">[</span>ARCHIVE_PATH<span class="o">]</span><span class="w"> </span>./
+</span></code></pre></div>
+<p>downloads the file to the current working directory.</p>
 
 
 
 
 
 
+
+  
+  
 
 
 
@@ -437,10 +525,10 @@ We reserve the right to charge for features not included in the core product and
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "search.share", "content.code.copy"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "search.share", "content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.081f42fc.min.js"></script>
+      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>
