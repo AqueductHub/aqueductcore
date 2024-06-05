@@ -10,7 +10,7 @@ export const GET_ALL_EXTENSION_NAMES = gql`
   }
 `;
 
-export function useGetAllExtensions(options?: QueryHookOptions) {
+export function useGetAllExtensionNames(options?: QueryHookOptions) {
   const extensionNames = useQuery<GET_ALL_EXTENSIONS_NAME_TYPE>(GET_ALL_EXTENSION_NAMES, {
     ...options
   });
