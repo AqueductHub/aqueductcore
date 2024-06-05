@@ -79,15 +79,15 @@ def test_import_experiments_metadata(db_session: Session, experiments_data: List
 
     assert len(db_users) == len(expected_metadata.users)
     for exp_user in expected_metadata.users:
-        user_res = [item for item in db_users if item.id == exp_user.uuid]
+        user_res = [item for item in db_users if item.uuid == exp_user.uuid]
         assert len(user_res) == 1
         db_user = user_res[0]
         assert db_user.username == exp_user.username
         for exp_exp in exp_user.experiments:
-            exp_res = [item for item in db_user.experiments if item.id == exp_exp.uuid]
+            exp_res = [item for item in db_user.experiments if item.uuid == exp_exp.uuid]
             assert len(exp_res) == 1
             db_experiment = exp_res[0]
-            assert db_experiment.alias == exp_exp.eid
+            assert db_experiment.eid == exp_exp.eid
             assert db_experiment.created_at == exp_exp.created_at
             assert db_experiment.updated_at == exp_exp.updated_at
             assert db_experiment.title == exp_exp.title

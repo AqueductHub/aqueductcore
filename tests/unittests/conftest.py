@@ -49,16 +49,16 @@ async def temp_experiment_files(db_session: AsyncSession, experiments_data: List
     experiment_files: Dict[UUID, List[Tuple[str, datetime]]] = {}
 
     for experiment in experiments_data:
-        Path(os.path.join(settings.experiments_dir_path, str(experiment.id))).mkdir(
+        Path(os.path.join(settings.experiments_dir_path, str(experiment.uuid))).mkdir(
             parents=True, exist_ok=True
         )
 
-        experiment_files[experiment.id] = []
+        experiment_files[experiment.uuid] = []
         for idx in range(5):
-            file_name = f"file_{experiment.id}_{idx}"
-            file_path = os.path.join(settings.experiments_dir_path, str(experiment.id), file_name)
+            file_name = f"file_{experiment.uuid}_{idx}"
+            file_path = os.path.join(settings.experiments_dir_path, str(experiment.uuid), file_name)
             Path(file_path).touch(exist_ok=False)
-            experiment_files[experiment.id].append(
+            experiment_files[experiment.uuid].append(
                 (
                     file_name,
                     datetime.fromtimestamp(Path(file_path).stat().st_mtime, tz=timezone.utc),
@@ -67,5 +67,5 @@ async def temp_experiment_files(db_session: AsyncSession, experiments_data: List
 
     yield experiment_files
 
-    for experiment_id in experiment_files.keys():
-        shutil.rmtree(os.path.join(settings.experiments_dir_path, str(experiment_id)))
+    for experiment_uuid in experiment_files.keys():
+        shutil.rmtree(os.path.join(settings.experiments_dir_path, str(experiment_uuid)))

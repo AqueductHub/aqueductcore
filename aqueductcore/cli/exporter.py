@@ -39,12 +39,12 @@ class Exporter:
 
         data = AqueductData(version=version, variant=variant, users=[])
         for user in result.unique().scalars().all():
-            user_data = User(uuid=user.id, username=user.username, experiments=[])
+            user_data = User(uuid=user.uuid, username=user.username, experiments=[])
             for experiment in user.experiments:
                 user_data.experiments.append(
                     Experiment(
-                        uuid=experiment.id,
-                        eid=experiment.alias,
+                        uuid=experiment.uuid,
+                        eid=experiment.eid,
                         title=experiment.title,
                         description=experiment.description,
                         created_at=experiment.created_at,

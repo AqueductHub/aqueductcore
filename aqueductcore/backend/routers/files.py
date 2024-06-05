@@ -27,9 +27,9 @@ from aqueductcore.backend.settings import settings
 router = APIRouter()
 
 
-@router.get("/{experiment_id}/{file_name}")
+@router.get("/{experiment_uuid}/{file_name}")
 async def download_experiment_file(
-    experiment_id: UUID,
+    experiment_uuid: UUID,
     file_name: str,
     context: Annotated[ServerContext, Depends(context_dependency)],
 ) -> FileResponse:
@@ -37,12 +37,14 @@ async def download_experiment_file(
 
     try:
         pathvalidate.validate_filename(file_name)
-        # check if experiment exists with the specified ID, otherwise raises an exception.
+        # check if experiment exists with the specified UUID, otherwise raises an exception.
         await get_experiment_by_uuid(
-            user_info=context.user_info, db_session=context.db_session, experiment_id=experiment_id
+            user_info=context.user_info,
+            db_session=context.db_session,
+            experiment_uuid=experiment_uuid,
         )
         experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment_id
+            str(settings.experiments_dir_path), experiment_uuid
         )
         file_path = os.path.join(experiment_dir, file_name)
 
@@ -99,10 +101,10 @@ class MaxBodySizeValidator:
             raise AQDMaxBodySizeException(body_len=self.body_len)
 
 
-@router.post("/{experiment_id}")
+@router.post("/{experiment_uuid}")
 async def upload_experiment_file(
     request: Request,
-    experiment_id: UUID,
+    experiment_uuid: UUID,
     context: Annotated[ServerContext, Depends(context_dependency)],
 ) -> JSONResponse:
     """Router for uploading files to an experiment."""
@@ -120,12 +122,14 @@ async def upload_experiment_file(
 
     try:
         pathvalidate.validate_filename(file_name)
-        # check if experiment exists with the specified ID, otherwise raises an exception.
+        # check if experiment exists with the specified UUID, otherwise raises an exception.
         await get_experiment_by_uuid(
-            user_info=context.user_info, db_session=context.db_session, experiment_id=experiment_id
+            user_info=context.user_info,
+            db_session=context.db_session,
+            experiment_uuid=experiment_uuid,
         )
         experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment_id
+            str(settings.experiments_dir_path), experiment_uuid
         )
 
         # create experiment directory if it is its first file

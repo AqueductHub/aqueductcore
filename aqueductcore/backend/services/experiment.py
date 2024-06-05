@@ -25,7 +25,7 @@ from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
-    generate_experiment_id_and_alias,
+    generate_experiment_uuid_and_eid,
     tag_model_to_orm,
     tag_orm_to_model,
 )
@@ -79,13 +79,13 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
 
     if title_filter is not None:
         statement = statement.filter(
             or_(
                 orm.Experiment.title.ilike(f"%{title_filter}%"),
-                orm.Experiment.alias.ilike(f"%{title_filter}%"),
+                orm.Experiment.eid.ilike(f"%{title_filter}%"),
             )
         )
 
@@ -110,18 +110,18 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
     if should_include_tags is not None:
         should_include_tags = [tag.lower() for tag in should_include_tags]
         filtered_experiments = (
-            select(orm.Experiment.id)
+            select(orm.Experiment.uuid)
             .options(joinedload(orm.Experiment.tags))
             .join(
                 orm.experiment_tag_association,
-                orm.Experiment.id == orm.experiment_tag_association.c.experiment_id,
+                orm.Experiment.uuid == orm.experiment_tag_association.c.experiment_uuid,
             )
             .join(orm.Tag, orm.experiment_tag_association.c.tag_key == orm.Tag.key)
             .filter(orm.Tag.key.in_(should_include_tags))
-            .group_by(orm.Experiment.id)
+            .group_by(orm.Experiment.uuid)
             .having(func.count(orm.Tag.key) == len(should_include_tags))
         )
-        statement = statement.filter(orm.Experiment.id.in_(filtered_experiments))
+        statement = statement.filter(orm.Experiment.uuid.in_(filtered_experiments))
 
     if not (should_include_tags and (ARCHIVED in should_include_tags)):
         statement = statement.filter(~orm.Experiment.tags.any(orm.Tag.key.like(ARCHIVED)))
@@ -132,13 +132,13 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_experiment_by_uuid(
-    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID
+    user_info: UserInfo, db_session: AsyncSession, experiment_uuid: UUID
 ) -> ExperimentRead:
-    """Get experiment by Experiment ID
+    """Get experiment by Experiment UUID
 
     Args:
         db_session: Database async session.
-        experiment_id: ID of the experiment.
+        experiment_uuid: UUID of the experiment.
 
     Returns:
         Experiment data model.
@@ -147,32 +147,32 @@ async def get_experiment_by_uuid(
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
         .options(joinedload(orm.Experiment.created_by_user))
-        .where(orm.Experiment.id == experiment_id)
+        .where(orm.Experiment.uuid == experiment_uuid)
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
 
     result = await db_session.execute(statement)
 
     experiment = result.scalars().first()
     if experiment is None:
         raise AQDDBExperimentNonExisting(
-            "DB query failed due to non-existing experiment with the specified ID."
+            "DB query failed due to non-existing experiment with the specified UUID."
         )
 
     return await experiment_orm_to_model(experiment)
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def get_experiment_by_alias(
-    user_info: UserInfo, db_session: AsyncSession, alias: str
+async def get_experiment_by_eid(
+    user_info: UserInfo, db_session: AsyncSession, eid: str
 ) -> ExperimentRead:
-    """Get experiment by experiment unique alias
+    """Get experiment by experiment unique eid
 
     Args:
         db_session: Database async session.
-        alias: Unique alias of the experiment.
+        eid: Unique eid of the experiment.
 
     Returns:
         Experiment data model.
@@ -181,38 +181,38 @@ async def get_experiment_by_alias(
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
         .options(joinedload(orm.Experiment.created_by_user))
-        .where(orm.Experiment.alias == alias)
+        .where(orm.Experiment.eid == eid)
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
 
     result = await db_session.execute(statement)
 
     experiment = result.scalars().first()
     if experiment is None:
         raise AQDDBExperimentNonExisting(
-            "Non-existing experiment with the specified alias for the user."
+            "Non-existing experiment with the specified eid for the user."
         )
 
     return await experiment_orm_to_model(experiment)
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-def build_experiment_dir_absolute_path(experiments_root_dir: str, experiment_id: UUID) -> str:
-    """Function to build experiment absolute path from root directory and experiment id."""
-    return os.path.normpath(os.path.join(experiments_root_dir, str(experiment_id)))
+def build_experiment_dir_absolute_path(experiments_root_dir: str, experiment_uuid: UUID) -> str:
+    """Function to build experiment absolute path from root directory and experiment UUid."""
+    return os.path.normpath(os.path.join(experiments_root_dir, str(experiment_uuid)))
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_experiment_files(
-    user_info: UserInfo, db_session: AsyncSession, experiments_root_dir: str, experiment_id: UUID
+    user_info: UserInfo, db_session: AsyncSession, experiments_root_dir: str, experiment_uuid: UUID
 ) -> List[Tuple[str, datetime]]:
     """Returns the list of the file names associated with the experiment.
 
     Args:
-        experiments_root_dir: Directory to search for experiments' directories based on their ID.
-        experiment_id: ID of the experiment.
+        experiments_root_dir: Directory to search for experiments' directories based on their UUID.
+        experiment_uuid: UUID of the experiment.
 
     Returns:
         List of file names associated with the experiment.
@@ -222,10 +222,10 @@ async def get_experiment_files(
 
     # check access to the experiment by retrieving it.
     await get_experiment_by_uuid(
-        user_info=user_info, db_session=db_session, experiment_id=experiment_id
+        user_info=user_info, db_session=db_session, experiment_uuid=experiment_uuid
     )
 
-    folder_path = build_experiment_dir_absolute_path(experiments_root_dir, experiment_id)
+    folder_path = build_experiment_dir_absolute_path(experiments_root_dir, experiment_uuid)
 
     try:
         with os.scandir(folder_path) as file_iterator:
@@ -245,7 +245,7 @@ async def get_experiment_files(
     return file_names
 
 
-EXPERIMENT_ALIAS_PATTERN = r"^(19[0-9]{2}|2[0-9]{3})(0[1-9]|1[012])([123]0|[012][1-9]|31)-(\d+)$"
+EXPERIMENT_EID_PATTERN = r"^(19[0-9]{2}|2[0-9]{3})(0[1-9]|1[012])([123]0|[012][1-9]|31)-(\d+)$"
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
@@ -283,38 +283,38 @@ async def create_experiment(
     # get last created experiment of the day
     today = datetime.combine(date.today(), time.min)
     today_experiments_statement = (
-        select(orm.Experiment.alias)
+        select(orm.Experiment.eid)
         .filter(orm.Experiment.created_at >= today)
-        .where(orm.Experiment.alias.regexp_match(EXPERIMENT_ALIAS_PATTERN))
+        .where(orm.Experiment.eid.regexp_match(EXPERIMENT_EID_PATTERN))
     )
     today_experiments = (await db_session.execute(today_experiments_statement)).scalars().all()
 
     if not today_experiments:
-        experiment_id, alias = generate_experiment_id_and_alias(experiment_index=1)
+        experiment_uuid, eid = generate_experiment_uuid_and_eid(experiment_index=1)
     else:
-        last_experiment_alias = sorted(today_experiments, key=lambda x: int(x.split("-")[-1]))[-1]
-        if re.match(EXPERIMENT_ALIAS_PATTERN, last_experiment_alias):
-            index = int(last_experiment_alias.split("-")[-1])
-            experiment_id, alias = generate_experiment_id_and_alias(experiment_index=index + 1)
+        last_experiment_eid = sorted(today_experiments, key=lambda x: int(x.split("-")[-1]))[-1]
+        if re.match(EXPERIMENT_EID_PATTERN, last_experiment_eid):
+            index = int(last_experiment_eid.split("-")[-1])
+            experiment_uuid, eid = generate_experiment_uuid_and_eid(experiment_index=index + 1)
         else:
-            experiment_id, alias = generate_experiment_id_and_alias(experiment_index=1)
+            experiment_uuid, eid = generate_experiment_uuid_and_eid(experiment_index=1)
 
-    db_user_statement = select(orm.User).where(orm.User.id == user_info.user_id)
+    db_user_statement = select(orm.User).where(orm.User.uuid == user_info.user_uuid)
     db_user = (await db_session.execute(db_user_statement)).scalars().first()
 
     if not db_user:
         db_user = orm.User(
-            id=user_info.user_id,
+            uuid=user_info.user_uuid,
             username=user_info.username,
         )
         db_session.add(db_user)
 
     db_experiment = orm.Experiment(
-        id=experiment_id,
+        uuid=experiment_uuid,
         title=title,
         description=description,
         tags=tags_orm,
-        alias=alias,
+        eid=eid,
         created_by_user=db_user,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
@@ -331,7 +331,7 @@ async def create_experiment(
 async def update_experiment(
     user_info: UserInfo,
     db_session: AsyncSession,
-    experiment_id: UUID,
+    experiment_uuid: UUID,
     title: Optional[ExperimentTitle] = None,
     description: Optional[ExperimentDescription] = None,
 ) -> ExperimentRead:
@@ -341,18 +341,18 @@ async def update_experiment(
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
         .options(joinedload(orm.Experiment.created_by_user))
-        .where(orm.Experiment.id == experiment_id)
+        .where(orm.Experiment.uuid == experiment_uuid)
     )
 
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_id)
+        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
 
     result = await db_session.execute(statement)
 
     db_experiment = result.scalars().first()
     if db_experiment is None:
         raise AQDDBExperimentNonExisting(
-            "Non-existing experiment with the specified ID for the user."
+            "Non-existing experiment with the specified UUID for the user."
         )
 
     if title:
@@ -369,7 +369,7 @@ async def update_experiment(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def add_tags_to_experiment(
-    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tags: List[ExperimentTag]
+    user_info: UserInfo, db_session: AsyncSession, experiment_uuid: UUID, tags: List[ExperimentTag]
 ) -> ExperimentRead:
     """Add tag to experiment"""
 
@@ -377,17 +377,17 @@ async def add_tags_to_experiment(
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
         .options(joinedload(orm.Experiment.created_by_user))
-        .filter(orm.Experiment.id == experiment_id)
+        .filter(orm.Experiment.uuid == experiment_uuid)
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_id
+            orm.Experiment.created_by == user_info.user_uuid
         )
     experiment_result = await db_session.execute(experiment_statement)
     db_experiment = experiment_result.scalars().first()
     if db_experiment is None:
         raise AQDDBExperimentNonExisting(
-            "Non-existing experiment with the specified ID for the user."
+            "Non-existing experiment with the specified UUID for the user."
         )
 
     new_tags = {tag.lower(): tag for tag in tags}
@@ -417,7 +417,7 @@ async def add_tags_to_experiment(
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def remove_tag_from_experiment(
-    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID, tag: ExperimentTag
+    user_info: UserInfo, db_session: AsyncSession, experiment_uuid: UUID, tag: ExperimentTag
 ) -> ExperimentRead:
     """Add tag to experiment"""
 
@@ -425,18 +425,18 @@ async def remove_tag_from_experiment(
         select(orm.Experiment)
         .options(joinedload(orm.Experiment.tags))
         .options(joinedload(orm.Experiment.created_by_user))
-        .filter(orm.Experiment.id == experiment_id)
+        .filter(orm.Experiment.uuid == experiment_uuid)
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_id
+            orm.Experiment.created_by == user_info.user_uuid
         )
 
     result = await db_session.execute(experiment_statement)
     db_experiment = result.scalars().first()
     if db_experiment is None:
         raise AQDDBExperimentNonExisting(
-            "Non-existing experiment with the specified ID for the user."
+            "Non-existing experiment with the specified UUID for the user."
         )
 
     tag_key = tag.lower()
@@ -470,14 +470,14 @@ async def get_all_tags(
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def get_tag_by_name(
     user_info: UserInfo, db_session: AsyncSession, tag_name: ExperimentTag
-) -> Optional[TagRead]:
+) -> TagRead:
     # pylint: disable=unused-argument
-    """Get tag by ID"""
+    """Get tag by name."""
     statement = select(orm.Tag).filter(orm.Tag.name == tag_name)
     result = await db_session.execute(statement)
     tag = result.scalars().first()
     if tag is None:
-        raise AQDDBError("DB query failed due to non-existing tag with the specified ID.")
+        raise AQDDBError("DB query failed due to non-existing tag with the specified UUID.")
 
     return tag_orm_to_model(tag)
 
@@ -495,40 +495,42 @@ async def create_tag(user_info: UserInfo, db_session: AsyncSession, tag: TagCrea
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
 async def remove_experiment(
-    user_info: UserInfo, db_session: AsyncSession, experiment_id: UUID
+    user_info: UserInfo, db_session: AsyncSession, experiment_uuid: UUID
 ) -> UUID:
     """Remove experiment from database"""
 
-    get_experiment_statement = select(orm.Experiment).where(orm.Experiment.id == experiment_id)
+    get_experiment_statement = select(orm.Experiment).where(orm.Experiment.uuid == experiment_uuid)
 
     if UserScope.EXPERIMENT_DELETE_ALL not in user_info.scopes:
         if UserScope.EXPERIMENT_DELETE_OWN not in user_info.scopes:
             raise AQDPermission("The user doesn't have the permission to remove the experiment.")
 
         get_experiment_statement = get_experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_id
+            orm.Experiment.created_by == user_info.user_uuid
         )
 
     get_experiment_result = await db_session.execute(get_experiment_statement)
     if not get_experiment_result.scalars().first():
         raise AQDDBExperimentNonExisting(
-            "Non-existing experiment with the specified ID for the user."
+            "Non-existing experiment with the specified UUID for the user."
         )
 
     folder_path = build_experiment_dir_absolute_path(
-        experiments_root_dir=str(settings.experiments_dir_path), experiment_id=experiment_id
+        experiments_root_dir=str(settings.experiments_dir_path), experiment_uuid=experiment_uuid
     )
 
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
-        orm.experiment_tag_association.c.experiment_id == experiment_id
+        orm.experiment_tag_association.c.experiment_uuid == experiment_uuid
     )
 
     await db_session.execute(remove_experiment_tag_links_statement)
-    remove_experiment_statement = delete(orm.Experiment).where(orm.Experiment.id == experiment_id)
+    remove_experiment_statement = delete(orm.Experiment).where(
+        orm.Experiment.uuid == experiment_uuid
+    )
     await db_session.execute(remove_experiment_statement)
 
     rmtree(folder_path, ignore_errors=True)
 
     await db_session.commit()
 
-    return experiment_id
+    return experiment_uuid

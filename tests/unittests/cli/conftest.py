@@ -60,7 +60,7 @@ def temp_experiments(
 
         for _ in range(1):
             metauser = User(uuid=uuid4(), username=settings.default_username, experiments=[])
-            db_user = orm.User(id=metauser.uuid, username=metauser.username)
+            db_user = orm.User(uuid=metauser.uuid, username=metauser.username)
             for experiment in experiments_data:
                 new_experiment = Experiment(
                     uuid=uuid4(),
@@ -73,10 +73,10 @@ def temp_experiments(
                 )
                 metauser.experiments.append(new_experiment)
                 db_experiment = orm.Experiment(
-                    id=new_experiment.uuid,
+                    uuid=new_experiment.uuid,
                     title=new_experiment.title,
                     description=new_experiment.description,
-                    alias=new_experiment.eid,
+                    eid=new_experiment.eid,
                 )
                 db_experiment.tags.extend(
                     [orm.Tag(key=item.key, name=item.name) for item in new_experiment.tags]

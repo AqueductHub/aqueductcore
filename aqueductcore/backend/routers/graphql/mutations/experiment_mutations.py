@@ -31,14 +31,14 @@ async def create_experiment(
 
 
 async def update_experiment(
-    context: ServerContext, experiment_id: UUID, experiment_update_input: ExperimentUpdateInput
+    context: ServerContext, experiment_uuid: UUID, experiment_update_input: ExperimentUpdateInput
 ) -> ExperimentData:
     """Update experiment mutation"""
 
     experiment = await experiment_service.update_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_id,
+        experiment_uuid=experiment_uuid,
         title=experiment_update_input.title,
         description=experiment_update_input.description,
     )
@@ -53,7 +53,7 @@ async def add_tag_to_experiment(
     experiment = await experiment_service.add_tags_to_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_tag_input.experiment_id,
+        experiment_uuid=experiment_tag_input.uuid,
         tags=[experiment_tag_input.tag],
     )
     return experiment_model_to_node(experiment)
@@ -67,7 +67,7 @@ async def add_tags_to_experiment(
     experiment = await experiment_service.add_tags_to_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_tags_input.experiment_id,
+        experiment_uuid=experiment_tags_input.uuid,
         tags=experiment_tags_input.tags,
     )
     return experiment_model_to_node(experiment)
@@ -81,7 +81,7 @@ async def remove_tag_from_experiment(
     experiment = await experiment_service.remove_tag_from_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_tag_input.experiment_id,
+        experiment_uuid=experiment_tag_input.uuid,
         tag=experiment_tag_input.tag,
     )
     return experiment_model_to_node(experiment)
@@ -92,9 +92,9 @@ async def remove_experiment(
 ) -> UUID:
     """Remove experiment mutation"""
 
-    deleted_experiment_id = await experiment_service.remove_experiment(
+    deleted_experiment_uuid = await experiment_service.remove_experiment(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_id=experiment_remove_input.experiment_id,
+        experiment_uuid=experiment_remove_input.uuid,
     )
-    return deleted_experiment_id
+    return deleted_experiment_uuid

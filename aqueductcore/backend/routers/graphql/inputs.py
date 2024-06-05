@@ -12,7 +12,7 @@ class IDType(Enum):
     """Experiment identification type."""
 
     UUID = "UUID"
-    ALIAS = "ALIAS"
+    EID = "EID"
 
 
 @strawberry.input
@@ -35,7 +35,7 @@ class ExperimentUpdateInput:
 class ExperimentTagInput:
     """Input type to add or remove tag from experiment"""
 
-    experiment_id: UUID
+    uuid: UUID
     tag: str
 
 
@@ -43,7 +43,7 @@ class ExperimentTagInput:
 class ExperimentTagsInput:
     """Input type to add or remove tags from experiment"""
 
-    experiment_id: UUID
+    uuid: UUID
     tags: List[str]
 
 
@@ -60,4 +60,4 @@ class ExperimentCreateInput:
 class ExperimentRemoveInput:
     """Input type to remove experiment"""
 
-    experiment_id: UUID
+    uuid: UUID

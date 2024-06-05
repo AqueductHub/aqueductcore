@@ -6,25 +6,32 @@ from typing import Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 import pytest
-
 import pytz
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry import Schema
 
 from aqueductcore.backend.context import ServerContext, UserInfo, UserScope
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.experiment import (ExperimentCreate,
-                                                    ExperimentRead, TagCreate,
-                                                    TagRead)
+from aqueductcore.backend.models.experiment import (
+    ExperimentCreate,
+    ExperimentRead,
+    TagCreate,
+    TagRead,
+)
 from aqueductcore.backend.routers.graphql.inputs import IDType
 from aqueductcore.backend.routers.graphql.query_schema import Query
 from aqueductcore.backend.services.experiment import get_all_tags
-from aqueductcore.backend.services.utils import (experiment_model_to_orm,
-                                                 experiment_orm_to_model,
-                                                 tag_model_to_orm)
+from aqueductcore.backend.services.utils import (
+    experiment_model_to_orm,
+    experiment_orm_to_model,
+    tag_model_to_orm,
+)
 from aqueductcore.backend.services.validators import (
-    MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER, MAX_EXPERIMENT_TITLE_FILTER_LENGTH,
-    MAX_EXPERIMENTS_PER_REQUEST, MAX_TAGS_PER_REQUEST)
+    MAX_EXPERIMENT_TAGS_ALLOWED_IN_FILTER,
+    MAX_EXPERIMENT_TITLE_FILTER_LENGTH,
+    MAX_EXPERIMENTS_PER_REQUEST,
+    MAX_TAGS_PER_REQUEST,
+)
 from aqueductcore.backend.settings import settings
 
 single_experiment_query = """
@@ -38,8 +45,8 @@ query MyQuery($experimentIdentifier: ExperimentIdentifierInput!) {
         description
         createdAt
         createdBy
-        alias
-        id
+        eid
+        uuid
         tags
         title
         updatedAt
@@ -54,7 +61,7 @@ all_experiments_query = """
         offset: 0
     ) {
         experimentsData {
-            id
+            uuid
             title
             files {
                 path
@@ -65,7 +72,7 @@ all_experiments_query = """
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -81,7 +88,7 @@ query MyQuery($filters: ExperimentFiltersInput!) {
         filters: $filters
     ) {
         experimentsData {
-            id
+            uuid
             title
             files {
                 path
@@ -92,7 +99,7 @@ query MyQuery($filters: ExperimentFiltersInput!) {
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -110,7 +117,7 @@ all_experiments_invalid_limit_query = (
         offset: 0
     ) {
         experimentsData {
-            id
+            uuid
             title
             files {
                 path
@@ -121,7 +128,7 @@ all_experiments_invalid_limit_query = (
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -143,7 +150,7 @@ all_experiments_invalid_title_filter_query = (
         }
     ) {
         experimentsData {
-            id
+            uuid
             title
             files {
                 path
@@ -154,7 +161,7 @@ all_experiments_invalid_title_filter_query = (
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -249,13 +256,13 @@ filter_by_tag_query = """
             }
         ) {
         experimentsData {
-            id
+            uuid
             title
             description
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -274,13 +281,13 @@ filter_by_title_query = """
             }
         ) {
         experimentsData {
-            id
+            uuid
             title
             description
             createdAt
             createdBy
             updatedAt
-            alias
+            eid
             tags
         }
         totalExperimentsCount
@@ -312,9 +319,9 @@ def check_experiment_values(
     sample_experiment: ExperimentRead,
     files: Optional[List[Tuple[str, datetime]]] = None,
 ):
-    assert sample_experiment.id == UUID(experiment_res["id"])
+    assert sample_experiment.uuid == UUID(experiment_res["uuid"])
     assert sample_experiment.title == experiment_res["title"]
-    assert sample_experiment.alias == experiment_res["alias"]
+    assert sample_experiment.eid == experiment_res["eid"]
     assert sample_experiment.description == experiment_res["description"]
     assert sample_experiment.created_by == experiment_res["createdBy"]
     assert sample_experiment.created_at == datetime.fromisoformat(experiment_res["createdAt"])
@@ -331,7 +338,7 @@ def check_experiment_values(
         assert len(paths) == 1  # all files should reside at the same path
         assert (
             next(iter(paths))  # required to access the first item for sets
-            == f"{settings.api_prefix}{settings.files_route_prefix}/{str(sample_experiment.id)}"
+            == f"{settings.api_prefix}{settings.files_route_prefix}/{str(sample_experiment.uuid)}"
         )
 
 
@@ -342,7 +349,7 @@ async def test_query_all_experiments(
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
 
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -359,7 +366,7 @@ async def test_query_all_experiments(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(all_experiments_query, context_value=context)
@@ -367,19 +374,19 @@ async def test_query_all_experiments(
     assert resp.errors is None
     assert resp.data is not None
 
-    experiment_ids_order = [
-        UUID(experiment["id"]) for experiment in resp.data["experiments"]["experimentsData"]
+    experiment_uuids_order = [
+        UUID(experiment["uuid"]) for experiment in resp.data["experiments"]["experimentsData"]
     ]
     db_experiments = [
-        experiment for experiment in db_experiments if experiment.id in experiment_ids_order
+        experiment for experiment in db_experiments if experiment.uuid in experiment_uuids_order
     ]
-    db_experiments = sorted(db_experiments, key=lambda exp: experiment_ids_order.index(exp.id))
+    db_experiments = sorted(db_experiments, key=lambda exp: experiment_uuids_order.index(exp.uuid))
 
     for idx, item in enumerate(resp.data["experiments"]["experimentsData"]):
         check_experiment_values(
             experiment_res=item,
             sample_experiment=await experiment_orm_to_model(db_experiments[idx]),
-            files=temp_experiment_files[db_experiments[idx].id],
+            files=temp_experiment_files[db_experiments[idx].uuid],
         )
 
 
@@ -390,7 +397,7 @@ async def test_query_all_experiments(
 @pytest.mark.asyncio
 async def test_query_filter_by_date(db_session: AsyncSession, time_zone: str):
 
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     experiment_creation_datetime = datetime.now(timezone.utc) + timedelta(days=100)
@@ -398,12 +405,12 @@ async def test_query_filter_by_date(db_session: AsyncSession, time_zone: str):
     tz_experiment_creation_datetime = experiment_creation_datetime.astimezone(
         pytz.timezone(time_zone)
     )
-    experiment_id = uuid4()
+    experiment_uuid = uuid4()
     db_experiment = orm.Experiment(
-        id=experiment_id,
+        uuid=experiment_uuid,
         title="test filter by date",
         description="test filter by date",
-        alias="test filter by date",
+        eid="test filter by date",
         created_at=tz_experiment_creation_datetime,
         updated_at=tz_experiment_creation_datetime,
     )
@@ -417,7 +424,7 @@ async def test_query_filter_by_date(db_session: AsyncSession, time_zone: str):
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     filters = {
@@ -503,7 +510,7 @@ async def test_query_all_experiments_invalid_limit(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -520,7 +527,7 @@ async def test_query_all_experiments_invalid_limit(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(all_experiments_invalid_limit_query, context_value=context)
@@ -538,7 +545,7 @@ async def test_query_all_experiments_title_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -555,7 +562,7 @@ async def test_query_all_experiments_title_filter(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
@@ -573,7 +580,7 @@ async def test_query_all_experiments_max_tags_filter(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -590,7 +597,7 @@ async def test_query_all_experiments_max_tags_filter(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(all_experiments_invalid_title_filter_query, context_value=context)
@@ -608,7 +615,7 @@ async def test_query_single_experiment(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -625,7 +632,7 @@ async def test_query_single_experiment(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
 
@@ -634,7 +641,7 @@ async def test_query_single_experiment(
         single_experiment_query,
         context_value=context,
         variable_values={
-            "experimentIdentifier": {"type": IDType.UUID.value, "value": str(db_experiment.id)}
+            "experimentIdentifier": {"type": IDType.UUID.value, "value": str(db_experiment.uuid)}
         },
     )
 
@@ -644,15 +651,15 @@ async def test_query_single_experiment(
     check_experiment_values(
         experiment_res=resp.data["experiment"],
         sample_experiment=await experiment_orm_to_model(db_experiments[0]),
-        files=temp_experiment_files[experiment.id],
+        files=temp_experiment_files[experiment.uuid],
     )
 
-    # check with alias
+    # check with eid
     resp = await schema.execute(
         single_experiment_query,
         context_value=context,
         variable_values={
-            "experimentIdentifier": {"type": IDType.ALIAS.value, "value": db_experiment.alias}
+            "experimentIdentifier": {"type": IDType.EID.value, "value": db_experiment.eid}
         },
     )
 
@@ -662,7 +669,7 @@ async def test_query_single_experiment(
     check_experiment_values(
         experiment_res=resp.data["experiment"],
         sample_experiment=await experiment_orm_to_model(db_experiments[0]),
-        files=temp_experiment_files[experiment.id],
+        files=temp_experiment_files[experiment.uuid],
     )
 
 
@@ -670,7 +677,7 @@ async def test_query_single_experiment(
 async def test_filter_by_tags_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -687,7 +694,7 @@ async def test_filter_by_tags_experiments(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(filter_by_tag_query, context_value=context)
@@ -701,7 +708,7 @@ async def test_filter_by_tags_experiments(
 async def test_filter_by_title_experiments(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -718,7 +725,7 @@ async def test_filter_by_title_experiments(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(filter_by_title_query, context_value=context)
@@ -732,7 +739,7 @@ async def test_filter_by_title_experiments(
 async def test_query_all_tags_all(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     no_dangling_tags_expected = []
@@ -755,7 +762,7 @@ async def test_query_all_tags_all(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(
@@ -802,7 +809,7 @@ async def test_query_all_tags_all(
 async def test_query_all_tags_no_dangling(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -817,7 +824,7 @@ async def test_query_all_tags_no_dangling(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(
@@ -844,7 +851,7 @@ async def test_query_over_limit_all_tags(
     experiments_data: List[ExperimentCreate],
     temp_experiment_files: Dict[UUID, List[Tuple[str, datetime]]],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiments = []
@@ -861,7 +868,7 @@ async def test_query_over_limit_all_tags(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(tags_pagination_over_limit_query, context_value=context)
@@ -874,7 +881,7 @@ async def test_query_over_limit_all_tags(
 async def test_query_pagination_tags(
     db_session: AsyncSession, experiments_data: List[ExperimentCreate]
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     for experiment in experiments_data:
@@ -889,7 +896,7 @@ async def test_query_pagination_tags(
     context = ServerContext(
         db_session=db_session,
         user_info=UserInfo(
-            user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
         ),
     )
     resp = await schema.execute(tags_pagination_query, context_value=context)

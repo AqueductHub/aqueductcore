@@ -17,7 +17,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 experiment_tag_association = Table(
     "experiment_tag",
     Base.metadata,
-    Column("experiment_id", Uuid, ForeignKey("experiment.id"), nullable=False),
+    Column("experiment_uuid", Uuid, ForeignKey("experiment.uuid"), nullable=False),
     Column("tag_key", String, ForeignKey("tag.key"), nullable=False),
 )
 
@@ -27,7 +27,7 @@ class User(Base):
 
     __tablename__ = "user"
 
-    id = mapped_column(Uuid, primary_key=True)
+    uuid = mapped_column(Uuid, primary_key=True)
     username: Mapped[str] = mapped_column(Text)
     experiments: Mapped[List["Experiment"]] = relationship()
 
@@ -37,10 +37,10 @@ class Experiment(Base):
 
     __tablename__ = "experiment"
 
-    id = mapped_column(Uuid, primary_key=True)
+    uuid = mapped_column(Uuid, primary_key=True)
     title: Mapped[str]
     description: Mapped[Optional[str]] = mapped_column(Text)
-    created_by: Mapped[Uuid] = mapped_column(ForeignKey("user.id"), nullable=False)
+    created_by: Mapped[Uuid] = mapped_column(ForeignKey("user.uuid"), nullable=False)
     created_by_user: Mapped[User] = relationship(back_populates="experiments")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
@@ -48,7 +48,7 @@ class Experiment(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )
-    alias: Mapped[str] = mapped_column(unique=True)
+    eid: Mapped[str] = mapped_column(unique=True)
 
     tags: Mapped[List[Tag]] = relationship(
         secondary=experiment_tag_association, back_populates="experiments"

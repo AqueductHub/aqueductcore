@@ -16,7 +16,7 @@ from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.models.plugin import Plugin, PluginExecutionResult
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
-    get_experiment_by_alias,
+    get_experiment_by_eid,
 )
 from aqueductcore.backend.settings import settings
 
@@ -178,22 +178,22 @@ class PluginExecutor:
     async def save_log_to_experiment(
         cls,
         context: ServerContext,
-        experiment_id: str,
+        eid: str,
         result: PluginExecutionResult,
         log_filename: str,
     ):
         """Saves result of plugin executions into a log file inside experiment.
 
         context: server context with database connection.
-        experiment_id: alias of the experiment.
+        eid: EID of the experiment.
         result: object with plugin execution results.
         log_filename: name of the log file to which data is saved.
         """
-        experiment = await get_experiment_by_alias(
-            user_info=context.user_info, db_session=context.db_session, alias=experiment_id
+        experiment = await get_experiment_by_eid(
+            user_info=context.user_info, db_session=context.db_session, eid=eid
         )
         experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment.id
+            str(settings.experiments_dir_path), experiment.uuid
         )
         # create experiment directory if it is its first file
         if not os.path.exists(experiment_dir):
