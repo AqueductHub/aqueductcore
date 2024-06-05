@@ -1,12 +1,14 @@
 version: '3'
 services:
   aqueduct:
+    platform: linux/amd64
     image: aqueducthub/aqueductcore:latest
     restart: always
     depends_on:
       - postgres
     environment:
       EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+      EXTENSIONS_DIR_PATH: /workspace/extensions
       POSTGRES_USERNAME: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres
@@ -14,10 +16,14 @@ services:
       POSTGRES_DB: aqueduct
     volumes:
       - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
+      - type: bind
+        source: ${EXTENSIONS_DIR}
+        target: /workspace/extensions
     ports:
       - 80:8000
 
   postgres:
+    platform: linux/amd64
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
