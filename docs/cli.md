@@ -3,7 +3,7 @@ title: Command Line Interface (CLI)
 summary: Aqueduct CLI for importing and exporting experiments.
 ---
 
-Aqueduct provides its Command Line Interface (CLI) with two main commands: `export` and `import`. These commands are used to export experiments data and files from the current Aqueduct instance into a `.tar.gz` file. This file can be later imported. This document provides a brief overview of how to use the Aqueduct CLI. For each command, it lists the usage, arguments, and options.
+Aqueduct provides its Command Line Interface (CLI), `aqueduct`, with two main commands: `export` and `import`. These commands are used to export experiments data and files from the current Aqueduct instance into a `.tar.gz` file. This file can be later imported. This document provides a brief overview of how to use the Aqueduct CLI. For each command, it lists the usage, arguments, and options.
 
 ## Global Options
 
@@ -24,6 +24,10 @@ aqueduct export [OPTIONS] [PATH]
 ##### Arguments
 
 - `PATH`: [Optional] File path for the exported archive. Default is `/workspace/aqueduct_data_[YYYY_MM_DD].tar.gz`.
+
+Note:
+
+1. If the provided file path doesn't have a `.tar.gz` suffix, a warning message will be printed, but the file will be created with gzipped compressed tarball content.
 
 ##### Options
 
@@ -50,4 +54,16 @@ aqueduct import [OPTIONS] FILE
 
 ## Notes
 
-1. Aqueduct CLI is installed alongside the web application. When using the official docker image of Aqueduct, the CLI is available inside the container and can be executed via `docker exec` command.
+1. Aqueduct CLI is installed alongside the web application. When using the official docker image of Aqueduct, the CLI is available inside the container and can be executed via `docker exec` command. For example:
+
+   ```sh
+   docker exec <container_name> aqueduct export [OPTIONS] [ARCHIVE_PATH]
+   ```
+
+   To download the archive from the container, you can use `docker cp` command. For example:
+
+   ```sh
+   docker cp <container_name>:[ARCHIVE_PATH] ./
+   ```
+
+   downloads the file to the current working directory.
