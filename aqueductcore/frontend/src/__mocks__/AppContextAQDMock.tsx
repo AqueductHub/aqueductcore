@@ -10,7 +10,7 @@ import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/getAllExp
 import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/getAllExperimentsWithStartTimeMock";
 import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/getAllExperimentsWithEndTimeMock";
 import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
-import { getAllExtensionNames_mock } from "__mocks__/queries/getAllExtensionsMock";
+import { getAllExtensionNames_mock } from "__mocks__/queries/getAllExtensionNamesMock";
 import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
 import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
 import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock";
