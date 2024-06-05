@@ -7,7 +7,7 @@ import { useState } from "react";
 import ExtentionFunctions from "components/molecules/ExtentionFunctions";
 import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
 import FunctionForm from "components/molecules/FunctionForm";
-import { extensions } from "__mocks__/ExtensionsDataMock";
+import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -76,10 +76,9 @@ const ModalStepGrid = styled(Grid)`
     position: relative;
 `;
 
-
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
-    const selectedExtensionItem: ExtensionType | undefined = extensions.find(extension => extension.name == selectedExtension);
+    const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
     
     // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
 

@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { CheckboxField } from "components/atoms/CheckboxField";
 
-test('renders checkbox field with correct props', () => {
+test('renders checkbox field with correct props', async () => {
     const title = 'Checkbox Title';
     const field = 'Checkbox Field';
     const description = 'Checkbox Description';
@@ -35,14 +35,14 @@ test('renders checkbox field with correct props', () => {
     expect(checkboxElement).toBeChecked();
 });
 
-test('clicking on the checkbox makes it checked', () => {
+test('clicking on the checkbox makes it checked', async () => {
     const { getByTitle } = render(
         <CheckboxField
             title="Test Checkbox"
             field="testField"
             description="Test Description"
             checkboxFieldProps={{
-                checked: true
+                defaultChecked: true
             }}
         />
     );
@@ -50,6 +50,6 @@ test('clicking on the checkbox makes it checked', () => {
     const checkbox = getByTitle('testField').children[0];
     expect(checkbox).toBeChecked();
 
-    userEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
+    await userEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();    
 });
