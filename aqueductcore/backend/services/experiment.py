@@ -79,7 +79,7 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
     if title_filter is not None:
         statement = statement.filter(
@@ -151,7 +151,7 @@ async def get_experiment_by_uuid(
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
 
@@ -185,7 +185,7 @@ async def get_experiment_by_eid(
     )
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
 
@@ -299,12 +299,12 @@ async def create_experiment(
         else:
             experiment_uuid, eid = generate_experiment_uuid_and_eid(experiment_index=1)
 
-    db_user_statement = select(orm.User).where(orm.User.uuid == user_info.user_uuid)
+    db_user_statement = select(orm.User).where(orm.User.uuid == user_info.uuid)
     db_user = (await db_session.execute(db_user_statement)).scalars().first()
 
     if not db_user:
         db_user = orm.User(
-            uuid=user_info.user_uuid,
+            uuid=user_info.uuid,
             username=user_info.username,
         )
         db_session.add(db_user)
@@ -345,7 +345,7 @@ async def update_experiment(
     )
 
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Experiment.created_by == user_info.user_uuid)
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
 
@@ -381,7 +381,7 @@ async def add_tags_to_experiment(
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_uuid
+            orm.Experiment.created_by == user_info.uuid
         )
     experiment_result = await db_session.execute(experiment_statement)
     db_experiment = experiment_result.scalars().first()
@@ -429,7 +429,7 @@ async def remove_tag_from_experiment(
     )
     if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         experiment_statement = experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_uuid
+            orm.Experiment.created_by == user_info.uuid
         )
 
     result = await db_session.execute(experiment_statement)
@@ -506,7 +506,7 @@ async def remove_experiment(
             raise AQDPermission("The user doesn't have the permission to remove the experiment.")
 
         get_experiment_statement = get_experiment_statement.filter(
-            orm.Experiment.created_by == user_info.user_uuid
+            orm.Experiment.created_by == user_info.uuid
         )
 
     get_experiment_result = await db_session.execute(get_experiment_statement)

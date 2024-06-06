@@ -74,7 +74,7 @@ async def test_file_download(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -108,7 +108,7 @@ async def test_nonexisting_file_download(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -168,7 +168,7 @@ async def test_file_upload_experiment_uuid(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -243,7 +243,7 @@ async def test_file_upload_max_body_size(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -288,7 +288,7 @@ async def test_file_upload_max_file_size(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -357,7 +357,7 @@ async def test_file_upload_non_existing_body(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -399,7 +399,7 @@ async def test_file_upload_invalid_filename(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 

@@ -29,7 +29,7 @@ class UserScope(str, Enum):
 class UserInfo(BaseModel):
     """User information and security scopes (permissions)."""
 
-    user_uuid: UUID
+    uuid: UUID
     username: str
     scopes: Set[UserScope]
 
@@ -46,7 +46,7 @@ class ServerContext(BaseContext):
 async def get_current_user() -> UserInfo:
     """Get the current user based on the provided authentication token."""
     token_data = UserInfo(
-        scopes=set(UserScope), user_uuid=UUID(int=0), username=settings.default_username
+        scopes=set(UserScope), uuid=UUID(int=0), username=settings.default_username
     )
 
     return token_data

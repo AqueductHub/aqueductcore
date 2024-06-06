@@ -313,9 +313,7 @@ async def test_create_experiment_invalid_title(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_invalid_title, context_value=context)
 
@@ -348,9 +346,7 @@ async def test_create_experiment_invalid_description(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         create_experiment_mutation_invalid_description, context_value=context
@@ -384,9 +380,7 @@ async def test_create_experiment_invalid_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_invalid_tags, context_value=context)
 
@@ -419,9 +413,7 @@ async def test_create_experiment_over_limit_tags(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(create_experiment_mutation_over_limit_tags, context_value=context)
 
@@ -454,9 +446,7 @@ async def test_update_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(update_experiment_mutation, context_value=context)
 
@@ -493,9 +483,7 @@ async def test_add_tag_to_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(add_tag_to_experiment_mutation, context_value=context)
 
@@ -528,9 +516,7 @@ async def test_add_tags_to_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
 
     expected_tags = ["test1", "test2", "test3"]
@@ -607,9 +593,7 @@ async def test_remove_tag_from_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(remove_tag_from_experiment_mutation, context_value=context)
 
@@ -642,9 +626,7 @@ async def test_remove_experiment(
 
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(remove_experiment_mutation, context_value=context)
 
@@ -682,9 +664,7 @@ async def test_execute_plugin_stdout_ok(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query,
@@ -730,9 +710,7 @@ async def test_execute_plugin_stderr_ok(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query.replace("echo", "echo_stderr"),
@@ -779,9 +757,7 @@ async def test_execute_plugin_failed_validation(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            user_uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
-        ),
+        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query.replace("111", "non_number"),
