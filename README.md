@@ -4,7 +4,7 @@ Aqueduct is the open platform that simplifies quantum experiment management.
 
 Intuitive automation and administration features enable you to
 focus on consistently running and scaling up your experiments.
-Powerful APIs and a flexible plugin SDK allow you to easily
+Powerful APIs and a flexible extensions SDK allow you to easily
 integrate with Aqueduct and streamline your workflow.
 
 This project uses the following main software stack and technologies:
@@ -53,6 +53,7 @@ services:
       - postgres
     environment:
       EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+      EXTENSIONS_DIR_PATH: /workspace/extensions
       POSTGRES_USERNAME: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres
@@ -60,6 +61,10 @@ services:
       POSTGRES_DB: aqueduct
     volumes:
       - /tmp/aqueduct_experiments:/tmp/aqueduct_experiments
+      - type: bind
+        # define your host folder with extensions
+        source: /aqueductcore/extensions
+        target: /workspace/extensions
     ports:
       - 80:8000
 

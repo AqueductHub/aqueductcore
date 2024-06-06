@@ -19,11 +19,11 @@ from aqueductcore.backend.routers.graphql.resolvers.tags_resolver import get_tag
 from aqueductcore.backend.routers.graphql.types import (
     ExperimentData,
     Experiments,
-    PluginInfo,
+    ExtensionInfo,
     Tags,
     UserInfo,
 )
-from aqueductcore.backend.services.plugin_executor import PluginExecutor
+from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
 
 
 @strawberry.input
@@ -104,8 +104,8 @@ class Query:
 
 
     @strawberry.field
-    async def plugins(self) -> List[PluginInfo]:
-        """List of plugins available now"""
+    async def extensions(self) -> List[ExtensionInfo]:
+        """List of extensions available now"""
         return list(
-            map(PluginInfo.from_plugin, PluginExecutor.list_plugins())
+            map(ExtensionInfo.from_extension, ExtensionsExecutor.list_extensions())
         )

@@ -1,17 +1,16 @@
-name: "Wolfram alpha solution plugin"
+name: "Wolfram alpha solution extension"
 description: >
-  This plugin solves mathematical problems
+  This extension solves mathematical problems
   using Wolfram|Alpha cloud engine. To run the
-  plugin, please obtain an App ID at
+  extension, please obtain an App ID at
   https://developer.wolframalpha.com/access
 authors: aqueduct@riverlane.com
-aqueduct_url: https://aqueduct-demo.azurewebsites.net/
+aqueduct_url: https://localhost:8000/
 
-params:
+constants:
   wolfram_app_id: "KEY HERE"
 
-
-functions:
+actions:
   - 
     name: solve as text
     description: >
@@ -19,7 +18,7 @@ functions:
 
     # there is a trick, which allows to
     # customise execution environments by having
-    # a venv inside a plugin folder, and running
+    # a venv inside a extension folder, and running
     # a venv-specific
     # python binary from venv folder. Details:
     # https://stackoverflow.com/a/54482177
@@ -27,14 +26,14 @@ functions:
     # This thick allows to avoid `aqueductcore`
     # dependency on client library.
     #
-    # Plugin may cache some data and libraries
+    # Extension may cache some data and libraries
     # for it's further usage, or, alternatively,
     # it may drop and recreate
     # its environment on each run.
     script: >
       $python solve_alpha.py
 
-    # arguments of the function
+    # arguments of the action
     parameters:
       - 
         name: equation

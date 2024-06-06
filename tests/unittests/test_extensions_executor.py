@@ -1,30 +1,26 @@
 import shutil
 
 import pytest
-from pydantic import ValidationError
-
 from aqueductcore.backend.errors import AQDValidationError
-from aqueductcore.backend.models.plugin import (
-    Plugin,
-    PluginFunction,
-    PluginParameter,
+from aqueductcore.backend.services.extensions_executor import (
+    ExtensionsExecutor, VENV_FOLDER, PYTHON_BINARY)
+
+from aqueductcore.backend.models.extensions import (
+    Extension,
+    ExtensionAction,
+    ExtensionParameter,
     SupportedTypes,
 )
-from aqueductcore.backend.services.plugin_executor import (
-    PYTHON_BINARY,
-    VENV_FOLDER,
-    PluginExecutor,
-)
 
 
-class TestPluginExecutor:
+class TestExtensionExecutor:
 
-    def test_list_plugins_ok(self):
-        plugins = PluginExecutor.list_plugins()
-        assert len(plugins) == 2
-        var1 = plugins[0].functions[0].parameters[0]
-        var2 = plugins[0].functions[0].parameters[1]
-        var6 = plugins[0].functions[0].parameters[5]
+    def test_list_extensions_ok(self):
+        extensions = ExtensionsExecutor.list_extensions()
+        assert len(extensions) == 2
+        var1 = extensions[0].actions[0].parameters[0]
+        var2 = extensions[0].actions[0].parameters[1]
+        var6 = extensions[0].actions[0].parameters[5]
 
         assert var1.default_value == "1" and var1.name == "var1"
         assert var2.display_name == "some display name"
@@ -63,12 +59,12 @@ class TestPluginExecutor:
         ],
     )
     def test_validate_values_ok(self, value):
-        plugins = PluginExecutor.list_plugins()
-        if plugins[0].name == "Dummy plugin":
-            plugin = plugins[0]
+        extensions = ExtensionsExecutor.list_extensions()
+        if extensions[0].name == "Dummy extension":
+            extension = extensions[0]
         else:
-            plugin = plugins[1]
-        func = plugin.functions[0]
+            extension = extensions[1]
+        func = extension.actions[0]
         func.validate_values(value)
 
     @pytest.mark.parametrize(
@@ -125,47 +121,49 @@ class TestPluginExecutor:
         ],
     )
     def test_validate_values_raises(self, value):
-        plugins = PluginExecutor.list_plugins()
-        if plugins[0].name == "Dummy plugin":
-            plugin = plugins[0]
+        extensions = ExtensionsExecutor.list_extensions()
+        if extensions[0].name == "Dummy extension":
+            extension = extensions[0]
         else:
-            plugin = plugins[1]
+            extension = extensions[1]
         with pytest.raises(AQDValidationError):
-            plugin.functions[0].validate_values(value)
+            extension.actions[0].validate_values(value)
 
     @pytest.mark.parametrize(
-        "plugin",
+        "extension",
         [
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
-                functions=[],
-                params={},
+                actions=[],
+                constants={},
                 aqueduct_url="",
             ),
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
                 aqueduct_url="",
-                functions=[
-                    PluginFunction(name="func1", description="descr", script="", parameters=[]),
+                actions=[
+                    ExtensionAction(
+                        name="func1", description="descr", script="", parameters=[]
+                    ),
                 ],
-                params={},
+                constants={},
             ),
-            Plugin(
+            Extension(
                 name="name",
                 description="long descr",
                 authors="a@a.org",
                 aqueduct_url="",
-                functions=[
-                    PluginFunction(
+                actions=[
+                    ExtensionAction(
                         name="func1",
                         description="descr",
                         script="",
                         parameters=[
-                            PluginParameter(
+                            ExtensionParameter(
                                 name="var1",
                                 description="descr",
                                 data_type=SupportedTypes.TEXTAREA,
@@ -173,34 +171,27 @@ class TestPluginExecutor:
                         ],
                     ),
                 ],
-                params={},
+                constants={},
             ),
         ],
     )
-    def test_plugin_validation_ok(self, plugin):
-        plugin.validate_object()
+    def test_extension_validation_ok(self, extension):
+        extension.validate_object()
 
-    def test_plugin_echo(self):
-        plugin = PluginExecutor.get_plugin("Dummy plugin")
-        result = PluginExecutor.execute(
-            plugin="Dummy plugin",
-            function="echo",
-            params={
-                "var1": "text",
-                "var2": 1,
-                "var3": 2.2,
-                "var4": "20240229-5689864ffd94",
-                "var5": "text\narea",
-                "var6": 0,
-                "var7": "string2",
-            },
+    def test_extension_echo(self):
+        extension = ExtensionsExecutor.get_extension("Dummy extension")
+        result = ExtensionsExecutor.execute(
+            extension="Dummy extension",
+            action="echo",
+            params={"var1": "text", "var2": 1, "var3": 2.2, "var4": "20240229-5689864ffd94",
+             "var5": "text\narea", "var6": 0, "var7": "string2"},
         )
         assert result.return_code == 0
 
     @pytest.mark.skip
-    def test_plugin_wolfram_alpha(self):
-        result = PluginExecutor.execute(
-            "Wolfram alpha solution plugin",
+    def test_extension_wolfram_alpha(self):
+        result = ExtensionsExecutor.execute(
+            "Wolfram alpha solution extension",
             "solve as text",
             {
                 "equation": "x^2 + 7 = 0",
@@ -212,14 +203,18 @@ class TestPluginExecutor:
         assert result.return_code == 0
         assert result.stdout == "x = -i sqrt(7)\nx = i sqrt(7)\n"
 
-    def test_plugin_venv_is_created_execute(self):
-        plugin = PluginExecutor.get_plugin("Wolfram alpha solution plugin")
-        venv = plugin.folder / VENV_FOLDER
+    def test_extension_venv_is_created_execute(self):
+        extension = ExtensionsExecutor.get_extension("Wolfram alpha solution extension")
+        venv = extension.folder / VENV_FOLDER
         # make sure there is no venv
         shutil.rmtree(venv, ignore_errors=True)
         # it will fail, but after the venv creation
         try:
-            PluginExecutor.execute("Wolfram alpha solution plugin", "solve as text", {})
+            ExtensionsExecutor.execute(
+                "Wolfram alpha solution extension",
+                "solve as text",
+                {}
+            )
         except:
             pass
         # venv is created
