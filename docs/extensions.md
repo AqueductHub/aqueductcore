@@ -37,10 +37,10 @@ This convention is described in the chapters below.
 When server executes an extension action, the following steps are followed:
 
 1. Server application (`aqueductcore` or `aqueductpro`) checks the correctness of the extension definition (see chapter on [Writing a Manifest File](#writing-a-manifest-file)).
-2. Then it check the existence of the python virtual environment inside extension's directory. If there is no virtual environment inside, it is created and populated with dependencies. You may control which modules are installed there by adding `requirements.txt` and/or `pyproject.toml` files. These dependencies are shared by all actions of the extension and installed once.
+2. Then it checks the existence of the python virtual environment inside the extension's directory. If there is no virtual environment inside, it gets created and the extension's dependencies are installed. You may control which packages are installed by adding `requirements.txt` and/or `pyproject.toml` files to the extension's directory. These dependencies are shared by all actions of the extension and installed once.
 3. Based on the manifest file and user input, parameters and constants are initialised as environment variables.
 4. `script` section of the action definition is executed. This may call arbitrary code: scripts or programs located in the directory. If `$python` variable is used inside this section, it is replaced with the python executable of the virtual environment. Read more about writing the code in [Writing Extension Code](#writing-extension-code) section. We expect that these programs read the data and persist the results inside the aqueduct experiment.
-5. Execution output (standard input stream, standard error stream, process result code) is recorded in a log file inside an experiment.
+5. Execution output (standard input stream, standard error stream, process result code) is recorded in a log file which gets saved alongside the experiment's files.
 
 ## Writing Extension Code
 
@@ -126,7 +126,7 @@ Start it simple. First, create three files on your local files system where `pyt
     echo "Result code: $?"
     ```
 
-Now, you may run and test your plugin action as `sh test.sh`. Do changes of variables and constants by adding them to the `test.sh` file, and reading them with `os.environ.get("name", "")` in python.
+Now, you may run and test your extension action as `sh test.sh`. Do changes of variables and constants by adding them to the `test.sh` file, and reading them with `os.environ.get("name", "")` in python.
 
 If you update code of extension actions, or its dependencies, deleting `.aqueduct-extension-dev/` 
 will force virtual environment re-creation. If your dependencies are already stable, you may keep virtual environment directory to accelerate test runs.
@@ -223,7 +223,7 @@ Each manifest starts with a header with general extension information
 the user interface. The `aqueduct_url` mandatory parameter is used to make 
 the extension aware of the instance of Aqueduct it should interact with. 
 In the current implementation, extensions are assumed to run on the same machine 
-as the server application, so this address will be a `http://localhost:8000/` or similar.
+as the server application, so this address will be a `http://localhost:8000/` or similar. Port `8000` is the default port in the container that the Aqueduct server listens to.
 
 Optional `constants` section allows to define key-value pairs for constants shared across
 all extension action executions.
