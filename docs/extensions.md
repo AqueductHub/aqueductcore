@@ -5,13 +5,13 @@ summary: this document describes extension programming, installation, and setup 
 
 On this page we provide information related to extension development, deployment and setup:
 
-- [What is Extension](#what-is-extension)
-- [Writing Extension Code](#writing-extension-code)
+- [What is an Extension](#what-is-an-extension)
+- [Writing an Extension](#writing-an-extension)
 - [Writing a Manifest File](#writing-a-manifest-file)
 - [Deploying an Extension](#deploying-an-extension)
 - [Extension Setup](#extension-setup)
 
-## What is Extension
+## What is an Extension
 
 Extension is a piece of software, which adds custom functionality to the server instance 
 (`aqueductcore` or `aqueductpro`) without server update or restart.
@@ -20,9 +20,9 @@ For example, a set of graph plotting actions, integration with a 3rd-party servi
 a collection of quantum circuit simulation methods.
 
 Extensions may be implemented in any programming language if this language interpreter 
-or binary architecture is supported by the executing (virtual) machine.
+or binary architecture is supported by the executing (virtual) environment.
 In the current implementation of extensions, their code is run on the Aqueduct server machine 
-(within server container, if you use containerised version). By default, `python3` and `bash` scripting  are supported.
+(within server container, if you use containerised version). By default, `python3.10` and `bash` scripting  are supported.
 
 Extension execution may be triggered in one of two ways:
 
@@ -39,10 +39,10 @@ When server executes an extension action, the following steps are followed:
 1. Server application (`aqueductcore` or `aqueductpro`) checks the correctness of the extension definition (see chapter on [Writing a Manifest File](#writing-a-manifest-file)).
 2. Then it checks the existence of the python virtual environment inside the extension's directory. If there is no virtual environment inside, it gets created and the extension's dependencies are installed. You may control which packages are installed by adding `requirements.txt` and/or `pyproject.toml` files to the extension's directory. These dependencies are shared by all actions of the extension and installed once.
 3. Based on the manifest file and user input, parameters and constants are initialised as environment variables.
-4. `script` section of the action definition is executed. This may call arbitrary code: scripts or programs located in the directory. If `$python` variable is used inside this section, it is replaced with the python executable of the virtual environment. Read more about writing the code in [Writing Extension Code](#writing-extension-code) section. We expect that these programs read the data and persist the results inside the aqueduct experiment.
+4. `script` section of the action definition is executed. This may call arbitrary code: scripts or programs located in the directory. If `$python` variable is used inside this section, it is replaced with the python executable of the virtual environment. Read more about writing the code in [Writing an Extension](#writing-an-extension) section. We expect that these programs read the data and persist the results inside the aqueduct experiment.
 5. Execution output (standard input stream, standard error stream, process result code) is recorded in a log file which gets saved alongside the experiment's files.
 
-## Writing Extension Code
+## Writing an Extension
 
 Extension may be fully written inside the `script` section of the manifest. But it is convenient to 
 separate its code into a dedicated file. Input values and constants are passed to this script file
@@ -271,7 +271,7 @@ Please, note, that purpose of extensions is to interact with an experiment. They
 ## Deploying an Extension
 
 Extensions are directories which could be distributed in the form of archives. When starting the server using Docker, 
-bind mount a host directory to the Aqueduct container at `/workspace/extensions`.
+bind mount a host directory to the Aqueduct container. Suggested location is `/workspace/extensions`. This location should be provided in `EXTENSIONS_DIR_PATH` environment variable.
 Unpack an extension directory into the host directory, and the container will immediately see the changes.
 
 For example, if you map host directory `/usr/data/extensions` to `/workspace/extensions`, 
