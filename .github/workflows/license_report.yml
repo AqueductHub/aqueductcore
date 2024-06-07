@@ -30,7 +30,7 @@ jobs:
     needs: [confirm-action-execution]
     environment:
       name: automated-release
-    if: ${{ env.allow_automated_release }} == 'true'
+    if: ${{ env.allow_automated_release  == 'true'}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
