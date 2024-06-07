@@ -13,9 +13,10 @@ jobs:
         id: is_release_allowed_check
         run: |
           if (( $(date +%V) % 2 == 0 )); then
-            echo "is_release_allowed=true" >> $GITHUB_OUTPUT
+            echo "is_release_allowed=true" >> $GITHUB_ENV
           else
-            echo "is_release_allowed=false" >> $GITHUB_OUTPUT
+            echo "is_release_allowed=false" >> $GITHUB_ENV
+          fi
         shell: bash
 
   release:
