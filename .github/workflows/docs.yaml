@@ -1,8 +1,7 @@
 name: Docs latest and released versions
 
 on:
-  schedule:
-    - cron: "30 11 * * 1"
+  workflow_dispatch:
 
 jobs:
   confirm-action-execution:
