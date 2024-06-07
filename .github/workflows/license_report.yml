@@ -12,7 +12,7 @@ jobs:
       - name: Confirm action execution
         id: is_release_allowed_check
         run: |
-          if (( $(date +%V) % 2 == 0 )); then
+          if (( $(date +%V) % 2 == 1 )); then
             echo "is_release_allowed=true" >> $GITHUB_ENV
           else
             echo "is_release_allowed=false" >> $GITHUB_ENV
