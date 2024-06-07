@@ -3,16 +3,21 @@ name: Generate license report of dependencies.
 on:
   workflow_dispatch:
 
+env:
+  env_var: ${{ vars.ALLOW_AUTOMATED_RELEASE }} 
+
 jobs:
   confirm-action-execution:
     runs-on: ubuntu-latest
     outputs:
       is_release_allowed: ${{ steps.is_release_allowed_check.outputs.is_release_allowed }}
+    environment:
+      name: automated-release
     steps:
       - name: Confirm action execution
         id: is_release_allowed_check
         run: |
-          echo "Value of automatic release is ${{ env.ALLOW_AUTOMATED_RELEASE }}"
+          echo "Value of automatic release is ${{ vars.ALLOW_AUTOMATED_RELEASE }}"
           if (( $(date +%V) % 2 == 1 )); then
             echo "is_release_allowed=true" >> $GITHUB_ENV
           else
