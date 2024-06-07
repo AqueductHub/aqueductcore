@@ -50,7 +50,7 @@ jobs:
       #     version: ${{ steps.next_version.outputs.version }}
 
       - name: Show the values of version
-        if: ${{ env.allow_automated_release == 'true' && && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
+        if: ${{ env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
         run: |
           echo ${{ steps.next_version.outputs.version }}
           echo ${{ needs.confirm-action-execution.outputs.is_release_allowed }}
