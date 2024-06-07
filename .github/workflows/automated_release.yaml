@@ -37,8 +37,13 @@ jobs:
           NEXT_VERSION=$(echo $CURRENT_VERSION | awk -F. '{ printf "%d.%d.%d", $1, $2, $3+1 }')
           echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Trigger release workflow
-        uses: ./release.yaml
-        with:
-          version: ${{ steps.next_version.outputs.version }}
-        secrets: inherit
+      # - name: Trigger release workflow
+      #   uses: ./release.yaml
+      #   with:
+      #     version: ${{ steps.next_version.outputs.version }}
+
+      - name: Show the values of version
+        run: |
+          echo 
+          echo ${{ steps.next_version.outputs.version }}
+          echo ${{ needs.confirm-action-execution.outputs.is_release_allowed }}
