@@ -8,6 +8,14 @@ on:
         required: true
         type: string
         default: "MAJOR.MINOR.PATCH"
+  workflow_call:
+    inputs:
+      version:
+        description: "Aqueduct Version"
+        required: true
+        type: string
+        default: "MAJOR.MINOR.PATCH"
+
 jobs:
   build:
     runs-on: ubuntu-20.04

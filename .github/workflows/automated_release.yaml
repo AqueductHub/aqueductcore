@@ -1,0 +1,55 @@
+name: Automated release for Aqueduct Core every alternate Monday at 12:00 PM
+
+on:
+  schedule:
+    - cron: "0 11 * * 1"
+env:
+  allow_automated_release: ${{ vars.ALLOW_AUTOMATED_RELEASE }}
+
+jobs:
+  confirm-action-execution:
+    runs-on: ubuntu-latest
+    outputs:
+      is_release_allowed: ${{ steps.is_release_allowed_check.outputs.is_release_allowed }}
+    environment:
+      name: automated-release
+    steps:
+      - name: Confirm action execution
+        id: is_release_allowed_check
+        run: |
+          if (( $(date +%V) % 2 == 0 )); then
+            echo "is_release_allowed=true" >> $GITHUB_ENV
+          else
+            echo "is_release_allowed=false" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [confirm-action-execution]
+    environment:
+      name: automated-release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current release version and calculate next patch version
+        id: next_version
+        run: |
+          git fetch --tags
+          CURRENT_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          NEXT_VERSION=$(echo $CURRENT_VERSION | awk -F. '{ printf "%d.%d.0", $1, $2+1 }')
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Show the values of version
+        run: |
+          echo ${{ steps.next_version.outputs.version }}
+          echo ${{ needs.confirm-action-execution.outputs.is_release_allowed }}
+
+      - name: Trigger release workflow
+        uses: ./release.yaml
+        if: ${{ env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
+        with:
+          version: ${{ steps.next_version.outputs.version }}
