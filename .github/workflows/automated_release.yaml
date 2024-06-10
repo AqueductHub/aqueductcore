@@ -5,9 +5,6 @@ on:
     - cron: "0 11 * * 1"
   workflow_dispatch:
 
-env:
-  allow_automated_release: ${{ vars.ALLOW_AUTOMATED_RELEASE }}
-
 jobs:
   confirm-action-execution:
     runs-on: ubuntu-latest
@@ -24,11 +21,6 @@ jobs:
             echo "week_number_check=true" >> $GITHUB_OUTPUT
           else
             echo "week_number_check=false" >> $GITHUB_OUTPUT
-          fi
-          if (( ${{ env.allow_automated_release }} == 'true' )); then
-            echo "is_release_allowed=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_release_allowed=false" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
@@ -59,11 +51,11 @@ jobs:
           echo "Week number check is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
-  trigger-workflow:
-    name: Trigger release workflow
-    needs: [confirm-action-execution, next-version]
-    if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
-    uses: ./.github/workflows/release.yaml
-    with:
-      version: ${{ needs.next-version.outputs.next_version_number }}
-    secrets: inherit
+  # trigger-workflow:
+  #   name: Trigger release workflow
+  #   needs: [confirm-action-execution, next-version]
+  #   if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
+  #   uses: ./.github/workflows/release.yaml
+  #   with:
+  #     version: ${{ needs.next-version.outputs.next_version_number }}
+  #   secrets: inherit
