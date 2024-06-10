@@ -51,13 +51,13 @@ jobs:
           echo "Previous step output is ${{ needs.confirm-action-execution.outputs.is_release_allowed }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
-    trigger-workflow:
-      name: Trigger release workflow
-      needs: [confirm-action-execution]
-      environment:
-        name: automated-release
-      uses: ./.github/workflows/release.yaml
-      if: ${{ env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
-      with:
-        version: ${{ steps.next_version.outputs.version }}
-      secrets: inherit
+  trigger-workflow:
+    name: Trigger release workflow
+    needs: [confirm-action-execution]
+    environment:
+      name: automated-release
+    uses: ./.github/workflows/release.yaml
+    if: ${{ env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
+    with:
+      version: ${{ steps.next_version.outputs.version }}
+    secrets: inherit
