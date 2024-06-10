@@ -1,11 +1,10 @@
 import os
 import urllib.parse
-import requests
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from xml.etree import ElementTree
 
-from tempfile import TemporaryDirectory
-from pathlib import Path
-
+import requests
 from pyaqueduct import API
 from pyaqueduct.experiment import Experiment
 
@@ -27,23 +26,20 @@ def solve_with_wolfram_alpha(app_id: str, question: str) -> str:
 
 
 def save_to_aqueduct(
-        content: str,
-        aqueduct_url: str,
-        aqueduct_key: str,
-        experiment_alias: str,
-        filename: str) -> None:
+    content: str, aqueduct_url: str, aqueduct_key: str, eid: str, filename: str
+) -> None:
     """Saves content string as a file in aqueduct
 
     content (str): string to save
     aqueduct_url (str): URL of the aqueduct instance
     aqueduct_key (str): access key (if needed) to access the instance
-    experiment_alias (str):
-        alias of the experiment where the file will be saved
+    eid (str):
+        EID of the experiment where the file will be saved
     filename (str):
         name of the resulting file
     """
     api = API(url=aqueduct_url, timeout=10)
-    exp = api.get_experiment(experiment_alias)
+    exp = api.get_experiment(eid)
 
     with TemporaryDirectory() as directory:
         fullname = Path(directory) / filename
@@ -60,12 +56,9 @@ if __name__ == "__main__":
     aq_url = os.environ.get("aqueduct_url", "")
     aq_key = os.environ.get("aqueduct_key", "")
 
-    experiment_alias = os.environ.get("experiment", "")
+    eid = os.environ.get("experiment", "")
     filename = os.environ.get("result_file", "")
 
     solution = solve_with_wolfram_alpha(app_id, problem)
-    save_to_aqueduct(
-        f"{problem}:\n{solution}",
-        aq_url, aq_key,
-        experiment_alias, filename)
+    save_to_aqueduct(f"{problem}:\n{solution}", aq_url, aq_key, eid, filename)
     print(solution)

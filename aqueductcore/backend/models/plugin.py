@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from enum import Enum
 import os
 import subprocess
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -91,10 +91,10 @@ class PluginParameter(BaseModel):
             try:
                 prefix, postfix = value.split("-")
                 if not prefix.isdecimal() or not postfix.isalnum():
-                    raise AQDValidationError("Experiment alias has wrong format.")
+                    raise AQDValidationError("Experiment EID has wrong format.")
                 return value
             except Exception as exc:
-                raise AQDValidationError(f"{value} is not a valid experiment id.") from exc
+                raise AQDValidationError(f"{value} is not a valid EID.") from exc
 
         if self.data_type == SupportedTypes.SELECT:
             if self.options is not None:
@@ -117,11 +117,8 @@ class PluginFunction(BaseModel):
     parameters: List[PluginParameter]
 
     def execute(
-            self,
-            plugin: Plugin,
-            params: dict,
-            python: str | Path | None = None,
-            timeout: int=60) -> PluginExecutionResult:
+        self, plugin: Plugin, params: dict, python: str | Path | None = None, timeout: int = 60
+    ) -> PluginExecutionResult:
         """Passes parameters to the function code and awaits
         execution results
 
@@ -233,7 +230,7 @@ class Plugin(BaseModel):
             return plugin
 
     def get_function(self, name: str) -> PluginFunction:
-        """ Get plugin function by its name.
+        """Get plugin function by its name.
 
         Args:
             name: function name
@@ -255,7 +252,7 @@ class Plugin(BaseModel):
 
     @property
     def folder(self):
-        """ Folder with plugin specification. Raises if not initialised. """
+        """Folder with plugin specification. Raises if not initialised."""
         if self._folder is None:
             raise AQDFilesPathError(f"Plugin {self.name} folder is not known.")
         return self._folder

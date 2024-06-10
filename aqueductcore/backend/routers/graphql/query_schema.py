@@ -31,7 +31,7 @@ class ExperimentFiltersInput:
     """Filters to be applied for experiments"""
 
     title: Optional[str] = strawberry.field(
-        default=None, description="Search string for experiment title and alias."
+        default=None, description="Search string for experiment title and EID."
     )
     tags: Optional[List[str]] = strawberry.field(
         default=None, description="List of tags to filter."
@@ -102,10 +102,7 @@ class Query:
         tags = await get_tags(context=context, limit=limit, offset=offset, filters=filters)
         return tags
 
-
     @strawberry.field
     async def plugins(self) -> List[PluginInfo]:
         """List of plugins available now"""
-        return list(
-            map(PluginInfo.from_plugin, PluginExecutor.list_plugins())
-        )
+        return list(map(PluginInfo.from_plugin, PluginExecutor.list_plugins()))

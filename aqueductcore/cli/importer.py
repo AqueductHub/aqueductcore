@@ -49,7 +49,7 @@ class Importer:
 
         """
         conflict_statement = select(orm.Experiment).where(
-            orm.Experiment.alias.in_([item.eid for item in experiments])
+            orm.Experiment.eid.in_([item.eid for item in experiments])
         )
         conflict_result = db_session.execute(conflict_statement).scalars().all()
 
@@ -66,10 +66,10 @@ class Importer:
         """
 
         cur_users_statement = select(orm.User).where(
-            orm.User.id.in_([item.uuid for item in metadata.users])
+            orm.User.uuid.in_([item.uuid for item in metadata.users])
         )
         cur_db_users = db_session.execute(cur_users_statement).scalars().all()
-        cur_db_users_dict = {item.id: item for item in cur_db_users}
+        cur_db_users_dict = {item.uuid: item for item in cur_db_users}
 
         metadata_experiments: List[Experiment] = []
         for user in metadata.users:
@@ -95,7 +95,7 @@ class Importer:
             db_user = cur_db_users_dict.get(user.uuid)
             if not db_user:
                 db_user = orm.User(
-                    id=user.uuid,
+                    uuid=user.uuid,
                     username=user.username,
                 )
                 cur_db_users_dict[user.uuid] = db_user
@@ -103,11 +103,11 @@ class Importer:
 
             for experiment in user.experiments:
                 db_experiment = orm.Experiment(
-                    id=experiment.uuid,
+                    uuid=experiment.uuid,
                     title=experiment.title,
                     description=experiment.description,
                     tags=[db_tags[tag.key] for tag in experiment.tags],
-                    alias=experiment.eid,
+                    eid=experiment.eid,
                     created_at=experiment.created_at,
                     updated_at=experiment.updated_at,
                 )
