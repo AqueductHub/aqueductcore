@@ -65,5 +65,5 @@ jobs:
     if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
     uses: ./.github/workflows/release.yaml
     with:
-      version: ${{ needs.release-allowed.outputs.version }}
+      version: ${{ needs.release-allowed.outputs.next_version_number }}
     secrets: inherit
