@@ -26,8 +26,10 @@ jobs:
           fi
         shell: bash
 
-  release:
+  release-allowed:
     runs-on: ubuntu-latest
+    outputs:
+      next_version_number: ${{ steps.next_version.outputs.version }}
     needs: [confirm-action-execution]
     environment:
       name: automated-release
@@ -53,8 +55,8 @@ jobs:
 
   trigger-workflow:
     name: Trigger release workflow
-    needs: [confirm-action-execution]
-    if: env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
+    needs: [confirm-action-execution, release-allowed]
+    if: needs.confirm-action-execution.outputs.is_release_allowed == 'true' && needs.release-allowed.outputs.next_version_number == 'true'
     uses: ./.github/workflows/release.yaml
     with:
       version: ${{ steps.next_version.outputs.version }}
