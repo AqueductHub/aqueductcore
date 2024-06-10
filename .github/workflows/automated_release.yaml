@@ -59,7 +59,7 @@ jobs:
     if: needs.confirm-action-execution.outputs.is_release_allowed == 'true' && needs.release-allowed.outputs.next_version_number == 'true'
     uses: ./.github/workflows/release.yaml
     with:
-      version: ${{ steps.next_version.outputs.version }}
+      version: ${{ needs.release-allowed.outputs.version }}
     environment:
       name: automated-release
     secrets: inherit
