@@ -56,13 +56,13 @@ jobs:
       - name: Show the values of version
         run: |
           echo "Next version is ${{ steps.next_version.outputs.version }}"
-          echo "Previous step output is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
+          echo "Week number check is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
   trigger-workflow:
     name: Trigger release workflow
     needs: [confirm-action-execution, release-allowed]
-    if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed
+    if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
     uses: ./.github/workflows/release.yaml
     with:
       version: ${{ needs.release-allowed.outputs.version }}
