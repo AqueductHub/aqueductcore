@@ -1,81 +1,62 @@
-// import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
-// import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
-// import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-// import CssBaseline from "@mui/material/CssBaseline";
-// import { ApolloProvider } from "@apollo/client";
-// import { Toaster } from "react-hot-toast";
+import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
+import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ApolloProvider } from "@apollo/client";
+import { Toaster } from "react-hot-toast";
 
-// import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
-// import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
-// import DrawerLayout from "components/templates/drawerLayout";
-// import AuthenticationPage from "pages/AuthenticationPage";
-// import { AuthProvider } from "context/AuthProvider";
-// import { client } from "API/apolloClientConfig";
-// import SettingsPage from "pages/SettingsPage";
-// import { cssVariableTheme } from "theme";
-
-// function App() {
-//   const themeConfig = extendTheme(cssVariableTheme);
-//   return (
-//     <ApolloProvider client={client}>
-//       <CssVarsProvider theme={themeConfig}>
-//         <CssBaseline />
-//         {/* main page */}
-//         <BrowserRouter>
-//           <AuthProvider>
-//             <DrawerLayout>
-//               <Routes>
-//                 <Route
-//                   path="/login"
-//                   element={<AuthenticationPage />}
-//                 />
-//                 <Route
-//                   path="/"
-//                   element={<Navigate replace to="/aqd/experiments" />}
-//                 />
-//                 <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
-//                 <Route
-//                   path="/aqd/experiments/favourites"
-//                   element={<ExperimentRecordsPage category="favourites" />}
-//                 />
-//                 <Route
-//                   path="/aqd/experiments/archived"
-//                   element={<ExperimentRecordsPage category="archived" />}
-//                 />
-//                 <Route
-//                   path="/aqd/experiments/:experimentIdentifier"
-//                   element={<ExperimentDetailsPage />}
-//                 />
-//                 <Route
-//                   path="/settings"
-//                   element={<SettingsPage />}
-//                 />
-//               </Routes>
-//             </DrawerLayout>
-//           </AuthProvider>
-//           <Toaster />
-//         </BrowserRouter>
-//       </CssVarsProvider>
-//     </ApolloProvider>
-//   );
-// }
-
-// export default App;
-
-
-import { Route, Routes } from "react-router-dom";
-
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
-import AppContextAQDMock from "__mocks__/AppContextAQDMock";
+import DrawerLayout from "components/templates/drawerLayout";
+import AuthenticationPage from "pages/AuthenticationPage";
+import { AuthProvider } from "context/AuthProvider";
+import { client } from "API/apolloClientConfig";
+import SettingsPage from "pages/SettingsPage";
+import { cssVariableTheme } from "theme";
 
 function App() {
+  const themeConfig = extendTheme(cssVariableTheme);
   return (
-    <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.alias}`] }}>
-      <Routes>
-        <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
-      </Routes>
-    </AppContextAQDMock >
+    <ApolloProvider client={client}>
+      <CssVarsProvider theme={themeConfig}>
+        <CssBaseline />
+        {/* main page */}
+        <BrowserRouter>
+          <AuthProvider>
+            <DrawerLayout>
+              <Routes>
+                <Route
+                  path="/login"
+                  element={<AuthenticationPage />}
+                />
+                <Route
+                  path="/"
+                  element={<Navigate replace to="/aqd/experiments" />}
+                />
+                <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
+                <Route
+                  path="/aqd/experiments/favourites"
+                  element={<ExperimentRecordsPage category="favourites" />}
+                />
+                <Route
+                  path="/aqd/experiments/archived"
+                  element={<ExperimentRecordsPage category="archived" />}
+                />
+                <Route
+                  path="/aqd/experiments/:experimentIdentifier"
+                  element={<ExperimentDetailsPage />}
+                />
+                <Route
+                  path="/settings"
+                  element={<SettingsPage />}
+                />
+              </Routes>
+            </DrawerLayout>
+          </AuthProvider>
+          <Toaster />
+        </BrowserRouter>
+      </CssVarsProvider>
+    </ApolloProvider>
   );
 }
 

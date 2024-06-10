@@ -11,7 +11,7 @@ export const getAllExtensions_mock = {
             request,
             result: {
                 data: {
-                    plugins: ExtensionsDataMock
+                    extensions: ExtensionsDataMock
                 },
             },
             maxUsageCount: Number.POSITIVE_INFINITY,

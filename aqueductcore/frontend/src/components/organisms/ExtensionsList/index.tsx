@@ -23,7 +23,7 @@ function ExtensionsList() {
     const anchorRef = useRef<HTMLDivElement>(null);
 
     const { data, error } = useGetAllExtensions()
-    const extensions = data?.plugins
+    const extensions = data?.extensions
 
     const handleClick = (option: string) => {
         setSelectedExtension(option)
@@ -100,7 +100,7 @@ function ExtensionsList() {
                                     {extensions.map((extension) => (
                                         <MenuItem
                                             key={extension.name}
-                                            disabled={!extension.functions.length}
+                                            disabled={!extension.actions.length}
                                             onClick={() => handleClick(extension.name)}
                                         >
                                             {extension.name}

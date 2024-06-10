@@ -8,12 +8,12 @@ import toast from "react-hot-toast";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
-import { EXECUTE_EXTENSION_TYPE, ExtensionFunctionType } from "types/globalTypes";
-import ExtentionFunctions from "components/molecules/ExtentionFunctions";
+import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
+import ExtentionActions from "components/molecules/ExtentionActions";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { functionInExtensionsType } from "types/componentTypes";
+import { actionInExtensionsType } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
-import FunctionForm from "components/molecules/FunctionForm";
+import ActionForm from "components/molecules/ActionForm";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -96,21 +96,21 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
 
     const { experimentIdentifier } = useParams();
     const { data } = useGetAllExtensions()
-    const extensions = data?.plugins
+    const extensions = data?.extensions
     const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
-    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>();
+    const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
-    const [inputParams, setInputParams] = useState<Array<functionInExtensionsType>>()
+    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>()
 
     //initiate input params when selected extension changes
     useEffect(() => {
-        setInputParams(selectedFunction?.parameters.map(
+        setInputParams(selectedAction?.parameters.map(
             item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
                 ? { name: item.name, value: experimentIdentifier }
                 : { name: item.name, value: item.defaultValue }
             ))
         )
-    }, [selectedExtension, selectedFunction])
+    }, [selectedExtension, selectedAction])
 
     function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
@@ -129,20 +129,20 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
 
 
     function handleExecuteExtension() {
-        if (selectedFunction) {
+        if (selectedAction) {
             mutate({
                 variables: {
-                    plugin: selectedExtension,
-                    function: selectedFunction.name,
+                    extension: selectedExtension,
+                    action: selectedAction.name,
                     params: formatExtensionParameters(inputParams)
                 },
-                onCompleted: (data) => handleOnCompletedExtensionExecution(data.executePlugin)
+                onCompleted: (data) => handleOnCompletedExtensionExecution(data.executeExtension)
             })
         }
     }
 
-    const updateSelectedFunctionHandler = (option: string) => {
-        setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
+    const updateSelectedActionHandler = (option: string) => {
+        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name == option));
     };
     return (
         <Modal
@@ -172,14 +172,14 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                 </ModalHeader>
                 <Grid container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtentionFunctions
+                        <ExtentionActions
                             extension={selectedExtensionItem}
-                            selectedFunction={selectedFunction}
-                            updateSelectedFunction={updateSelectedFunctionHandler}
+                            selectedAction={selectedAction}
+                            updateSelectedAction={updateSelectedActionHandler}
                         />
                     </ModalOptionsGrid>
                     {inputParams ? <ModalStepGrid item xs={8}>
-                        <FunctionForm selectedFunction={selectedFunction} inputParams={inputParams} setInputParams={setInputParams} />
+                        <ActionForm selectedAction={selectedAction} inputParams={inputParams} setInputParams={setInputParams} />
                     </ModalStepGrid> : null}
                     <ModalFooter>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

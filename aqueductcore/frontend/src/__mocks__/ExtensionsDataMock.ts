@@ -2,10 +2,10 @@ import { ExtensionType } from "types/globalTypes";
 
 export const ExtensionsDataMock: ExtensionType[] = [
     {
-        "name": "Dummy plugin",
-        "description": "This plugin prints environment variables passed to it. No requests to Aqueduct sent.\n",
+        "name": "Dummy extension",
+        "description": "This extension prints environment variables passed to it. No requests to Aqueduct sent.\n",
         "authors": "aqueduct@riverlane.com",
-        "functions": [
+        "actions": [
             {
                 "description": "Print values to stdout",
                 "name": "echo",
@@ -145,10 +145,10 @@ export const ExtensionsDataMock: ExtensionType[] = [
         ],
     },
     {
-        "name": "Wolfram alpha solution plugin",
-        "description": "This plugin solves mathematical problems using Wolfram|Alpha cloud engine. To run the plugin, please obtain an App ID at https://developer.wolframalpha.com/access\n",
+        "name": "Wolfram alpha solution extension",
+        "description": "This extension solves mathematical problems using Wolfram|Alpha cloud engine. To run the extension, please obtain an App ID at https://developer.wolframalpha.com/access\n",
         "authors": "aqueduct@riverlane.com",
-        "functions": [
+        "actions": [
             {
                 "description": "solve an equation and return a text answer\n",
                 "name": "solve as text",

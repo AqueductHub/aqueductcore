@@ -8,8 +8,8 @@ export const executeExperiment_mock = {
             request: {
                 query: EXECUTE_EXTENSION,
                 variables: {
-                    "plugin": "Dummy plugin",
-                    "function": "echo",
+                    "extension": "Dummy extension",
+                    "action": "echo",
                     "params": [
                         ["var1", "1"],
                         ["var2", null],
@@ -23,11 +23,11 @@ export const executeExperiment_mock = {
             },
             result: {
                 data: {
-                    "executePlugin": {
+                    "executeExtension": {
                         "returnCode": 0,
                         "stderr": "",
                         "stdout": `var1=1\nvar2=null\nvar3=null\nvar4=${selected_experiment.alias}\nvar5=null\nvar6=1\nvar7=string three\ndummykey=dummyvalue\n`,
-                        "__typename": "PluginExecutionResult"
+                        "__typename": "ExtensionExecutionResult"
                     }
                 }
             }

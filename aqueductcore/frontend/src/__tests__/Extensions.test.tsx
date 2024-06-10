@@ -46,7 +46,7 @@ test("author's name in the modal", async () => {
     expect(ExtensionAuthor).toBeInTheDocument()
 });
 
-test("list of functions in the extension", async () => {
+test("list of actions in the extension", async () => {
 
     const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
     const extensionOpenModalButton = await findByTitle("extensions")
@@ -55,14 +55,14 @@ test("list of functions in the extension", async () => {
     const first_extension = await findByText(ExtensionsDataMock[0].name);
     await userEvent.click(first_extension)
 
-    // Check function names to be there
-    for (const extensions_function of ExtensionsDataMock[0].functions) {
-        const functionName = await findByText(extensions_function.name)
-        expect(functionName).toBeInTheDocument();
+    // Check action names to be there
+    for (const extensions_action of ExtensionsDataMock[0].actions) {
+        const actionName = await findByText(extensions_action.name)
+        expect(actionName).toBeInTheDocument();
     }
 });
 
-test("click the other function and params should be updated", async () => {
+test("click the other action and params should be updated", async () => {
 
     const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
     const extensionOpenModalButton = await findByTitle("extensions")
@@ -71,14 +71,14 @@ test("click the other function and params should be updated", async () => {
     const first_extension = await findByText(ExtensionsDataMock[0].name);
     await userEvent.click(first_extension)
 
-    const second_function = await findByText(ExtensionsDataMock[0].functions[1].name);
-    await userEvent.click(second_function)
+    const second_action = await findByText(ExtensionsDataMock[0].actions[1].name);
+    await userEvent.click(second_action)
 
     //TODO: fix missing cache for experiment name
     // Check params names to be there
-    for (const functions_params of ExtensionsDataMock[0].functions[1].parameters
+    for (const actions_params of ExtensionsDataMock[0].actions[1].parameters
         .filter(param => param.dataType !== ExtensionParameterDataTypes.EXPERIMENT)) {
-        const paramName = await findByText(functions_params.name)
+        const paramName = await findByText(actions_params.name)
         expect(paramName).toBeInTheDocument();
     }
 });

@@ -4,32 +4,32 @@ import { Box, styled } from "@mui/material";
 import { GET_EXPERIMENT_BY_ID } from "API/graphql/queries/experiment/getExperimentById";
 import { ExperimentField } from "components/atoms/ExperimentField";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { functionInExtensionsType } from "types/componentTypes";
+import { actionInExtensionsType } from "types/componentTypes";
 import { CheckboxField } from "components/atoms/CheckboxField";
 import { TextAreaField } from "components/atoms/TextAreaField";
 import { IntegerField } from "components/atoms/IntegerField";
 import { SelectField } from "components/atoms/SelectField";
-import { ExtensionFunctionType } from "types/globalTypes";
+import { ExtensionActionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
 import { client } from "API/apolloClientConfig";
 
-const FunctionsForm = styled(Box)`
+const Container = styled(Box)`
     height: 557px;
     padding: 0 ${(props) => props.theme.spacing(1)};
     overflow-y: auto;
     `;
 
-interface FunctionFormProps {
-    selectedFunction?: ExtensionFunctionType;
-    setInputParams: (inputParam: functionInExtensionsType[]) => void
-    inputParams: functionInExtensionsType[];
+interface ActionFormProps {
+    selectedAction?: ExtensionActionType;
+    setInputParams: (inputParam: actionInExtensionsType[]) => void
+    inputParams: actionInExtensionsType[];
 }
 
-function FunctionForm({
-    selectedFunction,
+function ActionForm({
+    selectedAction,
     setInputParams,
     inputParams
-}: FunctionFormProps) {
+}: ActionFormProps) {
     const { experimentIdentifier } = useParams();
 
     const apolloCache = client.readQuery({
@@ -43,9 +43,9 @@ function FunctionForm({
     });
     return (
         <>
-            <FunctionsForm>
+            <Container>
                 <Box sx={{ pt: 1.5, pb: 2 }}>
-                    {selectedFunction?.parameters.map(parameterInfo => (
+                    {selectedAction?.parameters.map(parameterInfo => (
                         <Box key={parameterInfo.name}>
                             {parameterInfo.dataType == ExtensionParameterDataTypes.STR && <>
                                 <TextAreaField
@@ -126,9 +126,9 @@ function FunctionForm({
                         </Box>
                     ))}
                 </Box>
-            </FunctionsForm>
+            </Container>
         </>
     );
 }
 
-export default FunctionForm;
+export default ActionForm;

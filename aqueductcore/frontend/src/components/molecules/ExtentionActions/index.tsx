@@ -1,9 +1,9 @@
 import { Box, FormControl, FormControlLabel, Grid, Radio, RadioGroup, Typography, styled } from "@mui/material"
 import { useEffect } from "react";
 
-import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
+import { ExtensionActionType, ExtensionType } from "types/globalTypes";
 
-const ExtentionFunctionBox = styled(Box)`
+const ExtentionActionBox = styled(Box)`
     width: 100%;
     border: 1px solid ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)};
@@ -17,7 +17,7 @@ const HiddenRadio = styled(Radio)`
     display: none;
 `;
 
-const FunctionHeader = styled(Grid)`
+const ActionHeader = styled(Grid)`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
     background-color: ${({ theme }) => theme.palette.grey[500]};
     border-bottom: 1px solid ${({ theme }) => theme.palette.grey[300]};
@@ -25,7 +25,7 @@ const FunctionHeader = styled(Grid)`
     &:after{clear: both;display: block;content: "";}
 `;
 
-const FunctionsFormControl = styled(FormControl)`
+const ActionsFormControl = styled(FormControl)`
     width: 100%;
     .MuiFormControlLabel-root {
         width: 100%;
@@ -35,85 +35,85 @@ const FunctionsFormControl = styled(FormControl)`
     }
 `;
 
-const FunctionName = styled(Typography)`
+const ActionName = styled(Typography)`
     font-size: 0.9rem;
     font-weight: bold;
     line-height: 2.37rem;
     float: left;
 `;
 
-const FunctionCheckbox = styled(Box)`
+const ActionCheckbox = styled(Box)`
     float: right;
     line-height: 2.37rem;
 `;
 
-const FunctionDescription = styled(Typography)`
+const ActionDescription = styled(Typography)`
     font-size: 0.8rem;
     padding: ${(props) => props.theme.spacing(0.75)} ${(props) => props.theme.spacing(1.5)};
     background-color: ${(props) => props.theme.palette.common.white};
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 
-interface ExtentionFunctionsProps {
+interface ExtentionActionsProps {
     extension?: ExtensionType;
-    selectedFunction?: ExtensionFunctionType;
-    updateSelectedFunction: (value: string) => void;
+    selectedAction?: ExtensionActionType;
+    updateSelectedAction: (value: string) => void;
 }
 
-function ExtentionFunctions({
+function ExtentionActions({
     extension,
-    selectedFunction,
-    updateSelectedFunction
-}: ExtentionFunctionsProps) {
+    selectedAction,
+    updateSelectedAction
+}: ExtentionActionsProps) {
 
     const handleLabelClick = (value: string) => {
-        updateSelectedFunction(value);
+        updateSelectedAction(value);
     };
 
 
     useEffect(() => {
-        if (extension?.functions) {
-            updateSelectedFunction(extension?.functions[0].name)
+        if (extension?.actions) {
+            updateSelectedAction(extension?.actions[0].name)
         }
     }, [])
 
     return (
         <>
             <ExtentionDescription>{extension?.description}</ExtentionDescription>
-            <FunctionsFormControl>
+            <ActionsFormControl>
                 <RadioGroup
-                    defaultValue={extension?.functions[0].name}
+                    defaultValue={extension?.actions[0].name}
                 >
-                    {extension?.functions.map(functionInfo => (
+                    {extension?.actions.map(ActionInfo => (
                         <FormControlLabel
-                            onClick={() => handleLabelClick(functionInfo.name)}
+                            onClick={() => handleLabelClick(ActionInfo.name)}
                             sx={{ mt: 2.5 }}
-                            key={functionInfo.name}
-                            value={functionInfo.name}
+                            key={ActionInfo.name}
+                            value={ActionInfo.name}
                             control={<HiddenRadio />}
                             label={
-                                <ExtentionFunctionBox>
-                                    <FunctionHeader style={{ backgroundColor: selectedFunction?.name == functionInfo.name ? "#3dcbda" : "transparent" }}>
-                                        <FunctionName>{functionInfo.name}</FunctionName>
-                                        <FunctionCheckbox>
+                                <ExtentionActionBox>
+                                    <ActionHeader style={{ backgroundColor: selectedAction?.name == ActionInfo.name ? "#3dcbda" : "transparent" }}>
+                                        <ActionName>{ActionInfo.name}</ActionName>
+                                        <ActionCheckbox>
                                             <Radio
                                                 size="small"
                                                 color="default"
-                                                checked={selectedFunction?.name == functionInfo.name}
+                                                checked={selectedAction?.name == ActionInfo.name}
                                             />
-                                        </FunctionCheckbox>
-                                    </FunctionHeader>
-                                    <FunctionDescription>
-                                        {functionInfo.description}
-                                    </FunctionDescription>
-                                </ExtentionFunctionBox>
+                                        </ActionCheckbox>
+                                    </ActionHeader>
+                                    <ActionDescription>
+                                        {ActionInfo.description}
+                                    </ActionDescription>
+                                </ExtentionActionBox>
                             }
                         />
                     ))}
                 </RadioGroup>
-            </FunctionsFormControl>
+            </ActionsFormControl>
         </>
     );
 }
 
-export default ExtentionFunctions;
+export default ExtentionActions;

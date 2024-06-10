@@ -17,7 +17,7 @@ import { useUpdateExperiment } from "API/graphql/mutations/experiment/updateExpe
 import { useGetCurrentUserInfo } from "API/graphql/queries/user/getUserInformation";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-// import ExtensionsList from "components/organisms/ExtensionsList";
+import ExtensionsList from "components/organisms/ExtensionsList";
 import { ExperimentDataType } from "types/globalTypes";
 
 const BackButton = styled(Button)`
@@ -131,7 +131,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   <CircularProgress size="1.2rem" sx={{ mr: 5 }} />
                 )}
               </Grid>}
-            {/* <ExtensionsList /> */}
+            <ExtensionsList />
             <ExperimentDetailsActionButtons
               isEditable={isEditable}
               isDeletable={isDeletable}

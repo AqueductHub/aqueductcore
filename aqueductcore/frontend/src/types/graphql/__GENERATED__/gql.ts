@@ -17,10 +17,13 @@ const documents = {
     "\n    mutation removeExperiment($experimentId: UUID!) {\n        removeExperiment(experimentRemoveInput: { experimentId: $experimentId})\n    }\n": types.RemoveExperimentDocument,
     "\n  mutation removeTagFromExperiment($experimentId: UUID!, $tag: String!) {\n    removeTagFromExperiment(experimentTagInput: { experimentId: $experimentId, tag: $tag }) {\n      id\n      tags\n    }\n  }\n": types.RemoveTagFromExperimentDocument,
     "\n  mutation updateExperimentName(\n    $experimentId: UUID!\n    $experimentUpdateInput: ExperimentUpdateInput!\n  ) {\n    updateExperiment(experimentId: $experimentId, experimentUpdateInput: $experimentUpdateInput) {\n      id\n      title\n      description\n      alias\n    }\n  }\n": types.UpdateExperimentNameDocument,
+    "\n  mutation ExecuteExtension(\n    $extension: String!\n    $action: String!\n    $params: [[String!]!]!\n  ) {\n    executeExtension(extension: $extension, action: $action, params: $params) {\n      returnCode\n      stderr\n      stdout\n    }\n  }\n": types.ExecuteExtensionDocument,
     "\n  query getAllExperiments($offset: Int!, $limit: Int!, $filters: ExperimentFiltersInput) {\n    experiments(offset: $offset, limit: $limit, filters: $filters) {\n      experimentsData {\n        id\n        alias\n        title\n        description\n        tags\n        createdAt\n        createdBy\n      }\n      totalExperimentsCount\n    }\n  }\n": types.GetAllExperimentsDocument,
     "\n  query getAllTags {\n    tags {\n      tagsData\n    }\n  }\n": types.GetAllTagsDocument,
     "\n  query getExperimentById($experimentIdentifier: ExperimentIdentifierInput!) {\n    experiment(experimentIdentifier: $experimentIdentifier) {\n      id\n      title\n      description\n      tags\n      alias\n      createdAt\n      createdBy\n      files {\n        name\n        path\n        modifiedAt\n      }\n    }\n  }\n": types.GetExperimentByIdDocument,
     "\n  query getExperimentFilesById($experimentIdentifier: ExperimentIdentifierInput!) {\n    experiment(experimentIdentifier: $experimentIdentifier) {\n      files {\n        name\n        path\n        modifiedAt\n      }\n    }\n  }\n": types.GetExperimentFilesByIdDocument,
+    "\n  query getAllExtensionNames {\n    extensions {\n      name\n    }\n  }\n": types.GetAllExtensionNamesDocument,
+    "\n  query getAllExtensions {\n    extensions {\n        name\n        authors\n        description\n        actions {\n            description\n            experimentVariableName\n            name\n            parameters {\n                dataType\n                defaultValue\n                description\n                displayName\n                name\n                options\n            }\n        }\n    }\n  }\n": types.GetAllExtensionsDocument,
     "\n  query getCurrentUserInfo {\n    getCurrentUserInfo {\n      scopes\n      username\n    }\n  }\n": types.GetCurrentUserInfoDocument,
 };
 
@@ -57,6 +60,10 @@ export function graphql(source: "\n  mutation updateExperimentName(\n    $experi
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation ExecuteExtension(\n    $extension: String!\n    $action: String!\n    $params: [[String!]!]!\n  ) {\n    executeExtension(extension: $extension, action: $action, params: $params) {\n      returnCode\n      stderr\n      stdout\n    }\n  }\n"): (typeof documents)["\n  mutation ExecuteExtension(\n    $extension: String!\n    $action: String!\n    $params: [[String!]!]!\n  ) {\n    executeExtension(extension: $extension, action: $action, params: $params) {\n      returnCode\n      stderr\n      stdout\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query getAllExperiments($offset: Int!, $limit: Int!, $filters: ExperimentFiltersInput) {\n    experiments(offset: $offset, limit: $limit, filters: $filters) {\n      experimentsData {\n        id\n        alias\n        title\n        description\n        tags\n        createdAt\n        createdBy\n      }\n      totalExperimentsCount\n    }\n  }\n"): (typeof documents)["\n  query getAllExperiments($offset: Int!, $limit: Int!, $filters: ExperimentFiltersInput) {\n    experiments(offset: $offset, limit: $limit, filters: $filters) {\n      experimentsData {\n        id\n        alias\n        title\n        description\n        tags\n        createdAt\n        createdBy\n      }\n      totalExperimentsCount\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -70,6 +77,14 @@ export function graphql(source: "\n  query getExperimentById($experimentIdentifi
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getExperimentFilesById($experimentIdentifier: ExperimentIdentifierInput!) {\n    experiment(experimentIdentifier: $experimentIdentifier) {\n      files {\n        name\n        path\n        modifiedAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query getExperimentFilesById($experimentIdentifier: ExperimentIdentifierInput!) {\n    experiment(experimentIdentifier: $experimentIdentifier) {\n      files {\n        name\n        path\n        modifiedAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getAllExtensionNames {\n    extensions {\n      name\n    }\n  }\n"): (typeof documents)["\n  query getAllExtensionNames {\n    extensions {\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getAllExtensions {\n    extensions {\n        name\n        authors\n        description\n        actions {\n            description\n            experimentVariableName\n            name\n            parameters {\n                dataType\n                defaultValue\n                description\n                displayName\n                name\n                options\n            }\n        }\n    }\n  }\n"): (typeof documents)["\n  query getAllExtensions {\n    extensions {\n        name\n        authors\n        description\n        actions {\n            description\n            experimentVariableName\n            name\n            parameters {\n                dataType\n                defaultValue\n                description\n                displayName\n                name\n                options\n            }\n        }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

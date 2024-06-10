@@ -4,11 +4,11 @@ import { GET_ALL_EXTENSIONS_TYPE } from "types/globalTypes";
 
 export const GET_ALL_EXTENSIONS = gql`
   query getAllExtensions {
-    plugins {
+    extensions {
         name
         authors
         description
-        functions {
+        actions {
             description
             experimentVariableName
             name

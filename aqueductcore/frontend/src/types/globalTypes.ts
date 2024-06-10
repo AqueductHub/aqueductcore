@@ -1,12 +1,12 @@
 import {
   ExperimentFiltersInput,
-  PluginExecutionResult,
-  PluginParameterType,
-  PluginFunctionInfo,
+  ExtensionExecutionResult,
+  ExtensionParameterType,
+  ExtensionActionInfo,
   ExperimentData,
   ExperimentFile,
   Experiments,
-  PluginInfo,
+  ExtensionInfo,
   UserInfo,
   Tags,
 } from "./graphql/__GENERATED__/graphql";
@@ -83,13 +83,13 @@ export type GET_USER_INFO_TYPE = {
 };
 //### EXTENSION ###
 export type GET_ALL_EXTENSIONS_NAME_TYPE = {
-  plugins: Array<{
+  extensions: Array<{
     name: ExtensionType['name']
-    __typename?: PluginInfo["__typename"];
+    __typename?: ExtensionInfo["__typename"];
   }>;
 };
 export type GET_ALL_EXTENSIONS_TYPE = {
-  plugins: Array<ExtensionType>;
+  extensions: Array<ExtensionType>;
 };
 
 
@@ -114,9 +114,9 @@ export type REMOVE_EXPERIMENT_TYPE = {
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
-  returnCode: PluginExecutionResult['returnCode']
-  stderr: PluginExecutionResult['stderr']
-  stdout: PluginExecutionResult['stdout']
+  returnCode: ExtensionExecutionResult['returnCode']
+  stderr: ExtensionExecutionResult['stderr']
+  stdout: ExtensionExecutionResult['stdout']
 }
 
 //############### Other types ###############//
@@ -175,24 +175,24 @@ export interface ExperimentsListTableProps extends ExperimentDataType {
 }
 //### EXTENSION ###
 export type ExtensionType = {
-  name: PluginInfo['name']
-  authors: PluginInfo['authors'],
-  description: PluginInfo['description']
-  functions: Array<ExtensionFunctionType>
+  name: ExtensionInfo['name']
+  authors: ExtensionInfo['authors'],
+  description: ExtensionInfo['description']
+  actions: Array<ExtensionActionType>
 };
-export type ExtensionFunctionType = {
-  name: PluginFunctionInfo['name']
-  description: PluginFunctionInfo['description'],
-  experimentVariableName: PluginFunctionInfo['experimentVariableName'],
-  parameters: Array<ExtensionParameterType>,
+export type ExtensionActionType = {
+  name: ExtensionActionInfo['name']
+  description: ExtensionActionInfo['description'],
+  experimentVariableName: ExtensionActionInfo['experimentVariableName'],
+  parameters: Array<ExtensionsActionParameterType>,
 };
-export type ExtensionParameterType = {
-  dataType: PluginParameterType['dataType']
-  defaultValue: PluginParameterType['defaultValue']
-  description: PluginParameterType['description']
-  displayName: PluginParameterType['displayName']
-  name: PluginParameterType['name']
-  options: PluginParameterType['options']
+export type ExtensionsActionParameterType = {
+  dataType: ExtensionParameterType['dataType']
+  defaultValue: ExtensionParameterType['defaultValue']
+  description: ExtensionParameterType['description']
+  displayName: ExtensionParameterType['displayName']
+  name: ExtensionParameterType['name']
+  options: ExtensionParameterType['options']
 };
 export interface ExtensionFieldBase {
   title: string,

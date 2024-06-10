@@ -4,12 +4,12 @@ import toast from "react-hot-toast";
 import { EXECUTE_EXTENSION_TYPE } from "types/globalTypes";
 
 export const EXECUTE_EXTENSION = gql`
-  mutation ExecutePlugin(
-    $plugin: String!
-    $function: String!
+  mutation ExecuteExtension(
+    $extension: String!
+    $action: String!
     $params: [[String!]!]!
   ) {
-    executePlugin(plugin: $plugin, function: $function, params: $params) {
+    executeExtension(extension: $extension, action: $action, params: $params) {
       returnCode
       stderr
       stdout
@@ -19,7 +19,7 @@ export const EXECUTE_EXTENSION = gql`
 
 export function useExecuteExtension() {
   const [mutate, { loading, data, error }] = useMutation<{
-    executePlugin: EXECUTE_EXTENSION_TYPE;
+    executeExtension: EXECUTE_EXTENSION_TYPE;
   }>(EXECUTE_EXTENSION, {
     onError(error) {
       console.log("Execute Extension failed", error);
