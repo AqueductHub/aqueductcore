@@ -60,4 +60,5 @@ jobs:
           name: "${{ inputs.version }}"
           allowUpdates: true
           artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
+          generateReleaseNotes: true
           token: ${{ secrets.GITHUB_TOKEN }}
