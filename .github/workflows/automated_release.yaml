@@ -3,6 +3,8 @@ name: Automated release for Aqueduct Core every alternate Monday at 12:00 PM
 on:
   schedule:
     - cron: "0 11 * * 1"
+  workflow_dispatch:
+
 env:
   allow_automated_release: ${{ vars.ALLOW_AUTOMATED_RELEASE }}
 
