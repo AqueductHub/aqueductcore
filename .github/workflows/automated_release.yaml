@@ -59,11 +59,11 @@ jobs:
           echo "Week number check is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
-  trigger-workflow:
-    name: Trigger release workflow
-    needs: [confirm-action-execution, next-version]
-    if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
-    uses: ./.github/workflows/release.yaml
-    with:
-      version: ${{ needs.next-version.outputs.next_version_number }}
-    secrets: inherit
+  # trigger-workflow:
+  #   name: Trigger release workflow
+  #   needs: [confirm-action-execution, next-version]
+  #   if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
+  #   uses: ./.github/workflows/release.yaml
+  #   with:
+  #     version: ${{ needs.next-version.outputs.next_version_number }}
+  #   secrets: inherit
