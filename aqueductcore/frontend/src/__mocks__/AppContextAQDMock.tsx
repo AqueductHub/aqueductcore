@@ -20,6 +20,7 @@ import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
 import { getAllExtensions_mock } from "__mocks__/queries/getAllExtensionsMock";
 import { getExperiment_mock } from "__mocks__/queries/getExperimentByIdMock";
 import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
+import { executeExperiment_mock } from "./mutations/executeExtension";
 
 interface AppContextAQDMockProps {
   children: PropsWithChildren["children"];
@@ -36,6 +37,7 @@ interface AppContextAQDMockProps {
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
   getAllExtensions_mockMockMode?: keyof typeof getAllExtensions_mock;
   getAllExtensionNames_mockMockMode?: keyof typeof getAllExtensionNames_mock;
+  executeExperiment_mockMockMode?: keyof typeof executeExperiment_mock;
   browserRouter?: boolean;
   memoryRouterProps?: MemoryRouterProps
 }
@@ -54,6 +56,7 @@ function AppContextAQDMock({
   getExperiment_mockMockMode = "success",
   getAllExtensions_mockMockMode = "success",
   getAllExtensionNames_mockMockMode = "success",
+  executeExperiment_mockMockMode = "success",
   memoryRouterProps,
   browserRouter,
   children,
@@ -100,7 +103,8 @@ function AppContextAQDMock({
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     ...getAllExtensionNames_mock[getAllExtensionNames_mockMockMode],
     ...getAllExtensions_mock[getAllExtensions_mockMockMode],
-    getExperiment_mock[getExperiment_mockMockMode],
+    ...getExperiment_mock[getExperiment_mockMockMode],
+    ...executeExperiment_mock[executeExperiment_mockMockMode],
   ];
 
   const App =

@@ -183,7 +183,12 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     </ModalStepGrid> : null}
                     <ModalFooter>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button size="small" variant="contained" onClick={() => handleExecuteExtension()}>{loading ? 'running' : 'Run Extention'}</Button>
+                            <Button
+                                size="small"
+                                variant="contained"
+                                onClick={() => handleExecuteExtension()}
+                                title='run_extension'
+                            >{loading ? 'running' : 'Run Extention'}</Button>
                         </Box>
                     </ModalFooter>
                 </Grid>

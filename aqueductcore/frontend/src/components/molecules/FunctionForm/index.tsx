@@ -32,7 +32,7 @@ function FunctionForm({
 }: FunctionFormProps) {
     const { experimentIdentifier } = useParams();
 
-    const { experiment } = client.readQuery({
+    const apolloCache = client.readQuery({
         query: GET_EXPERIMENT_BY_ID,
         variables: {
             experimentIdentifier: {
@@ -41,7 +41,6 @@ function FunctionForm({
             },
         },
     });
-
     return (
         <>
             <FunctionsForm>
@@ -81,13 +80,13 @@ function FunctionForm({
                                     }}
                                 />
                             </>}
-                            {parameterInfo.dataType == ExtensionParameterDataTypes.EXPERIMENT && <>
+                            {parameterInfo.dataType == ExtensionParameterDataTypes.EXPERIMENT && apolloCache?.experiment && <>
                                 <ExperimentField
                                     title={parameterInfo?.displayName || ""}
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
-                                    experiment_title={experiment.title}
-                                    experiment_alias={experiment.alias}
+                                    experiment_title={apolloCache.experiment.title}
+                                    experiment_alias={apolloCache.experiment.alias}
                                 />
                             </>}
                             {parameterInfo.dataType == ExtensionParameterDataTypes.TEXTAREA && <>

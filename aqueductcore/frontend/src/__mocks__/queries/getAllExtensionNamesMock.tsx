@@ -14,6 +14,7 @@ export const getAllExtensionNames_mock = {
                     plugins: ExtensionsDataMock.map(item => ({ name: item.name }))
                 },
             },
+            maxUsageCount: Number.POSITIVE_INFINITY,
         }
     ]
 };

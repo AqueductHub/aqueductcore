@@ -14,6 +14,7 @@ export const getAllExtensions_mock = {
                     plugins: ExtensionsDataMock
                 },
             },
+            maxUsageCount: Number.POSITIVE_INFINITY,
         }
     ]
 };

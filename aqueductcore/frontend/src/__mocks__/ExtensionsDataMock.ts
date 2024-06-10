@@ -84,7 +84,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "1",
                         "description": "variable 1",
                         "displayName": null,
-                        "name": "var1",
+                        "name": "var_1",
                         "options": null
                     },
                     {
@@ -92,7 +92,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 2",
                         "displayName": "some display name",
-                        "name": "var2",
+                        "name": "var_2",
                         "options": null
                     },
                     {
@@ -100,7 +100,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 3",
                         "displayName": null,
-                        "name": "var3",
+                        "name": "var_3",
                         "options": null
                     },
                     {
@@ -108,7 +108,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 4",
                         "displayName": null,
-                        "name": "var4",
+                        "name": "var_4",
                         "options": null
                     },
                     {
@@ -116,7 +116,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 5 multiline",
                         "displayName": null,
-                        "name": "var5",
+                        "name": "var_5",
                         "options": null
                     },
                     {
@@ -124,7 +124,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "1",
                         "description": "boolean variable",
                         "displayName": null,
-                        "name": "var6",
+                        "name": "var_6",
                         "options": null
                     },
                     {
@@ -132,7 +132,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "string three",
                         "description": "select / combobox",
                         "displayName": null,
-                        "name": "var7",
+                        "name": "var_7",
                         "options": [
                             "string1",
                             "string2",
