@@ -32,7 +32,7 @@ jobs:
           fi
         shell: bash
 
-  release-allowed:
+  next-version:
     runs-on: ubuntu-latest
     outputs:
       next_version_number: ${{ steps.next_version.outputs.version }}
@@ -61,9 +61,9 @@ jobs:
 
   trigger-workflow:
     name: Trigger release workflow
-    needs: [confirm-action-execution, release-allowed]
+    needs: [confirm-action-execution, next-version]
     if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
     uses: ./.github/workflows/release.yaml
     with:
-      version: ${{ needs.release-allowed.outputs.next_version_number }}
+      version: ${{ needs.next-version.outputs.next_version_number }}
     secrets: inherit
