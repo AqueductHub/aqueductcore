@@ -55,7 +55,7 @@ jobs:
 
       - name: Show the values of version
         run: |
-          echo "Next version is ${{ steps.next_version.outputs.version }}""
+          echo "Next version is ${{ steps.next_version.outputs.version }}"
           echo "Previous step output is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
