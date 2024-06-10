@@ -30,7 +30,7 @@ jobs:
   next-version:
     runs-on: ubuntu-latest
     outputs:
-      next_version_number: ${{ steps.next_version.outputs.version }}
+      next_version_number: ${{ steps.next_version_step.outputs.version }}
     needs: [confirm-action-execution]
     environment:
       name: automated-release
@@ -41,7 +41,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current release version and calculate next patch version
-        id: next_version
+        id: next_version_step
         run: |
           git fetch --tags
           CURRENT_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
@@ -50,7 +50,7 @@ jobs:
 
       - name: Show the values of version
         run: |
-          echo "Next version is ${{ steps.next_version.outputs.version }}"
+          echo "Next version is ${{ steps.next_version_step.outputs.version }}"
           echo "Week number check is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
           echo "Allow automated release value is ${{ env.allow_automated_release }}"
 
