@@ -51,7 +51,7 @@ jobs:
           echo ${{ needs.confirm-action-execution.outputs.is_release_allowed }}
 
       - name: Trigger release workflow
-        uses: ./.github/workflows/release.yaml
+        uses: ./../.github/workflows/release.yaml
         if: ${{ env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true' }}
         with:
           version: ${{ steps.next_version.outputs.version }}
