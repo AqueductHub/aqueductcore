@@ -54,10 +54,10 @@ jobs:
   trigger-workflow:
     name: Trigger release workflow
     needs: [confirm-action-execution]
-    environment:
-      name: automated-release
-    uses: ./.github/workflows/release.yaml
     if: env.allow_automated_release == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
+    uses: ./.github/workflows/release.yaml
     with:
       version: ${{ steps.next_version.outputs.version }}
+    environment:
+      name: automated-release
     secrets: inherit
