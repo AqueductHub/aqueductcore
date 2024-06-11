@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
 import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
-import ExtentionActions from "components/molecules/ExtentionActions";
+import ExtensionActions from "components/molecules/ExtensionActions";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import { actionInExtensionsType } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
@@ -46,7 +46,7 @@ const HeaderIcon = styled(AutoAwesomeIcon)`
     vertical-align: middle;
 `;
 
-const ExtentionName = styled(Typography)`
+const ExtensionName = styled(Typography)`
     line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
@@ -164,7 +164,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                         <HeaderIcon />
                         <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
                         <HeaderRightIcon />
-                        <ExtentionName>{selectedExtension}</ExtentionName>
+                        <ExtensionName>{selectedExtension}</ExtensionName>
                     </Grid>
                     <Grid item>
                         <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
@@ -172,7 +172,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                 </ModalHeader>
                 <Grid container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtentionActions
+                        <ExtensionActions
                             extension={selectedExtensionItem}
                             selectedAction={selectedAction}
                             updateSelectedAction={updateSelectedActionHandler}
@@ -190,7 +190,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                                 title='run_extension'
                                 disabled={loading}
                             >
-                                Run Extention
+                                Run Extension
                             </Button>
                         </Box>
                     </ModalFooter>
