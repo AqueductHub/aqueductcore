@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Modal, Typography, styled } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
@@ -183,12 +183,15 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     </ModalStepGrid> : null}
                     <ModalFooter>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
                             <Button
-                                size="small"
                                 variant="contained"
                                 onClick={() => handleExecuteExtension()}
                                 title='run_extension'
-                            >{loading ? 'running' : 'Run Extention'}</Button>
+                                disabled={loading}
+                            >
+                                Run Extention
+                            </Button>
                         </Box>
                     </ModalFooter>
                 </Grid>
