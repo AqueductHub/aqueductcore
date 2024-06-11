@@ -2,10 +2,10 @@ import { ExtensionType } from "types/globalTypes";
 
 export const ExtensionsDataMock: ExtensionType[] = [
     {
-        "name": "Dummy plugin",
-        "description": "This plugin prints environment variables passed to it. No requests to Aqueduct sent.\n",
+        "name": "Dummy extension",
+        "description": "This extension prints environment variables passed to it. No requests to Aqueduct sent.\n",
         "authors": "aqueduct@riverlane.com",
-        "functions": [
+        "actions": [
             {
                 "description": "Print values to stdout",
                 "name": "echo",
@@ -84,7 +84,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "1",
                         "description": "variable 1",
                         "displayName": null,
-                        "name": "var1",
+                        "name": "var_1",
                         "options": null
                     },
                     {
@@ -92,7 +92,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 2",
                         "displayName": "some display name",
-                        "name": "var2",
+                        "name": "var_2",
                         "options": null
                     },
                     {
@@ -100,7 +100,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 3",
                         "displayName": null,
-                        "name": "var3",
+                        "name": "var_3",
                         "options": null
                     },
                     {
@@ -108,7 +108,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 4",
                         "displayName": null,
-                        "name": "var4",
+                        "name": "var_4",
                         "options": null
                     },
                     {
@@ -116,7 +116,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": null,
                         "description": "variable 5 multiline",
                         "displayName": null,
-                        "name": "var5",
+                        "name": "var_5",
                         "options": null
                     },
                     {
@@ -124,7 +124,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "1",
                         "description": "boolean variable",
                         "displayName": null,
-                        "name": "var6",
+                        "name": "var_6",
                         "options": null
                     },
                     {
@@ -132,7 +132,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                         "defaultValue": "string three",
                         "description": "select / combobox",
                         "displayName": null,
-                        "name": "var7",
+                        "name": "var_7",
                         "options": [
                             "string1",
                             "string2",
@@ -145,10 +145,10 @@ export const ExtensionsDataMock: ExtensionType[] = [
         ],
     },
     {
-        "name": "Wolfram alpha solution plugin",
-        "description": "This plugin solves mathematical problems using Wolfram|Alpha cloud engine. To run the plugin, please obtain an App ID at https://developer.wolframalpha.com/access\n",
+        "name": "Wolfram alpha solution extension",
+        "description": "This extension solves mathematical problems using Wolfram|Alpha cloud engine. To run the extension, please obtain an App ID at https://developer.wolframalpha.com/access\n",
         "authors": "aqueduct@riverlane.com",
-        "functions": [
+        "actions": [
             {
                 "description": "solve an equation and return a text answer\n",
                 "name": "solve as text",

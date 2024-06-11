@@ -23,7 +23,7 @@ export const getUserInformation_mock = {
                             "experiment::delete::all",
                             "experiment::edit::all",
                             "experiment::edit::own"
-                        ]
+                        ],
                     }
                 }
             },

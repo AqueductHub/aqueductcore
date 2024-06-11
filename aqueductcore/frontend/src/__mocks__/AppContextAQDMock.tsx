@@ -3,22 +3,24 @@ import { BrowserRouter, MemoryRouter, MemoryRouterProps } from "react-router-dom
 import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
 import { MockedProvider } from "@apollo/client/testing";
 import CssBaseline from "@mui/material/CssBaseline";
+import { Toaster } from "react-hot-toast";
 import { PropsWithChildren } from "react";
+import { cssVariableTheme } from "theme";
 
 import { getAllExperimentsWithNameFilter_mock } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
 import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/getAllExperimentsWithTagFilterMock";
 import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/getAllExperimentsWithStartTimeMock";
 import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/getAllExperimentsWithEndTimeMock";
-import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
 import { getAllExtensionNames_mock } from "__mocks__/queries/getAllExtensionNamesMock";
+import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
 import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
 import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
 import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock";
 import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
+import { getAllExtensions_mock } from "__mocks__/queries/getAllExtensionsMock";
 import { getExperiment_mock } from "__mocks__/queries/getExperimentByIdMock";
 import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
-import { Toaster } from "react-hot-toast";
-import { cssVariableTheme } from "theme";
+import { executeExperiment_mock } from "./mutations/executeExtension";
 
 interface AppContextAQDMockProps {
   children: PropsWithChildren["children"];
@@ -33,7 +35,9 @@ interface AppContextAQDMockProps {
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
+  getAllExtensions_mockMockMode?: keyof typeof getAllExtensions_mock;
   getAllExtensionNames_mockMockMode?: keyof typeof getAllExtensionNames_mock;
+  executeExperiment_mockMockMode?: keyof typeof executeExperiment_mock;
   browserRouter?: boolean;
   memoryRouterProps?: MemoryRouterProps
 }
@@ -50,7 +54,9 @@ function AppContextAQDMock({
   getExperimentFiles_mockMockMode = "success",
   getUserInformation_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
+  getAllExtensions_mockMockMode = "success",
   getAllExtensionNames_mockMockMode = "success",
+  executeExperiment_mockMockMode = "success",
   memoryRouterProps,
   browserRouter,
   children,
@@ -96,7 +102,9 @@ function AppContextAQDMock({
     ...removeExperiment_mock[removeExperiment_mockMockMode],
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     ...getAllExtensionNames_mock[getAllExtensionNames_mockMockMode],
-    getExperiment_mock[getExperiment_mockMockMode],
+    ...getAllExtensions_mock[getAllExtensions_mockMockMode],
+    ...getExperiment_mock[getExperiment_mockMockMode],
+    ...executeExperiment_mock[executeExperiment_mockMockMode],
   ];
 
   const App =

@@ -1,6 +1,7 @@
+import { actionInExtensionsType } from "types/componentTypes";
 import { Tags } from "types/graphql/__GENERATED__/graphql";
-import { ExperimentDataType } from "types/globalTypes";
 import { ARCHIVED, FAVOURITE } from "constants/constants";
+import { ExperimentDataType } from "types/globalTypes";
 import { AQD_FILE_URI } from "constants/api";
 
 export const dateFormatter = (date: Date) => {
@@ -45,4 +46,8 @@ export function mdUrlTransformer(url: string, experimentId: ExperimentDataType['
   // Logic to modify links in the MD file lives here
   if (isValidUrl(url)) return url
   return `${AQD_FILE_URI}/api/files/${experimentId}/${url}`
+}
+
+export function formatExtensionParameters(params?: actionInExtensionsType[]) {
+  return params?.map(item => ([item.name, item.value]))
 }

@@ -182,7 +182,7 @@ function Viewer({
           </SpecialFilePreview>
           /* TEXT */
         ) : info?.type === "text/plain" ? (
-          <TextViewer readOnly>{String(info.data)}</TextViewer>
+          <TextViewer readOnly value={String(info.data)} />
           /* IMAGES */
         ) : ["image/jpeg", "image/png"].includes(info?.type) ? (
           <FilePreviewImages>

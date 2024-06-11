@@ -1,13 +1,14 @@
 import {
   ExperimentFiltersInput,
+  ExtensionExecutionResult,
+  ExtensionParameterType,
+  ExtensionActionInfo,
   ExperimentData,
   ExperimentFile,
   Experiments,
-  PluginInfo,
+  ExtensionInfo,
   UserInfo,
   Tags,
-  PluginFunctionInfo,
-  PluginParameterType,
 } from "./graphql/__GENERATED__/graphql";
 
 type NonNullish<T> = Exclude<T, null | undefined>; // Remove null and undefined from T
@@ -20,6 +21,7 @@ export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>
 
 
 //############### Query types ###############//
+//### EXPERIMENT ###
 export type GET_ALL_EXPERIMENTS_TYPE = {
   experiments: {
     experimentsData: Array<{
@@ -36,14 +38,12 @@ export type GET_ALL_EXPERIMENTS_TYPE = {
     __typename?: Experiments["__typename"];
   };
 };
-
 export type GET_ALL_TAGS_TYPE = {
   tags: {
     tagsData: Array<TagType>;
     __typename?: Tags["__typename"];
   };
 };
-
 export type GET_EXPERIMENT_BY_ID_TYPE = {
   experiment: {
     id: ExperimentDataType["id"];
@@ -62,7 +62,6 @@ export type GET_EXPERIMENT_BY_ID_TYPE = {
     __typename?: ExperimentData["__typename"];
   };
 };
-
 export type GET_EXPERIMENT_FILES_BY_ID_TYPE = {
   experiment: {
     files: Array<{
@@ -74,7 +73,7 @@ export type GET_EXPERIMENT_FILES_BY_ID_TYPE = {
     __typename?: ExperimentData["__typename"];
   };
 };
-
+//### USER ###
 export type GET_USER_INFO_TYPE = {
   getCurrentUserInfo: {
     scopes: UserInfo["scopes"]
@@ -82,20 +81,20 @@ export type GET_USER_INFO_TYPE = {
     __typename?: UserInfo["__typename"];
   };
 };
-
+//### EXTENSION ###
 export type GET_ALL_EXTENSIONS_NAME_TYPE = {
-  plugins: Array<{
+  extensions: Array<{
     name: ExtensionType['name']
-    __typename?: PluginInfo["__typename"];
+    __typename?: ExtensionInfo["__typename"];
   }>;
 };
-
-
 export type GET_ALL_EXTENSIONS_TYPE = {
-  plugins: Array<ExtensionType>;
+  extensions: Array<ExtensionType>;
 };
 
+
 //############### Mutation types ###############//
+//### EXPERIMENT ###
 export type UPDATE_EXPERIMENT_DETAILS_TYPE = {
   id: ExperimentDataType["id"];
   alias: ExperimentDataType["alias"];
@@ -113,17 +112,22 @@ export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
 export type REMOVE_EXPERIMENT_TYPE = {
   id: ExperimentDataType["id"];
 }
+//### EXTENSION ###
+export type EXECUTE_EXTENSION_TYPE = {
+  returnCode: ExtensionExecutionResult['returnCode']
+  stderr: ExtensionExecutionResult['stderr']
+  stdout: ExtensionExecutionResult['stdout']
+}
 
-//############### Experiment types ###############//
+//############### Other types ###############//
+//### EXPERIMENT ###
 export type TagType = string;
-
 export type TagsFieldProps = {
   tags: TagType[];
   selectedOptions: TagType[];
   handleTagUpdate: (value: TagType[]) => void;
   isEditable?: boolean,
 };
-
 export type ExperimentAllFieldsDataType = {
   id: ExperimentData["id"];
   alias: ExperimentData["alias"];
@@ -134,7 +138,6 @@ export type ExperimentAllFieldsDataType = {
   createdBy: ExperimentData["createdBy"];
   files: Array<ExperimentFileType>;
 };
-
 export type ExperimentDataType = {
   id: ExperimentData["id"];
   alias: ExperimentData["alias"];
@@ -144,7 +147,6 @@ export type ExperimentDataType = {
   createdAt: ExperimentData["createdAt"];
   createdBy: ExperimentData["createdBy"];
 };
-
 export type ExperimentFiltersType = {
   endDate?: ExperimentFiltersInput["endDate"];
   startDate?: ExperimentFiltersInput["startDate"];
@@ -152,49 +154,11 @@ export type ExperimentFiltersType = {
   shouldIncludeTags?: ExperimentFiltersInput["shouldIncludeTags"];
   title?: ExperimentFiltersInput["title"];
 };
-
 export type ExperimentFileType = {
   name: ExperimentFile["name"];
   path: ExperimentFile["path"];
   modifiedAt: ExperimentFile["modifiedAt"];
 };
-
-export type ExtensionType = {
-  name: PluginInfo['name']
-  authors: PluginInfo['authors'],
-  description: PluginInfo['description']
-  functions: Array<ExtensionFunctionType>
-};
-
-export type ExtensionFunctionType = {
-  name: PluginFunctionInfo['name']
-  description: PluginFunctionInfo['description'],
-  experimentVariableName: PluginFunctionInfo['experimentVariableName'],
-  parameters: Array<ExtensionParameterType>,
-};
-
-export type ExtensionParameterType = {
-  dataType: PluginParameterType['dataType']
-  defaultValue: PluginParameterType['defaultValue']
-  description: PluginParameterType['description']
-  displayName: PluginParameterType['displayName']
-  name: PluginParameterType['name']
-  options: PluginParameterType['options']
-};
-
-export type PreviewFilesType = "JSON" | "MARKDOWN" | "text/plain" | "image/png" | "image/jpeg" | "file";
-export type ExperimentRecordsPageType = "all" | "favourites" | "archived";
-
-export interface ExperimentsListTableProps extends ExperimentDataType {
-  star: boolean;
-}
-
-export interface PluginFieldBase {
-  title: string,
-  field: string,
-  description?: string,
-}
-
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
   label: string;
@@ -203,4 +167,35 @@ export interface ExperimentRecordsColumnsType {
   align?: "right" | "center";
   ellipsis?: boolean;
   format?: (value?: unknown) => string | React.ReactNode;
+}
+export type ExperimentRecordsPageType = "all" | "favourites" | "archived";
+export type PreviewFilesType = "JSON" | "MARKDOWN" | "text/plain" | "image/png" | "image/jpeg" | "file";
+export interface ExperimentsListTableProps extends ExperimentDataType {
+  star: boolean;
+}
+//### EXTENSION ###
+export type ExtensionType = {
+  name: ExtensionInfo['name']
+  authors: ExtensionInfo['authors'],
+  description: ExtensionInfo['description']
+  actions: Array<ExtensionActionType>
+};
+export type ExtensionActionType = {
+  name: ExtensionActionInfo['name']
+  description: ExtensionActionInfo['description'],
+  experimentVariableName: ExtensionActionInfo['experimentVariableName'],
+  parameters: Array<ExtensionsActionParameterType>,
+};
+export type ExtensionsActionParameterType = {
+  dataType: ExtensionParameterType['dataType']
+  defaultValue: ExtensionParameterType['defaultValue']
+  description: ExtensionParameterType['description']
+  displayName: ExtensionParameterType['displayName']
+  name: ExtensionParameterType['name']
+  options: ExtensionParameterType['options']
+};
+export interface ExtensionFieldBase {
+  title: string,
+  field: string,
+  description?: string,
 }

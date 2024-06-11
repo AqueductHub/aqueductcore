@@ -1,14 +1,14 @@
 import { Box, Checkbox, CheckboxProps, Grid, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { PluginFieldBase } from "types/globalTypes";
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const CheckboxInput = styled(Checkbox)`
   padding: ${({ theme }) => theme.spacing(0.5)};
   border-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.white : theme.palette.grey[600]};
 `;
 
-interface CheckboxFieldProps extends PluginFieldBase {
+interface CheckboxFieldProps extends ExtensionFieldBase {
   checkboxFieldProps: CheckboxProps
 }
 

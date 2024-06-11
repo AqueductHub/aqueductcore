@@ -1,17 +1,17 @@
-import { GET_ALL_EXTENSION_NAMES } from "API/graphql/queries/extension/getAllExtensionNames";
+import { GET_ALL_EXTENSIONS } from "API/graphql/queries/extension/getAllExtensions";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 
 const request = {
-    query: GET_ALL_EXTENSION_NAMES,
+    query: GET_ALL_EXTENSIONS,
 };
 
-export const getAllExtensionNames_mock = {
+export const getAllExtensions_mock = {
     success: [
         {
             request,
             result: {
                 data: {
-                    extensions: ExtensionsDataMock.map(item => ({ name: item.name }))
+                    extensions: ExtensionsDataMock
                 },
             },
             maxUsageCount: Number.POSITIVE_INFINITY,

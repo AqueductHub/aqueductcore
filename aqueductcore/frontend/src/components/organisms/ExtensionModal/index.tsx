@@ -1,13 +1,19 @@
-import { Box, Grid, Modal, Typography, styled } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-import ExtentionFunctions from "components/molecules/ExtentionFunctions";
-import { ExtensionFunctionType, ExtensionType } from "types/globalTypes";
-import FunctionForm from "components/molecules/FunctionForm";
-import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
+import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
+import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
+import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
+import ExtentionActions from "components/molecules/ExtentionActions";
+import { ExtensionParameterDataTypes } from "constants/constants";
+import { actionInExtensionsType } from "types/componentTypes";
+import { formatExtensionParameters } from "helper/formatters";
+import ActionForm from "components/molecules/ActionForm";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -76,23 +82,76 @@ const ModalStepGrid = styled(Grid)`
     position: relative;
 `;
 
+const ModalFooter = styled(Box)`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-top: 1px solid ${({ theme }) => theme.palette.grey[400]};
+    padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
+`;
+
+
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
-    const selectedExtensionItem: ExtensionType | undefined = ExtensionsDataMock.find(extension => extension.name == selectedExtension);
-    
-    // const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType>(selectedExtensionItem?.functions.find(item => item.name == selectedExtensionItem.functions[0].name);
+    const { experimentIdentifier } = useParams();
+    const { data } = useGetAllExtensions()
+    const extensions = data?.extensions
+    const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
+    const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
+    const { loading, mutate } = useExecuteExtension();
+    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>()
 
-    const defaultFunctionOption: ExtensionFunctionType | undefined = selectedExtensionItem?.functions[0];
-    const [selectedFunction, setSelectedFunction] = useState<ExtensionFunctionType | undefined>(defaultFunctionOption);
+    //initiate input params when selected extension changes
+    useEffect(() => {
+        setInputParams(selectedAction?.parameters.map(
+            item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
+                ? { name: item.name, value: experimentIdentifier }
+                : { name: item.name, value: item.defaultValue }
+            ))
+        )
+    }, [selectedExtension, selectedAction])
 
-    const updateSelectedFunctionHandler = (option: string) => {
-        setSelectedFunction(selectedExtensionItem?.functions.find(item => item.name == option));
+    function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
+        handleClose()
+        if (executeExtension.stderr) {
+            toast.error(
+                `Execution finished with the erorr: ${executeExtension.stderr} `,
+                { id: "exec_extension_error" }
+            )
+        } else {
+            toast.success(
+                "Execution finished successfully",
+                { id: "exec_extension_success" }
+            )
+        }
+    }
+
+
+    function handleExecuteExtension() {
+        if (selectedAction) {
+            mutate({
+                variables: {
+                    extension: selectedExtension,
+                    action: selectedAction.name,
+                    params: formatExtensionParameters(inputParams)
+                },
+                onCompleted: (data) => handleOnCompletedExtensionExecution(data.executeExtension)
+            })
+        }
+    }
+
+    const updateSelectedActionHandler = (option: string) => {
+        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name == option));
     };
-
     return (
         <Modal
             open={isOpen}
-            onClose={handleClose}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick') {
+                    handleClose();
+                }
+            }}
         >
             <ModalContainer>
                 <ModalHeader
@@ -108,24 +167,37 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                         <ExtentionName>{selectedExtension}</ExtentionName>
                     </Grid>
                     <Grid item>
-                        <CloseIcon onClick={handleClose} sx={{cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle"}} />
+                        <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
                     </Grid>
                 </ModalHeader>
                 <Grid container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtentionFunctions
+                        <ExtentionActions
                             extension={selectedExtensionItem}
-                            selectedFunction={selectedFunction}
-                            updateSelectedFunction={updateSelectedFunctionHandler}
+                            selectedAction={selectedAction}
+                            updateSelectedAction={updateSelectedActionHandler}
                         />
                     </ModalOptionsGrid>
-                    <ModalStepGrid item xs={8}>
-                        <FunctionForm selectedFunction={selectedFunction} />
-                    </ModalStepGrid>
+                    {inputParams ? <ModalStepGrid item xs={8}>
+                        <ActionForm selectedAction={selectedAction} inputParams={inputParams} setInputParams={setInputParams} />
+                    </ModalStepGrid> : null}
+                    <ModalFooter>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
+                            <Button
+                                variant="contained"
+                                onClick={() => handleExecuteExtension()}
+                                title='run_extension'
+                                disabled={loading}
+                            >
+                                Run Extention
+                            </Button>
+                        </Box>
+                    </ModalFooter>
                 </Grid>
             </ModalContainer>
         </Modal>
     )
 }
 
-export default ExtensionModal;
+export default ExtensionModal

@@ -10,7 +10,7 @@ import Grow from '@mui/material/Grow';
 import toast from 'react-hot-toast';
 
 import { BorderedButtonWithIcon } from 'components/atoms/sharedStyledComponents/BorderedButtonWithIcon';
-import { useGetAllExtensions } from 'API/graphql/queries/extension/getAllExtensionNames';
+import { useGetAllExtensions } from 'API/graphql/queries/extension/getAllExtensions';
 import ExtensionModal from 'components/organisms/ExtensionModal';
 
 function ExtensionsList() {
@@ -22,8 +22,8 @@ function ExtensionsList() {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
 
-    const { data } = useGetAllExtensions()
-    const extensions = data?.plugins
+    const { data, error } = useGetAllExtensions()
+    const extensions = data?.extensions
 
     const handleClick = (option: string) => {
         setSelectedExtension(option)
@@ -32,7 +32,12 @@ function ExtensionsList() {
     };
 
     const handleToggle = () => {
-        if (!extensions?.length) {
+        if (error) {
+            toast.error(error?.message, {
+                id: "extension_error"
+            })
+        }
+        else if (!extensions?.length) {
             toast("No extension available", {
                 id: "extension_error",
                 duration: 2000
@@ -92,10 +97,10 @@ function ExtensionsList() {
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
-                                    {extensions.map((extension, index) => (
+                                    {extensions.map((extension) => (
                                         <MenuItem
                                             key={extension.name}
-                                            disabled={index === 2}
+                                            disabled={!extension.actions.length}
                                             onClick={() => handleClick(extension.name)}
                                         >
                                             {extension.name}
