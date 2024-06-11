@@ -1,14 +1,16 @@
+import dayjs from "dayjs";
+
 import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 
-export const filterByThisTitle = "EXP_rabi";
+export const filterByThisStartDate = "23/11/2022";
 
 const request = {
   query: GET_ALL_EXPERIMENTS,
 };
 
-export const getAllExperimentsWithNameFilter_mock = {
+export const getAllExperimentsWithStartTime_mock = {
   success: [
     {
       request: {
@@ -17,21 +19,22 @@ export const getAllExperimentsWithNameFilter_mock = {
           offset: 0,
           limit: experimentRecordsRowsPerPageOptions[0],
           filters: {
-            startDate: null,
+            startDate: dayjs(filterByThisStartDate, "DD/MM/YYYY").format("YYYY-MM-DD"),
             endDate: null,
-            title: filterByThisTitle,
+            title: "",
             tags: null,
-            shouldIncludeTags: null
           },
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter((item) =>
-              item.title.includes(filterByThisTitle)
+            experimentsData: ExperimentsDataMock.filter(
+              (item) =>
+                dayjs(item.createdAt).isAfter(dayjs(filterByThisStartDate, "DD/MM/YYYY")) ||
+                dayjs(item.createdAt).isSame(dayjs(filterByThisStartDate, "DD/MM/YYYY"))
             ).slice(0, experimentRecordsRowsPerPageOptions[0]),
-            totalExperimentsCount: ExperimentDataMock.length,
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },
@@ -43,24 +46,25 @@ export const getAllExperimentsWithNameFilter_mock = {
           offset: experimentRecordsRowsPerPageOptions[0],
           limit: experimentRecordsRowsPerPageOptions[0],
           filters: {
-            startDate: null,
+            startDate: dayjs(filterByThisStartDate, "DD/MM/YYYY").format("YYYY-MM-DD"),
             endDate: null,
-            title: filterByThisTitle,
+            title: "",
             tags: null,
-            shouldIncludeTags: null
           },
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter((item) =>
-              item.title.includes(filterByThisTitle)
+            experimentsData: ExperimentsDataMock.filter(
+              (item) =>
+                dayjs(item.createdAt).isAfter(dayjs(filterByThisStartDate, "DD/MM/YYYY")) ||
+                dayjs(item.createdAt).isSame(dayjs(filterByThisStartDate, "DD/MM/YYYY"))
             ).slice(
               experimentRecordsRowsPerPageOptions[0],
               experimentRecordsRowsPerPageOptions[0] * 2
             ),
-            totalExperimentsCount: ExperimentDataMock.length,
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },

@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import { render } from "@testing-library/react";
 
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";

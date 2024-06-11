@@ -1,5 +1,5 @@
 import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
-import { ExperimentDataMock, tagOptions } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock, tagOptions } from "__mocks__/ExperimentsDataMock";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 
 export const filterByThisTag = tagOptions[0];
@@ -28,10 +28,10 @@ export const getAllExperimentsWithTagFilter_mock = {
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter((item) =>
+            experimentsData: ExperimentsDataMock.filter((item) =>
               item.tags.includes(filterByThisTag)
             ).slice(0, experimentRecordsRowsPerPageOptions[0]),
-            totalExperimentsCount: ExperimentDataMock.length,
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },
@@ -55,13 +55,13 @@ export const getAllExperimentsWithTagFilter_mock = {
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter((item) =>
+            experimentsData: ExperimentsDataMock.filter((item) =>
               item.tags.includes(filterByThisTag)
             ).slice(
               experimentRecordsRowsPerPageOptions[0],
               experimentRecordsRowsPerPageOptions[0] * 2
             ),
-            totalExperimentsCount: ExperimentDataMock.length,
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },

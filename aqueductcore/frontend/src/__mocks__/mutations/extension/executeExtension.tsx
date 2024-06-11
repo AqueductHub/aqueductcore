@@ -1,8 +1,8 @@
 import { EXECUTE_EXTENSION } from "API/graphql/mutations/extension/executeExtension";
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 
 // warning: This is not based on the real mock it's just no change and submit mode of the form
-export const executeExperiment_mock = {
+export const executeExtension_mock = {
     success: [
         {
             request: {

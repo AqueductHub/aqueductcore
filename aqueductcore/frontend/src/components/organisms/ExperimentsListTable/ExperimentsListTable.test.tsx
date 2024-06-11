@@ -2,11 +2,11 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 import { useState } from "react";
 
-import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
-import AppContextAQDMock from "__mocks__/AppContextAQDMock";
-import { processExperimentTableData } from "helper/formatters";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
+import { processExperimentTableData } from "helper/formatters";
+import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import ExperimentsListTable from ".";
 
 export const ExperimentTable = () => {
@@ -17,14 +17,14 @@ export const ExperimentTable = () => {
     setPage,
     rowsPerPage,
     setRowsPerPage,
-    count: ExperimentDataMock.length,
+    count: ExperimentsDataMock.length,
   };
   processExperimentTableData;
   return (
     <AppContextAQDMock>
       <ExperimentsListTable
         ExperimentRecordsColumns={ExperimentRecordsColumns}
-        experimentList={processExperimentTableData(ExperimentDataMock).slice(
+        experimentList={processExperimentTableData(ExperimentsDataMock).slice(
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage
         )}
@@ -57,7 +57,7 @@ test("Check if the table has pagination", async () => {
 });
 
 test("Check if the table's pagination list length is dynamically changing", async () => {
-  const processedExperimentTableData = processExperimentTableData(ExperimentDataMock);
+  const processedExperimentTableData = processExperimentTableData(ExperimentsDataMock);
   const { getByText, getAllByRole } = render(<ExperimentTable />);
 
   // Check if second pagination option is bigger than list's length
@@ -81,7 +81,7 @@ test("Check if the table's pagination list length is dynamically changing", asyn
 });
 
 test("Check if the table's pagination list next page is working", async () => {
-  const processedExperimentTableData = processExperimentTableData(ExperimentDataMock);
+  const processedExperimentTableData = processExperimentTableData(ExperimentsDataMock);
   const { getByTitle } = render(<ExperimentTable />);
   const nextPageIconButton = getByTitle("Go to next page");
   const previousPageIconButton = getByTitle("Go to previous page");

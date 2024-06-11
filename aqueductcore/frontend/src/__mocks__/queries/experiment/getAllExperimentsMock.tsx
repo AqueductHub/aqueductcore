@@ -1,17 +1,13 @@
-import dayjs from "dayjs";
-
 import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
-
-
-export const filterByThisEndDate = "11/11/2022";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
+import { isArchived } from "helper/formatters";
 
 const request = {
   query: GET_ALL_EXPERIMENTS,
 };
 
-export const getAllExperimentsWithEndTime_mock = {
+export const getAllExperiments_mock = {
   success: [
     {
       request: {
@@ -21,24 +17,22 @@ export const getAllExperimentsWithEndTime_mock = {
           limit: experimentRecordsRowsPerPageOptions[0],
           filters: {
             startDate: null,
-            endDate: dayjs(filterByThisEndDate, "DD/MM/YYYY").format("YYYY-MM-DD"),
+            endDate: null,
             title: "",
             tags: null,
-          },
+            shouldIncludeTags: null,
+          }
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter(
-              (item) =>
-                dayjs(item.createdAt).isBefore(dayjs(filterByThisEndDate, "DD/MM/YYYY")) ||
-                dayjs(item.createdAt).isSame(dayjs(filterByThisEndDate, "DD/MM/YYYY"))
-            ).slice(0, experimentRecordsRowsPerPageOptions[0]),
-            totalExperimentsCount: ExperimentDataMock.length,
+            experimentsData: ExperimentsDataMock.filter(experiment => !isArchived(experiment.tags)).slice(0, experimentRecordsRowsPerPageOptions[0]),
+            totalExperimentsCount: ExperimentsDataMock.filter(experiment => !isArchived(experiment.tags)).length,
           },
         },
       },
+      maxUsageCount: Number.POSITIVE_INFINITY,
     },
     {
       request: {
@@ -48,27 +42,25 @@ export const getAllExperimentsWithEndTime_mock = {
           limit: experimentRecordsRowsPerPageOptions[0],
           filters: {
             startDate: null,
-            endDate: dayjs(filterByThisEndDate, "DD/MM/YYYY").format("YYYY-MM-DD"),
+            endDate: null,
             title: "",
             tags: null,
+            shouldIncludeTags: null,
           },
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter(
-              (item) =>
-                dayjs(item.createdAt).isBefore(dayjs(filterByThisEndDate, "DD/MM/YYYY")) ||
-                dayjs(item.createdAt).isSame(dayjs(filterByThisEndDate, "DD/MM/YYYY"))
-            ).slice(
+            experimentsData: ExperimentsDataMock.filter(experiment => !isArchived(experiment.tags)).slice(
               experimentRecordsRowsPerPageOptions[0],
               experimentRecordsRowsPerPageOptions[0] * 2
             ),
-            totalExperimentsCount: ExperimentDataMock.length,
+            totalExperimentsCount: ExperimentsDataMock.filter(experiment => !isArchived(experiment.tags)).length,
           },
         },
       },
+      maxUsageCount: Number.POSITIVE_INFINITY,
     },
   ],
 };

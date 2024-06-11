@@ -2,13 +2,13 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import ExperimentDetails from "components/organisms/ExperimentDetails";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { updatedDescription } from "__mocks__/constants";
 
 function ExperimentDetailsWithinComponent() {
   return (
-    <ExperimentDetails experimentDetails={ExperimentDataMock[0]} />
+    <ExperimentDetails experimentDetails={ExperimentsDataMock[0]} />
   );
 }
 

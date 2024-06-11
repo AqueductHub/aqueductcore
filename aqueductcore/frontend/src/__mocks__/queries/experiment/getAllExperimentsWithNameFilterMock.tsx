@@ -1,13 +1,14 @@
 import { GET_ALL_EXPERIMENTS } from "API/graphql/queries/experiment/getAllExperiments";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
-import { isArchived } from "helper/formatters";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
+
+export const filterByThisTitle = "EXP_rabi";
 
 const request = {
   query: GET_ALL_EXPERIMENTS,
 };
 
-export const getAllExperiments_mock = {
+export const getAllExperimentsWithNameFilter_mock = {
   success: [
     {
       request: {
@@ -18,21 +19,22 @@ export const getAllExperiments_mock = {
           filters: {
             startDate: null,
             endDate: null,
-            title: "",
+            title: filterByThisTitle,
             tags: null,
-            shouldIncludeTags: null,
-          }
+            shouldIncludeTags: null
+          },
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).slice(0, experimentRecordsRowsPerPageOptions[0]),
-            totalExperimentsCount: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).length,
+            experimentsData: ExperimentsDataMock.filter((item) =>
+              item.title.includes(filterByThisTitle)
+            ).slice(0, experimentRecordsRowsPerPageOptions[0]),
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },
-      maxUsageCount: Number.POSITIVE_INFINITY,
     },
     {
       request: {
@@ -43,24 +45,25 @@ export const getAllExperiments_mock = {
           filters: {
             startDate: null,
             endDate: null,
-            title: "",
+            title: filterByThisTitle,
             tags: null,
-            shouldIncludeTags: null,
+            shouldIncludeTags: null
           },
         },
       },
       result: {
         data: {
           experiments: {
-            experimentsData: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).slice(
+            experimentsData: ExperimentsDataMock.filter((item) =>
+              item.title.includes(filterByThisTitle)
+            ).slice(
               experimentRecordsRowsPerPageOptions[0],
               experimentRecordsRowsPerPageOptions[0] * 2
             ),
-            totalExperimentsCount: ExperimentDataMock.filter(experiment => !isArchived(experiment.tags)).length,
+            totalExperimentsCount: ExperimentsDataMock.length,
           },
         },
       },
-      maxUsageCount: Number.POSITIVE_INFINITY,
     },
   ],
 };
