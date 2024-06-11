@@ -27,38 +27,38 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to registry
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Log in to registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Setting up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+      # - name: Setting up Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.8
 
-      - name: Build Release Images
-        run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
+      # - name: Build Release Images
+      #   run: ci/build_docker_image.sh -i aqueductcore -p true -t ${{ inputs.version }}
 
-      - name: Build final archived file
-        run: |
-          cp scripts/release/docker-compose.yaml ./build \
-          && cp scripts/release/install.sh ./build \
-          && cp scripts/release/uninstall.sh ./build
+      # - name: Build final archived file
+      #   run: |
+      #     cp scripts/release/docker-compose.yaml ./build \
+      #     && cp scripts/release/install.sh ./build \
+      #     && cp scripts/release/uninstall.sh ./build
 
-          cd build && tar -cvzf aqueduct_v${{ inputs.version }}.tar.gz \
-          aqueductcore.tar \
-          docker-compose.yaml \
-          install.sh \
-          uninstall.sh
+      #     cd build && tar -cvzf aqueduct_v${{ inputs.version }}.tar.gz \
+      #     aqueductcore.tar \
+      #     docker-compose.yaml \
+      #     install.sh \
+      #     uninstall.sh
 
-      - name: Create release and upload artifacts
-        uses: ncipollo/release-action@v1.12.0
-        with:
-          tag: ${{ inputs.version }}
-          name: "${{ inputs.version }}"
-          allowUpdates: true
-          artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
-          generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Create release and upload artifacts
+      #   uses: ncipollo/release-action@v1.12.0
+      #   with:
+      #     tag: ${{ inputs.version }}
+      #     name: "${{ inputs.version }}"
+      #     allowUpdates: true
+      #     artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
+      #     generateReleaseNotes: true
+      #     token: ${{ secrets.GITHUB_TOKEN }}
