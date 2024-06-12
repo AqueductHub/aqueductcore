@@ -12,9 +12,10 @@ import { SelectField } from "components/atoms/SelectField";
 import { ExtensionActionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
 import { client } from "API/apolloClientConfig";
+import { FileField } from "components/atoms/FileField";
 
 const Container = styled(Box)`
-    height: 557px;
+    height: 551px;
     padding: 0 ${(props) => props.theme.spacing(1)};
     overflow-y: auto;
     `;
@@ -41,6 +42,7 @@ function ActionForm({
             },
         },
     });
+
     return (
         <>
             <Container>
@@ -121,6 +123,18 @@ function ActionForm({
                                         value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
                                         onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }]))
                                     }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == ExtensionParameterDataTypes.FILE && <>
+                                <FileField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    experimentIdentifier={experimentIdentifier || ""}
+                                    // fileFieldProps={{
+                                    //     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
+                                    //     onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }]))
+                                    // }}
                                 />
                             </>}
                         </Box>

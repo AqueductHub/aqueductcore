@@ -104,16 +104,31 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const { loading, mutate } = useExecuteExtension();
     const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>()
     const { setSelectedFile } = useContext(FileSelectStateContext)
+    const [executeExtensionEnabled, setExecuteExtensionEnabled] = useState(false);
 
-    //initiate input params when selected extension changes
     useEffect(() => {
         setInputParams(selectedAction?.parameters.map(
             item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
                 ? { name: item.name, value: experimentIdentifier }
-                : { name: item.name, value: item.defaultValue }
+                : { name: item.name, value: item.defaultValue ?? "" }
             ))
         )
     }, [selectedExtension, selectedAction])
+
+    useEffect(() => {
+        let enableExecutionUpdate: boolean = true;
+        enableExecutionUpdate = !inputParams?.some(param => {
+            const paramElement = selectedAction?.parameters?.find(inputParam => inputParam.name === param.name);
+            return (
+                (paramElement?.dataType === ExtensionParameterDataTypes.STR && param.value === "") ||
+                (paramElement?.dataType === ExtensionParameterDataTypes.INT && param.value === "") ||
+                (paramElement?.dataType === ExtensionParameterDataTypes.FLOAT && param.value === "") ||
+                (paramElement?.dataType === ExtensionParameterDataTypes.SELECT && param.value === "") ||
+                (paramElement?.dataType === ExtensionParameterDataTypes.TEXTAREA && param.value === "")
+            );
+        });
+        setExecuteExtensionEnabled(enableExecutionUpdate);
+    }, [inputParams, selectedAction])
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
@@ -134,7 +149,6 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         }
     }
 
-
     function handleExecuteExtension() {
         if (selectedAction) {
             mutate({
@@ -151,6 +165,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const updateSelectedActionHandler = (option: string) => {
         setSelectedAction(selectedExtensionItem?.actions.find(item => item.name == option));
     };
+
     return (
         <Modal
             open={isOpen}
@@ -195,7 +210,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                                 variant="contained"
                                 onClick={() => handleExecuteExtension()}
                                 title='run_extension'
-                                disabled={loading}
+                                disabled={!executeExtensionEnabled}
                             >
                                 Run Extension
                             </Button>
