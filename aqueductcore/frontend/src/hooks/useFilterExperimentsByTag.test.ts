@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { act } from "react-dom/test-utils";
 
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 import useFilterExperimentsByTag from "./useFilterExperimentsByTag";
 import { ARCHIVED } from "constants/constants";
 import { isArchived } from "helper/formatters";
@@ -14,7 +14,7 @@ jest.mock("react-router-dom", () => ({
 
 test("it should filter experiments based on included tags", () => {
   const { result } = renderHook(
-    () => useFilterExperimentsByTag({ initialExperiments: ExperimentDataMock }),
+    () => useFilterExperimentsByTag({ initialExperiments: ExperimentsDataMock }),
     {
       wrapper: MemoryRouter,
     }
@@ -24,7 +24,7 @@ test("it should filter experiments based on included tags", () => {
     result.current.updateFilters({ includedTags: ["rabi"] });
   });
 
-  const experiment_with_rabi_tag = ExperimentDataMock.filter((experiment) =>
+  const experiment_with_rabi_tag = ExperimentsDataMock.filter((experiment) =>
     experiment.tags.includes("rabi")
   );
 
@@ -33,7 +33,7 @@ test("it should filter experiments based on included tags", () => {
 
 test("it should filter experiments based on excluded tags", () => {
   const { result } = renderHook(
-    () => useFilterExperimentsByTag({ initialExperiments: ExperimentDataMock }),
+    () => useFilterExperimentsByTag({ initialExperiments: ExperimentsDataMock }),
     {
       wrapper: MemoryRouter,
     }
@@ -43,7 +43,7 @@ test("it should filter experiments based on excluded tags", () => {
     result.current.updateFilters({ excludedTags: ["rabi"] });
   });
 
-  const experiment_without_rabi_tag = ExperimentDataMock.filter(
+  const experiment_without_rabi_tag = ExperimentsDataMock.filter(
     (experiment) => !experiment.tags.includes("rabi")
   );
 
@@ -52,7 +52,7 @@ test("it should filter experiments based on excluded tags", () => {
 
 test("it should give priority to the excluded experiment tags", () => {
   const { result } = renderHook(
-    () => useFilterExperimentsByTag({ initialExperiments: ExperimentDataMock }),
+    () => useFilterExperimentsByTag({ initialExperiments: ExperimentsDataMock }),
     {
       wrapper: MemoryRouter,
     }
@@ -62,7 +62,7 @@ test("it should give priority to the excluded experiment tags", () => {
     result.current.updateFilters({ includedTags: ["rabi"], excludedTags: [ARCHIVED] });
   });
 
-  const experiment_with_rabi_without_archived_tag = ExperimentDataMock.filter(
+  const experiment_with_rabi_without_archived_tag = ExperimentsDataMock.filter(
     (experiment) => experiment.tags.includes("rabi") && !isArchived(experiment.tags)
   );
 

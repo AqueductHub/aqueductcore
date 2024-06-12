@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";

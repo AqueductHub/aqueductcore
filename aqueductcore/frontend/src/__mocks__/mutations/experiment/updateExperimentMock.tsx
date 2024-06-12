@@ -1,6 +1,6 @@
 import { UPDATE_EXPERIMENT } from "API/graphql/mutations/experiment/updateExperiment";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
 import { updatedTitle, updatedDescription } from "__mocks__/constants";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 
 export const updateExperiment_mock = {
   success: [
@@ -8,7 +8,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentDataMock[0].id,
+          experimentId: ExperimentsDataMock[0].id,
           experimentUpdateInput: {
             title: updatedTitle,
             description: updatedDescription,
@@ -20,8 +20,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentDataMock[0].id,
-            alias: ExperimentDataMock[0].alias,
+            id: ExperimentsDataMock[0].id,
+            alias: ExperimentsDataMock[0].alias,
           },
         },
       },
@@ -31,7 +31,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentDataMock[0].id,
+          experimentId: ExperimentsDataMock[0].id,
           experimentUpdateInput: {
             description: "",
           },
@@ -42,8 +42,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentDataMock[0].id,
-            alias: ExperimentDataMock[0].alias,
+            id: ExperimentsDataMock[0].id,
+            alias: ExperimentsDataMock[0].alias,
           },
         },
       },
@@ -53,7 +53,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentDataMock[0].id,
+          experimentId: ExperimentsDataMock[0].id,
           experimentUpdateInput: {
             title: "",
           },
@@ -64,8 +64,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentDataMock[0].id,
-            alias: ExperimentDataMock[0].alias,
+            id: ExperimentsDataMock[0].id,
+            alias: ExperimentsDataMock[0].alias,
           },
         },
       },

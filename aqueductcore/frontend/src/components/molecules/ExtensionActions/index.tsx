@@ -3,13 +3,13 @@ import { useEffect } from "react";
 
 import { ExtensionActionType, ExtensionType } from "types/globalTypes";
 
-const ExtentionActionBox = styled(Box)`
+const ExtensionActionBox = styled(Box)`
     width: 100%;
     border: 1px solid ${({ theme }) => theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)};
 `;
 
-const ExtentionDescription = styled(Typography)`
+const ExtensionDescription = styled(Typography)`
     font-size: 0.8rem;
 `;
 
@@ -54,17 +54,17 @@ const ActionDescription = styled(Typography)`
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 
-interface ExtentionActionsProps {
+interface ExtensionActionsProps {
     extension?: ExtensionType;
     selectedAction?: ExtensionActionType;
     updateSelectedAction: (value: string) => void;
 }
 
-function ExtentionActions({
+function ExtensionActions({
     extension,
     selectedAction,
     updateSelectedAction
-}: ExtentionActionsProps) {
+}: ExtensionActionsProps) {
 
     const handleLabelClick = (value: string) => {
         updateSelectedAction(value);
@@ -79,7 +79,7 @@ function ExtentionActions({
 
     return (
         <>
-            <ExtentionDescription>{extension?.description}</ExtentionDescription>
+            <ExtensionDescription>{extension?.description}</ExtensionDescription>
             <ActionsFormControl>
                 <RadioGroup
                     defaultValue={extension?.actions[0].name}
@@ -92,7 +92,7 @@ function ExtentionActions({
                             value={ActionInfo.name}
                             control={<HiddenRadio />}
                             label={
-                                <ExtentionActionBox>
+                                <ExtensionActionBox>
                                     <ActionHeader style={{ backgroundColor: selectedAction?.name == ActionInfo.name ? "#3dcbda" : "transparent" }}>
                                         <ActionName>{ActionInfo.name}</ActionName>
                                         <ActionCheckbox>
@@ -106,7 +106,7 @@ function ExtentionActions({
                                     <ActionDescription>
                                         {ActionInfo.description}
                                     </ActionDescription>
-                                </ExtentionActionBox>
+                                </ExtensionActionBox>
                             }
                         />
                     ))}
@@ -116,4 +116,4 @@ function ExtentionActions({
     );
 }
 
-export default ExtentionActions;
+export default ExtensionActions;

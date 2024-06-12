@@ -1,5 +1,5 @@
 import { REMOVE_EXPERIMENT } from "API/graphql/mutations/experiment/removeExperiment";
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 
 export const removeExperiment_mock = {
   success: [

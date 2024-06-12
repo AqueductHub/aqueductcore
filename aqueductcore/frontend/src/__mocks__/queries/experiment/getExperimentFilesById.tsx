@@ -1,5 +1,5 @@
 import { GET_EXPERIMENT_FILES_BY_ID } from "API/graphql/queries/experiment/getExperimentFilesById";
-import { ExperimentDataMock, alias } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock, alias } from "__mocks__/ExperimentsDataMock";
 
 const request = {
   query: GET_EXPERIMENT_FILES_BY_ID,
@@ -16,7 +16,7 @@ export const getExperimentFiles_mock = {
     result: {
       data: {
         experiment: {
-          files: ExperimentDataMock.filter((experiment) => experiment.alias === alias)[0].files,
+          files: ExperimentsDataMock.filter((experiment) => experiment.alias === alias)[0].files,
         },
       },
     },

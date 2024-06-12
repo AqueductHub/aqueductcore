@@ -1,5 +1,5 @@
-import { ARCHIVED, FAVOURITE } from "constants/constants";
 import { ExperimentAllFieldsDataType, TagType } from "types/globalTypes";
+import { ARCHIVED, FAVOURITE } from "constants/constants";
 
 export const alias = "20221111-01";
 
@@ -37,7 +37,7 @@ export const tagOptions: TagType[] = [
   "bell",
 ];
 
-export const ExperimentDataMock: ExperimentAllFieldsDataType[] = [
+export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   {
     id: "010bbd7f-43a8-4f4e-996b-1cdaebc398cc",
     alias: "20221111-01",
