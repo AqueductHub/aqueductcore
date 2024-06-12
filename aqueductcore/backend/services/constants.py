@@ -1,3 +1,3 @@
 """Constant values"""
 
-MARKDOWN_EXTENTIONS = ["markdn", "markdown", "md", "mdown"]
+MARKDOWN_EXTENSIONS = ["markdn", "markdown", "md", "mdown"]

@@ -272,11 +272,11 @@ remove_experiment_mutation = """
 """
 
 
-execute_plugin = """
-  mutation ExecutePlugin {
-        executePlugin(
-            plugin: "Dummy plugin"
-            function: "echo"
+execute_extension = """
+  mutation ExecuteExtension {
+        executeExtension(
+            extension: "Dummy extension"
+            action: "echo"
             params: [
                 ["var1", "abc"],
                 ["var2", "111"],
@@ -640,7 +640,7 @@ async def test_remove_experiment(
 
 
 @pytest.mark.asyncio
-async def test_execute_plugin_stdout_ok(
+async def test_execute_extension_stdout_ok(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
     # fixture is here to ensure that files are cleaned after execution
@@ -659,7 +659,7 @@ async def test_execute_plugin_stdout_ok(
         await db_session.refresh(db_experiment)
 
     exp_eid = experiment_data[0].eid
-    query = execute_plugin.replace("PLACEHOLDER", exp_eid)
+    query = execute_extension.replace("PLACEHOLDER", exp_eid)
 
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
@@ -671,7 +671,7 @@ async def test_execute_plugin_stdout_ok(
         context_value=context,
     )
     assert resp.errors is None
-    res = resp.data["executePlugin"]
+    res = resp.data["executeExtension"]
     assert res["returnCode"] == 0
     assert res["stdout"] == (
         "var1=abc\n"
@@ -687,7 +687,7 @@ async def test_execute_plugin_stdout_ok(
 
 
 @pytest.mark.asyncio
-async def test_execute_plugin_stderr_ok(
+async def test_execute_extension_stderr_ok(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
     # fixture is here to ensure that files are cleaned after execution
@@ -706,7 +706,7 @@ async def test_execute_plugin_stderr_ok(
         await db_session.refresh(db_experiment)
 
     exp_eid = experiment_data[0].eid
-    query = execute_plugin.replace("PLACEHOLDER", exp_eid)
+    query = execute_extension.replace("PLACEHOLDER", exp_eid)
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
@@ -717,7 +717,7 @@ async def test_execute_plugin_stderr_ok(
         context_value=context,
     )
     assert resp.errors is None
-    res = resp.data["executePlugin"]
+    res = resp.data["executeExtension"]
     assert res["returnCode"] == 13
     assert res["stdout"] == ""
     assert res["stderr"] == (
@@ -733,7 +733,7 @@ async def test_execute_plugin_stderr_ok(
 
 
 @pytest.mark.asyncio
-async def test_execute_plugin_failed_validation(
+async def test_execute_extension_failed_validation(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
     # fixture is here to ensure that files are cleaned after execution
@@ -752,7 +752,7 @@ async def test_execute_plugin_failed_validation(
         await db_session.refresh(db_experiment)
 
     exp_eid = experiment_data[0].eid
-    query = execute_plugin.replace("PLACEHOLDER", exp_eid)
+    query = execute_extension.replace("PLACEHOLDER", exp_eid)
 
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(

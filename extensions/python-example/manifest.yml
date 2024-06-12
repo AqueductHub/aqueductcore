@@ -1,0 +1,49 @@
+name: "Wolfram alpha solution extension"
+description: >
+  This extension solves mathematical problems
+  using Wolfram|Alpha cloud engine. To run the
+  extension, please obtain an App ID at
+  https://developer.wolframalpha.com/access
+authors: aqueduct@riverlane.com
+aqueduct_url: https://localhost:8000/
+
+constants:
+  wolfram_app_id: "KEY HERE"
+
+actions:
+  - 
+    name: solve as text
+    description: >
+      solve an equation and return a text answer
+
+    # there is a trick, which allows to
+    # customise execution environments by having
+    # a venv inside a extension folder, and running
+    # a venv-specific
+    # python binary from venv folder. Details:
+    # https://stackoverflow.com/a/54482177
+    #
+    # This thick allows to avoid `aqueductcore`
+    # dependency on client library.
+    #
+    # Extension may cache some data and libraries
+    # for it's further usage, or, alternatively,
+    # it may drop and recreate
+    # its environment on each run.
+    script: >
+      $python solve_alpha.py
+
+    # arguments of the action
+    parameters:
+      - 
+        name: equation
+        description: equation to solve
+        data_type: str
+      -
+        name: experiment
+        description: experiment to store result
+        data_type: experiment
+      - 
+        name: result_file
+        description: file name to store result
+        data_type: str

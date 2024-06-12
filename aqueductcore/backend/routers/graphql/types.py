@@ -10,7 +10,7 @@ import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.models.plugin import Plugin
+from aqueductcore.backend.models.extensions import Extension
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
 
@@ -95,8 +95,8 @@ class Tags:
 
 
 @strawberry.type
-class PluginParameterType:
-    """A single parameter of the plugin interface"""
+class ExtensionParameterType:
+    """A single parameter of the extension interface"""
 
     name: str
     display_name: Optional[str]
@@ -107,18 +107,18 @@ class PluginParameterType:
 
 
 @strawberry.type
-class PluginFunctionInfo:
-    """Represents a function of the plugin. One plugin
-    may have multiple functions."""
+class ExtensionActionInfo:
+    """Represents a action of the extension. One extension
+    may have multiple actions."""
 
     name: str
     description: Optional[str]
-    parameters: List[PluginParameterType]
+    parameters: List[ExtensionParameterType]
     experiment_variable_name: Optional[str]
 
 
 @strawberry.type
-class PluginExecutionResult:
+class ExtensionExecutionResult:
     """Result of OS process execution"""
 
     return_code: int
@@ -129,24 +129,24 @@ class PluginExecutionResult:
 
 
 @strawberry.type
-class PluginInfo:
-    """Plugin information passed to the frontend"""
+class ExtensionInfo:
+    """Extension information passed to the frontend"""
 
     name: str
     description: Optional[str]
-    authors: str = strawberry.field(description="Plugin authors' emails")
-    functions: List[PluginFunctionInfo]
+    authors: str = strawberry.field(description="Extension authors' emails")
+    actions: List[ExtensionActionInfo]
 
     @staticmethod
-    def from_plugin(plugin: Plugin):
-        """Generates a plugin information object for a plugin model."""
+    def from_extension(extension: Extension):
+        """Generates a extension information object for a extension model."""
 
-        functions = []
-        for function in plugin.functions:
+        actions = []
+        for action in extension.actions:
             parameters = []
-            for parameter in function.parameters:
+            for parameter in action.parameters:
                 parameters.append(
-                    PluginParameterType(
+                    ExtensionParameterType(
                         name=parameter.name,
                         display_name=parameter.display_name,
                         description=parameter.description,
@@ -155,21 +155,21 @@ class PluginInfo:
                         options=parameter.options,
                     )
                 )
-            var = function.get_default_experiment_parameter()
+            var = action.get_default_experiment_parameter()
             varname = None
             if var is not None:
                 varname = var.name
-            functions.append(
-                PluginFunctionInfo(
-                    name=function.name,
-                    description=function.description,
+            actions.append(
+                ExtensionActionInfo(
+                    name=action.name,
+                    description=action.description,
                     parameters=parameters,
                     experiment_variable_name=varname,
                 )
             )
-        return PluginInfo(
-            name=plugin.name,
-            description=plugin.description,
-            authors=plugin.authors,
-            functions=functions,
+        return ExtensionInfo(
+            name=extension.name,
+            description=extension.description,
+            authors=extension.authors,
+            actions=actions,
         )

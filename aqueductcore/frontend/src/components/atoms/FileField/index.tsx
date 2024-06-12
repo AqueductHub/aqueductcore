@@ -1,8 +1,8 @@
 import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { useGetExperimentFilesById } from "API/graphql/queries/experiment/getExperimentFilesById";
-import { PluginFieldBase } from "types/globalTypes";
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const FileInput = styled(TextField)`
   resize: none;
@@ -13,7 +13,7 @@ const FileInput = styled(TextField)`
   background-color: transparent;
 `;
 
-interface FileFieldProps extends PluginFieldBase {
+interface FileFieldProps extends ExtensionFieldBase {
   experimentIdentifier: string;
   fileFieldProps?: AutocompleteProps<string, false, true, false>;
 }

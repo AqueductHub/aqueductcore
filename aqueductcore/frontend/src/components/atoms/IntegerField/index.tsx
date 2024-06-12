@@ -1,7 +1,7 @@
 import { Box, Grid, TextField, TextFieldProps, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { PluginFieldBase } from "types/globalTypes";
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const IntegerInput = styled(TextField)`
   resize: none;
@@ -20,7 +20,7 @@ const IntegerInput = styled(TextField)`
   }
 `;
 
-interface IntegerFieldProps extends PluginFieldBase {
+interface IntegerFieldProps extends ExtensionFieldBase {
   defaultValue?: string;
   integerFieldProps?: TextFieldProps
 }

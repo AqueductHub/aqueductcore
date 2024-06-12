@@ -8,6 +8,14 @@ on:
         required: true
         type: string
         default: "MAJOR.MINOR.PATCH"
+  workflow_call:
+    inputs:
+      version:
+        description: "Aqueduct Version"
+        required: true
+        type: string
+        default: "MAJOR.MINOR.PATCH"
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -52,4 +60,5 @@ jobs:
           name: "${{ inputs.version }}"
           allowUpdates: true
           artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
+          generateReleaseNotes: true
           token: ${{ secrets.GITHUB_TOKEN }}

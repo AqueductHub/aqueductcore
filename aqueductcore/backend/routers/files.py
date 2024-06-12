@@ -17,7 +17,7 @@ from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
-from aqueductcore.backend.services.constants import MARKDOWN_EXTENTIONS
+from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
@@ -54,8 +54,8 @@ async def download_experiment_file(
             )
 
         # override markdown media type to work in Python 3.8 as it doesn't recognize markdown.
-        file_extention = file_name.split(".")[-1]
-        media_type = "text/x-markdown" if file_extention in MARKDOWN_EXTENTIONS else None
+        file_extension = file_name.split(".")[-1]
+        media_type = "text/x-markdown" if file_extension in MARKDOWN_EXTENSIONS else None
 
         response = FileResponse(file_path, stat_result=os.stat(file_path), media_type=media_type)
 

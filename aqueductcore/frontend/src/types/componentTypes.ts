@@ -7,3 +7,5 @@ export type ThemeModeTypes = "dark" | "light";
 export type SortOrder = 'asc' | 'desc';
 
 export type selectedFileType = ExperimentFileType['modifiedAt'] | undefined
+
+export type actionInExtensionsType = { name: string, value?: string | null }

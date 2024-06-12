@@ -11,3 +11,15 @@ export const experimentRecordsRowsPerPageOptions = [10, 25, 100];
 export const FAVOURITE = "__favourite__";
 export const ARCHIVED = "__archived__";
 export const MAX_TAGS_VISIBLE_LENGTH = 3;
+
+//Extension
+export const ExtensionParameterDataTypes = {
+    STR: "str",
+    INT: "int",
+    FLOAT: "float",
+    EXPERIMENT: "experiment",
+    TEXTAREA: "textarea",
+    BOOL: "bool",
+    SELECT: "select",
+    FILE: "file"
+}

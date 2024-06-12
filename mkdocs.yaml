@@ -68,5 +68,6 @@ nav:
   - "setup.md"
   - "getting-started.md"
   - "Python Client": "https://aqueducthub.github.io/pyaqueduct/"
+  - "extensions.md"
 
 copyright: Copyright &copy; 2023 - 2024 Riverlane Ltd.

@@ -1,7 +1,7 @@
 import { Box, Select, Grid, styled, MenuItem, SelectProps } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/pluginInputFields"
-import { PluginFieldBase } from "types/globalTypes";
+import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { ExtensionFieldBase } from "types/globalTypes";
 
 const DropDown = styled(Select)`
   width: calc(100% - ${(props) => props.theme.spacing(1)});
@@ -10,7 +10,7 @@ const DropDown = styled(Select)`
   border-color: ${({ theme }) => theme.palette.neutral.main};
 `;
 
-interface SelectFieldProps extends PluginFieldBase {
+interface SelectFieldProps extends ExtensionFieldBase {
   options: string[];
   selectFieldProps?: SelectProps
 }

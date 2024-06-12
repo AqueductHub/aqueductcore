@@ -2,12 +2,12 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import ExperimentDetails from "components/organisms/ExperimentDetails";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { updatedTitle } from "__mocks__/constants";
 
 function ExperimentDetailsWithinComponent() {
-  return <ExperimentDetails experimentDetails={ExperimentDataMock[0]} />;
+  return <ExperimentDetails experimentDetails={ExperimentsDataMock[0]} />;
 }
 
 test("clicking on pencil icon converts text to field", async () => {

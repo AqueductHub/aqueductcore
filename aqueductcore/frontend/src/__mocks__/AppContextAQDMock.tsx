@@ -3,25 +3,27 @@ import { BrowserRouter, MemoryRouter, MemoryRouterProps } from "react-router-dom
 import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
 import { MockedProvider } from "@apollo/client/testing";
 import CssBaseline from "@mui/material/CssBaseline";
-import { PropsWithChildren } from "react";
-
-import { getAllExperimentsWithNameFilter_mock } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
-import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/getAllExperimentsWithTagFilterMock";
-import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/getAllExperimentsWithStartTimeMock";
-import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/getAllExperimentsWithEndTimeMock";
-import { getExperimentFiles_mock } from "__mocks__/queries/getExperimentFilesById";
-import { getAllExtensionNames_mock } from "__mocks__/queries/getAllExtensionNamesMock";
-import { getAllExperiments_mock } from "__mocks__/queries/getAllExperimentsMock";
-import { updateExperiment_mock } from "__mocks__/mutations/updateExperimentMock";
-import { removeExperiment_mock } from "__mocks__/mutations/removeExperimentMock";
-import { getUserInformation_mock } from "__mocks__/queries/getUserInformation";
-import { getExperiment_mock } from "__mocks__/queries/getExperimentByIdMock";
-import { getAllTags_mock } from "__mocks__/queries/getAllTagsMock";
 import { Toaster } from "react-hot-toast";
+import { PropsWithChildren } from "react";
 import { cssVariableTheme } from "theme";
 
+import { getAllExperimentsWithNameFilter_mock } from "__mocks__/queries/experiment/getAllExperimentsWithNameFilterMock";
+import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/experiment/getAllExperimentsWithTagFilterMock";
+import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/experiment/getAllExperimentsWithStartTimeMock";
+import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/experiment/getAllExperimentsWithEndTimeMock";
+import { getAllExtensionNames_mock } from "__mocks__/queries/extension/getAllExtensionNamesMock";
+import { getExperimentFiles_mock } from "__mocks__/queries/experiment/getExperimentFilesById";
+import { getAllExperiments_mock } from "__mocks__/queries/experiment/getAllExperimentsMock";
+import { removeExperiment_mock } from "__mocks__/mutations/experiment/removeExperimentMock";
+import { updateExperiment_mock } from "__mocks__/mutations/experiment/updateExperimentMock";
+import { getAllExtensions_mock } from "__mocks__/queries/extension/getAllExtensionsMock";
+import { getExperiment_mock } from "__mocks__/queries/experiment/getExperimentByIdMock";
+import { executeExtension_mock } from "__mocks__/mutations/extension/executeExtension";
+import { getUserInformation_mock } from "__mocks__/queries/user/getUserInformation";
+import { getAllTags_mock } from "__mocks__/queries/experiment/getAllTagsMock";
+
 interface AppContextAQDMockProps {
-  children: PropsWithChildren["children"];
+  //Experiments
   getAllTags_mockMockMode?: keyof typeof getAllTags_mock;
   getAllExperiments_mockMockMode?: keyof typeof getAllExperiments_mock;
   getAllExperimentsWithNameFilter_mockMockMode?: keyof typeof getAllExperimentsWithNameFilter_mock;
@@ -31,14 +33,21 @@ interface AppContextAQDMockProps {
   updateExperiment_mockMockMode?: keyof typeof updateExperiment_mock;
   removeExperiment_mockMockMode?: keyof typeof removeExperiment_mock;
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
-  getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
+  //Users
+  getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
+  //Extensions
+  getAllExtensions_mockMockMode?: keyof typeof getAllExtensions_mock;
   getAllExtensionNames_mockMockMode?: keyof typeof getAllExtensionNames_mock;
-  browserRouter?: boolean;
+  executeExtension_mockMockMode?: keyof typeof executeExtension_mock;
+  //Others
+  children: PropsWithChildren["children"];
   memoryRouterProps?: MemoryRouterProps
+  browserRouter?: boolean;
 }
 
 function AppContextAQDMock({
+  //Experiments
   getAllTags_mockMockMode = "success",
   getAllExperiments_mockMockMode = "success",
   getAllExperimentsWithNameFilter_mockMockMode = "success",
@@ -48,9 +57,14 @@ function AppContextAQDMock({
   updateExperiment_mockMockMode = "success",
   removeExperiment_mockMockMode = "success",
   getExperimentFiles_mockMockMode = "success",
-  getUserInformation_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
+  //Users
+  getUserInformation_mockMockMode = "success",
+  //Extensions
+  getAllExtensions_mockMockMode = "success",
   getAllExtensionNames_mockMockMode = "success",
+  executeExtension_mockMockMode = "success",
+  //Others
   memoryRouterProps,
   browserRouter,
   children,
@@ -85,8 +99,8 @@ function AppContextAQDMock({
 
   const themeConfig = extendTheme(cssVariableTheme);
   const mocks = [
+    // Experiments
     getAllTags_mock[getAllTags_mockMockMode],
-    getExperimentFiles_mock[getExperimentFiles_mockMockMode],
     ...getAllExperiments_mock[getAllExperiments_mockMockMode],
     ...getAllExperimentsWithNameFilter_mock[getAllExperimentsWithNameFilter_mockMockMode],
     ...getAllExperimentsWithTagFilter_mock[getAllExperimentsWithTagFilter_mockMockMode],
@@ -94,9 +108,14 @@ function AppContextAQDMock({
     ...getAllExperimentsWithEndTime_mock[getAllExperimentsWithEndTime_mockMockMode],
     ...updateExperiment_mock[updateExperiment_mockMockMode],
     ...removeExperiment_mock[removeExperiment_mockMockMode],
+    getExperimentFiles_mock[getExperimentFiles_mockMockMode],
+    ...getExperiment_mock[getExperiment_mockMockMode],
+    // Users
     ...getUserInformation_mock[getUserInformation_mockMockMode],
+    //Extensions
     ...getAllExtensionNames_mock[getAllExtensionNames_mockMockMode],
-    getExperiment_mock[getExperiment_mockMockMode],
+    ...getAllExtensions_mock[getAllExtensions_mockMockMode],
+    ...executeExtension_mock[executeExtension_mockMockMode],
   ];
 
   const App =

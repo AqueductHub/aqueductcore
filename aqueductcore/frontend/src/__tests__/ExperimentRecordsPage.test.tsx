@@ -1,11 +1,11 @@
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { filterByThisTitle } from "__mocks__/queries/getAllExperimentsWithNameFilterMock";
-import { filterByThisTag } from "__mocks__/queries/getAllExperimentsWithTagFilterMock";
+import { filterByThisTitle } from "__mocks__/queries/experiment/getAllExperimentsWithNameFilterMock";
+import { filterByThisTag } from "__mocks__/queries/experiment/getAllExperimentsWithTagFilterMock";
 import { ARCHIVED, experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
-import { ExperimentDataMock } from "__mocks__/ExperimentDataMock";
+import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 
@@ -41,7 +41,7 @@ test("render experiment table data", async () => {
     </AppContextAQDMock>
   );
   // Render table with data in it, except TAGs and Date created
-  for (const item of ExperimentDataMock.filter((item) => !item.tags.includes(ARCHIVED)).slice(
+  for (const item of ExperimentsDataMock.filter((item) => !item.tags.includes(ARCHIVED)).slice(
     0,
     1
   )) {
@@ -71,7 +71,7 @@ test("render filtered experiments based on searchBar", async () => {
 
   const filtered = await findAllByText(new RegExp(filterByThisTitle, "i"));
   expect(filtered.length).toBe(
-    ExperimentDataMock.filter(
+    ExperimentsDataMock.filter(
       (item) => !item.tags.includes(ARCHIVED) && item.title.includes(filterByThisTitle)
     ).slice(0, experimentRecordsRowsPerPageOptions[0]).length
   );
@@ -92,7 +92,7 @@ test("render filtered experiments based on Tags", async () => {
 
   const filtered = await findAllByRole("checkbox", { name: new RegExp(filterByThisTag, "i") });
   expect(filtered.length).toBe(
-    ExperimentDataMock.filter(
+    ExperimentsDataMock.filter(
       (item) => !item.tags.includes(ARCHIVED) && item.title.includes(filterByThisTitle)
     ).slice(0, experimentRecordsRowsPerPageOptions[0]).length
   );
@@ -108,7 +108,7 @@ test("experiment table next page click", async () => {
   );
 
   // 0- Just page loaded. ex: 1–10 of 14
-  const length_of_all_active_experiments = ExperimentDataMock.filter((item) => !item.tags.includes(ARCHIVED)).length
+  const length_of_all_active_experiments = ExperimentsDataMock.filter((item) => !item.tags.includes(ARCHIVED)).length
   const firstNumberInPaginationRange = 1
   const secondNumberInPaginationRange = Math.min(length_of_all_active_experiments, experimentRecordsRowsPerPageOptions[0])
   const paginationString = `${firstNumberInPaginationRange}–${secondNumberInPaginationRange} of ${length_of_all_active_experiments}`

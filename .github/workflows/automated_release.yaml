@@ -1,0 +1,66 @@
+name: Automated release for Aqueduct Core every alternate Monday at 12:00 PM
+
+on:
+  schedule:
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+
+env:
+  allow_automated_release: ${{ vars.ALLOW_AUTOMATED_RELEASE }}
+
+jobs:
+  confirm-action-execution:
+    runs-on: ubuntu-latest
+    outputs:
+      week_number_check: ${{ steps.week_number_check_step.outputs.week_number_check }}
+      is_release_allowed: ${{ env.allow_automated_release }}
+    environment:
+      name: automated-release
+    steps:
+      - name: Confirm action execution
+        id: week_number_check_step
+        run: |
+          if (( $(date +%V) % 2 == 0 )); then
+            echo "week_number_check=true" >> $GITHUB_OUTPUT
+          else
+            echo "week_number_check=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+  next-version:
+    runs-on: ubuntu-latest
+    outputs:
+      next_version_number: ${{ steps.next_version_step.outputs.version }}
+    needs: [confirm-action-execution]
+    environment:
+      name: automated-release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current release version and calculate next patch version
+        id: next_version_step
+        run: |
+          git fetch --tags
+          CURRENT_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          NEXT_VERSION=$(echo $CURRENT_VERSION | awk -F. '{ printf "%d.%d.0", $1, $2+1 }')
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Show the values of version
+        run: |
+          echo "Next version is ${{ steps.next_version_step.outputs.version }}"
+          echo "Week number check is ${{ needs.confirm-action-execution.outputs.week_number_check }}"
+          echo "Allow automated release value is ${{ env.allow_automated_release }}"
+
+  trigger-workflow:
+    name: Trigger release workflow
+    permissions:
+      contents: write
+    needs: [confirm-action-execution, next-version]
+    if: needs.confirm-action-execution.outputs.week_number_check == 'true' && needs.confirm-action-execution.outputs.is_release_allowed == 'true'
+    uses: ./.github/workflows/release.yaml
+    with:
+      version: ${{ needs.next-version.outputs.next_version_number }}
+    secrets: inherit
