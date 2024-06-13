@@ -1,12 +1,13 @@
 import Attachments from "components/organisms/Attachments";
+import { useParams } from "react-router-dom";
 import { Box, styled } from "@mui/material";
 
 import { useGetExperimentById } from "API/graphql/queries/experiment/getExperimentById";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentDetails from "components/organisms/ExperimentDetails";
+import { FileSelectProvider } from "context/FileSelectProvider";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
-import { useParams } from "react-router-dom";
 
 const Container = styled(Box)`
   margin: -${mainPadding}px;
@@ -38,8 +39,10 @@ function ExperimentDetailsPage() {
 
   return (
     <Container>
-      <ExperimentDetails experimentDetails={experimentDetails} />
-      <Attachments experimentId={experimentDetails.id} experimentFiles={experimentDetails.files} />
+      <FileSelectProvider>
+        <ExperimentDetails experimentDetails={experimentDetails} />
+        <Attachments experimentId={experimentDetails.id} experimentFiles={experimentDetails.files} />
+      </FileSelectProvider>
     </Container>
   );
 }
