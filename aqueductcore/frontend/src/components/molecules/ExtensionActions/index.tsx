@@ -17,12 +17,12 @@ const HiddenRadio = styled(Radio)`
     display: none;
 `;
 
-const ActionHeader = styled(Grid)<{ $isselected?: boolean }>`
+const ActionHeader = styled(Grid, {shouldForwardProp: (prop) => prop !== "$isselected"})<{$isselected: boolean}>`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
-    background-color: ${({ theme, $isselected }) => $isselected ? theme.palette.primary.main : theme.palette.grey[500]};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[300]};
+    background-color: ${({ theme, $isselected }) => $isselected ? theme.palette.primary.main : theme.palette.background.default};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)} 0 0;
-    &:after{clear: both;display: block;content: "";}
+    &:after{clear: both;display: block;content: '';}
 `;
 
 const ActionsFormControl = styled(FormControl)`
@@ -53,7 +53,7 @@ const ActionDescription = styled(Typography)`
     background-color: ${(props) =>
         props.theme.palette.mode === "dark"
         ? props.theme.palette.background.card
-        : props.theme.palette.grey[200]};
+        : props.theme.palette.common.white};
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 

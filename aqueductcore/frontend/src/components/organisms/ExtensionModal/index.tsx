@@ -224,7 +224,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                                 title='run_extension'
                                 disabled={!executeExtensionEnabled}
                             >
-                                Run Extention
+                                Run Extension
                             </RunExtension>
                         </Box>
                     </ModalFooter>
