@@ -17,9 +17,9 @@ const HiddenRadio = styled(Radio)`
     display: none;
 `;
 
-const ActionHeader = styled(Grid)<{ $isSelected?: boolean }>`
+const ActionHeader = styled(Grid)<{ $isselected?: boolean }>`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
-    background-color: ${({ theme, $isSelected }) => $isSelected ? theme.palette.primary.main : theme.palette.grey[500]};
+    background-color: ${({ theme, $isselected }) => $isselected ? theme.palette.primary.main : theme.palette.grey[500]};
     border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)} 0 0;
     &:after{clear: both;display: block;content: "";}
@@ -96,7 +96,7 @@ function ExtensionActions({
                             control={<HiddenRadio />}
                             label={
                                 <ExtensionActionBox>
-                                    <ActionHeader $isSelected={selectedAction?.name == ActionInfo.name}>
+                                    <ActionHeader $isselected={selectedAction?.name == ActionInfo.name}>
                                         <ActionName>{ActionInfo.name}</ActionName>
                                         <ActionCheckbox>
                                             <Radio
