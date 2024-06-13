@@ -1,4 +1,4 @@
-import { selected_experiment } from "__mocks__/queries/getExperimentByIdMock";
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { ExtensionType } from "types/globalTypes";
 
 export const ExtensionsDataMock: ExtensionType[] = [

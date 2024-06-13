@@ -19,7 +19,7 @@ const params = [
     ["var7", parameters[6].defaultValue]
 ]
 
-export const executeExperiment_mock = {
+export const executeExtension_mock = {
     success: [
         {
             request: {
