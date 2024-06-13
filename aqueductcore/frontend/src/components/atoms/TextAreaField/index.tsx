@@ -9,9 +9,13 @@ const TextAreaInput = styled(TextareaAutosize)`
   max-width: 100%;
   resize: auto;
   border-width: 1px;
-  border-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
+  border-color: ${({ theme }) => theme.palette.neutral.main};
   background-color: transparent;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.common.white
+      : props.theme.palette.common.black};
   line-height: ${(props) => props.theme.spacing(2.5)};
   border-radius: ${(props) => props.theme.spacing(0.5)};
   min-height: ${(props) => props.theme.spacing(5)};

@@ -18,7 +18,7 @@ const Container = styled(Box)`
     height: 551px;
     padding: 0 ${(props) => props.theme.spacing(1)};
     overflow-y: auto;
-    `;
+`;
 
 interface ActionFormProps {
     selectedAction?: ExtensionActionType;
@@ -131,10 +131,10 @@ function ActionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     experimentIdentifier={experimentIdentifier || ""}
-                                    // fileFieldProps={{
-                                    //     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    //     onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }]))
-                                    // }}
+                                    fileFieldProps={{
+                                        value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
+                                        onChange: ((_, value) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: value }]))
+                                    }}
                                 />
                             </>}
                         </Box>

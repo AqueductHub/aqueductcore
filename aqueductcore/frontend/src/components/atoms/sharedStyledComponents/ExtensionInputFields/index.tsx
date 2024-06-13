@@ -25,8 +25,8 @@ export const FieldType = styled(Typography)`
 export const FieldDescription = styled(Typography)`
   font-size: 0.8rem;
   font-style: italic;
-  border-left: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.white : theme.palette.grey[600]};
-  color: #555;
+  border-left: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[400] : theme.palette.grey[800]};
+  color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[400] : theme.palette.grey[800]};
   height: 100%;
 `;
 

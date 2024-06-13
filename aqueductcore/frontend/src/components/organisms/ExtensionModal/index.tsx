@@ -29,16 +29,18 @@ const ModalContainer = styled(Box)`
     left: 50%;
     transform: translate(-50%, -50%);
     width: 1080px;
-    background-color: ${(props) => props.theme.palette.background.default};
     box-shadow: 24;
     border-radius: ${(props) => props.theme.spacing(1)};
 `;
 
 const ModalHeader = styled(Grid)`
-    background-color: ${({ theme }) => theme.palette.grey[300]};
+    background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.common.black
+      : props.theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1)} 0 0;
     line-height: 3.25rem;
-    border-bottom: 1px solid ${({ theme }) => theme.palette.grey[400]};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
@@ -73,13 +75,23 @@ const AuthorName = styled(Typography)`
 const ModalOptionsGrid = styled(Grid)`
     height: 620px;
     background-color: ${({ theme }) => theme.palette.grey[200]};
+    background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.grey[900]
+      : props.theme.palette.grey[200]};
     border-right: 1px solid rgba(0,0,0,0.3);
     padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
 `;
 
+const RunExtension = styled(Button)`
+    background-color: ${(props) => props.theme.palette.primary.main};
+`;
 
 const ModalStepGrid = styled(Grid)`
-    background-color: ${(props) => props.theme.palette.common.white};
+    background-color: ${(props) =>
+    props.theme.palette.mode === "dark"
+      ? props.theme.palette.background.card
+      : props.theme.palette.common.white};
     height: 620px;
     position: relative;
 `;
@@ -89,7 +101,7 @@ const ModalFooter = styled(Box)`
     bottom: 0;
     left: 0;
     width: 100%;
-    border-top: 1px solid ${({ theme }) => theme.palette.grey[400]};
+    border-top: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
     padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
 `;
 
@@ -206,14 +218,14 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     <ModalFooter>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
-                            <Button
+                            <RunExtension
                                 variant="contained"
                                 onClick={() => handleExecuteExtension()}
                                 title='run_extension'
                                 disabled={!executeExtensionEnabled}
                             >
-                                Run Extension
-                            </Button>
+                                Run Extention
+                            </RunExtension>
                         </Box>
                     </ModalFooter>
                 </Grid>

@@ -2,7 +2,7 @@ import { Autocomplete, AutocompleteProps, Box, Grid, InputAdornment, TextField, 
 
 import { FieldDescription, FieldTitle, FieldType, InputFieldHint } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { useGetExperimentFilesById } from "API/graphql/queries/experiment/getExperimentFilesById";
-import { ExtensionFieldBase } from "types/globalTypes";
+import { ExtensionFieldBase, WithOptional } from "types/globalTypes";
 
 const FileInput = styled(TextField)`
   resize: none;
@@ -15,7 +15,7 @@ const FileInput = styled(TextField)`
 
 interface FileFieldProps extends ExtensionFieldBase {
   experimentIdentifier: string;
-  fileFieldProps?: AutocompleteProps<string, false, true, false>;
+  fileFieldProps?: WithOptional<WithOptional<AutocompleteProps<string, false, true, false>, 'options'>, 'renderInput'>;
 }
 
 export function FileField({

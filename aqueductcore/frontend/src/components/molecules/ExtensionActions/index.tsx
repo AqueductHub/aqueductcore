@@ -5,7 +5,7 @@ import { ExtensionActionType, ExtensionType } from "types/globalTypes";
 
 const ExtensionActionBox = styled(Box)`
     width: 100%;
-    border: 1px solid ${({ theme }) => theme.palette.grey[300]};
+    border: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)};
 `;
 
@@ -17,10 +17,10 @@ const HiddenRadio = styled(Radio)`
     display: none;
 `;
 
-const ActionHeader = styled(Grid)`
+const ActionHeader = styled(Grid)<{ $isSelected?: boolean }>`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
-    background-color: ${({ theme }) => theme.palette.grey[500]};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.grey[300]};
+    background-color: ${({ theme, $isSelected }) => $isSelected ? theme.palette.primary.main : theme.palette.grey[500]};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)} 0 0;
     &:after{clear: both;display: block;content: "";}
 `;
@@ -50,7 +50,10 @@ const ActionCheckbox = styled(Box)`
 const ActionDescription = styled(Typography)`
     font-size: 0.8rem;
     padding: ${(props) => props.theme.spacing(0.75)} ${(props) => props.theme.spacing(1.5)};
-    background-color: ${(props) => props.theme.palette.common.white};
+    background-color: ${(props) =>
+        props.theme.palette.mode === "dark"
+        ? props.theme.palette.background.card
+        : props.theme.palette.grey[200]};
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 
@@ -93,7 +96,7 @@ function ExtensionActions({
                             control={<HiddenRadio />}
                             label={
                                 <ExtensionActionBox>
-                                    <ActionHeader style={{ backgroundColor: selectedAction?.name == ActionInfo.name ? "#3dcbda" : "transparent" }}>
+                                    <ActionHeader $isSelected={selectedAction?.name == ActionInfo.name}>
                                         <ActionName>{ActionInfo.name}</ActionName>
                                         <ActionCheckbox>
                                             <Radio
