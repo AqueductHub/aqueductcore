@@ -3,6 +3,7 @@ import { BrowserRouter, MemoryRouter, MemoryRouterProps } from "react-router-dom
 import { experimental_extendTheme as extendTheme } from "@mui/material/styles";
 import { MockedProvider } from "@apollo/client/testing";
 import CssBaseline from "@mui/material/CssBaseline";
+import { InMemoryCache } from "@apollo/client";
 import { Toaster } from "react-hot-toast";
 import { PropsWithChildren } from "react";
 import { cssVariableTheme } from "theme";
@@ -11,7 +12,9 @@ import { getAllExperimentsWithNameFilter_mock } from "__mocks__/queries/experime
 import { getAllExperimentsWithTagFilter_mock } from "__mocks__/queries/experiment/getAllExperimentsWithTagFilterMock";
 import { getAllExperimentsWithStartTime_mock } from "__mocks__/queries/experiment/getAllExperimentsWithStartTimeMock";
 import { getAllExperimentsWithEndTime_mock } from "__mocks__/queries/experiment/getAllExperimentsWithEndTimeMock";
+import { removeTagFromExperiment_mock } from "__mocks__/mutations/experiment/removeTagFromExperimentMock";
 import { getAllExtensionNames_mock } from "__mocks__/queries/extension/getAllExtensionNamesMock";
+import { addTagToExperiment_mock } from "__mocks__/mutations/experiment/addTagToExperimentMock";
 import { getExperimentFiles_mock } from "__mocks__/queries/experiment/getExperimentFilesById";
 import { getAllExperiments_mock } from "__mocks__/queries/experiment/getAllExperimentsMock";
 import { removeExperiment_mock } from "__mocks__/mutations/experiment/removeExperimentMock";
@@ -21,6 +24,7 @@ import { getExperiment_mock } from "__mocks__/queries/experiment/getExperimentBy
 import { executeExtension_mock } from "__mocks__/mutations/extension/executeExtension";
 import { getUserInformation_mock } from "__mocks__/queries/user/getUserInformation";
 import { getAllTags_mock } from "__mocks__/queries/experiment/getAllTagsMock";
+import { ApolloOptions } from "constants/apolloOptions";
 
 interface AppContextAQDMockProps {
   //Experiments
@@ -34,6 +38,8 @@ interface AppContextAQDMockProps {
   removeExperiment_mockMockMode?: keyof typeof removeExperiment_mock;
   getExperimentFiles_mockMockMode?: keyof typeof getExperimentFiles_mock;
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
+  addTagToExperiment_mockMockMode?: keyof typeof addTagToExperiment_mock;
+  removeTagFromExperiment_mockMockMode?: keyof typeof removeTagFromExperiment_mock;
   //Users
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   //Extensions
@@ -58,6 +64,8 @@ function AppContextAQDMock({
   removeExperiment_mockMockMode = "success",
   getExperimentFiles_mockMockMode = "success",
   getExperiment_mockMockMode = "success",
+  addTagToExperiment_mockMockMode = "success",
+  removeTagFromExperiment_mockMockMode = "success",
   //Users
   getUserInformation_mockMockMode = "success",
   //Extensions
@@ -110,6 +118,8 @@ function AppContextAQDMock({
     ...removeExperiment_mock[removeExperiment_mockMockMode],
     getExperimentFiles_mock[getExperimentFiles_mockMockMode],
     ...getExperiment_mock[getExperiment_mockMockMode],
+    ...addTagToExperiment_mock[addTagToExperiment_mockMockMode],
+    ...removeTagFromExperiment_mock[removeTagFromExperiment_mockMockMode],
     // Users
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     //Extensions
@@ -118,6 +128,8 @@ function AppContextAQDMock({
     ...executeExtension_mock[executeExtension_mockMockMode],
   ];
 
+  const cache = new InMemoryCache({ ...ApolloOptions, addTypename: false })
+
   const App =
     <>
       <CssBaseline />
@@ -125,7 +137,7 @@ function AppContextAQDMock({
       <Toaster />
     </>
   return (
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks} addTypename={false} cache={cache}>
       <CssVarsProvider theme={themeConfig}>
         {browserRouter ?
           <BrowserRouter>

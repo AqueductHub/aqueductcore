@@ -180,6 +180,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
                         }
                         sx={{ minWidth: 140, ml: 1 }}
                         onClick={ToggleAddToFavourites}
+                        title="toggle-favourite"
                     >
                         Add{isFavourite(experimentDetails.tags) ? "ed" : ""} to favourites
                     </BorderedButtonWithIcon>}

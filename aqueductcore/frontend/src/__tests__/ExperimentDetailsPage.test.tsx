@@ -131,3 +131,5 @@ test("click on confirm fails for non existing experiment", async () => {
         expect(deletedExperimentConfirmation).toBeInTheDocument();
     });
 });
+
+// TODO: Test Favourite button change functionality when cache issue is fixed
