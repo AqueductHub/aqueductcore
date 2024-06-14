@@ -26,11 +26,11 @@ const SectionTitle = styled(Typography)`
 // `;
 
 interface AttachmentProps {
-  experimentId: ExperimentFileType[];
+  experimentUuid: ExperimentFileType[];
   experimentFiles: ExperimentFileType[];
 }
 
-function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
+function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
   const [selectedItem, setSelectedItem] = useState();
 
   return (
@@ -81,7 +81,7 @@ function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
           />
         </Grid>
         <Grid item xs={12} lg={6}>
-          <Viewer file={selectedItem && experimentFiles.find(item => item.modifiedAt === selectedItem)} handleSelectFile={setSelectedItem} experimentId={experimentId} />
+          <Viewer file={selectedItem && experimentFiles.find(item => item.modifiedAt === selectedItem)} handleSelectFile={setSelectedItem} experimentUuid={experimentUuid} />
         </Grid>
       </Grid>
     </>

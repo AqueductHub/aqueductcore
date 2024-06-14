@@ -63,21 +63,21 @@ function ExperimentsListTable({
 
   function handleToggleFavorite(
     e: React.MouseEvent,
-    experimentId: ExperimentDataType["id"],
+    uuid: ExperimentDataType["uuid"],
     addToFavourite?: boolean
   ) {
     e.stopPropagation();
     if (addToFavourite) {
       mutateAddTag({
         variables: {
-          experimentId: experimentId,
+          uuid: uuid,
           tag: FAVOURITE,
         },
       });
     } else {
       mutateRemoveTag({
         variables: {
-          experimentId: experimentId,
+          uuid: uuid,
           tag: FAVOURITE,
         },
       });
@@ -107,13 +107,13 @@ function ExperimentsListTable({
                   hover
                   role="checkbox"
                   tabIndex={-1}
-                  key={row.alias}
+                  key={row.eid}
                   onMouseEnter={() => {
-                    setShowActionId(row.alias); // set id here
+                    setShowActionId(row.eid); // set id here
                   }}
                   onMouseLeave={() => setShowActionId("-1")}
                   onClick={() =>
-                    navigate(`/aqd/experiments/${row.alias}`, {
+                    navigate(`/aqd/experiments/${row.eid}`, {
                       state: { from: window.location.pathname },
                     })
                   }
@@ -138,18 +138,18 @@ function ExperimentsListTable({
                               color="primary"
                               fontSize="small"
                               style={{
-                                cursor: row.alias === showActionId ? "pointer" : "default",
+                                cursor: row.eid === showActionId ? "pointer" : "default",
                               }}
-                              onClick={(e) => handleToggleFavorite(e, row.id, false)}
+                              onClick={(e) => handleToggleFavorite(e, row.uuid, false)}
                             />
                           ) : (
                             <StarBorderOutlinedIcon
                               fontSize="small"
                               style={{
-                                visibility: row.alias === showActionId ? "inherit" : "hidden",
-                                cursor: row.alias === showActionId ? "pointer" : "default",
+                                visibility: row.eid === showActionId ? "inherit" : "hidden",
+                                cursor: row.eid === showActionId ? "pointer" : "default",
                               }}
-                              onClick={(e) => handleToggleFavorite(e, row.id, true)}
+                              onClick={(e) => handleToggleFavorite(e, row.uuid, true)}
                             />
                           )
                         ) : column.format ? (

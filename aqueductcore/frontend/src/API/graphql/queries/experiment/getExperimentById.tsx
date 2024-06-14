@@ -5,11 +5,11 @@ import { GET_EXPERIMENT_BY_ID_TYPE } from "types/globalTypes";
 export const GET_EXPERIMENT_BY_ID = gql`
   query getExperimentById($experimentIdentifier: ExperimentIdentifierInput!) {
     experiment(experimentIdentifier: $experimentIdentifier) {
-      id
+      uuid
       title
       description
       tags
-      alias
+      eid
       createdAt
       createdBy
       files {

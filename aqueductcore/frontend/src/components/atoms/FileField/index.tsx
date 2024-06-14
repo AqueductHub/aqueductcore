@@ -33,7 +33,7 @@ export function FileField({
   } = useGetExperimentFilesById({
     variables: {
       experimentIdentifier: {
-        type: experimentIdentifier?.split("-").length === 2 ? "ALIAS" : "UUID",
+        type: experimentIdentifier?.split("-").length === 2 ? "EID" : "UUID",
         value: experimentIdentifier,
       },
     },

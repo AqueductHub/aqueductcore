@@ -38,7 +38,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
         if (isFavourite(experimentDetails.tags)) {
             mutateRemoveTag({
                 variables: {
-                    experimentId: experimentDetails.id,
+                    uuid: experimentDetails.uuid,
                     tag: FAVOURITE,
                 },
                 onError() {
@@ -50,7 +50,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
         } else {
             mutateAddTag({
                 variables: {
-                    experimentId: experimentDetails.id,
+                    uuid: experimentDetails.uuid,
                     tag: FAVOURITE,
                 },
                 onError() {
@@ -65,7 +65,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
     const handleArchive = () => {
         mutateAddTag({
             variables: {
-                experimentId: experimentDetails.id,
+                uuid: experimentDetails.uuid,
                 tag: ARCHIVED,
             },
             onCompleted() {
@@ -80,7 +80,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
                             onClick={() => {
                                 mutateRemoveTag({
                                     variables: {
-                                        experimentId: experimentDetails.id,
+                                        uuid: experimentDetails.uuid,
                                         tag: ARCHIVED,
                                     },
                                     onCompleted() {
@@ -105,7 +105,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
     const handleRestore = () => {
         mutateRemoveTag({
             variables: {
-                experimentId: experimentDetails.id,
+                uuid: experimentDetails.uuid,
                 tag: ARCHIVED,
             },
             onError() {
@@ -120,7 +120,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
         if (!removeExperimentLoading) {
             mutateRemoveExperiment({
                 variables: {
-                    experimentId: experimentDetails.id
+                    uuid: experimentDetails.uuid
                 },
                 onError(error) {
                     toast.error(error.message, {
@@ -139,7 +139,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
 
     function handleCopyToClipboard() {
         navigator.clipboard
-            .writeText(`${window.location.origin}/aqd/experiments/${experimentDetails.alias}`)
+            .writeText(`${window.location.origin}/aqd/experiments/${experimentDetails.eid}`)
             .then(
                 () => {
                     toast.success("Copied to clipboard!", {

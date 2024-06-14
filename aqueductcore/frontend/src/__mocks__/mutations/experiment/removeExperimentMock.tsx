@@ -7,7 +7,7 @@ export const removeExperiment_mock = {
       request: {
         query: REMOVE_EXPERIMENT,
         variables: {
-          experimentId: selected_experiment.id
+          uuid: selected_experiment.uuid
         },
       },
       result: {
@@ -22,7 +22,7 @@ export const removeExperiment_mock = {
       request: {
         query: REMOVE_EXPERIMENT,
         variables: {
-          experimentId: selected_experiment.id
+          uuid: selected_experiment.uuid
         },
       },
       result: {
