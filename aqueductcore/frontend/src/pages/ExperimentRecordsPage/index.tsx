@@ -115,7 +115,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     endDate: searchParams.get('endDate'),
     tags: JSON.parse(String(searchParams.get('tags')) ?? null),
     title: searchParams.get('title') ?? '',
-    shouldIncludeTags: null
+    shouldIncludeTags: category === 'archived' ? [ARCHIVED] : category === 'favourites' ? [FAVOURITE] : null
   });
   const {
     data: AllExperiments,
