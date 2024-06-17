@@ -15,14 +15,14 @@ const ExperimentTitle = styled(Typography)`
   font-size: 0.9rem;
 `;
 
-const ExperimentEID = styled(Typography)`
+const ExperimentID = styled(Typography)`
   font-size: 0.6rem;
   font-style: italic;
 `;
 
 interface ExperimentProps extends ExtensionFieldBase {
   experiment_title: string,
-  experiment_eid: string,
+  experiment_id: string,
 }
 
 export function ExperimentField({
@@ -30,7 +30,7 @@ export function ExperimentField({
   field,
   description,
   experiment_title,
-  experiment_eid
+  experiment_id
 }: ExperimentProps) {
   return (
     <Box>
@@ -40,7 +40,7 @@ export function ExperimentField({
           <Box sx={{ p: 1 }}>
             <ExperimentBox>
               <ExperimentTitle>{experiment_title}</ExperimentTitle>
-              <ExperimentEID>{experiment_eid}</ExperimentEID>
+              <ExperimentID>{experiment_id}</ExperimentID>
             </ExperimentBox>
           </Box>
         </Grid>

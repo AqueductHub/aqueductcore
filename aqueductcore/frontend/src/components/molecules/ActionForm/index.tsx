@@ -86,7 +86,7 @@ function ActionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     experiment_title={apolloCache.experiment.title}
-                                    experiment_eid={apolloCache.experiment.eid}
+                                    experiment_id={apolloCache.experiment.eid}
                                 />
                             </>}
                             {parameterInfo.dataType == ExtensionParameterDataTypes.TEXTAREA && <>

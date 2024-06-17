@@ -1,8 +1,6 @@
 import { ExperimentAllFieldsDataType, TagType } from "types/globalTypes";
 import { ARCHIVED, FAVOURITE } from "constants/constants";
 
-export const eid = "20221111-01";
-
 export const tagOptions: TagType[] = [
   "rabi",
   "ibm",
@@ -236,3 +234,5 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
     files: [],
   },
 ];
+
+export const sample_eid = ExperimentsDataMock[0].eid;
