@@ -115,7 +115,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     endDate: searchParams.get('endDate'),
     tags: JSON.parse(String(searchParams.get('tags')) ?? null),
     title: searchParams.get('title') ?? '',
-    shouldIncludeTags: null
+    shouldIncludeTags: initiShouldIncludeTags(category)
   });
   const {
     data: AllExperiments,
@@ -168,6 +168,19 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
         break;
     }
   }, [category]);
+
+
+  function initiShouldIncludeTags(category: ExperimentRecordsPageType | undefined) {
+    if (category === 'archived') {
+      return [ARCHIVED]
+    }
+    else if (category === 'favourites') {
+      return [FAVOURITE]
+    }
+    else {
+      return null
+    }
+  }
 
   const handlePageName = (pageUrl: string) => {
     switch (pageUrl) {
