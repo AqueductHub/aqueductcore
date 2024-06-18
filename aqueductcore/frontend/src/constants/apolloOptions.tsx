@@ -1,1 +1,7 @@
-export const ApolloOptions = {};
+export const ApolloOptions = {
+    typePolicies: {
+        ExperimentData: {
+            keyFields: ["uuid"],
+        },
+    },
+};

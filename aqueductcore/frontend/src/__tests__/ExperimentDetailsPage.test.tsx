@@ -10,7 +10,7 @@ import { dateFormatter } from "helper/formatters";
 
 test("render page with no error", async () => {
     render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
@@ -19,7 +19,7 @@ test("render page with no error", async () => {
 
 test("render page with the experiment info", async () => {
     const { findByText } = render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
@@ -37,7 +37,7 @@ test("render page with the experiment info", async () => {
 
 test("render page with the edit buttons as it's part of the scope", async () => {
     const { findByTitle, findAllByRole } = render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
@@ -52,7 +52,7 @@ test("render page with the edit buttons as it's part of the scope", async () => 
 
 test("render page when the edit is not allowed", async () => {
     const { queryByTitle, queryAllByRole } = render(
-        <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess" memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess" memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
@@ -74,7 +74,7 @@ test("render page when the edit is not allowed", async () => {
 
 test("remove experiment button is present in archived experiments", async () => {
     const { findByText } = render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
@@ -86,7 +86,7 @@ test("remove experiment button is present in archived experiments", async () => 
 
 test("click on confirm deletion button results in experiment deletion", async () => {
     const { findByText, queryByText } = render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
                 <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
@@ -110,7 +110,7 @@ test("click on confirm deletion button results in experiment deletion", async ()
 
 test("click on confirm fails for non existing experiment", async () => {
     const { findByText, queryByText } = render(
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.id}`] }} removeExperiment_mockMockMode="failed">
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }} removeExperiment_mockMockMode="failed">
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
                 <Route path="/aqd/experiments" element={<ExperimentRecordsPage />} />
@@ -131,3 +131,5 @@ test("click on confirm fails for non existing experiment", async () => {
         expect(deletedExperimentConfirmation).toBeInTheDocument();
     });
 });
+
+// TODO: Test Favourite button change functionality when cache issue is fixed

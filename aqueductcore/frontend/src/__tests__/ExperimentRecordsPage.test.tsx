@@ -45,7 +45,7 @@ test("render experiment table data", async () => {
     0,
     1
   )) {
-    const dataEID = await findByText(item.alias);
+    const dataEID = await findByText(item.eid);
     expect(dataEID).toBeInTheDocument();
 
     const dataTitle = await findAllByText(item.title);

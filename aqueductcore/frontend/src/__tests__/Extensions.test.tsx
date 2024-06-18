@@ -10,7 +10,7 @@ import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 
 function ExtensionIncludedComponent() {
     return (
-        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.alias}`] }}>
+        <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.eid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>

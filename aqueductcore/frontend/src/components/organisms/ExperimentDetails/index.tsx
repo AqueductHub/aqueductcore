@@ -58,7 +58,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const handleExperimentTitleUpdate = (value: string) => {
     mutateExperiment({
       variables: {
-        experimentId: experimentDetails.id,
+        uuid: experimentDetails.uuid,
         experimentUpdateInput: {
           title: value,
         },
@@ -69,7 +69,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
   const handleExperimentDescriptionUpdate = (value: string) => {
     mutateExperiment({
       variables: {
-        experimentId: experimentDetails.id,
+        uuid: experimentDetails.uuid,
         experimentUpdateInput: {
           description: value,
         },

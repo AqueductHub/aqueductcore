@@ -96,11 +96,11 @@ const TextViewer = styled("textarea")`
 
 function Viewer({
   file,
-  experimentId,
+  experimentUuid,
   handleSelectFile,
 }: {
   file?: ExperimentFileType;
-  experimentId: ExperimentDataType['id'];
+  experimentUuid: ExperimentDataType['uuid'];
   handleSelectFile: (fileId: selectedFileType) => void;
 }) {
 
@@ -178,7 +178,7 @@ function Viewer({
           /* MARKDOWN */
         ) : info?.type === "MARKDOWN" ? (
           <SpecialFilePreview>
-            {info && <Markdown urlTransform={(url) => mdUrlTransformer(url, experimentId)}>{String(info?.data)}</Markdown>}
+            {info && <Markdown urlTransform={(url) => mdUrlTransformer(url, experimentUuid)}>{String(info?.data)}</Markdown>}
           </SpecialFilePreview>
           /* TEXT */
         ) : info?.type === "text/plain" ? (
