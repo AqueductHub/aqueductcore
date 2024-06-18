@@ -142,11 +142,7 @@ function Explorer({
                 hover={selectedItem !== index}
                 key={row.name}
                 onClick={() => handleSelectFile(String(row.name))}
-                sx={
-                  selectedItem === row.name
-                    ? { backgroundColor: "var(--mui-palette-fill-primaryFillPrimaryTransparent)" }
-                    : null
-                }
+                selected={selectedItem === row.name}
               >
                 <FileNameCell>
                   {getFileIcon(String(row.name))}

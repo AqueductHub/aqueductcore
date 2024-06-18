@@ -155,7 +155,7 @@ function Viewer({
   return (
     <ViewerBox>
       <ViewerBoxHeader>
-        <ViewerBoxHeaderContent>{file ? file.name : "No file selected"}</ViewerBoxHeaderContent>
+        <ViewerBoxHeaderContent title="file_name">{file ? file.name : "No file selected"}</ViewerBoxHeaderContent>
         {file ? (
           <>
             {info?.type !== "file" ? (
