@@ -27,6 +27,7 @@ export const executeExtension_mock = {
                         "returnCode": 0,
                         "stderr": "",
                         "stdout": `var1=1\nvar2=null\nvar3=null\nvar4=${selected_experiment.eid}\nvar5=null\nvar6=1\nvar7=string three\ndummykey=dummyvalue\n`,
+                        "logFile": "log_file.log",
                         "__typename": "ExtensionExecutionResult"
                     }
                 }

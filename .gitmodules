@@ -1,0 +1,3 @@
+[submodule "external/extensions"]
+	path = external/extensions
+	url = git@github.com:AqueductHub/aqueduct-extensions.git

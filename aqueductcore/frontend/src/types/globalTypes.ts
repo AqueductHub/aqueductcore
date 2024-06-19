@@ -1,6 +1,6 @@
 import {
-  ExperimentFiltersInput,
   ExtensionExecutionResult,
+  ExperimentFiltersInput,
   ExtensionParameterType,
   ExtensionActionInfo,
   ExperimentData,
@@ -116,6 +116,7 @@ export type REMOVE_EXPERIMENT_TYPE = {
 export type EXECUTE_EXTENSION_TYPE = {
   returnCode: ExtensionExecutionResult['returnCode']
   stderr: ExtensionExecutionResult['stderr']
+  logFile: ExtensionExecutionResult['logFile']
   stdout: ExtensionExecutionResult['stdout']
 }
 

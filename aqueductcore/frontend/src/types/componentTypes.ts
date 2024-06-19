@@ -9,3 +9,8 @@ export type SortOrder = 'asc' | 'desc';
 export type selectedFileType = ExperimentFileType['modifiedAt'] | undefined
 
 export type actionInExtensionsType = { name: string, value?: string | null }
+
+export type FileSelectContextType = {
+    selectedFile: string | undefined,
+    setSelectedFile: React.Dispatch<React.SetStateAction<string | undefined>>
+}

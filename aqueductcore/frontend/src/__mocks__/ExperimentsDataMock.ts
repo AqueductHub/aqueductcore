@@ -47,6 +47,11 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
     createdBy: "admin",
     files: [
       {
+        name: "log_file.log",
+        path: "/api/files/95dc350e-10cf-4fb8-b356-050ccc6536b3-log",
+        modifiedAt: "2023-12-25T15:43:17",
+      },
+      {
         name: "aqueduct_intro.pdf",
         path: "/api/files/95dc350e-10cf-4fb8-b356-050ccc6536b3",
         modifiedAt: "2023-11-22T15:43:17",

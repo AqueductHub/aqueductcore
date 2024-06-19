@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 
 import { ExperimentDataType, ExperimentFileType, PreviewFilesType } from "types/globalTypes";
-import { selectedFileType } from "types/componentTypes";
+import { FileSelectContextType } from "types/componentTypes";
 import { mdUrlTransformer } from "helper/formatters";
 import { AQD_FILE_URI } from "constants/api";
 
@@ -101,7 +101,7 @@ function Viewer({
 }: {
   file?: ExperimentFileType;
   experimentUuid: ExperimentDataType['uuid'];
-  handleSelectFile: (fileId: selectedFileType) => void;
+  handleSelectFile: FileSelectContextType['setSelectedFile'];
 }) {
 
   const [info, setInfo] = useState<{ data: unknown; type: PreviewFilesType }>();
@@ -155,7 +155,7 @@ function Viewer({
   return (
     <ViewerBox>
       <ViewerBoxHeader>
-        <ViewerBoxHeaderContent>{file ? file.name : "No file selected"}</ViewerBoxHeaderContent>
+        <ViewerBoxHeaderContent title="file_name">{file ? file.name : "No file selected"}</ViewerBoxHeaderContent>
         {file ? (
           <>
             {info?.type !== "file" ? (
@@ -163,7 +163,7 @@ function Viewer({
                 <OpenInNewIcon titleAccess="Open in new tab" />
               </IconButton>
             ) : null}
-            <IconButton onClick={() => handleSelectFile(-1)}>
+            <IconButton onClick={() => handleSelectFile(undefined)}>
               <CloseIcon titleAccess="Close" />
             </IconButton>
           </>
