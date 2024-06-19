@@ -47,6 +47,14 @@ const TagBox = styled(Box)`
   margin-right: ${(props) => props.theme.spacing(1)};
 `;
 
+const NoExperimentsMessage = styled(Typography)`
+  font-size: 0.95rem;
+  /* background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.black : theme.palette.common.white}; */
+  color: ${({ theme }) => theme.palette.grey[500]};
+  text-align: center;
+  padding: ${(props) => `${props.theme.spacing(2.5)}`};
+`;
+
 export const ExperimentRecordsColumns: readonly ExperimentRecordsColumnsType[] = [
   { id: "alias", label: "EID", minWidth: 170 },
   {
@@ -222,7 +230,9 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
             pageInfo={pageInfo}
             maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           />
-        ) : null}
+        ) :
+        <NoExperimentsMessage>No experiments found.</NoExperimentsMessage>
+        }
       </Box>
     </Container>
   );
