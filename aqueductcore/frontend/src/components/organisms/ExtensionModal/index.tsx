@@ -134,9 +134,9 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
             include: "active",
         });
         setSelectedFile(executeExtension.logFile)
-        if (executeExtension.stderr) {
+        if (executeExtension.returnCode !== 0) {
             toast.error(
-                `Execution finished with the erorr: ${executeExtension.stderr} `,
+                `Execution finished with the error: ${executeExtension.stderr} `,
                 { id: "exec_extension_error" }
             )
         } else {
