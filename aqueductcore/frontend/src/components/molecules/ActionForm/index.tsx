@@ -44,6 +44,16 @@ function ActionForm({
         },
     });
 
+    function handleBooleanValue(value: string) {
+        switch (value) {
+            case '1':
+            case 'true':
+                return true
+            default:
+                return false
+        }
+    }
+
     return (
         <>
             <Container>
@@ -109,7 +119,7 @@ function ActionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     checkboxFieldProps={{
-                                        value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
+                                        checked: handleBooleanValue(inputParams.find((item) => item.name === parameterInfo.name)?.value ?? ''),
                                         onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.checked) }]))
                                     }}
                                 />
