@@ -133,7 +133,7 @@ class Mutation:
         now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         log_filename = f"{extension}-{action}-{now}.log"
 
-        result = action_object.execute(extension_object, dict_params, timeout=600)
+        result = ExtensionsExecutor.execute(extension, action, dict_params)
 
         await ExtensionsExecutor.save_log_to_experiment(
             context=context,
