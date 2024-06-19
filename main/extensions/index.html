@@ -744,10 +744,10 @@ and they will be installed into a python virtual environment at the first action
 <p>Please, note, that purpose of extensions is to interact with an experiment. They may generate, process or consume the data from the experiment, that is why each extension action MUST have at least one parameter of <code>experiment</code> type.</p>
 <h2 id="deploying-an-extension">Deploying an Extension<a class="headerlink" href="#deploying-an-extension" title="Permanent link">&para;</a></h2>
 <p>Extensions are directories which could be distributed in the form of archives. When starting the server using Docker, 
-bind mount a host directory to the Aqueduct container. Suggested location is <code>/workspace/extensions</code>. This location should be provided in <code>EXTENSIONS_DIR_PATH</code> environment variable.
+bind mount a host directory to the Aqueduct container. Suggested location is <code>/workspace/external/extensions</code>. This location should be provided in <code>EXTENSIONS_DIR_PATH</code> environment variable.
 Unpack an extension directory into the host directory, and the container will immediately see the changes.</p>
-<p>For example, if you map host directory <code>/usr/data/extensions</code> to <code>/workspace/extensions</code>, 
-then <code>/usr/data/extensions/dummy/manifest.yml</code> within will become available inside the container as <code>/workspace/extensions/dummy/manifest.yml</code>.</p>
+<p>For example, if you map host directory <code>/usr/data/extensions</code> to <code>/workspace/external/extensions</code>, 
+then <code>/usr/data/extensions/dummy/manifest.yml</code> within will become available inside the container as <code>/workspace/external/extensions/dummy/manifest.yml</code>.</p>
 <h2 id="extension-setup">Extension Setup<a class="headerlink" href="#extension-setup" title="Permanent link">&para;</a></h2>
 <p>Extension may require final adjustment after deployment. Here are potential places for these:</p>
 <ul>
