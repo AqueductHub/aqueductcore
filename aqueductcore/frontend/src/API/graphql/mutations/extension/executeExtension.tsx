@@ -13,6 +13,7 @@ export const EXECUTE_EXTENSION = gql`
       returnCode
       stderr
       stdout
+      logFile
     }
   }
 `;

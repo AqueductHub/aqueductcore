@@ -83,9 +83,9 @@ test("click the other action and params should be updated", async () => {
     }
 });
 
-test("submit the form and success modal", async () => {
+test("submit the form and success modal and file selection", async () => {
 
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
+    const { findByTitle, findByText, findAllByText } = render(<ExtensionIncludedComponent />)
     const extensionOpenModalButton = await findByTitle("extensions")
     await userEvent.click(extensionOpenModalButton)
 
@@ -96,4 +96,12 @@ test("submit the form and success modal", async () => {
     await userEvent.click(runButton)
     const successModal = await findByText("Execution finished successfully")
     expect(successModal).toBeInTheDocument()
+
+    const file_name_items = await findAllByText('log_file.log')
+    expect(file_name_items).toHaveLength(2)
+    //1- file being selected in the <Explorer />
+    expect(file_name_items[0].parentNode).toHaveClass('Mui-selected')
+    //1- file being opened in the <Viewer/>
+    expect(file_name_items[1]).toHaveProperty('title', 'file_name')
 });
+

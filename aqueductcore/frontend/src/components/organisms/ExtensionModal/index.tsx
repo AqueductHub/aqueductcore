@@ -1,19 +1,21 @@
 import { Box, Button, CircularProgress, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { useContext, useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
 import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
+import { FileSelectStateContext } from "context/FileSelectProvider";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import { actionInExtensionsType } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
+import { client } from "API/apolloClientConfig";
 
 interface ExtensionModalProps {
     isOpen: boolean
@@ -101,6 +103,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
     const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>()
+    const { setSelectedFile } = useContext(FileSelectStateContext)
 
     //initiate input params when selected extension changes
     useEffect(() => {
@@ -112,8 +115,12 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         )
     }, [selectedExtension, selectedAction])
 
-    function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
+    async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
+        await client.refetchQueries({
+            include: "active",
+        });
+        setSelectedFile(executeExtension.logFile)
         if (executeExtension.stderr) {
             toast.error(
                 `Execution finished with the erorr: ${executeExtension.stderr} `,

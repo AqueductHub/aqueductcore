@@ -3,15 +3,16 @@ import { Grid, Typography, styled } from "@mui/material";
 // import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 // import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 // import { Divider } from "@mui/material";
-import { useState } from "react";
+import { useContext } from "react";
 
+import { FileSelectStateContext } from "context/FileSelectProvider";
 import { ExperimentFileType } from "types/globalTypes";
 import Explorer from "./Explorer";
 import Viewer from "./Viewer";
 
 const SectionTitle = styled(Typography)`
-  font-size: 1.15rem;
-  margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
+font-size: 1.15rem;
+margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
 `;
 
 // const BorderedButtonWithIcon = styled(Button)`
@@ -31,7 +32,7 @@ interface AttachmentProps {
 }
 
 function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
-  const [selectedItem, setSelectedItem] = useState();
+  const { selectedFile, setSelectedFile } = useContext(FileSelectStateContext)
 
   return (
     <>
@@ -76,12 +77,16 @@ function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
         <Grid item xs={12} lg={6}>
           <Explorer
             files={experimentFiles}
-            handleSelectFile={setSelectedItem}
-            selectedItem={selectedItem}
+            handleSelectFile={setSelectedFile}
+            selectedItem={selectedFile}
           />
         </Grid>
         <Grid item xs={12} lg={6}>
-          <Viewer file={selectedItem && experimentFiles.find(item => item.modifiedAt === selectedItem)} handleSelectFile={setSelectedItem} experimentId={experimentId} />
+          <Viewer
+            file={experimentFiles.find(file => file.name === selectedFile)}
+            handleSelectFile={setSelectedFile}
+            experimentId={experimentId}
+          />
         </Grid>
       </Grid>
     </>

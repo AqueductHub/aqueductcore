@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import { useMemo, useState } from "react";
 import Table from "@mui/material/Table";
 
-import { SortOrder, selectedFileType } from "types/componentTypes";
+import { FileSelectContextType, SortOrder, selectedFileType } from "types/componentTypes";
 import { getComparator, stableSort } from "helper/functions";
 import { ExperimentFileType } from "types/globalTypes";
 import { dateFormatter } from "helper/formatters";
@@ -72,7 +72,7 @@ function Explorer({
   selectedItem,
 }: {
   files: ExperimentFileType[];
-  handleSelectFile: (fileId: ExperimentFileType['modifiedAt'] | undefined) => void;
+  handleSelectFile: FileSelectContextType['setSelectedFile'];
   selectedItem: selectedFileType;
 }) {
   const [order, setOrder] = useState<SortOrder>('desc');
@@ -109,7 +109,7 @@ function Explorer({
 
   const visibleRows = useMemo(() =>
     stableSort(files, getComparator(order, orderBy)),
-    [order, orderBy],
+    [files, order, orderBy],
   );
 
   return (
@@ -141,12 +141,8 @@ function Explorer({
               <TableRow
                 hover={selectedItem !== index}
                 key={row.name}
-                onClick={() => handleSelectFile(row.modifiedAt)}
-                sx={
-                  selectedItem === row.modifiedAt
-                    ? { backgroundColor: "var(--mui-palette-fill-primaryFillPrimaryTransparent)" }
-                    : null
-                }
+                onClick={() => handleSelectFile(String(row.name))}
+                selected={selectedItem === row.name}
               >
                 <FileNameCell>
                   {getFileIcon(String(row.name))}
