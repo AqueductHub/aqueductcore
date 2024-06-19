@@ -291,13 +291,19 @@ Then you may start backend with the following command:
 ./scripts/start_aqueduct_core.py 
 ```
 
-and frontend with the following:
+To start a frontend run the following commands:
 
 ```bash
 cd aqueductcore/frontend
 yarn
 yarn start
 ```
+
+Note, that to make a frontend and a backend talk to each other, you will need
+to allow browser perform cross-origin resource sharing (CORS).
+This may be done by following
+[this FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/cors/).
+Alternatively, you may [disable the whole security check in Chrome](https://medium.com/@beligh.hamdi/run-chrome-browser-without-cors-872747142c61).
 
 ## Deploying an Extension
 
