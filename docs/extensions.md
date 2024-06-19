@@ -271,11 +271,11 @@ Please, note, that purpose of extensions is to interact with an experiment. They
 ## Deploying an Extension
 
 Extensions are directories which could be distributed in the form of archives. When starting the server using Docker, 
-bind mount a host directory to the Aqueduct container. Suggested location is `/workspace/extensions`. This location should be provided in `EXTENSIONS_DIR_PATH` environment variable.
+bind mount a host directory to the Aqueduct container. Suggested location is `/workspace/external/extensions`. This location should be provided in `EXTENSIONS_DIR_PATH` environment variable.
 Unpack an extension directory into the host directory, and the container will immediately see the changes.
 
-For example, if you map host directory `/usr/data/extensions` to `/workspace/extensions`, 
-then `/usr/data/extensions/dummy/manifest.yml` within will become available inside the container as `/workspace/extensions/dummy/manifest.yml`.
+For example, if you map host directory `/usr/data/extensions` to `/workspace/external/extensions`, 
+then `/usr/data/extensions/dummy/manifest.yml` within will become available inside the container as `/workspace/external/extensions/dummy/manifest.yml`.
 
 ## Extension Setup
 

@@ -8,7 +8,7 @@ services:
       - postgres
     environment:
       EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
-      EXTENSIONS_DIR_PATH: /workspace/extensions
+      EXTENSIONS_DIR_PATH: /workspace/external/extensions
       POSTGRES_USERNAME: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres
@@ -18,7 +18,7 @@ services:
       - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
       - type: bind
         source: ${EXTENSIONS_DIR}
-        target: /workspace/extensions
+        target: /workspace/external/extensions
     ports:
       - 80:8000
 
