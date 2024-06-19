@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.errors import AQDError, AQDValidationError
 from aqueductcore.backend.models.extensions import (
     Extension,
     ExtensionExecutionResult,
@@ -41,12 +41,15 @@ class ExtensionsExecutor:
                 "Extensions directory is not set is EXTENSIONS_DIR_PATH environment variable.")
             return []
         for directory in Path(settings.extensions_dir_path).iterdir():
-            if directory.exists():
+            if directory.exists() and not directory.is_file():
                 try:
                     extension = Extension.from_folder(directory)
                     result.append(extension)
-                except AQDValidationError as err:
-                    logging.error(err)
+                except AQDError as err:
+                    logging.warning(
+                        "Skipping %s extension parsing %s",
+                        directory, err,
+                    )
         return sorted(result, key=lambda extension: extension.name)
 
     @classmethod
