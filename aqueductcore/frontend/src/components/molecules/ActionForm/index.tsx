@@ -13,6 +13,7 @@ import { ExtensionActionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
 import { client } from "API/apolloClientConfig";
 import { FileField } from "components/atoms/FileField";
+import { TextInputField } from "components/atoms/TextInputField";
 
 const Container = styled(Box)`
     height: 551px;
@@ -50,11 +51,11 @@ function ActionForm({
                     {selectedAction?.parameters.map(parameterInfo => (
                         <Box key={parameterInfo.name}>
                             {parameterInfo.dataType == ExtensionParameterDataTypes.STR && <>
-                                <TextAreaField
+                                <TextInputField
                                     title={parameterInfo?.displayName || ""}
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
-                                    textareaFieldProps={{
+                                    textFieldProps={{
                                         value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
                                         onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]))
                                     }}
