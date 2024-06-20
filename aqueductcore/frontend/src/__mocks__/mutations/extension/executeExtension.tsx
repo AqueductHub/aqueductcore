@@ -1,10 +1,7 @@
 import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { EXECUTE_EXTENSION } from "API/graphql/mutations/extension/executeExtension";
-
 import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 import { logFileName } from "__mocks__/constants";
-
-// warning: This is not based on the real mock it's just no change and submit mode of the form
 
 const extensionName = ExtensionsDataMock[0].name
 const actionName = ExtensionsDataMock[0].actions[0].name
@@ -36,7 +33,6 @@ export const executeExtension_mock = {
                     "executeExtension": {
                         "returnCode": 0,
                         "stderr": "",
-                        // "stdout": `var1=1\nvar2=null\nvar3=null\nvar4=${selected_experiment.alias}\nvar5=null\nvar6=1\nvar7=string three\ndummykey=dummyvalue\n`,
                         "stdout": `${params.map(param => param.join('=')).join('\n')}\ndummykey=dummyvalue\n`,
                         "logFile": logFileName,
                         "__typename": "ExtensionExecutionResult"

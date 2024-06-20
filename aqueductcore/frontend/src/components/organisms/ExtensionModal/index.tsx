@@ -114,9 +114,8 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
-    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>()
-    const { setSelectedFile } = useContext(FileSelectStateContext)
-    const [executeExtensionEnabled, setExecuteExtensionEnabled] = useState(false);
+    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>();
+    const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
         setInputParams(selectedAction?.parameters.map(
@@ -127,20 +126,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         )
     }, [selectedExtension, selectedAction])
 
-    useEffect(() => {
-        let enableExecutionUpdate: boolean = true;
-        enableExecutionUpdate = !inputParams?.some(param => {
-            const paramElement = selectedAction?.parameters?.find(inputParam => inputParam.name === param.name);
-            return (
-                (paramElement?.dataType === ExtensionParameterDataTypes.STR && param.value === "") ||
-                (paramElement?.dataType === ExtensionParameterDataTypes.INT && param.value === "") ||
-                (paramElement?.dataType === ExtensionParameterDataTypes.FLOAT && param.value === "") ||
-                (paramElement?.dataType === ExtensionParameterDataTypes.SELECT && param.value === "") ||
-                (paramElement?.dataType === ExtensionParameterDataTypes.TEXTAREA && param.value === "")
-            );
-        });
-        setExecuteExtensionEnabled(enableExecutionUpdate);
-    }, [inputParams, selectedAction])
+    const isExtensionExexutable = inputParams?.every(param => param.value);
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
@@ -222,7 +208,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                                 variant="contained"
                                 onClick={() => handleExecuteExtension()}
                                 title='run_extension'
-                                disabled={!executeExtensionEnabled}
+                                disabled={!isExtensionExexutable}
                             >
                                 Run Extension
                             </RunExtension>

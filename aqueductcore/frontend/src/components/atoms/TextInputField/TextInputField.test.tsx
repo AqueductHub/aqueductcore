@@ -4,13 +4,13 @@ import { render } from "@testing-library/react";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import { TextInputField } from "components/atoms/TextInputField";
 
-test("only support float values in float field", async () => {
+test("normal text input field", async () => {
     const { getByTitle } = render(
         <AppContextAQDMock>
             <TextInputField
                 title="text_field"
                 field="text_field"
-                description="Description of float field"
+                description="Description of textInputField"
                 defaultValue="abc123"
             />
         </AppContextAQDMock>
