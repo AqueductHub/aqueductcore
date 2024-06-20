@@ -203,6 +203,17 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     }
   };
 
+  const emptyListErrorMessage = (pageUrl: string) => {
+    switch(pageUrl) {
+      case "/aqd/experiments/favourites":
+        return "No favourited experiment records found";
+      case "/aqd/experiments/archived":
+        return "No archived experiment records found";
+      default:
+        return "No experiment records found";
+    }
+  }
+
   const handleResetPagination = () => {
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     newQueryParameters.set('rowsPerPage', String(rowsPerPage))
@@ -230,9 +241,9 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
             pageInfo={pageInfo}
             maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           />
-        ) :
-        <NoExperimentsMessage>No experiments found.</NoExperimentsMessage>
-        }
+        ) : ""
+      }
+      {!loading && !pageInfo.count && <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>}
       </Box>
     </Container>
   );
