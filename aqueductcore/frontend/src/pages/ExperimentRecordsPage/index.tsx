@@ -49,7 +49,6 @@ const TagBox = styled(Box)`
 
 const NoExperimentsMessage = styled(Typography)`
   font-size: 0.95rem;
-  /* background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.common.black : theme.palette.common.white}; */
   color: ${({ theme }) => theme.palette.grey[500]};
   text-align: center;
   padding: ${(props) => `${props.theme.spacing(2.5)}`};
