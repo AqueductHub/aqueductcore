@@ -1,8 +1,8 @@
-import { Autocomplete, AutocompleteProps, Box, Grid, TextField, styled } from "@mui/material";
+import { Autocomplete, AutocompleteProps, Box, Grid, InputAdornment, TextField, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { FieldDescription, FieldTitle, FieldType, InputFieldHint } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { useGetExperimentFilesById } from "API/graphql/queries/experiment/getExperimentFilesById";
-import { ExtensionFieldBase } from "types/globalTypes";
+import { ExtensionFieldBase, WithOptional } from "types/globalTypes";
 
 const FileInput = styled(TextField)`
   resize: none;
@@ -15,7 +15,7 @@ const FileInput = styled(TextField)`
 
 interface FileFieldProps extends ExtensionFieldBase {
   experimentIdentifier: string;
-  fileFieldProps?: AutocompleteProps<string, false, true, false>;
+  fileFieldProps?: WithOptional<WithOptional<AutocompleteProps<string, false, true, false>, 'options'>, 'renderInput'>;
 }
 
 export function FileField({
@@ -59,7 +59,17 @@ export function FileField({
               size="small"
               forcePopupIcon={false}
               options={experimentFilesList}
-              renderInput={(params) => <FileInput {...params} />}
+              renderInput={(params) => <FileInput
+                {...params}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <InputFieldHint>file</InputFieldHint>
+                    </InputAdornment>
+                  ),
+                }}
+              />}
             />
           </Box>
         </Grid>

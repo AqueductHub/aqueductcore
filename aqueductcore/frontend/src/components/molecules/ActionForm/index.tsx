@@ -12,12 +12,14 @@ import { SelectField } from "components/atoms/SelectField";
 import { ExtensionActionType } from "types/globalTypes";
 import { FloatField } from "components/atoms/FloatField";
 import { client } from "API/apolloClientConfig";
+import { FileField } from "components/atoms/FileField";
+import { TextInputField } from "components/atoms/TextInputField";
 
 const Container = styled(Box)`
-    height: 557px;
+    height: 551px;
     padding: 0 ${(props) => props.theme.spacing(1)};
     overflow-y: auto;
-    `;
+`;
 
 interface ActionFormProps {
     selectedAction?: ExtensionActionType;
@@ -41,6 +43,7 @@ function ActionForm({
             },
         },
     });
+
     return (
         <>
             <Container>
@@ -48,11 +51,11 @@ function ActionForm({
                     {selectedAction?.parameters.map(parameterInfo => (
                         <Box key={parameterInfo.name}>
                             {parameterInfo.dataType == ExtensionParameterDataTypes.STR && <>
-                                <TextAreaField
+                                <TextInputField
                                     title={parameterInfo?.displayName || ""}
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
-                                    textareaFieldProps={{
+                                    textFieldProps={{
                                         value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
                                         onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]))
                                     }}
@@ -120,6 +123,18 @@ function ActionForm({
                                     selectFieldProps={{
                                         value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
                                         onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }]))
+                                    }}
+                                />
+                            </>}
+                            {parameterInfo.dataType == ExtensionParameterDataTypes.FILE && <>
+                                <FileField
+                                    title={parameterInfo?.displayName || ""}
+                                    description={parameterInfo?.description || ""}
+                                    field={parameterInfo.name}
+                                    experimentIdentifier={experimentIdentifier || ""}
+                                    fileFieldProps={{
+                                        value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
+                                        onChange: ((_, value) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: value }]))
                                     }}
                                 />
                             </>}

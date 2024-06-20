@@ -5,7 +5,7 @@ import { ExtensionFieldBase } from "types/globalTypes";
 
 const ExperimentBox = styled(Box)`
   border: 1px solid ${({ theme }) => theme.palette.neutral.main};
-  background-color: ${({ theme }) => theme.palette.grey[200]};;
+  background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[200]};
   width: calc(100% - ${(props) => props.theme.spacing(1)});
   border-radius: ${(props) => props.theme.spacing(0.5)};
   padding: ${(props) => props.theme.spacing(1)};
