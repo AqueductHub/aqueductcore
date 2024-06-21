@@ -1,5 +1,5 @@
+import { LinearProgress, Typography, styled } from "@mui/material";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
@@ -229,19 +229,20 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
       {/* //Guides would be added here */}
       <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
       <Box sx={{ mt: 2 }}>
-        {processedExperimentData && pageInfo.count && !loading ? (
-          <ExperimentsListTable
-            ExperimentRecordsColumns={
-              location.pathname.includes("archived") || location.pathname.includes("favourite")
-                ? ExperimentRecordsColumns
-                : ExperimentRecordsColumnsWithFavColumn
-            }
-            experimentList={processedExperimentData}
-            pageInfo={pageInfo}
-            maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
-          />
-        ) : null}
-      {!loading && !pageInfo.count && <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>}
+        {loading ? <LinearProgress /> :
+          processedExperimentData && pageInfo.count ? (
+            <ExperimentsListTable
+              ExperimentRecordsColumns={
+                location.pathname.includes("archived") || location.pathname.includes("favourite")
+                  ? ExperimentRecordsColumns
+                  : ExperimentRecordsColumnsWithFavColumn
+              }
+              experimentList={processedExperimentData}
+              pageInfo={pageInfo}
+              maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
+            /> ) :
+            <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>
+        }
       </Box>
     </Container>
   );
