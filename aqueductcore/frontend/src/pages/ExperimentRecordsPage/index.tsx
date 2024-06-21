@@ -240,8 +240,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
             pageInfo={pageInfo}
             maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           />
-        ) : ""
-      }
+        ) : null}
       {!loading && !pageInfo.count && <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>}
       </Box>
     </Container>
