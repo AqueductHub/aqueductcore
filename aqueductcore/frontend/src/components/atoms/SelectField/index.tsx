@@ -1,6 +1,6 @@
 import { Box, Select, Grid, styled, MenuItem, SelectProps } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { FieldDescription, FieldTitle, FieldType, RequiredFieldIndicator } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { ExtensionFieldBase } from "types/globalTypes";
 
 const DropDown = styled(Select)`
@@ -27,7 +27,9 @@ export function SelectField({
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>
         <Grid item xs={6}>
-          <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
+          <FieldTitle>{title}</FieldTitle>
+          <RequiredFieldIndicator>*</RequiredFieldIndicator>
+          <FieldType>{field}</FieldType>
           <Box sx={{ p: 1 }}>
             <DropDown
               title={field}

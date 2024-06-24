@@ -1,3 +1,4 @@
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { ExtensionType } from "types/globalTypes";
 
 export const ExtensionsDataMock: ExtensionType[] = [
@@ -21,7 +22,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                     },
                     {
                         "dataType": "int",
-                        "defaultValue": null,
+                        "defaultValue": "20",
                         "description": "variable 2",
                         "displayName": "some display name",
                         "name": "var2",
@@ -29,7 +30,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                     },
                     {
                         "dataType": "float",
-                        "defaultValue": null,
+                        "defaultValue": "20.12",
                         "description": "variable 3",
                         "displayName": null,
                         "name": "var3",
@@ -37,7 +38,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                     },
                     {
                         "dataType": "experiment",
-                        "defaultValue": null,
+                        "defaultValue": selected_experiment.alias,
                         "description": "variable 4",
                         "displayName": null,
                         "name": "var4",
@@ -45,7 +46,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                     },
                     {
                         "dataType": "textarea",
-                        "defaultValue": null,
+                        "defaultValue": "some multiline\ntext",
                         "description": "variable 5 multiline",
                         "displayName": null,
                         "name": "var5",

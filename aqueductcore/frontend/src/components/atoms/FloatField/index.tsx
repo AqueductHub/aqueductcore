@@ -1,6 +1,6 @@
-import { Box, Grid, TextField, TextFieldProps, styled } from "@mui/material";
+import { Box, Grid, InputAdornment, TextField, TextFieldProps, styled } from "@mui/material";
 
-import { FieldDescription, FieldTitle, FieldType } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
+import { FieldDescription, FieldTitle, FieldType, InputFieldHint, RequiredFieldIndicator } from "components/atoms/sharedStyledComponents/ExtensionInputFields"
 import { ExtensionFieldBase } from "types/globalTypes";
 
 const FloatInput = styled(TextField)`
@@ -36,7 +36,9 @@ export function FloatField({
     <Box>
       <Grid container sx={{ px: 2, py: 1.5 }}>
         <Grid item xs={6}>
-          <FieldTitle>{title}</FieldTitle><FieldType>{field}</FieldType>
+          <FieldTitle>{title}</FieldTitle>
+          <RequiredFieldIndicator>*</RequiredFieldIndicator>
+          <FieldType>{field}</FieldType>
           <Box sx={{ p: 1, pr: 2 }}>
             <FloatInput
               {...floatFieldProps}
@@ -44,6 +46,11 @@ export function FloatField({
               size="small"
               title={field}
               defaultValue={defaultValue}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">
+                  <InputFieldHint>float</InputFieldHint>
+                </InputAdornment>,
+              }}
             />
           </Box>
         </Grid>
