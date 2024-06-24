@@ -19,7 +19,7 @@ from aqueductcore.backend.routers.graphql.types import (
 from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
 from aqueductcore.backend.services.experiment import (
     get_all_experiments,
-    get_experiment_by_alias,
+    get_experiment_by_eid,
     get_experiment_by_uuid,
 )
 from aqueductcore.backend.services.validators import MAX_EXPERIMENTS_PER_REQUEST
@@ -76,13 +76,13 @@ async def get_experiment(
         experiment = await get_experiment_by_uuid(
             user_info=context.user_info,
             db_session=context.db_session,
-            experiment_id=UUID(experiment_identifier.value),
+            experiment_uuid=UUID(experiment_identifier.value),
         )
     else:
-        experiment = await get_experiment_by_alias(
+        experiment = await get_experiment_by_eid(
             user_info=context.user_info,
             db_session=context.db_session,
-            alias=experiment_identifier.value,
+            eid=experiment_identifier.value,
         )
 
     return experiment_model_to_node(experiment)

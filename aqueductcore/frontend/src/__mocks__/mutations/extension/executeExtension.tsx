@@ -11,7 +11,7 @@ const params = [
     ["var1", parameters[0].defaultValue],
     ["var2", parameters[1].defaultValue],
     ["var3", parameters[2].defaultValue],
-    ["var4", `${selected_experiment.alias}`],
+    ["var4", `${selected_experiment.eid}`],
     ["var5", parameters[4].defaultValue],
     ["var6", parameters[5].defaultValue],
     ["var7", parameters[6].defaultValue]

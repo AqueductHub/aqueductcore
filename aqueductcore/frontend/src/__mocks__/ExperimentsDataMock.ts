@@ -1,8 +1,6 @@
 import { ExperimentAllFieldsDataType, TagType } from "types/globalTypes";
 import { ARCHIVED, FAVOURITE } from "constants/constants";
 
-export const alias = "20221111-01";
-
 export const tagOptions: TagType[] = [
   "rabi",
   "ibm",
@@ -39,8 +37,8 @@ export const tagOptions: TagType[] = [
 
 export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   {
-    id: "010bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221111-01",
+    uuid: "010bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221111-01",
     title: "EXP_rabi_20mk",
     description:
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
@@ -87,8 +85,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "020bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221111-02",
+    uuid: "020bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221111-02",
     title: "EXP_rabi_20mk",
     description:
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
@@ -99,8 +97,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "030bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221111-03",
+    uuid: "030bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221111-03",
     title: "EXP_rabi_20mk",
     description:
       "Had to recalibrate the main trap due to ion loss earlier, which led to a delay in our experiment timeline.",
@@ -111,8 +109,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "040bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-04",
+    uuid: "040bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-04",
     title: "EXP_rabi_10mk",
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
@@ -121,19 +119,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
     files: [],
   },
   {
-    id: "050bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-05",
-    title: "EXP_rabi_10mk",
-    description: "Achieved higher precision with the modified laser setup! ",
-    tags: ["rabi"],
-    createdAt: "2022-11-13T00:00:00+00:00",
-    createdBy: "admin",
-    files: [],
-  },
-
-  {
-    id: "060bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-06",
+    uuid: "050bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-05",
     title: "EXP_rabi_10mk",
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
@@ -143,8 +130,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "070bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-07",
+    uuid: "060bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-06",
     title: "EXP_rabi_10mk",
     description: "Achieved higher precision with the modified laser setup! ",
     tags: ["rabi"],
@@ -154,8 +141,19 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "080bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-08",
+    uuid: "070bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-07",
+    title: "EXP_rabi_10mk",
+    description: "Achieved higher precision with the modified laser setup! ",
+    tags: ["rabi"],
+    createdAt: "2022-11-13T00:00:00+00:00",
+    createdBy: "admin",
+    files: [],
+  },
+
+  {
+    uuid: "080bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-08",
     title: "Scanning 1D",
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
@@ -165,8 +163,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "090bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-09",
+    uuid: "090bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-09",
     title: "Scanning 1D",
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
@@ -176,8 +174,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "100bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221113-10",
+    uuid: "100bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221113-10",
     title: "Scanning 1D",
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
@@ -187,8 +185,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "110bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221123-11",
+    uuid: "110bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221123-11",
     title: "Scanning 1D",
     description: "Increased cooling time resulted in reduce measurement error.",
     tags: ["scanning", "1D"],
@@ -198,8 +196,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "120bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221123-12",
+    uuid: "120bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221123-12",
     title: "Scanning 2D",
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
@@ -209,8 +207,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "130bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221122-13",
+    uuid: "130bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221122-13",
     title: "Scanning 2D",
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
@@ -220,8 +218,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "140bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221122-14",
+    uuid: "140bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221122-14",
     title: "Scanning 2D",
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
@@ -231,8 +229,8 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 
   {
-    id: "150bbd7f-43a8-4f4e-996b-1cdaebc398cc",
-    alias: "20221123-15",
+    uuid: "150bbd7f-43a8-4f4e-996b-1cdaebc398cc",
+    eid: "20221123-15",
     title: "Scanning 2D",
     description: "Experiment repeated for consistency; results consistent with prior run.",
     tags: ["scanning", "1D", "2D", "three", "else", "things"],
@@ -241,3 +239,5 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
     files: [],
   },
 ];
+
+export const sample_eid = ExperimentsDataMock[0].eid;

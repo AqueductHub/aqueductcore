@@ -38,7 +38,7 @@ function ActionForm({
         query: GET_EXPERIMENT_BY_ID,
         variables: {
             experimentIdentifier: {
-                type: "ALIAS",
+                type: "EID",
                 value: experimentIdentifier,
             },
         },
@@ -99,7 +99,7 @@ function ActionForm({
                                     description={parameterInfo?.description || ""}
                                     field={parameterInfo.name}
                                     experiment_title={apolloCache.experiment.title}
-                                    experiment_alias={apolloCache.experiment.alias}
+                                    experiment_id={apolloCache.experiment.eid}
                                 />
                             </>}
                             {parameterInfo.dataType == ExtensionParameterDataTypes.TEXTAREA && <>

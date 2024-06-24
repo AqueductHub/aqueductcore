@@ -3,10 +3,14 @@ import os
 import shutil
 from tempfile import TemporaryDirectory
 from typing import AsyncGenerator, List, Tuple
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
+from fastapi import status
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from aqueductcore.backend.context import (
     ServerContext,
     UserInfo,
@@ -14,14 +18,11 @@ from aqueductcore.backend.context import (
     context_dependency,
 )
 from aqueductcore.backend.main import app
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
 from aqueductcore.backend.settings import settings
-from fastapi import status
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
-from aqueductcore.backend.models import orm
 
 BYTES_IN_KB = 1024
 
@@ -38,7 +39,7 @@ async def experiment_files(experiments_data: List[ExperimentCreate]):
     if not os.path.exists(main_dir):
         os.makedirs(main_dir)
 
-    experiment_uuid = experiments_data[0].id
+    experiment_uuid = experiments_data[0].uuid
     # make experiment file.
     experiment_dir = os.path.join(main_dir, str(experiment_uuid))
     os.makedirs(experiment_dir)
@@ -61,7 +62,7 @@ async def test_file_download(
     experiment_files: Tuple[str, str, bytes],
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -73,7 +74,7 @@ async def test_file_download(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -95,7 +96,7 @@ async def test_nonexisting_file_download(
 ):
     experiment_file_name = "nonexisting_test_file.txt"
 
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -107,7 +108,7 @@ async def test_nonexisting_file_download(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -150,12 +151,12 @@ async def test_invalid_filename_download(
 
 
 @pytest.mark.asyncio
-async def test_file_upload_experiment_id(
+async def test_file_upload_experiment_uuid(
     client: TestClient,
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -167,7 +168,7 @@ async def test_file_upload_experiment_id(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -182,7 +183,7 @@ async def test_file_upload_experiment_id(
             file_writer.write(test_data)
 
         response = client.post(
-            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
@@ -190,7 +191,7 @@ async def test_file_upload_experiment_id(
 
         # check if the file is uploaded correctly in the expected directory
         server_experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), db_experiment.id
+            str(settings.experiments_dir_path), db_experiment.uuid
         )
         with open(
             os.path.join(server_experiment_dir, experiment_file_name), mode="rb"
@@ -203,7 +204,7 @@ async def test_file_upload_experiment_id(
 
 
 @pytest.mark.asyncio
-async def test_file_upload_invalid_experiment_id(
+async def test_file_upload_invalid_experiment_uuid(
     client: TestClient,
     db_session: AsyncSession,  # unused but need to create tables in DB.
 ):
@@ -230,7 +231,7 @@ async def test_file_upload_max_body_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -242,7 +243,7 @@ async def test_file_upload_max_body_size(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -257,7 +258,7 @@ async def test_file_upload_max_body_size(
             file_writer.write(test_data)
 
         response = client.post(
-            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
@@ -274,7 +275,7 @@ async def test_file_upload_max_file_size(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -287,7 +288,7 @@ async def test_file_upload_max_file_size(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -303,7 +304,7 @@ async def test_file_upload_max_file_size(
             file_writer.write(test_data)
 
         response = client.post(
-            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
@@ -343,7 +344,7 @@ async def test_file_upload_non_existing_body(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -356,7 +357,7 @@ async def test_file_upload_non_existing_body(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -372,7 +373,7 @@ async def test_file_upload_non_existing_body(
             file_writer.write(test_data)
 
         response = client.post(
-            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
             files={"file_wrong": open(upload_file_path, "rb")},
             headers={"file_name": experiment_file_name},
         )
@@ -386,7 +387,7 @@ async def test_file_upload_invalid_filename(
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
 ):
-    db_user = orm.User(id=UUID(int=0), username=settings.default_username)
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
     db_session.add(db_user)
 
     db_experiment = experiment_model_to_orm(experiments_data[0])
@@ -398,7 +399,7 @@ async def test_file_upload_invalid_filename(
         yield ServerContext(
             db_session=db_session,
             user_info=UserInfo(
-                user_id=uuid4(), username=settings.default_username, scopes=set(UserScope)
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
             ),
         )
 
@@ -414,7 +415,7 @@ async def test_file_upload_invalid_filename(
             file_writer.write(test_data)
 
         response = client.post(
-            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.id)}",
+            f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
             files={"file": open(upload_file_path, "rb")},
             headers={"file_name": invalid_filename},
         )

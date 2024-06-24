@@ -48,7 +48,7 @@ const TagBox = styled(Box)`
 `;
 
 export const ExperimentRecordsColumns: readonly ExperimentRecordsColumnsType[] = [
-  { id: "alias", label: "EID", minWidth: 170 },
+  { id: "eid", label: "EID", minWidth: 170 },
   {
     id: "title",
     label: "Name",

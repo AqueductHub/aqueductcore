@@ -36,5 +36,6 @@
         "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format"
     ],
     "files.insertFinalNewline": true,
-    "notebook.insertFinalNewline": true
+    "notebook.insertFinalNewline": true,
+    "remote.localPortHost": "allInterfaces"
 }

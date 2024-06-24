@@ -19,10 +19,9 @@ from aqueductcore.backend.models.extensions import (
 )
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
-    get_experiment_by_alias,
+    get_experiment_by_eid,
 )
 from aqueductcore.backend.settings import settings
-
 
 VENV_FOLDER = ".aqueduct-extension-venv"
 PYTHON_BINARY = "bin/python"
@@ -38,7 +37,8 @@ class ExtensionsExecutor:
         result = []
         if settings.extensions_dir_path is None:
             logging.warning(
-                "Extensions directory is not set is EXTENSIONS_DIR_PATH environment variable.")
+                "Extensions directory is not set is EXTENSIONS_DIR_PATH environment variable."
+            )
             return []
         for directory in Path(settings.extensions_dir_path).iterdir():
             if directory.exists() and not directory.is_file():
@@ -48,19 +48,20 @@ class ExtensionsExecutor:
                 except AQDError as err:
                     logging.warning(
                         "Skipping %s extension parsing %s",
-                        directory, err,
+                        directory,
+                        err,
                     )
         return sorted(result, key=lambda extension: extension.name)
 
     @classmethod
     def get_extension(cls, extension: str) -> Extension:
         """Returns extension instance given its name.
-        
+
         Args:
             extension: extension name.
 
         Returns:
-            Extension instance. 
+            Extension instance.
         """
         extensions = [p for p in cls.list_extensions() if p.name == extension]
         if len(extensions) != 1:
@@ -69,7 +70,7 @@ class ExtensionsExecutor:
 
     @classmethod
     def is_venv_present(cls, extension: str) -> bool:
-        """ Checks if inside extension folder there is a venv folder
+        """Checks if inside extension folder there is a venv folder
 
         Args:
             extension: extension name
@@ -87,7 +88,7 @@ class ExtensionsExecutor:
 
     @classmethod
     def create_venv_python_if_not_present(cls, extension: str) -> Path:
-        """ If virtual environment is not present in extension directory,
+        """If virtual environment is not present in extension directory,
         it is created and requirements are installed. The method
         returns python executable inside this venv.
 
@@ -111,7 +112,7 @@ class ExtensionsExecutor:
 
     @classmethod
     def try_install_requirements_txt(cls, extension: str, python: Path) -> bool:
-        """ Checks in requirements.txt file is present, and
+        """Checks in requirements.txt file is present, and
         installs requirements into a virtual environment.
 
         Args:
@@ -135,7 +136,7 @@ class ExtensionsExecutor:
 
     @classmethod
     def try_install_pyproject_toml(cls, extension: str, python: Path) -> bool:
-        """ Checks in pyproject.toml file is present, and
+        """Checks in pyproject.toml file is present, and
         installs an extension folder as a python module into a virtual environment.
 
         Args:
@@ -183,22 +184,22 @@ class ExtensionsExecutor:
     async def save_log_to_experiment(
         cls,
         context: ServerContext,
-        experiment_id: str,
+        eid: str,
         result: ExtensionExecutionResult,
         log_filename: str,
     ):
         """Saves result of extension executions into a log file inside experiment.
 
         context: server context with database connection.
-        experiment_id: alias of the experiment.
+        eid: EID of the experiment.
         result: object with extension execution results.
         log_filename: name of the log file to which data is saved.
         """
-        experiment = await get_experiment_by_alias(
-            user_info=context.user_info, db_session=context.db_session, alias=experiment_id
+        experiment = await get_experiment_by_eid(
+            user_info=context.user_info, db_session=context.db_session, eid=eid
         )
         experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment.id
+            str(settings.experiments_dir_path), experiment.uuid
         )
         # create experiment directory if it is its first file
         if not os.path.exists(experiment_dir):

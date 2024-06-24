@@ -25,8 +25,8 @@ export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>
 export type GET_ALL_EXPERIMENTS_TYPE = {
   experiments: {
     experimentsData: Array<{
-      id: ExperimentDataType["id"];
-      alias: ExperimentDataType["alias"];
+      uuid: ExperimentDataType["uuid"];
+      eid: ExperimentDataType["eid"];
       title: ExperimentDataType["title"];
       description: ExperimentDataType["description"];
       tags: Array<TagType>;
@@ -46,8 +46,8 @@ export type GET_ALL_TAGS_TYPE = {
 };
 export type GET_EXPERIMENT_BY_ID_TYPE = {
   experiment: {
-    id: ExperimentDataType["id"];
-    alias: ExperimentDataType["alias"];
+    uuid: ExperimentDataType["uuid"];
+    eid: ExperimentDataType["eid"];
     title: ExperimentDataType["title"];
     description: ExperimentDataType["description"];
     tags: Array<TagType>;
@@ -96,21 +96,21 @@ export type GET_ALL_EXTENSIONS_TYPE = {
 //############### Mutation types ###############//
 //### EXPERIMENT ###
 export type UPDATE_EXPERIMENT_DETAILS_TYPE = {
-  id: ExperimentDataType["id"];
-  alias: ExperimentDataType["alias"];
+  uuid: ExperimentDataType["uuid"];
+  eid: ExperimentDataType["eid"];
   title: ExperimentDataType["title"];
   description: ExperimentDataType["description"];
 };
 export type ADD_TAG_TO_EXPERIMENT_TYPE = {
-  id: ExperimentDataType["id"];
+  uuid: ExperimentDataType["uuid"];
   tags: ExperimentDataType["tags"];
 };
 export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
-  id: ExperimentDataType["id"];
+  uuid: ExperimentDataType["uuid"];
   tags: ExperimentDataType["tags"];
 };
 export type REMOVE_EXPERIMENT_TYPE = {
-  id: ExperimentDataType["id"];
+  uuid: ExperimentDataType["uuid"];
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
@@ -130,8 +130,8 @@ export type TagsFieldProps = {
   isEditable?: boolean,
 };
 export type ExperimentAllFieldsDataType = {
-  id: ExperimentData["id"];
-  alias: ExperimentData["alias"];
+  uuid: ExperimentData["uuid"];
+  eid: ExperimentData["eid"];
   title: ExperimentData["title"];
   description: ExperimentData["description"];
   tags: Array<TagType>;
@@ -140,8 +140,8 @@ export type ExperimentAllFieldsDataType = {
   files: Array<ExperimentFileType>;
 };
 export type ExperimentDataType = {
-  id: ExperimentData["id"];
-  alias: ExperimentData["alias"];
+  uuid: ExperimentData["uuid"];
+  eid: ExperimentData["eid"];
   title: ExperimentData["title"];
   description: ExperimentData["description"];
   tags: Array<TagType>;

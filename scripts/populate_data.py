@@ -40,26 +40,26 @@ async def populate():
 
     async with get_session() as db_session:
         for _ in range(10):
-            id = uuid4()
-            tag = Tag(name=f"Tag_{str(id)[-12:]}", key=f"tag_{str(id)[-12:]}")
+            uuid = uuid4()
+            tag = Tag(name=f"Tag_{str(uuid)[-12:]}", key=f"tag_{str(uuid)[-12:]}")
             tags.append(tag)
             db_session.add(tag)
 
-        admin_user = User(id=UUID(int=0), username="admin")
+        admin_user = User(uuid=UUID(int=0), username="admin")
         for _ in range(10):
-            id = uuid4()
+            uuid = uuid4()
             date = random_date(start_date, now)
             experiment = Experiment(
-                id=id,
+                uuid=uuid,
                 created_at=date,
                 updated_at=date,
-                title=f"experiment_{str(id)[-12:]}",
+                title=f"experiment_{str(uuid)[-12:]}",
                 description="description test",
-                alias=f"{date.strftime('%y%m%d')}-{random.randint(1,100)}",
+                eid=f"{date.strftime('%y%m%d')}-{random.randint(1,100)}",
             )
             experiment.tags.extend(random.choices(tags, k=4))
             admin_user.experiments.append(experiment)
-            experiment_dir = os.path.join(str(settings.experiments_dir_path), f"{experiment.id}")
+            experiment_dir = os.path.join(str(settings.experiments_dir_path), f"{experiment.uuid}")
             os.mkdir(experiment_dir)
             file_size = 1024 * 1024 * 1  # 10 MB
             for file_idx in range(10):

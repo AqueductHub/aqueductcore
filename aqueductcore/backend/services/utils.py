@@ -21,8 +21,8 @@ async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
         updated_at=value.updated_at.replace(tzinfo=timezone.utc),
         created_by=value.created_by_user.username,
         description=value.description,
-        alias=value.alias,
-        id=value.id,
+        eid=value.eid,
+        uuid=value.uuid,
         title=value.title,
         tags=[tag_orm_to_model(tag) for tag in value.tags],
     )
@@ -40,10 +40,10 @@ def tag_orm_to_model(value: orm.Tag) -> TagRead:
 def experiment_model_to_orm(value: ExperimentCreate) -> orm.Experiment:
     """Convert Pydantic Experiment to ORM Experiment."""
     experiment = orm.Experiment(
-        id=value.id,
+        uuid=value.uuid,
         title=value.title,
         description=value.description,
-        alias=value.alias,
+        eid=value.eid,
     )
     experiment.tags.extend([tag_model_to_orm(item) for item in value.tags])
 
@@ -57,13 +57,13 @@ def tag_model_to_orm(value: TagCreate) -> orm.Tag:
     return tag
 
 
-def generate_experiment_id_and_alias(experiment_index: int) -> Tuple[UUID, str]:
-    """Generate uuid and alias for experiment"""
+def generate_experiment_uuid_and_eid(experiment_index: int) -> Tuple[UUID, str]:
+    """Generate uuid and eid for experiment"""
     current_date = datetime.today().strftime("%Y%m%d")
-    experiment_id = uuid4()
-    alias = f"{current_date}-{experiment_index}"
+    uuid = uuid4()
+    eid = f"{current_date}-{experiment_index}"
 
-    return experiment_id, alias
+    return uuid, eid
 
 
 def is_tag_valid(tag: str) -> bool:

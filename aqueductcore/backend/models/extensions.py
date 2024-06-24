@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from enum import Enum
 import os
 import subprocess
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -91,10 +91,10 @@ class ExtensionParameter(BaseModel):
             try:
                 prefix, postfix = value.split("-")
                 if not prefix.isdecimal() or not postfix.isalnum():
-                    raise AQDValidationError("Experiment alias has wrong format.")
+                    raise AQDValidationError("Experiment EID has wrong format.")
                 return value
             except Exception as exc:
-                raise AQDValidationError(f"{value} is not a valid experiment id.") from exc
+                raise AQDValidationError(f"{value} is not a valid EID.") from exc
 
         if self.data_type == SupportedTypes.SELECT:
             if self.options is not None:
@@ -117,11 +117,12 @@ class ExtensionAction(BaseModel):
     parameters: List[ExtensionParameter]
 
     def execute(
-            self,
-            extension: Extension,
-            params: dict,
-            python: str | Path | None = None,
-            timeout: int=60) -> ExtensionExecutionResult:
+        self,
+        extension: Extension,
+        params: dict,
+        python: str | Path | None = None,
+        timeout: int = 60,
+    ) -> ExtensionExecutionResult:
         """Passes parameters to the action code and awaits
         execution results
 
@@ -233,7 +234,7 @@ class Extension(BaseModel):
             return extension
 
     def get_action(self, name: str) -> ExtensionAction:
-        """ Get extension action by its name.
+        """Get extension action by its name.
 
         Args:
             name: action name
@@ -255,7 +256,7 @@ class Extension(BaseModel):
 
     @property
     def folder(self):
-        """ Folder with extension specification. Raises if not initialised. """
+        """Folder with extension specification. Raises if not initialised."""
         if self._folder is None:
             raise AQDFilesPathError(f"Extension {self.name} folder is not known.")
         return self._folder

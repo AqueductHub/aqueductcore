@@ -2,15 +2,13 @@
 
 In this tutorial, the API of PyAqueduct is introduced by working on a sample experiment. The sample experiment generates some results in the form of different files such as CSV, JSON, HDF5, and image files. Each execution of the experiment generates new set of files and therefore, is treated as a new experiment run.
 
-## Experiment: analysis of projectile motion 
-
+## Experiment: analysis of projectile motion
 
 ```python
 # Install experiment dependecies.
 import sys
 !{sys.executable} -m pip install numpy pandas matplotlib h5py
 ```
-
 
 ```python
 import os
@@ -106,7 +104,6 @@ print("Simulation and data processing completed.")
 
 ## Create experiment on Aqueduct
 
-
 ```python
 from pyaqueduct import API
 
@@ -116,11 +113,10 @@ experiment = api.create_experiment(
     title="Motion Simulation Experiment", description="Tutorial experiment: motion simulation."
 )
 
-print(f"Experiment created with unique id: {experiment.alias}")
+print(f"Experiment created with unique eid: {experiment.eid}")
 ```
 
 ## Add tags to experiment
-
 
 ```python
 experiment.add_tag("motion")
@@ -132,7 +128,6 @@ experiment.tags
 
 ## Remove tags from experiment
 
-
 ```python
 experiment.remove_tag("simulation")
 experiment.remove_tag("notebook")
@@ -141,7 +136,6 @@ experiment.tags
 ```
 
 ## Update experiment and file download/upload
-
 
 ```python
 experiment.title = "Motion Simulation"
@@ -156,7 +150,6 @@ print(f"Experiment tags: {experiment.tags}")
 
 ## Upload files
 
-
 ```python
 experiment.upload_file(file="projectile_motion.csv")
 experiment.upload_file(file="projectile_motion.json")
@@ -165,7 +158,6 @@ experiment.upload_file(file="projectile_motion_plot.png")
 ```
 
 ## Download files
-
 
 ```python
 download_dir = os.path.join(os.getcwd(), "downloads")
@@ -180,9 +172,8 @@ experiment.download_file(file_name="projectile_motion_plot.png", destination_dir
 
 ## Get specific experiment
 
-
 ```python
-experiment = api.get_experiment("[Experiment ID]")
+experiment = api.get_experiment("[Experiment UUID]")
 
 print(f"Experiment title: {experiment.title}")
 print(f"Experiment title: {experiment.description}")

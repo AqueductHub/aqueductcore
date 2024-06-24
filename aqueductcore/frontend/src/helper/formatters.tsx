@@ -12,7 +12,7 @@ export const dateFormatter = (date: Date) => {
 
 export function processExperimentTableData(experimentList: ExperimentDataType[]) {
   return experimentList.map((experiment) => {
-    const { id, alias, title, description, tags, createdAt, createdBy } = experiment;
+    const { uuid, eid, title, description, tags, createdAt, createdBy } = experiment;
 
     // star
     let star = false;
@@ -24,7 +24,7 @@ export function processExperimentTableData(experimentList: ExperimentDataType[])
     const pattern = /^__\w+__$/;
     const filteredTags = tags.filter((tag) => !pattern.test(tag));
 
-    return { id, alias, title, description, tags: filteredTags, createdAt, createdBy, star };
+    return { uuid, eid, title, description, tags: filteredTags, createdAt, createdBy, star };
   });
 }
 
@@ -42,10 +42,10 @@ export function isValidUrl(string: string | URL) {
   }
 }
 
-export function mdUrlTransformer(url: string, experimentId: ExperimentDataType['id']) {
+export function mdUrlTransformer(url: string, experimentUuid: ExperimentDataType['uuid']) {
   // Logic to modify links in the MD file lives here
   if (isValidUrl(url)) return url
-  return `${AQD_FILE_URI}/api/files/${experimentId}/${url}`
+  return `${AQD_FILE_URI}/api/files/${experimentUuid}/${url}`
 }
 
 export function formatExtensionParameters(params?: actionInExtensionsType[]) {

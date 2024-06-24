@@ -109,7 +109,7 @@ def importer(
             if len(conflicts) > 0:
                 err_console.print(
                     "Import failed: The following conflicting experiments with the "
-                    f"same IDs are found: {[item.alias for item in conflicts]}."
+                    f"same IDs are found: {[item.eid for item in conflicts]}."
                 )
                 raise typer.Exit(code=1)
             Importer.import_experiments_metadata(db_session=db_session, metadata=metadata)

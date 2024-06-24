@@ -8,7 +8,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentsDataMock[0].id,
+          uuid: ExperimentsDataMock[0].uuid,
           experimentUpdateInput: {
             title: updatedTitle,
             description: updatedDescription,
@@ -20,8 +20,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentsDataMock[0].id,
-            alias: ExperimentsDataMock[0].alias,
+            uuid: ExperimentsDataMock[0].uuid,
+            eid: ExperimentsDataMock[0].eid,
           },
         },
       },
@@ -31,7 +31,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentsDataMock[0].id,
+          uuid: ExperimentsDataMock[0].uuid,
           experimentUpdateInput: {
             description: "",
           },
@@ -42,8 +42,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentsDataMock[0].id,
-            alias: ExperimentsDataMock[0].alias,
+            uuid: ExperimentsDataMock[0].uuid,
+            eid: ExperimentsDataMock[0].eid,
           },
         },
       },
@@ -53,7 +53,7 @@ export const updateExperiment_mock = {
       request: {
         query: UPDATE_EXPERIMENT,
         variables: {
-          experimentId: ExperimentsDataMock[0].id,
+          uuid: ExperimentsDataMock[0].uuid,
           experimentUpdateInput: {
             title: "",
           },
@@ -64,8 +64,8 @@ export const updateExperiment_mock = {
           updateExperiment: {
             title: updatedTitle,
             description: updatedDescription,
-            id: ExperimentsDataMock[0].id,
-            alias: ExperimentsDataMock[0].alias,
+            uuid: ExperimentsDataMock[0].uuid,
+            eid: ExperimentsDataMock[0].eid,
           },
         },
       },

@@ -42,7 +42,7 @@ function ExperimentDetailsData({ experimentDetails, isEditable }: experimentDeta
         if (selectedTags.length < updatedTagsList.length) {
             mutateAddTag({
                 variables: {
-                    experimentId: experimentDetails.id,
+                    uuid: experimentDetails.uuid,
                     tag: Array.from(
                         new Set([...updatedTagsList].filter((element) => !new Set(selectedTags).has(element)))
                     ).pop(),
@@ -59,7 +59,7 @@ function ExperimentDetailsData({ experimentDetails, isEditable }: experimentDeta
         } else {
             mutateRemoveTag({
                 variables: {
-                    experimentId: experimentDetails.id,
+                    uuid: experimentDetails.uuid,
                     tag: Array.from(
                         new Set([...selectedTags].filter((element) => !new Set(updatedTagsList).has(element)))
                     ).pop(),
@@ -81,7 +81,7 @@ function ExperimentDetailsData({ experimentDetails, isEditable }: experimentDeta
                 <List>
                     <ListItem sx={{ pl: 1, pr: 1 }}>
                         <ExperimentDetailsTitle>Experiment ID: </ExperimentDetailsTitle>
-                        <ExperimentDetailsContent>{experimentDetails.alias}</ExperimentDetailsContent>
+                        <ExperimentDetailsContent>{experimentDetails.eid}</ExperimentDetailsContent>
                     </ListItem>
                     <ListItem sx={{ pl: 1, pr: 1 }}>
                         <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>

@@ -27,11 +27,11 @@ margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
 // `;
 
 interface AttachmentProps {
-  experimentId: ExperimentFileType[];
+  experimentUuid: ExperimentFileType[];
   experimentFiles: ExperimentFileType[];
 }
 
-function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
+function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
   const { selectedFile, setSelectedFile } = useContext(FileSelectStateContext)
 
   return (
@@ -85,7 +85,7 @@ function Attachments({ experimentId, experimentFiles }: AttachmentProps) {
           <Viewer
             file={experimentFiles.find(file => file.name === selectedFile)}
             handleSelectFile={setSelectedFile}
-            experimentId={experimentId}
+            experimentUuid={experimentUuid}
           />
         </Grid>
       </Grid>

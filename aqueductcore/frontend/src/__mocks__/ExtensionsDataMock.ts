@@ -38,7 +38,7 @@ export const ExtensionsDataMock: ExtensionType[] = [
                     },
                     {
                         "dataType": "experiment",
-                        "defaultValue": selected_experiment.alias,
+                        "defaultValue": selected_experiment.eid,
                         "description": "variable 4",
                         "displayName": null,
                         "name": "var4",

@@ -25,7 +25,7 @@ function ExperimentDetailsPage() {
   } = useGetExperimentById({
     variables: {
       experimentIdentifier: {
-        type: experimentIdentifier?.split("-").length === 2 ? "ALIAS" : "UUID",
+        type: experimentIdentifier?.split("-").length === 2 ? "EID" : "UUID",
         value: experimentIdentifier,
       },
     },
@@ -41,7 +41,7 @@ function ExperimentDetailsPage() {
     <Container>
       <FileSelectProvider>
         <ExperimentDetails experimentDetails={experimentDetails} />
-        <Attachments experimentId={experimentDetails.id} experimentFiles={experimentDetails.files} />
+        <Attachments experimentUuid={experimentDetails.uuid} experimentFiles={experimentDetails.files} />
       </FileSelectProvider>
     </Container>
   );

@@ -4,14 +4,14 @@ import { UPDATE_EXPERIMENT_DETAILS_TYPE } from "types/globalTypes";
 
 export const UPDATE_EXPERIMENT = gql`
   mutation updateExperimentName(
-    $experimentId: UUID!
+    $uuid: UUID!
     $experimentUpdateInput: ExperimentUpdateInput!
   ) {
-    updateExperiment(experimentId: $experimentId, experimentUpdateInput: $experimentUpdateInput) {
-      id
+    updateExperiment(uuid: $uuid, experimentUpdateInput: $experimentUpdateInput) {
+      uuid
       title
       description
-      alias
+      eid
     }
   }
 `;

@@ -10,27 +10,27 @@ import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
+from aqueductcore.backend.models.extensions import Extension
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
-from aqueductcore.backend.models.extensions import Extension
 
 
 async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
     """Resolve experiment files."""
-    experiment_id = root.id
+    experiment_uuid = root.uuid
     result: List[ExperimentFile] = []
     context = cast(ServerContext, info.context)
     files = await get_experiment_files(
         user_info=context.user_info,
         db_session=context.db_session,
         experiments_root_dir=str(settings.experiments_dir_path),
-        experiment_id=experiment_id,
+        experiment_uuid=experiment_uuid,
     )
     for name, modified_time in files:
         result.append(
             ExperimentFile(
                 name=name,
-                path=f"{settings.api_prefix}{settings.files_route_prefix}/{str(experiment_id)}",
+                path=f"{settings.api_prefix}{settings.files_route_prefix}/{str(experiment_uuid)}",
                 modified_at=modified_time,
             )
         )
@@ -51,9 +51,9 @@ class ExperimentFile:
 class ExperimentData:
     """GraphQL node."""
 
-    id: UUID = strawberry.field(description="Unique identifier of the experiment.")
+    uuid: UUID = strawberry.field(description="Unique identifier of the experiment.")
     title: str = strawberry.field(description="Title of the experiment.")
-    alias: str = strawberry.field(description="Alias of the experiment.")
+    eid: str = strawberry.field(description="EID of the experiment.")
     description: Optional[str] = strawberry.field(
         default=None, description="Description of the experiment."
     )
@@ -115,6 +115,7 @@ class ExtensionActionInfo:
     description: Optional[str]
     parameters: List[ExtensionParameterType]
     experiment_variable_name: Optional[str]
+
 
 @strawberry.type
 class ExtensionExecutionResult:

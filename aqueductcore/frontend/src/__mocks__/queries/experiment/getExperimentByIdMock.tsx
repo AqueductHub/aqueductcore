@@ -15,18 +15,18 @@ export const getExperiment_mock = {
                 variables: {
                     experimentIdentifier: {
                         type: 'UUID',
-                        value: selected_experiment.id
+                        value: selected_experiment.uuid
                     },
                 },
             },
             result: {
                 data: {
                     experiment: {
-                        id: selected_experiment.id,
+                        uuid: selected_experiment.uuid,
                         title: selected_experiment.title,
                         description: selected_experiment.description,
                         tags: selected_experiment.tags,
-                        alias: selected_experiment.alias,
+                        eid: selected_experiment.eid,
                         createdAt: selected_experiment.createdAt,
                         createdBy: selected_experiment.createdBy,
                         files: selected_experiment.files,
@@ -40,19 +40,19 @@ export const getExperiment_mock = {
                 ...request,
                 variables: {
                     experimentIdentifier: {
-                        type: 'ALIAS',
-                        value: selected_experiment.alias
+                        type: 'EID',
+                        value: selected_experiment.eid
                     },
                 },
             },
             result: {
                 data: {
                     experiment: {
-                        id: selected_experiment.id,
+                        uuid: selected_experiment.uuid,
                         title: selected_experiment.title,
                         description: selected_experiment.description,
                         tags: selected_experiment.tags,
-                        alias: selected_experiment.alias,
+                        eid: selected_experiment.eid,
                         createdAt: selected_experiment.createdAt,
                         createdBy: selected_experiment.createdBy,
                         files: selected_experiment.files,

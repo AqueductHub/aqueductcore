@@ -6,8 +6,8 @@ export const GET_ALL_EXPERIMENTS = gql`
   query getAllExperiments($offset: Int!, $limit: Int!, $filters: ExperimentFiltersInput) {
     experiments(offset: $offset, limit: $limit, filters: $filters) {
       experimentsData {
-        id
-        alias
+        uuid
+        eid
         title
         description
         tags

@@ -3,9 +3,9 @@ import { gql, useMutation } from "@apollo/client";
 import { ADD_TAG_TO_EXPERIMENT_TYPE } from "types/globalTypes";
 
 export const ADD_TAG_TO_EXPERIMENT = gql`
-  mutation addTagToExperiment($experimentId: UUID!, $tag: String!) {
-    addTagToExperiment(experimentTagInput: { experimentId: $experimentId, tag: $tag }) {
-      id
+  mutation addTagToExperiment($uuid: UUID!, $tag: String!) {
+    addTagToExperiment(experimentTagInput: { uuid: $uuid, tag: $tag }) {
+      uuid
       tags
     }
   }

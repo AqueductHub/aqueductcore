@@ -3,9 +3,9 @@ import { gql, useMutation } from "@apollo/client";
 import { REMOVE_TAG_FROM_EXPERIMENT_TYPE } from "types/globalTypes";
 
 export const REMOVE_TAG_FROM_EXPERIMENT = gql`
-  mutation removeTagFromExperiment($experimentId: UUID!, $tag: String!) {
-    removeTagFromExperiment(experimentTagInput: { experimentId: $experimentId, tag: $tag }) {
-      id
+  mutation removeTagFromExperiment($uuid: UUID!, $tag: String!) {
+    removeTagFromExperiment(experimentTagInput: { uuid: $uuid, tag: $tag }) {
+      uuid
       tags
     }
   }
