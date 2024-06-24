@@ -1,4 +1,5 @@
-name: Automated release for Aqueduct Core every alternate Monday at 12:00 PM
+name: Automated release
+# Automated release for Aqueduct Core every alternate Monday at 12:00 PM
 
 on:
   schedule:
