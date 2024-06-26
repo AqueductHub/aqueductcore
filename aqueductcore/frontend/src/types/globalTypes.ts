@@ -170,7 +170,7 @@ export interface ExperimentRecordsColumnsType {
   format?: (value?: unknown) => string | React.ReactNode;
 }
 export type ExperimentRecordsPageType = "all" | "favourites" | "archived";
-export type PreviewFilesType = "JSON" | "MARKDOWN" | "text/plain" | "image/png" | "image/jpeg" | "file";
+export type PreviewFilesType = "JSON" | "HTML" | "MARKDOWN" | "text/plain" | "image/png" | "image/jpeg" | "file";
 export interface ExperimentsListTableProps extends ExperimentDataType {
   star: boolean;
 }
