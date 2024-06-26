@@ -11,4 +11,4 @@ ADD frontend_build ./frontend_build
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir $(ls dist/*.whl)
 
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "aqueductcore.backend.main:app", "--bind", "0.0.0.0:8000", "--timeout", "60"]
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "aqueductcore.backend.main:app", "--bind", "0.0.0.0:8000", "--timeout", "60"]
