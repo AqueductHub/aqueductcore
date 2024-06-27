@@ -1,7 +1,7 @@
 """Server context management module."""
 
 from enum import Enum
-from typing import AsyncGenerator, Set
+from typing import AsyncGenerator, Optional, Set
 from uuid import UUID
 
 from fastapi import Depends
@@ -32,6 +32,7 @@ class UserInfo(BaseModel):
     uuid: UUID
     username: str
     scopes: Set[UserScope]
+    token: Optional[str] = None
 
 
 class ServerContext(BaseContext):
