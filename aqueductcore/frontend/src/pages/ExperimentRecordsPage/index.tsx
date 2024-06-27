@@ -1,5 +1,5 @@
+import { LinearProgress, Typography, styled } from "@mui/material";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
@@ -45,6 +45,13 @@ const TagBox = styled(Box)`
   padding: ${(props) => `${props.theme.spacing(0.5)} ${props.theme.spacing(1)}`};
   border-radius: ${(props) => props.theme.spacing(0.5)};
   margin-right: ${(props) => props.theme.spacing(1)};
+`;
+
+const NoExperimentsMessage = styled(Typography)`
+  font-size: 0.95rem;
+  color: ${({ theme }) => theme.palette.grey[500]};
+  text-align: center;
+  padding: ${(props) => `${props.theme.spacing(2.5)}`};
 `;
 
 export const ExperimentRecordsColumns: readonly ExperimentRecordsColumnsType[] = [
@@ -195,6 +202,17 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     }
   };
 
+  const emptyListErrorMessage = (pageUrl: string) => {
+    switch(pageUrl) {
+      case "/aqd/experiments/favourites":
+        return "No favourited experiment records found";
+      case "/aqd/experiments/archived":
+        return "No archived experiment records found";
+      default:
+        return "No experiment records found";
+    }
+  }
+
   const handleResetPagination = () => {
     const newQueryParameters: URLSearchParams = new URLSearchParams(searchParams);
     newQueryParameters.set('rowsPerPage', String(rowsPerPage))
@@ -211,18 +229,20 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
       {/* //Guides would be added here */}
       <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
       <Box sx={{ mt: 2 }}>
-        {processedExperimentData && pageInfo.count && !loading ? (
-          <ExperimentsListTable
-            ExperimentRecordsColumns={
-              location.pathname.includes("archived") || location.pathname.includes("favourite")
-                ? ExperimentRecordsColumns
-                : ExperimentRecordsColumnsWithFavColumn
-            }
-            experimentList={processedExperimentData}
-            pageInfo={pageInfo}
-            maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
-          />
-        ) : null}
+        {loading ? <LinearProgress /> :
+          processedExperimentData && pageInfo.count ? (
+            <ExperimentsListTable
+              ExperimentRecordsColumns={
+                location.pathname.includes("archived") || location.pathname.includes("favourite")
+                  ? ExperimentRecordsColumns
+                  : ExperimentRecordsColumnsWithFavColumn
+              }
+              experimentList={processedExperimentData}
+              pageInfo={pageInfo}
+              maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
+            /> ) :
+            <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>
+        }
       </Box>
     </Container>
   );
