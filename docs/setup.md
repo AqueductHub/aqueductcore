@@ -10,18 +10,20 @@ On this page we provide instructions for two ways to set up Aqueduct:
 ## Using Production Docker Images
 For the ease of deployment in production, Aqueduct is released as a production-ready container image. The docker image is available through Dockerhub, [`aqueducthub/aqueductcore`](https://hub.docker.com/r/aqueducthub/aqueductcore).
 
-This example Docker compose file shows how you can use the Docker images:
+This example Docker compose `compose.yaml` file shows how you can use the Docker images:
 
 ```yaml
 version: '3'
 services:
   aqueduct:
     image: aqueducthub/aqueductcore:latest
+    platform: linux/amd64
     restart: always
     depends_on:
       - postgres
     environment:
       EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+      EXTENSIONS_DIR_PATH: /workspace/external/extensions
       POSTGRES_USERNAME: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres
@@ -31,13 +33,14 @@ services:
       - /tmp/aqueduct_experiments:/tmp/aqueduct_experiments
       - type: bind
         # host folder for extensions
-        source: /aqueductcode/extensions
-        target: /workspace/extensions
+        source: /tmp/extensions
+        target: /workspace/external/extensions
     ports:
       - 80:8000
 
   postgres:
     image: postgres:15-alpine
+    platform: linux/amd64
     restart: unless-stopped
     environment:
       - POSTGRES_USER=admin
@@ -45,10 +48,30 @@ services:
       - POSTGRES_DB=aqueduct
     expose:
       - 5432
+    volumes:
+      - /tmp/postgres_data:/var/lib/postgresql/data
 
 ```
 
-In this example, the Aqueduct server will be running at [http://localhost]. 
+In this example, the Aqueduct server will be running at [http://localhost](http://localhost). Please take care
+of the following settings:
+
+- `volumes` sections of both services point to source directories on your host operation system (before `:`). Please
+  change these names if necessary.
+- `ports` setting of the `aqueduct` service specifies the port of your host operating system (80), which will be
+  occupied by the web interface. This port might be already in use, so you may want to change this number.
+- in `aqueduct` service, extensions directory is bind-mounted to the container. Unlike volumes, this folder
+  should exist before container is started.
+
+To start a service, you may run:
+
+```bash
+# create extensions dir
+mkdir -p /tmp/extensions
+# run service containers, detach from terminal
+docker compose -f compose.yaml up -d
+```
+
 
 !!! note
     
