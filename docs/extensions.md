@@ -271,11 +271,11 @@ Please, note, that purpose of extensions is to interact with an experiment. They
 
 ## Debugging an Extension
 
-To debug an extension code working working with the backend, open Aqueduct Core project in Visual Studio and use development container. Then your terminal will point to a `/workspace` directory, which corresponds to a project directory on your native file system.
+To debug an extension code working with the backend, open Aqueduct-core project in _Visual Studio Code_ and use _Dev Container_. Then your terminal will point to a `/workspace` directory, which corresponds to a project directory on your native file system.
 
-The `/workspace/external/extensions/` is the directory you would like to put your new extension code. Create a subdirectory and put your artefact there.
+The `/workspace/external/extensions/` is the directory where you would like to put your new extension code. Create a subdirectory and put your artefacts there.
 
-Note, that extensions do changes on your file system: they may create temporary files and logs, they initialise and update a virtual environment. When you run your backend code in development environment, this will trigger `uvicorn` to reload the server. This takes several seconds. When your extension tries to access the Aqueduct via API, this may result in timeout errors. The best way to avoid this is to disable reloading when you test extension. For this, edit `./scripts/start_aqueduct_core.py` and set `reload` option to `False`:
+Note that extensions make changes to your file system: they may create temporary files and logs, and they initialise and update a virtual environment. When you run your backend code in a development environment, this will trigger `uvicorn` to reload the server. This takes several seconds. When your extension tries to access the Aqueduct via API, this may result in timeout errors. The best way to avoid this is to disable reloading when you test the extension. For this, edit `./scripts/start_aqueduct_core.py` and set `reload` option to `False`:
 ```python
 #!/usr/bin/env python
 
@@ -301,7 +301,7 @@ yarn start
 
 Note, that to make a frontend and a backend talk to each other, you will need
 to allow browser perform cross-origin resource sharing (CORS).
-This may be done by following
+This might be done by in several ways, it's a quick hack to do so:
 [this FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/cors/).
 Alternatively, you may [disable the whole security check in Chrome](https://medium.com/@beligh.hamdi/run-chrome-browser-without-cors-872747142c61).
 
