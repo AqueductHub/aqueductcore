@@ -413,6 +413,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#debugging-an-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging an Extension
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deploying-an-extension" class="md-nav__link">
     <span class="md-ellipsis">
       Deploying an Extension
@@ -460,6 +469,7 @@
 <li><a href="#what-is-an-extension">What is an Extension</a></li>
 <li><a href="#writing-an-extension">Writing an Extension</a></li>
 <li><a href="#writing-a-manifest-file">Writing a Manifest File</a></li>
+<li><a href="#debugging-an-extension">Debugging an Extension</a></li>
 <li><a href="#deploying-an-extension">Deploying an Extension</a></li>
 <li><a href="#extension-setup">Extension Setup</a></li>
 </ul>
@@ -742,6 +752,30 @@ and they will be installed into a python virtual environment at the first action
 </tbody>
 </table>
 <p>Please, note, that purpose of extensions is to interact with an experiment. They may generate, process or consume the data from the experiment, that is why each extension action MUST have at least one parameter of <code>experiment</code> type.</p>
+<h2 id="debugging-an-extension">Debugging an Extension<a class="headerlink" href="#debugging-an-extension" title="Permanent link">&para;</a></h2>
+<p>To debug an extension code working with the backend, open Aqueduct-core project in <em>Visual Studio Code</em> and use <em>Dev Container</em>. Then your terminal will point to a <code>/workspace</code> directory, which corresponds to a project directory on your native file system.</p>
+<p>The <code>/workspace/external/extensions/</code> is the directory where you would like to put your new extension code. Create a subdirectory and put your artefacts there.</p>
+<p>Note that extensions make changes to your file system: they may create temporary files and logs, and they initialise and update a virtual environment. When you run your backend code in a development environment, this will trigger <code>uvicorn</code> to reload the server. This takes several seconds. When your extension tries to access the Aqueduct via API, this may result in timeout errors. The best way to avoid this is to disable reloading when you test the extension. For this, edit <code>./scripts/start_aqueduct_core.py</code> and set <code>reload</code> option to <code>False</code>:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="ch">#!/usr/bin/env python</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kn">import</span> <span class="nn">uvicorn</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;aqueductcore.backend.main:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>Then you may start backend with the following command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./scripts/start_aqueduct_core.py<span class="w"> </span>
+</span></code></pre></div>
+<p>To start a frontend run the following commands:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">cd</span><span class="w"> </span>aqueductcore/frontend
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>yarn
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>yarn<span class="w"> </span>start
+</span></code></pre></div>
+<p>Note, that to make a frontend and a backend talk to each other, you will need
+to allow browser perform cross-origin resource sharing (CORS).
+This might be done by in several ways, it's a quick hack to do so:
+<a href="https://fastapi.tiangolo.com/tutorial/cors/">this FastAPI tutorial</a>.
+Alternatively, you may <a href="https://groups.google.com/a/chromium.org/g/chromium-discuss/c/Wms-ZaAwA1Q?pli=1">disable the whole security check in Chrome</a>.</p>
 <h2 id="deploying-an-extension">Deploying an Extension<a class="headerlink" href="#deploying-an-extension" title="Permanent link">&para;</a></h2>
 <p>Extensions are directories which could be distributed in the form of archives. When starting the server using Docker, 
 bind mount a host directory to the Aqueduct container. Suggested location is <code>/workspace/external/extensions</code>. This location should be provided in <code>EXTENSIONS_DIR_PATH</code> environment variable.
