@@ -8,6 +8,7 @@ On this page we provide information related to extension development, deployment
 - [What is an Extension](#what-is-an-extension)
 - [Writing an Extension](#writing-an-extension)
 - [Writing a Manifest File](#writing-a-manifest-file)
+- [Debugging an Extension](#debugging-an-extension)
 - [Deploying an Extension](#deploying-an-extension)
 - [Extension Setup](#extension-setup)
 
@@ -267,6 +268,42 @@ Here is the list of available data types:
 | `bool`             | True or False. Passed to an extension action as 0 or 1 |
 
 Please, note, that purpose of extensions is to interact with an experiment. They may generate, process or consume the data from the experiment, that is why each extension action MUST have at least one parameter of `experiment` type.
+
+## Debugging an Extension
+
+To debug an extension code working with the backend, open Aqueduct-core project in _Visual Studio Code_ and use _Dev Container_. Then your terminal will point to a `/workspace` directory, which corresponds to a project directory on your native file system.
+
+The `/workspace/external/extensions/` is the directory where you would like to put your new extension code. Create a subdirectory and put your artefacts there.
+
+Note that extensions make changes to your file system: they may create temporary files and logs, and they initialise and update a virtual environment. When you run your backend code in a development environment, this will trigger `uvicorn` to reload the server. This takes several seconds. When your extension tries to access the Aqueduct via API, this may result in timeout errors. The best way to avoid this is to disable reloading when you test the extension. For this, edit `./scripts/start_aqueduct_core.py` and set `reload` option to `False`:
+```python
+#!/usr/bin/env python
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run("aqueductcore.backend.main:app", host="0.0.0.0", port=8000, reload=False)
+```
+
+Then you may start backend with the following command:
+
+```bash
+./scripts/start_aqueduct_core.py 
+```
+
+To start a frontend run the following commands:
+
+```bash
+cd aqueductcore/frontend
+yarn
+yarn start
+```
+
+Note, that to make a frontend and a backend talk to each other, you will need
+to allow browser perform cross-origin resource sharing (CORS).
+This might be done by in several ways, it's a quick hack to do so:
+[this FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/cors/).
+Alternatively, you may [disable the whole security check in Chrome](https://groups.google.com/a/chromium.org/g/chromium-discuss/c/Wms-ZaAwA1Q?pli=1).
 
 ## Deploying an Extension
 
