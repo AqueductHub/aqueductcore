@@ -303,7 +303,7 @@ Note, that to make a frontend and a backend talk to each other, you will need
 to allow browser perform cross-origin resource sharing (CORS).
 This might be done by in several ways, it's a quick hack to do so:
 [this FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/cors/).
-Alternatively, you may [disable the whole security check in Chrome](https://medium.com/@beligh.hamdi/run-chrome-browser-without-cors-872747142c61).
+Alternatively, you may [disable the whole security check in Chrome](https://groups.google.com/a/chromium.org/g/chromium-discuss/c/Wms-ZaAwA1Q?pli=1).
 
 ## Deploying an Extension
 
