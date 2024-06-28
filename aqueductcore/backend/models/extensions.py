@@ -139,8 +139,9 @@ class ExtensionAction(BaseModel):
         my_env.update({key: str(val) for key, val in (extension.constants or {}).items()})
         my_env.update(params)
         my_env["aqueduct_url"] = extension.aqueduct_url
-        if extension.aqueduct_key is not None:
-            my_env["aqueduct_key"] = extension.aqueduct_key
+        if extension.aqueduct_api_token is not None:
+            my_env["API_TOKEN"] = extension.aqueduct_api_token
+
         cwd = Path.home()
         if extension.manifest_file:
             cwd = Path(extension.manifest_file).parent
@@ -207,7 +208,7 @@ class Extension(BaseModel):
     actions: List[ExtensionAction]
     aqueduct_url: str
     manifest_file: Optional[str] = None
-    aqueduct_key: Optional[str] = None
+    aqueduct_api_token: Optional[str] = None
     constants: Optional[Dict[str, Any]] = None
     _folder: Optional[Path] = None
 
@@ -227,8 +228,7 @@ class Extension(BaseModel):
             extension_as_dict = yaml.safe_load(manifest_stream)
             extension = Extension(**extension_as_dict)
             extension.manifest_file = str(manifest.absolute())
-            # TODO: somehow generate and pass it here
-            extension.aqueduct_key = ""
+            extension.aqueduct_api_token = None
             extension.validate_object()
             extension._folder = path
             return extension

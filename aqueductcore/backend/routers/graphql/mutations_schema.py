@@ -127,6 +127,8 @@ class Mutation:
         dict_params = dict(params)
         context = cast(ServerContext, info.context)
         extension_object = ExtensionsExecutor.get_extension(extension)
+        extension_object.aqueduct_api_token = context.user_info.token
+
         action_object = extension_object.get_action(action)
         exp_parameter = action_object.get_default_experiment_parameter()
         if exp_parameter is None:
