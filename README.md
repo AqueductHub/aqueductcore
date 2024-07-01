@@ -1,7 +1,7 @@
 # Aqueduct
 
 [![Automated release](https://github.com/AqueductHub/aqueductcore/actions/workflows/automated_release.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/automated_release.yaml)
-[![Tests](https://github.com/AqueductHub/aqueductcore/actions/workflows/pull_request.yml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/pull_request.yml)
+[![Tests](https://github.com/AqueductHub/aqueductcore/actions/workflows/static_analysis_and_tests.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/static_analysis_and_tests.yaml)
 [![Development Docker Images](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml)
 [![pages-build-deployment](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment)
 
