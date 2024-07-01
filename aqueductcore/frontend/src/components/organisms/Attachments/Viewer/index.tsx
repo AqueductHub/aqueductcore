@@ -119,6 +119,14 @@ function Viewer({
               type: "JSON",
             });
           });
+        } else if (contentType?.includes("text/html")) {
+          response.text().then(() => {
+            console.log('fileURL', fileURL)
+            setInfo({
+              data: fileURL,
+              type: "HTML",
+            });
+          });
         } else if (contentType?.includes("text/x-markdown")) {
           response.text().then((data) => {
             setInfo({
@@ -174,6 +182,11 @@ function Viewer({
         info?.type === "JSON" ? (
           <SpecialFilePreview>
             <ReactJson src={info.data} theme={theme.palette.mode === 'dark' ? 'bright' : 'bright:inverted'} />
+          </SpecialFilePreview>
+          /* HTML */
+        ) : info?.type === "HTML" ? (
+          <SpecialFilePreview>
+            {info && <iframe style={{ height: 'inherit', width: "100%", border: 'none' }} src={String(info.data)} />}
           </SpecialFilePreview>
           /* MARKDOWN */
         ) : info?.type === "MARKDOWN" ? (
