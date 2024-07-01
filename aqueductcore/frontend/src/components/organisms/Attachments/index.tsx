@@ -29,12 +29,12 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
   function handleExperimentFileUpload(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       const file = e.target?.files[0]
-      const fileURL = file ? `${AQD_FILE_URI}/api/files/${experimentUuid}` : "";
+      const uploadFileEndpoint = file ? `${AQD_FILE_URI}/api/files/${experimentUuid}` : "";
 
       const data = new FormData();
       data.append('file', file);
 
-      fetch(fileURL, {
+      fetch(uploadFileEndpoint, {
         method: 'POST',
         headers: {
           file_name: file.name
