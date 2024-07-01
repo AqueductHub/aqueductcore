@@ -1,5 +1,10 @@
 # Aqueduct
 
+[![Automated release](https://github.com/AqueductHub/aqueductcore/actions/workflows/automated_release.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/automated_release.yaml)
+[![Tests](https://github.com/AqueductHub/aqueductcore/actions/workflows/pull_request.yml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/pull_request.yml)
+[![Development Docker Images](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml)
+[![pages-build-deployment](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment)
+
 Aqueduct is the open platform that simplifies quantum experiment management.
 
 Intuitive automation and administration features enable you to
