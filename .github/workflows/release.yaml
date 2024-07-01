@@ -65,7 +65,7 @@ jobs:
 
       - name: Update CHANGELOG.md file.
         run: |
-          sed -i -e "0,/## Latest Changes/s//## ${{ inputs.version }}/" CHANGELOG.md
+          sed -i -e "0,/## Latest Changes/s//## Latest Changes\n\n## ${{ inputs.version }}/" CHANGELOG.md
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
