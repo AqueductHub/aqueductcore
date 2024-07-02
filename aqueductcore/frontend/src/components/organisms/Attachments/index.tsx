@@ -2,14 +2,12 @@
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
 import { Grid, Typography, styled } from "@mui/material";
 import { ChangeEvent, useContext } from "react";
-import toast from "react-hot-toast";
 
 import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon";
 import { VisuallyHiddenInput } from "components/atoms/sharedStyledComponents/VisuallyHiddenInput";
+import { ExperimentDataType, ExperimentFileType } from "types/globalTypes";
 import { FileSelectStateContext } from "context/FileSelectProvider";
-import { ExperimentFileType } from "types/globalTypes";
-import { client } from "API/apolloClientConfig";
-import { AQD_FILE_URI } from "constants/api";
+import useFileUpload from "hooks/useUploadFile";
 import Explorer from "./Explorer";
 import Viewer from "./Viewer";
 
@@ -19,62 +17,20 @@ margin-top: ${(props) => `${props.theme.spacing(1.5)}`};
 `;
 
 interface AttachmentProps {
-  experimentUuid: ExperimentFileType[];
+  experimentUuid: ExperimentDataType['uuid'];
   experimentFiles: ExperimentFileType[];
 }
 
 function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
   const { selectedFile, setSelectedFile } = useContext(FileSelectStateContext)
-
-  function handleExperimentFileUpload(e: ChangeEvent<HTMLInputElement>) {
+  const { handleExperimentFileUpload } = useFileUpload(experimentUuid)
+  function handleChangeFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
-      const file = e.target?.files[0]
-      const uploadFileEndpoint = file ? `${AQD_FILE_URI}/api/files/${experimentUuid}` : "";
-
-      const data = new FormData();
-      data.append('file', file);
-
-      fetch(uploadFileEndpoint, {
-        method: 'POST',
-        headers: {
-          file_name: file.name
-        },
-        body: data
+      [...e.target.files].forEach(file => {
+        handleExperimentFileUpload(file)
       })
-        .then((response) => {
-          const status = response.status
-          const statusText = response.statusText
-          // SUCCESS
-          if (status === 200) {
-            response.json().then(async (data) => {
-              await client.refetchQueries({
-                include: "active",
-              });
-              // ! file.name is fronm client! might cause issues,
-              // TODO: it should be in the response.
-              setSelectedFile(file.name)
-              toast.success(data.result ?? "File uploaded successfully!", {
-                id: "upload_success",
-              });
-            })
-            // Response failure message
-          } else {
-            response.json().then((error) => {
-              toast.error(error.detail ?? statusText, {
-                id: "upload_failed",
-              });
-            })
-              // No failure message
-              .catch(() => {
-                toast.error(statusText, {
-                  id: "upload_catch",
-                });
-              });
-          }
-        })
     }
   }
-
   return (
     <>
       <SectionTitle sx={{ mt: 3 }}>Attachment</SectionTitle>
@@ -90,7 +46,7 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             startIcon={<UploadFileOutlinedIcon />}
           >
             File upload
-            <VisuallyHiddenInput type="file" onChange={handleExperimentFileUpload} />
+            <VisuallyHiddenInput type="file" multiple onChange={handleChangeFile} />
           </BorderedButtonWithIcon>
         </Grid>
         {/* <Grid item>
@@ -113,6 +69,7 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             files={experimentFiles}
             handleSelectFile={setSelectedFile}
             selectedItem={selectedFile}
+            handleExperimentFileUpload={handleExperimentFileUpload}
           />
         </Grid>
         <Grid item xs={12} lg={6}>

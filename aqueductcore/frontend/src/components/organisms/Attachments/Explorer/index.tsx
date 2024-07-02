@@ -3,11 +3,11 @@ import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
 import { Box, TableSortLabel, styled } from "@mui/material";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import TableContainer from "@mui/material/TableContainer";
+import { DragEvent, useMemo, useState } from "react";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { useMemo, useState } from "react";
 import Table from "@mui/material/Table";
 
 import { FileSelectContextType, SortOrder, selectedFileType } from "types/componentTypes";
@@ -70,10 +70,12 @@ function Explorer({
   files,
   handleSelectFile,
   selectedItem,
+  handleExperimentFileUpload
 }: {
   files: ExperimentFileType[];
   handleSelectFile: FileSelectContextType['setSelectedFile'];
   selectedItem: selectedFileType;
+  handleExperimentFileUpload?: (file: File) => void
 }) {
   const [order, setOrder] = useState<SortOrder>('desc');
   const [orderBy, setOrderBy] = useState<keyof ExperimentFileType>('modifiedAt');
@@ -112,48 +114,82 @@ function Explorer({
     [files, order, orderBy],
   );
 
+  function dropHandler(ev: DragEvent<HTMLDivElement>) {
+    if (!handleExperimentFileUpload) return;
+    dragLeaveHandler(ev)
+    ev.preventDefault();
+    if (ev?.dataTransfer) {
+      if (ev.dataTransfer?.items) {
+        [...ev.dataTransfer.items].forEach((item) => {
+          if (item.kind === "file") {
+            const file = item.getAsFile();
+            if (file) {
+              handleExperimentFileUpload(file)
+            }
+          }
+        });
+      } else {
+        [...ev.dataTransfer.files].forEach((file) => {
+          handleExperimentFileUpload(file)
+        });
+      }
+    }
+  }
+
+  function dragOverHandler(ev: DragEvent<HTMLDivElement>) {
+    if (!handleExperimentFileUpload) return;
+    ev.preventDefault();
+    ev.currentTarget.style.background = "rgba(0, 0, 0, 0.08)"
+  }
+
+  function dragLeaveHandler(ev: DragEvent<HTMLDivElement>) {
+    ev.currentTarget.style.background = "inherit"
+  }
+
   return (
     <ExplorerBox>
-      <TableContainer
-        sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
-      >
-        <Table stickyHeader>
-          <ExplorerTableHead>
-            <TableRow>
-              {headCells.map((headCell) => (
-                <HeaderCell
-                  key={headCell.id}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === headCell.id}
-                    direction={orderBy === headCell.id ? order : 'asc'}
-                    onClick={createSortHandler(headCell.id)}
+      <div onDrop={dropHandler} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler}>
+        <TableContainer
+          sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
+        >
+          <Table stickyHeader>
+            <ExplorerTableHead>
+              <TableRow>
+                {headCells.map((headCell) => (
+                  <HeaderCell
+                    key={headCell.id}
+                    sortDirection={orderBy === headCell.id ? order : false}
                   >
-                    {headCell.label}
-                  </TableSortLabel>
-                </HeaderCell>
-              ))}
-            </TableRow>
-          </ExplorerTableHead>
-          <TableBody>
-            {visibleRows.map((row, index) => (
-              <TableRow
-                hover={selectedItem !== index}
-                key={row.name}
-                onClick={() => handleSelectFile(String(row.name))}
-                selected={selectedItem === row.name}
-              >
-                <FileNameCell>
-                  {getFileIcon(String(row.name))}
-                  {row.name}
-                </FileNameCell>
-                <DateAddedCell>{dateFormatter(new Date(row.modifiedAt))}</DateAddedCell>
+                    <TableSortLabel
+                      active={orderBy === headCell.id}
+                      direction={orderBy === headCell.id ? order : 'asc'}
+                      onClick={createSortHandler(headCell.id)}
+                    >
+                      {headCell.label}
+                    </TableSortLabel>
+                  </HeaderCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </ExplorerTableHead>
+            <TableBody>
+              {visibleRows.map((row, index) => (
+                <TableRow
+                  hover={selectedItem !== index}
+                  key={row.name}
+                  onClick={() => handleSelectFile(String(row.name))}
+                  selected={selectedItem === row.name}
+                >
+                  <FileNameCell>
+                    {getFileIcon(String(row.name))}
+                    {row.name}
+                  </FileNameCell>
+                  <DateAddedCell>{dateFormatter(new Date(row.modifiedAt))}</DateAddedCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </ExplorerBox>
   );
 }
