@@ -6,13 +6,13 @@ import {
 
 function DrawerLayout({ children, handleUpload }: PropsWithChildren<{ handleUpload?: (file: File) => void }>) {
     const theme = useTheme();
-    function dropHandler(ev: DragEvent<HTMLDivElement>) {
+    function dropHandler(e: DragEvent<HTMLDivElement>) {
         if (!handleUpload) return;
-        dragLeaveHandler(ev)
-        ev.preventDefault();
-        if (ev?.dataTransfer) {
-            if (ev.dataTransfer?.items) {
-                [...ev.dataTransfer.items].forEach((item) => {
+        dragLeaveHandler(e)
+        e.preventDefault();
+        if (e?.dataTransfer) {
+            if (e.dataTransfer?.items) {
+                [...e.dataTransfer.items].forEach((item) => {
                     if (item.kind === "file") {
                         const file = item.getAsFile();
                         if (file) {
@@ -20,22 +20,18 @@ function DrawerLayout({ children, handleUpload }: PropsWithChildren<{ handleUplo
                         }
                     }
                 });
-            } else {
-                [...ev.dataTransfer.files].forEach((file) => {
-                    handleUpload(file)
-                });
             }
         }
     }
 
-    function dragOverHandler(ev: DragEvent<HTMLDivElement>) {
+    function dragOverHandler(e: DragEvent<HTMLDivElement>) {
         if (!handleUpload) return;
-        ev.preventDefault();
-        ev.currentTarget.style.background = theme.palette.action.selected
+        e.preventDefault();
+        e.currentTarget.style.background = theme.palette.action.selected
     }
 
-    function dragLeaveHandler(ev: DragEvent<HTMLDivElement>) {
-        ev.currentTarget.style.background = "inherit"
+    function dragLeaveHandler(e: DragEvent<HTMLDivElement>) {
+        e.currentTarget.style.background = "inherit"
     }
     return (
         <div
