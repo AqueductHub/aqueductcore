@@ -53,6 +53,12 @@ function useFileUpload(experimentUuid: ExperimentDataType['uuid']) {
                         });
                 }
             })
+            // Somethings went wrong with the file
+            .catch((error) => {
+                toast.error(error.message ?? "Unable to upload file.", {
+                    id: "file_catch",
+                });
+            });
     }
     return { handleExperimentFileUpload }
 }

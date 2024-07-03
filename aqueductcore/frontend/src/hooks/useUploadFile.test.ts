@@ -92,3 +92,18 @@ test('should handle failed file upload without error message', async () => {
         id: 'upload_catch',
     });
 });
+
+test('should handle fetch failure', async () => {
+    const mockError = new Error('Network Error');
+    (fetch as jest.Mock).mockRejectedValue(mockError);
+
+    const { result } = renderHook(() => useFileUpload('test-uuid'));
+
+    await act(async () => {
+        result.current.handleExperimentFileUpload(new File(['dummy content'], 'test.txt', { type: 'text/plain' }));
+    });
+
+    expect(toast.error).toHaveBeenCalledWith('Network Error', {
+        id: 'file_catch',
+    });
+});
