@@ -12,6 +12,7 @@ import Table from "@mui/material/Table";
 
 import { FileSelectContextType, SortOrder, selectedFileType } from "types/componentTypes";
 import { getComparator, stableSort } from "helper/functions";
+import UploadZone from "components/templates/UploadFileZone";
 import { ExperimentFileType } from "types/globalTypes";
 import { dateFormatter } from "helper/formatters";
 
@@ -70,10 +71,12 @@ function Explorer({
   files,
   handleSelectFile,
   selectedItem,
+  handleExperimentFileUpload
 }: {
   files: ExperimentFileType[];
   handleSelectFile: FileSelectContextType['setSelectedFile'];
   selectedItem: selectedFileType;
+  handleExperimentFileUpload?: (file: File) => void
 }) {
   const [order, setOrder] = useState<SortOrder>('desc');
   const [orderBy, setOrderBy] = useState<keyof ExperimentFileType>('modifiedAt');
@@ -114,46 +117,48 @@ function Explorer({
 
   return (
     <ExplorerBox>
-      <TableContainer
-        sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
-      >
-        <Table stickyHeader>
-          <ExplorerTableHead>
-            <TableRow>
-              {headCells.map((headCell) => (
-                <HeaderCell
-                  key={headCell.id}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === headCell.id}
-                    direction={orderBy === headCell.id ? order : 'asc'}
-                    onClick={createSortHandler(headCell.id)}
+      <UploadZone handleUpload={handleExperimentFileUpload}>
+        <TableContainer
+          sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
+        >
+          <Table stickyHeader>
+            <ExplorerTableHead>
+              <TableRow>
+                {headCells.map((headCell) => (
+                  <HeaderCell
+                    key={headCell.id}
+                    sortDirection={orderBy === headCell.id ? order : false}
                   >
-                    {headCell.label}
-                  </TableSortLabel>
-                </HeaderCell>
-              ))}
-            </TableRow>
-          </ExplorerTableHead>
-          <TableBody>
-            {visibleRows.map((row, index) => (
-              <TableRow
-                hover={selectedItem !== index}
-                key={row.name}
-                onClick={() => handleSelectFile(String(row.name))}
-                selected={selectedItem === row.name}
-              >
-                <FileNameCell>
-                  {getFileIcon(String(row.name))}
-                  {row.name}
-                </FileNameCell>
-                <DateAddedCell>{dateFormatter(new Date(row.modifiedAt))}</DateAddedCell>
+                    <TableSortLabel
+                      active={orderBy === headCell.id}
+                      direction={orderBy === headCell.id ? order : 'asc'}
+                      onClick={createSortHandler(headCell.id)}
+                    >
+                      {headCell.label}
+                    </TableSortLabel>
+                  </HeaderCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </ExplorerTableHead>
+            <TableBody>
+              {visibleRows.map((row, index) => (
+                <TableRow
+                  hover={selectedItem !== index}
+                  key={row.name}
+                  onClick={() => handleSelectFile(String(row.name))}
+                  selected={selectedItem === row.name}
+                >
+                  <FileNameCell>
+                    {getFileIcon(String(row.name))}
+                    {row.name}
+                  </FileNameCell>
+                  <DateAddedCell>{dateFormatter(new Date(row.modifiedAt))}</DateAddedCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </UploadZone>
     </ExplorerBox>
   );
 }
