@@ -3,15 +3,16 @@ import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
 import { Box, TableSortLabel, styled } from "@mui/material";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import TableContainer from "@mui/material/TableContainer";
-import { DragEvent, useMemo, useState } from "react";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useMemo, useState } from "react";
 import Table from "@mui/material/Table";
 
 import { FileSelectContextType, SortOrder, selectedFileType } from "types/componentTypes";
 import { getComparator, stableSort } from "helper/functions";
+import UploadZone from "components/templates/UploadFileZone";
 import { ExperimentFileType } from "types/globalTypes";
 import { dateFormatter } from "helper/formatters";
 
@@ -114,41 +115,9 @@ function Explorer({
     [files, order, orderBy],
   );
 
-  function dropHandler(ev: DragEvent<HTMLDivElement>) {
-    if (!handleExperimentFileUpload) return;
-    dragLeaveHandler(ev)
-    ev.preventDefault();
-    if (ev?.dataTransfer) {
-      if (ev.dataTransfer?.items) {
-        [...ev.dataTransfer.items].forEach((item) => {
-          if (item.kind === "file") {
-            const file = item.getAsFile();
-            if (file) {
-              handleExperimentFileUpload(file)
-            }
-          }
-        });
-      } else {
-        [...ev.dataTransfer.files].forEach((file) => {
-          handleExperimentFileUpload(file)
-        });
-      }
-    }
-  }
-
-  function dragOverHandler(ev: DragEvent<HTMLDivElement>) {
-    if (!handleExperimentFileUpload) return;
-    ev.preventDefault();
-    ev.currentTarget.style.background = "rgba(0, 0, 0, 0.08)"
-  }
-
-  function dragLeaveHandler(ev: DragEvent<HTMLDivElement>) {
-    ev.currentTarget.style.background = "inherit"
-  }
-
   return (
     <ExplorerBox>
-      <div onDrop={dropHandler} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler}>
+      <UploadZone handleUpload={handleExperimentFileUpload}>
         <TableContainer
           sx={{ boxShadow: "none", borderRadius: "8px 8px 0 0", maxHeight: 540, height: 540 }}
         >
@@ -189,7 +158,7 @@ function Explorer({
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </UploadZone>
     </ExplorerBox>
   );
 }
