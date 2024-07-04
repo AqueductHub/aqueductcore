@@ -17,7 +17,7 @@ const HiddenRadio = styled(Radio)`
     display: none;
 `;
 
-const ActionHeader = styled(Grid, {shouldForwardProp: (prop) => prop !== "$isselected"})<{$isselected: boolean}>`
+const ActionHeader = styled(Grid, { shouldForwardProp: (prop) => prop !== "$isselected" }) <{ $isselected: boolean }>`
     padding: 0 ${(props) => props.theme.spacing(1.5)};
     background-color: ${({ theme, $isselected }) => $isselected ? theme.palette.primary.main : theme.palette.background.default};
     border-bottom: 1px solid ${({ theme }) => theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[300]};
@@ -52,8 +52,8 @@ const ActionDescription = styled(Typography)`
     padding: ${(props) => props.theme.spacing(0.75)} ${(props) => props.theme.spacing(1.5)};
     background-color: ${(props) =>
         props.theme.palette.mode === "dark"
-        ? props.theme.palette.background.card
-        : props.theme.palette.common.white};
+            ? props.theme.palette.background.card
+            : props.theme.palette.common.white};
     border-radius: 0 0 ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
 `;
 
