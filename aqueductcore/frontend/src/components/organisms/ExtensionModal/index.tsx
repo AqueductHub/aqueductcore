@@ -35,9 +35,9 @@ const ModalContainer = styled(Box)`
 
 const ModalHeader = styled(Grid)`
     background-color: ${(props) =>
-    props.theme.palette.mode === "dark"
-      ? props.theme.palette.common.black
-      : props.theme.palette.grey[300]};
+        props.theme.palette.mode === "dark"
+            ? props.theme.palette.common.black
+            : props.theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1)} 0 0;
     line-height: 3.25rem;
     border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
@@ -76,9 +76,9 @@ const ModalOptionsGrid = styled(Grid)`
     height: 620px;
     background-color: ${({ theme }) => theme.palette.grey[200]};
     background-color: ${(props) =>
-    props.theme.palette.mode === "dark"
-      ? props.theme.palette.grey[900]
-      : props.theme.palette.grey[200]};
+        props.theme.palette.mode === "dark"
+            ? props.theme.palette.grey[900]
+            : props.theme.palette.grey[200]};
     border-right: 1px solid rgba(0,0,0,0.3);
     padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
 `;
@@ -89,9 +89,9 @@ const RunExtension = styled(Button)`
 
 const ModalStepGrid = styled(Grid)`
     background-color: ${(props) =>
-    props.theme.palette.mode === "dark"
-      ? props.theme.palette.background.card
-      : props.theme.palette.common.white};
+        props.theme.palette.mode === "dark"
+            ? props.theme.palette.background.card
+            : props.theme.palette.common.white};
     height: 620px;
     position: relative;
 `;

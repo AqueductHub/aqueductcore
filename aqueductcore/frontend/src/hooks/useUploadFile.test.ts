@@ -50,8 +50,8 @@ test('should handle successful file upload', async () => {
         include: 'active',
     });
     expect(setSelectedFileMock).toHaveBeenCalledWith('test.txt');
-    expect(toast.success).toHaveBeenCalledWith('Upload success!', {
-        id: 'upload_success',
+    expect(toast.success).toHaveBeenCalledWith('Upload success!' ?? 'File uploaded successfully!', {
+        id: 'upload_success' + 'test.txt',
     });
 });
 
@@ -69,9 +69,12 @@ test('should handle failed file upload with error message', async () => {
         result.current.handleExperimentFileUpload(new File(['dummy content'], 'test.txt', { type: 'text/plain' }));
     });
 
-    expect(toast.error).toHaveBeenCalledWith('Upload failed!', {
-        id: 'upload_failed',
-    });
+    expect(toast.error).toHaveBeenCalledWith(
+        `file name: "test.txt"\nUpload failed!`,
+        {
+            id: 'upload_failedtest.txt',
+        }
+    );
 });
 
 test('should handle failed file upload without error message', async () => {
@@ -88,7 +91,28 @@ test('should handle failed file upload without error message', async () => {
         result.current.handleExperimentFileUpload(new File(['dummy content'], 'test.txt', { type: 'text/plain' }));
     });
 
-    expect(toast.error).toHaveBeenCalledWith('Bad Request', {
-        id: 'upload_catch',
+    expect(toast.error).toHaveBeenCalledWith(
+        `file name: "test.txt"\nBad Request`,
+        {
+            id: 'upload_catchtest.txt',
+        }
+    );
+});
+
+test('should handle fetch failure', async () => {
+    const mockError = new Error('Network Error');
+    (fetch as jest.Mock).mockRejectedValue(mockError);
+
+    const { result } = renderHook(() => useFileUpload('test-uuid'));
+
+    await act(async () => {
+        result.current.handleExperimentFileUpload(new File(['dummy content'], 'test.txt', { type: 'text/plain' }));
     });
+
+    expect(toast.error).toHaveBeenCalledWith(
+        `file name: "test.txt"\nNetwork Error`,
+        {
+            id: 'file_catchtest.txt',
+        }
+    );
 });

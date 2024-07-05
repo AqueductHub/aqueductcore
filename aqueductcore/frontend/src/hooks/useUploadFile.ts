@@ -35,24 +35,30 @@ function useFileUpload(experimentUuid: ExperimentDataType['uuid']) {
                         // TODO: it should be in the response.
                         setSelectedFile(file.name)
                         toast.success(data.result ?? "File uploaded successfully!", {
-                            id: "upload_success",
+                            id: "upload_success" + file.name,
                         });
                     })
                     // Response failure message
                 } else {
                     response.json().then((error) => {
-                        toast.error(error.detail ?? statusText, {
-                            id: "upload_failed",
+                        toast.error(`file name: "${file.name}"\n` + (error.detail ?? statusText), {
+                            id: "upload_failed" + file.name,
                         });
                     })
                         // No failure message
                         .catch(() => {
-                            toast.error(statusText, {
-                                id: "upload_catch",
+                            toast.error(`file name: "${file.name}"\n` + statusText, {
+                                id: "upload_catch" + file.name,
                             });
                         });
                 }
             })
+            // Somethings went wrong with the file
+            .catch((error) => {
+                toast.error(`file name: "${file.name}"\n` + (error.message ?? `Unable to upload file.`), {
+                    id: "file_catch" + file.name,
+                });
+            });
     }
     return { handleExperimentFileUpload }
 }
