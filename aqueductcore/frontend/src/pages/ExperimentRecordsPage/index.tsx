@@ -1,9 +1,10 @@
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { LinearProgress, Stack, Typography, styled } from "@mui/material";
-import { useLocation, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
 import { useGetAllExperiments } from "API/graphql/queries/experiment/getAllExperiments";
+import { useCreateExperiment } from "API/graphql/mutations/experiment/createExperiment";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";
@@ -222,9 +223,22 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     setRowsPerPage(experimentRecordsRowsPerPageOptions[0]);
     setPage(0);
   };
+  const { mutate } = useCreateExperiment()
+  const navigate = useNavigate()
 
   const handleCreateNewExperiment = () => {
-    console.log('create new exp')
+    mutate({
+      variables: {
+        title: '',
+        description: '',
+        tags: []
+      },
+      onCompleted(data) {
+        navigate(`/aqd/experiments/${data.createExperiment.eid}`, {
+          state: { from: 'create_new_exp' },
+        })
+      }
+    })
   }
 
   if (error) return <Error message={error.message} />;
