@@ -3,5 +3,8 @@ export const ApolloOptions = {
         ExperimentData: {
             keyFields: ["uuid"],
         },
+        ExperimentFile: {
+            keyFields: ["name"],
+        }
     },
 };
