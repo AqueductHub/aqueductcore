@@ -204,7 +204,7 @@ async def upload_experiment_file(
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})
 
 
-@router.delete("/{experiment_uuid}/")
+@router.delete("/{experiment_uuid}")
 async def remove_experiment_file(
     request: Request,
     experiment_uuid: UUID,
@@ -212,15 +212,21 @@ async def remove_experiment_file(
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
-    file_names = request.headers.get("file_names")
+    file_names = request.headers.get("file_names").split(",")
     if file_names is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filenames header is missing."
         )
 
+    if len(file_names) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Filenames header is empty."
+        )
+
     try:
         # check if experiment exists with the specified UUID, otherwise raises an exception.
-        pathvalidate.validate_filename(file_name) for file_name in file_names
+        for file_name in file_names:
+            pathvalidate.validate_filename(file_name)
 
         await get_experiment_by_uuid(
             user_info=context.user_info,
@@ -247,7 +253,7 @@ async def remove_experiment_file(
         if invalid_file_names:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Files {invalid_file_names} as invalid",
+                detail=f"Files {','.join(invalid_file_names)} are invalid !"
             )
             
         for file_name in file_names:
@@ -260,4 +266,6 @@ async def remove_experiment_file(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({"result": f"Successfully removed {file_name}"})
+    return JSONResponse({
+        "result": f"Successfully removed {','.join(invalid_file_names)}"
+    })
