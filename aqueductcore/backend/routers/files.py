@@ -17,6 +17,7 @@ from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
+from aqueductcore.backend.services.utils import arr_humanize
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
@@ -205,22 +206,30 @@ async def upload_experiment_file(
 
 
 @router.delete("/{experiment_uuid}")
-async def remove_experiment_file(
+async def remove_experiment_files(
     request: Request,
     experiment_uuid: UUID,
     context: Annotated[ServerContext, Depends(context_dependency)],
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
-    file_name = request.headers.get("file_name")
-
-    if file_name is None:
+    request_body = await request.json()
+    file_list = set(request_body.get('file_list'))
+    if not file_list:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filename header is missing."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File list missing from request body",
+        )
+
+    if file_list is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="File list is missing from the request body."
         )
 
     try:
-        pathvalidate.validate_filename(file_name)
+        for file_name in file_list:
+            pathvalidate.validate_filename(file_name)
 
         await get_experiment_by_uuid(
             user_info=context.user_info,
@@ -231,11 +240,22 @@ async def remove_experiment_file(
             str(settings.experiments_dir_path), experiment_uuid
         )
 
-        # validate if folder exists for the experient
         if not os.path.exists(experiment_dir):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No files were found for this experiment",
+            )
+
+        invalid_files = []
+        for file_name in file_list:
+            abs_file_path = os.path.join(experiment_dir, file_name)
+            if not os.path.exists(abs_file_path) or not os.path.isfile(abs_file_path):
+                invalid_files.append(file_name)
+
+        if invalid_files:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid file names {arr_humanize(invalid_files)}"
             )
 
         dest_file_path = os.path.join(experiment_dir, file_name)
@@ -258,4 +278,4 @@ async def remove_experiment_file(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({"result": f"Successfully deleted {file_name}"})
+    return JSONResponse({"result": f"Successfully deleted {arr_humanize(file_list)}"})

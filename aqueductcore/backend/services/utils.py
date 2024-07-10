@@ -73,3 +73,14 @@ def is_tag_valid(tag: str) -> bool:
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
+
+
+def arr_humanize(arr: list[str | int]) -> str:
+    """Convert list of strings to a single string separated by commas"""
+    if len(arr) == 1:
+        return arr[0]
+
+    if len(arr) == 2:
+        return arr[-2] + " and " + arr[-1]
+
+    return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
