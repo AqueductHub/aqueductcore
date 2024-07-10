@@ -234,6 +234,11 @@ async def remove_experiment_files(
             detail="File list can not be empty."
         )
 
+    if len(file_names) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Filenames header is empty."
+        )
+
     try:
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
