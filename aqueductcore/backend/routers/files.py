@@ -234,9 +234,9 @@ async def remove_experiment_files(
             detail="File list can not be empty."
         )
 
-    if len(file_names) == 0:
+    if file_name is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Filenames header is empty."
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filename header is missing."
         )
 
     try:
