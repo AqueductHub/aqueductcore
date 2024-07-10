@@ -238,14 +238,14 @@ async def remove_experiment_file(
                 detail="No files were found for this experiment",
             )
 
-            dest_file_path = os.path.join(experiment_dir, file_name)
-            if os.path.exists(dest_file_path) and os.path.isfile(dest_file_path):
-                os.remove(dest_file_path)
-            else:            
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Files {','.join(invalid_file_names)} are invalid !"
-                )
+        dest_file_path = os.path.join(experiment_dir, file_name)
+        if os.path.exists(dest_file_path) and os.path.isfile(dest_file_path):
+            os.remove(dest_file_path)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File {file_name} is invalid !"
+            )
 
     except AQDDBExperimentNonExisting as error:
         raise HTTPException(
