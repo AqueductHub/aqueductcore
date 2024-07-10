@@ -36,11 +36,7 @@ export function ExperimentTitleUpdate({
 
   const titleField = useRef<HTMLInputElement>(null);
   const debounced = useDebouncedCallback<string>(handleExperimentTitleUpdate, DEBOUNCE_DELAY);
-
-  const handleClickAway = () => {
-    setEditTitleStatus(false)
-    navigate(".", { replace: true });
-  };
+  const handleClickAway = () => setEditTitleStatus(false);
   const handleTitleUpdate = () => {
     setEditTitleStatus(true);
     setTimeout(() => {
@@ -55,10 +51,11 @@ export function ExperimentTitleUpdate({
   // Handle Just created experiment title being focused
   useEffect(() => {
     const isItJustCreated = location?.state && location.state?.from === 'create_new_exp';
-    const isItEmptyTitle = internalExperimentTitle === ''
-    if (isItJustCreated && isItEmptyTitle) {
+    if (isItJustCreated) {
       handleTitleUpdate()
     }
+    // remove location.state
+    navigate(".", { replace: true });
   }, [])
 
   useEffect(() => {

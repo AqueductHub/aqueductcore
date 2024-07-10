@@ -229,7 +229,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   const handleCreateNewExperiment = () => {
     mutate({
       variables: {
-        title: '',
+        title: 'New Experiment',
         description: '',
         tags: []
       },
