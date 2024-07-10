@@ -236,7 +236,14 @@ async def remove_experiment_files(
 
     if file_name is None:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filename header is missing."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File list missing from request body",
+        )
+
+    if file_list is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="File list is missing from the request body."
         )
 
     try:
