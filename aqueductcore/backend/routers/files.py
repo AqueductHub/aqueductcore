@@ -212,21 +212,15 @@ async def remove_experiment_file(
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
-    file_names = request.headers.get("file_names").split(",")
-    if file_names is None:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filenames header is missing."
-        )
+    file_name = request.headers.get("file_name")
 
-    if len(file_names) == 0:
+    if file_name is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Filenames header is empty."
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Filename header is missing."
         )
 
     try:
-        # check if experiment exists with the specified UUID, otherwise raises an exception.
-        for file_name in file_names:
-            pathvalidate.validate_filename(file_name)
+        pathvalidate.validate_filename(file_name)
 
         await get_experiment_by_uuid(
             user_info=context.user_info,
@@ -244,28 +238,24 @@ async def remove_experiment_file(
                 detail="No files were found for this experiment",
             )
 
-        invalid_file_names = []
-        for file_name in file_names:
-            abs_file_path = os.path.join(experiment_dir, file_name)
-            if not os.path.exists(abs_file_path) or not os.path.isfile(abs_file_path):
-                invalid_file_names.append(file_name)
-        
-        if invalid_file_names:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Files {','.join(invalid_file_names)} are invalid !"
-            )
-            
-        for file_name in file_names:
-            abs_file_path = os.path.join(experiment_dir, file_name)
-            os.remove(abs_file_path)
+            dest_file_path = os.path.join(experiment_dir, file_name)
+            if os.path.exists(dest_file_path) and os.path.isfile(dest_file_path):
+                os.remove(dest_file_path)
+            else:            
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Files {','.join(invalid_file_names)} are invalid !"
+                )
 
+    except AQDDBExperimentNonExisting as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The specified experiment was not found.",
+        ) from error
     except pathvalidate.ValidationError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({
-        "result": f"Successfully removed {','.join(invalid_file_names)}"
-    })
+    return JSONResponse({"result": f"Successfully deleted {file_name}"})
