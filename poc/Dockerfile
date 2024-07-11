@@ -24,4 +24,3 @@ ENV     HOST=${HOST:-host.docker.internal}
 CMD     rabbitmq-server -detached ; \
             sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// flower --port=5555 & \
             sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A aqueductcore.backend.services.task_executor worker --loglevel=INFO
-            
