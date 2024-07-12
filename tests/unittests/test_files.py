@@ -422,3 +422,167 @@ async def test_file_upload_invalid_filename(
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "Invalid file name." in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_file_delete_successful(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    experiment_file_name = "test_delete_file.zip"
+    experiment_dir = build_experiment_dir_absolute_path(
+        str(settings.experiments_dir_path), db_experiment.uuid
+    )
+    os.makedirs(experiment_dir, exist_ok=True)
+    file_path = os.path.join(experiment_dir, experiment_file_name)
+    with open(file_path, "wb") as file_writer:
+        file_writer.write(os.urandom(settings.upload_max_file_size_KB * BYTES_IN_KB))
+
+    request_body = {"file_list": [experiment_file_name]}
+    response = client.request(
+        "DELETE",
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"result": f"Successfully deleted {experiment_file_name}"}
+    assert not os.path.exists(file_path)
+
+@pytest.mark.asyncio
+async def test_file_delete_invalid_experiment_uuid(
+    client: TestClient,
+    db_session: AsyncSession,
+):
+    request_body = {"file_list": ["test_delete_file.zip"]}
+
+    response = client.request(
+        "DELETE",
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(uuid4())}",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "The specified experiment was not found."}
+
+
+@pytest.mark.asyncio
+async def test_file_delete_missing_file_list(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    response = client.request(
+        "DELETE",
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+        json={},
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "File list missing from request body" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_file_delete_invalid_filename(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    invalid_filename = 'fi:l*e/p"a?t>h|.t<xt'
+    request_body = {"file_list": [invalid_filename]}
+
+    response = client.request(
+        "DELETE",
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {"detail": "Invalid file names."}
+
+
+@pytest.mark.asyncio
+async def test_file_delete_non_existing_file(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    non_existing_file = "non_existing_file.zip"
+    request_body = {"file_list": [non_existing_file]}
+
+    response = client.request(
+        "DELETE",
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {"detail": f"Invalid file names {non_existing_file}"}

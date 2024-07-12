@@ -77,10 +77,14 @@ def is_tag_valid(tag: str) -> bool:
 
 def arr_humanize(arr: list[str | int]) -> str:
     """Convert list of strings to a single string separated by commas"""
+    arr = [str(value) for value in arr]
     if len(arr) == 1:
         return arr[0]
 
     if len(arr) == 2:
         return arr[-2] + " and " + arr[-1]
 
-    return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
+    if len(arr) > 2:
+        return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
+
+    return ""

@@ -214,12 +214,13 @@ async def remove_experiment_files(
     """Router for deleting file from an experiment"""
 
     request_body = await request.json()
-    file_list = set(request_body.get('file_list'))
+    file_list = request_body.get('file_list')
     if not file_list:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File list missing from request body",
         )
+    file_list = list(set(file_list))
 
     if file_list is None:
         raise HTTPException(
@@ -231,6 +232,7 @@ async def remove_experiment_files(
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
 
+        # check the experiment exists before deleting a file from it
         await get_experiment_by_uuid(
             user_info=context.user_info,
             db_session=context.db_session,
