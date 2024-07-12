@@ -239,6 +239,7 @@ async def remove_experiment_files(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File list missing from request body",
         )
+    file_list = list(set(file_list))
 
     if file_list is None:
         raise HTTPException(
