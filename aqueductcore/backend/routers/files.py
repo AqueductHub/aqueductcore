@@ -24,6 +24,9 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
 )
+from aqueductcore.backend.errors import (
+    AQDPermission,
+)
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
@@ -206,6 +209,7 @@ async def upload_experiment_file(
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})
 
 
+# pylint: disable=too-many-return-statements,too-many-branches
 @router.post("/{experiment_uuid}/delete_files")
 async def remove_experiment_files(
     request: Request,
@@ -241,8 +245,10 @@ async def remove_experiment_files(
 
         if UserScope.EXPERIMENT_DELETE_ALL not in context.user_info.scopes:
             if UserScope.EXPERIMENT_DELETE_OWN not in context.user_info.scopes:
-                raise AQDPermission("The user doesn't have permission to delete files from experiment")
-            
+                raise AQDPermission(
+                    "The user doesn't have permission to delete files from experiment"
+                )
+
             if experiment.created_by != context.user_info.uuid:
                 raise AQDDBExperimentNonExisting(
                     "The user doesn't have permission to delete files from this experiment."
