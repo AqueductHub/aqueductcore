@@ -17,8 +17,9 @@ from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
-from aqueductcore.backend.services.utils import arr_humanize
+from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
+from aqueductcore.backend.context import UserScope
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
@@ -205,7 +206,7 @@ async def upload_experiment_file(
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})
 
 
-@router.delete("/{experiment_uuid}")
+@router.post("/{experiment_uuid}/delete_files")
 async def remove_experiment_files(
     request: Request,
     experiment_uuid: UUID,
@@ -232,12 +233,21 @@ async def remove_experiment_files(
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
 
-        # check the experiment exists before deleting a file from it
-        await get_experiment_by_uuid(
+        experiment = await get_experiment_by_uuid(
             user_info=context.user_info,
             db_session=context.db_session,
             experiment_uuid=experiment_uuid,
         )
+
+        if UserScope.EXPERIMENT_DELETE_ALL not in context.user_info.scopes:
+            if UserScope.EXPERIMENT_DELETE_OWN not in context.user_info.scopes:
+                raise AQDPermission("The user doesn't have permission to delete files from experiment")
+            
+            if experiment.created_by != context.user_info.uuid:
+                raise AQDDBExperimentNonExisting(
+                    "The user doesn't have permission to delete files from this experiment."
+                )
+
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment_uuid
         )
@@ -257,7 +267,7 @@ async def remove_experiment_files(
         if invalid_files:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid file names {arr_humanize(invalid_files)}"
+                detail=f"File(s) not found - {format_list_human_readable(invalid_files)}"
             )
 
         dest_file_path = os.path.join(experiment_dir, file_name)
@@ -280,4 +290,4 @@ async def remove_experiment_files(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({"result": f"Successfully deleted {arr_humanize(file_list)}"})
+    return JSONResponse({"result": f"Successfully deleted {format_list_human_readable(file_list)}"})

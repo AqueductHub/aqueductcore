@@ -458,9 +458,8 @@ async def test_file_delete_successful(
         file_writer.write(os.urandom(settings.upload_max_file_size_KB * BYTES_IN_KB))
 
     request_body = {"file_list": [experiment_file_name]}
-    response = client.request(
-        "DELETE",
-        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json=request_body,
     )
     assert response.status_code == status.HTTP_200_OK
@@ -474,9 +473,8 @@ async def test_file_delete_invalid_experiment_uuid(
 ):
     request_body = {"file_list": ["test_delete_file.zip"]}
 
-    response = client.request(
-        "DELETE",
-        f"{settings.api_prefix}{settings.files_route_prefix}/{str(uuid4())}",
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(uuid4())}/delete_files",
         json=request_body,
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -507,9 +505,8 @@ async def test_file_delete_missing_file_list(
 
     app.dependency_overrides[context_dependency] = override_context_dependency
 
-    response = client.request(
-        "DELETE",
-        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json={},
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -543,9 +540,8 @@ async def test_file_delete_invalid_filename(
     invalid_filename = 'fi:l*e/p"a?t>h|.t<xt'
     request_body = {"file_list": [invalid_filename]}
 
-    response = client.request(
-        "DELETE",
-        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json=request_body,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -579,10 +575,9 @@ async def test_file_delete_non_existing_file(
     non_existing_file = "non_existing_file.zip"
     request_body = {"file_list": [non_existing_file]}
 
-    response = client.request(
-        "DELETE",
-        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}",
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json=request_body,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": f"Invalid file names {non_existing_file}"}
+    assert response.json() == {"detail": f"File(s) not found - {non_existing_file}"}

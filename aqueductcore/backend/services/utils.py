@@ -75,7 +75,7 @@ def is_tag_valid(tag: str) -> bool:
     return bool(regex.match(tag))
 
 
-def arr_humanize(arr: List[Union[str, int]]) -> str:
+def format_list_human_readable(arr: List[Union[str, int]]) -> str:
     """Convert list of strings to a single string separated by commas"""
     arr = [str(value) for value in arr]
     if len(arr) == 1:

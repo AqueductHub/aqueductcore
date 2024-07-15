@@ -1,30 +1,30 @@
 import pytest
 
-from aqueductcore.backend.services.utils import arr_humanize, is_tag_valid
+from aqueductcore.backend.services.utils import format_list_human_readable, is_tag_valid
 
 
 def test_single_element():
-    assert arr_humanize(['apple']) == 'apple'
+    assert format_list_human_readable(['apple']) == 'apple'
 
 
 def test_two_elements():
-    assert arr_humanize(['apple', 'banana']) == 'apple and banana'
+    assert format_list_human_readable(['apple', 'banana']) == 'apple and banana'
 
 
 def test_three_elements():
-    assert arr_humanize(['apple', 'banana', 'cherry']) == 'apple, banana and cherry'
+    assert format_list_human_readable(['apple', 'banana', 'cherry']) == 'apple, banana and cherry'
 
 
 def test_empty_list():
-    assert arr_humanize([]) == ''
+    assert format_list_human_readable([]) == ''
 
 
 def test_mixed_data_types():
-    assert arr_humanize(['apple', 2, 'banana']) == 'apple, 2 and banana'
+    assert format_list_human_readable(['apple', 2, 'banana']) == 'apple, 2 and banana'
 
 
 def test_non_string_elements():
-    assert arr_humanize([1, 2, 3]) == '1, 2 and 3'
+    assert format_list_human_readable([1, 2, 3]) == '1, 2 and 3'
 
 
 def test_valid_tag_alphanumeric():
