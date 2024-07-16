@@ -209,7 +209,7 @@ async def upload_experiment_file(
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})
 
 
-# pylint: disable=too-many-return-statements,too-many-branches
+# pylint: disable=too-many-return-statements,too-many-branches, unused-argument
 @router.post("/{experiment_uuid}/delete_files")
 async def remove_experiment_files(
     request: Request,
