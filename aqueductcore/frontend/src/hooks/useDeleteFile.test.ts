@@ -33,8 +33,8 @@ test('should handle successful file deletion', async () => {
         result.current.handleExperimentFileDelete('test.txt');
     });
 
-    expect(fetch).toHaveBeenCalledWith(`${AQD_FILE_URI}/api/files/test-uuid`, {
-        method: 'DELETE',
+    expect(fetch).toHaveBeenCalledWith(`${AQD_FILE_URI}/api/files/test-uuid/delete_files`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },

@@ -6,7 +6,7 @@ import { AQD_FILE_URI } from "constants/api";
 function useFileDelete(experimentUuid: ExperimentDataType['uuid']) {
 
     function handleExperimentFileDelete(file_name: string) {
-        const deleteFileEndpoint = file_name ? `${AQD_FILE_URI}/api/files/${experimentUuid}` : "";
+        const deleteFileEndpoint = file_name ? `${AQD_FILE_URI}/api/files/${experimentUuid}/delete_files` : "";
 
         if (!deleteFileEndpoint) {
             toast.error(`Invalid file name: "${file_name}"`, {
@@ -21,7 +21,7 @@ function useFileDelete(experimentUuid: ExperimentDataType['uuid']) {
         const file_list = JSON.stringify(request_body);
 
         fetch(deleteFileEndpoint, {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
