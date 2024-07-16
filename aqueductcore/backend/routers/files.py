@@ -219,15 +219,8 @@ async def remove_experiment_files(
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
-    file_list = file_list.file_list
+    file_list = list(set(file_list.file_list))
     if not file_list:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File list missing from request body",
-        )
-    file_list = list(set(file_list))
-
-    if file_list is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File list can not be empty."
@@ -276,14 +269,9 @@ async def remove_experiment_files(
                 detail=f"File(s) not found - {format_list_human_readable(invalid_files)}"
             )
 
-        dest_file_path = os.path.join(experiment_dir, file_name)
-        if os.path.exists(dest_file_path) and os.path.isfile(dest_file_path):
+        for file_name in file_list:
+            dest_file_path = os.path.join(experiment_dir, file_name)
             os.remove(dest_file_path)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"File {file_name} is invalid!"
-            )
 
     except AQDDBExperimentNonExisting as error:
         raise HTTPException(
