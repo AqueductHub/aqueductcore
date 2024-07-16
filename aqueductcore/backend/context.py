@@ -1,7 +1,7 @@
 """Server context management module."""
 
 from enum import Enum
-from typing import AsyncGenerator, Optional, Set
+from typing import AsyncGenerator, Optional, Set, List
 from uuid import UUID
 
 from fastapi import Depends
@@ -42,6 +42,12 @@ class ServerContext(BaseContext):
         super().__init__()
         self.db_session = db_session
         self.user_info = user_info
+
+
+class FileList(BaseModel):
+    """List of file names."""
+
+    file_list: List[str]
 
 
 async def get_current_user() -> UserInfo:

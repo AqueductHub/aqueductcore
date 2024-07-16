@@ -509,8 +509,9 @@ async def test_file_delete_missing_file_list(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json={},
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert "File list missing from request body" in response.json()["detail"]
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "file_list" in response.json()["detail"][0]["loc"]
+    assert "Field required" == response.json()["detail"][0]["msg"]
 
 
 @pytest.mark.asyncio
