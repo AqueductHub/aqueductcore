@@ -511,7 +511,7 @@ async def test_file_delete_multiple_files_successful(
         json=request_body,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"result": f"Successfully deleted {format_list_human_readable(experiment_file_names)}"}
+    assert response.json() == {"result": f"Successfully deleted {format_list_human_readable(sorted(experiment_file_names))}"}
     for experiment_file_name in experiment_file_names:
         file_path = os.path.join(experiment_dir, experiment_file_name)
         assert not os.path.exists(file_path)
