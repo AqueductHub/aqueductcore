@@ -50,6 +50,12 @@ class ServerContext(BaseContext):
         self.user_info = user_info
 
 
+class DeleteFileRequestBody(BaseModel):
+    """List of file names."""
+
+    file_list: List[str]
+
+
 async def get_current_user() -> UserInfo:
     """Get the current user based on the provided authentication token."""
     token_data = UserInfo(

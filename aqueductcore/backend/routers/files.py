@@ -14,14 +14,18 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.context import (
+    ServerContext,
+    UserScope,
+    DeleteFileRequestBody,
+    context_dependency
+)
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
 from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
-from aqueductcore.backend.context import UserScope, FileList
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
