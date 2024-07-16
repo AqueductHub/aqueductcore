@@ -14,7 +14,7 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.context import ServerContext, FileList, context_dependency
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
@@ -243,8 +243,8 @@ async def remove_experiment_files(
 
     if file_list is None:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="File list is missing from the request body."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File list can not be empty."
         )
 
     try:
