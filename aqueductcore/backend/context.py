@@ -35,6 +35,12 @@ class UserInfo(BaseModel):
     token: Optional[str] = None
 
 
+class FileList(BaseModel):
+    """List of file names."""
+
+    file_list: List[str]
+
+
 class ServerContext(BaseContext):
     """Server context class."""
 

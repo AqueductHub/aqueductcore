@@ -21,7 +21,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
-from aqueductcore.backend.context import UserScope
+from aqueductcore.backend.context import UserScope, FileList
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
