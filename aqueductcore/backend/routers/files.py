@@ -2,9 +2,11 @@
 
 import os
 from tempfile import TemporaryDirectory
+from typing import List
 from uuid import UUID
 
 import pathvalidate
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import FileResponse, JSONResponse
 from streaming_form_data import StreamingFormDataParser
@@ -17,14 +19,25 @@ from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
+from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
+from aqueductcore.backend.context import UserScope
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
 )
+from aqueductcore.backend.errors import (
+    AQDPermission,
+)
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
+
+
+class DeleteFileRequestBody(BaseModel):
+    """List of file names."""
+
+    file_list: List[str]
 
 
 @router.get("/{experiment_uuid}/{file_name}")
@@ -202,3 +215,81 @@ async def upload_experiment_file(
         ) from error
 
     return JSONResponse({"result": f"Successfuly uploaded {file_name}"})
+
+
+# pylint: disable=too-many-return-statements,too-many-branches, unused-argument
+@router.post("/{experiment_uuid}/delete_files")
+async def remove_experiment_files(
+    request: Request,
+    experiment_uuid: UUID,
+    context: Annotated[ServerContext, Depends(context_dependency)],
+    body: DeleteFileRequestBody
+) -> JSONResponse:
+    """Router for deleting file from an experiment"""
+
+    file_list = list(set(body.file_list))
+    if not file_list:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File list can not be empty."
+        )
+
+    try:
+        for file_name in file_list:
+            pathvalidate.validate_filename(file_name)
+
+        experiment = await get_experiment_by_uuid(
+            user_info=context.user_info,
+            db_session=context.db_session,
+            experiment_uuid=experiment_uuid,
+        )
+
+        if UserScope.EXPERIMENT_DELETE_ALL not in context.user_info.scopes:
+            if UserScope.EXPERIMENT_DELETE_OWN not in context.user_info.scopes:
+                raise AQDPermission(
+                    "The user doesn't have permission to delete files from experiment"
+                )
+
+            if experiment.created_by != context.user_info.uuid:
+                raise AQDDBExperimentNonExisting(
+                    "The user doesn't have permission to delete files from this experiment."
+                )
+
+        experiment_dir = build_experiment_dir_absolute_path(
+            str(settings.experiments_dir_path), experiment_uuid
+        )
+
+        if not os.path.exists(experiment_dir):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No files were found for this experiment",
+            )
+
+        invalid_files = []
+        for file_name in file_list:
+            abs_file_path = os.path.join(experiment_dir, file_name)
+            if not os.path.exists(abs_file_path) or not os.path.isfile(abs_file_path):
+                invalid_files.append(file_name)
+
+        if invalid_files:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File(s) not found - {format_list_human_readable(invalid_files)}"
+            )
+
+        for file_name in file_list:
+            dest_file_path = os.path.join(experiment_dir, file_name)
+            os.remove(dest_file_path)
+
+    except AQDDBExperimentNonExisting as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The specified experiment was not found.",
+        ) from error
+    except pathvalidate.ValidationError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file names.",
+        ) from error
+
+    return JSONResponse({"result": f"Successfully deleted {format_list_human_readable(file_list)}"})
