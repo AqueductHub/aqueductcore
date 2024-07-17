@@ -31,6 +31,10 @@ const ModalContainer = styled(Box)`
     width: 1080px;
     box-shadow: 24;
     border-radius: ${(props) => props.theme.spacing(1)};
+    background-color: ${(props) =>
+        props.theme.palette.mode === "dark"
+            ? props.theme.palette.background.card
+            : props.theme.palette.common.white};
 `;
 
 const ModalHeader = styled(Grid)`
@@ -73,34 +77,36 @@ const AuthorName = styled(Typography)`
 `;
 
 const ModalOptionsGrid = styled(Grid)`
-    height: 620px;
-    background-color: ${({ theme }) => theme.palette.grey[200]};
+    height: inherit;
+    overflow: hidden;
     background-color: ${(props) =>
         props.theme.palette.mode === "dark"
             ? props.theme.palette.grey[900]
             : props.theme.palette.grey[200]};
     border-right: 1px solid rgba(0,0,0,0.3);
-    padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
 `;
 
 const RunExtension = styled(Button)`
     background-color: ${(props) => props.theme.palette.primary.main};
 `;
 
-const ModalStepGrid = styled(Grid)`
-    background-color: ${(props) =>
-        props.theme.palette.mode === "dark"
-            ? props.theme.palette.background.card
-            : props.theme.palette.common.white};
-    height: 620px;
+const ModalMain = styled(Grid)`
+    height: 560px;
+`;
+
+const ModalInputsGrid = styled(Grid)`
+    height: inherit;
+    overflow-y: auto;
     position: relative;
 `;
 
 const ModalFooter = styled(Box)`
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     width: 100%;
+    height: ${(props) => props.theme.spacing(9)};
     border-top: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
     padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
 `;
@@ -126,7 +132,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         )
     }, [selectedExtension, selectedAction])
 
-    const isExtensionExexutable = inputParams?.every(param => param.value);
+    const isExtensionExecutable = inputParams?.every(param => param.value);
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
@@ -190,33 +196,39 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                         <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
                     </Grid>
                 </ModalHeader>
-                <Grid container>
+                <ModalMain container>
                     <ModalOptionsGrid item xs={4}>
-                        <ExtensionActions
-                            extension={selectedExtensionItem}
-                            selectedAction={selectedAction}
-                            updateSelectedAction={updateSelectedActionHandler}
-                        />
+                        {/* left-side: Actions */}
+                        {selectedExtensionItem?.actions.length ?
+                            <ExtensionActions
+                                extension={selectedExtensionItem}
+                                selectedAction={selectedAction}
+                                updateSelectedAction={updateSelectedActionHandler}
+                            /> : null}
                     </ModalOptionsGrid>
-                    {inputParams ? <ModalStepGrid item xs={8}>
-                        <ActionForm selectedAction={selectedAction} inputParams={inputParams} setInputParams={setInputParams} />
-                    </ModalStepGrid> : null}
-                    <ModalFooter>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
-                            <RunExtension
-                                variant="contained"
-                                onClick={() => handleExecuteExtension()}
-                                title='run_extension'
-                                disabled={!isExtensionExexutable}
-                            >
-                                Run Extension
-                            </RunExtension>
-                        </Box>
-                    </ModalFooter>
-                </Grid>
+                    <ModalInputsGrid item xs={8}>
+                        {/* right-side: Inputs */}
+                        {inputParams ?
+                            <ActionForm
+                                selectedAction={selectedAction}
+                                inputParams={inputParams}
+                                setInputParams={setInputParams}
+                            /> : null}
+                    </ModalInputsGrid>
+                </ModalMain>
+                <ModalFooter>
+                    {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
+                    <RunExtension
+                        variant="contained"
+                        onClick={() => handleExecuteExtension()}
+                        title='run_extension'
+                        disabled={!isExtensionExecutable}
+                    >
+                        Run Extension
+                    </RunExtension>
+                </ModalFooter>
             </ModalContainer>
-        </Modal>
+        </Modal >
     )
 }
 
