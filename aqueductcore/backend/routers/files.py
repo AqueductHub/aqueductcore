@@ -2,9 +2,11 @@
 
 import os
 from tempfile import TemporaryDirectory
+from typing import List
 from uuid import UUID
 
 import pathvalidate
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import FileResponse, JSONResponse
 from streaming_form_data import StreamingFormDataParser
@@ -12,7 +14,7 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import ServerContext, FileList, context_dependency
+from aqueductcore.backend.context import ServerContext, context_dependency
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
@@ -30,6 +32,12 @@ from aqueductcore.backend.errors import (
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
+
+
+class DeleteFileRequestBody(BaseModel):
+    """List of file names."""
+
+    file_list: List[str]
 
 
 @router.get("/{experiment_uuid}/{file_name}")
@@ -215,11 +223,11 @@ async def remove_experiment_files(
     request: Request,
     experiment_uuid: UUID,
     context: Annotated[ServerContext, Depends(context_dependency)],
-    file_list: FileList
+    body: DeleteFileRequestBody
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
-    file_list = list(set(file_list.file_list))
+    file_list = list(set(body.file_list))
     if not file_list:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
