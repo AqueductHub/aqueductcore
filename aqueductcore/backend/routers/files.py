@@ -14,18 +14,14 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import (
-    ServerContext,
-    UserScope,
-    DeleteFileRequestBody,
-    context_dependency
-)
+from aqueductcore.backend.context import ServerContext, context_dependency
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
 )
 from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
+from aqueductcore.backend.context import UserScope
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
@@ -238,19 +234,6 @@ async def remove_experiment_files(
             detail="File list can not be empty."
         )
 
-    if file_name is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File list missing from request body",
-        )
-    file_list = list(set(file_list))
-
-    if file_list is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File list can not be empty."
-        )
-
     try:
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
@@ -309,6 +292,4 @@ async def remove_experiment_files(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({
-        "result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"
-    })
+    return JSONResponse({"result": f"Successfully deleted {format_list_human_readable(file_list)}"})
