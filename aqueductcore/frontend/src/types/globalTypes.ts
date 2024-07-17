@@ -112,6 +112,9 @@ export type REMOVE_TAG_FROM_EXPERIMENT_TYPE = {
 export type REMOVE_EXPERIMENT_TYPE = {
   uuid: ExperimentDataType["uuid"];
 }
+export type CREATE_EXPERIMENT_TYPE = {
+  eid: ExperimentDataType["eid"];
+}
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
   returnCode: ExtensionExecutionResult['returnCode']

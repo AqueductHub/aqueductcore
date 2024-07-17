@@ -12,6 +12,15 @@ export function useRemoveExperiment() {
   const [mutate, { loading, data, error }] = useMutation<{
     removeExperiment: REMOVE_EXPERIMENT_TYPE;
   }>(REMOVE_EXPERIMENT, {
+    update(cache) {
+      cache.modify({
+        fields: {
+          experiment({ DELETE }) {
+            return DELETE;
+          },
+        },
+      })
+    },
     onError(error) {
       console.log("Remove experiment failed", error);
     },

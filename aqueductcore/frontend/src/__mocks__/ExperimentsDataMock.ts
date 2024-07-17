@@ -240,4 +240,15 @@ export const ExperimentsDataMock: ExperimentAllFieldsDataType[] = [
   },
 ];
 
+export const createdNewExperiment = {
+  uuid: "020bbd7f-43a8-4f4e-996b-1cdaebc398dd",
+  eid: "20221111-16",
+  title: "New Experiment",
+  description: "",
+  tags: [],
+  createdAt: "2022-11-23T00:00:00+00:00",
+  createdBy: "admin",
+  files: [],
+}
+
 export const sample_eid = ExperimentsDataMock[0].eid;

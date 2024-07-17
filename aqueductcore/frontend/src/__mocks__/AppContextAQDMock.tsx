@@ -19,6 +19,7 @@ import { getExperimentFiles_mock } from "__mocks__/queries/experiment/getExperim
 import { getAllExperiments_mock } from "__mocks__/queries/experiment/getAllExperimentsMock";
 import { removeExperiment_mock } from "__mocks__/mutations/experiment/removeExperimentMock";
 import { updateExperiment_mock } from "__mocks__/mutations/experiment/updateExperimentMock";
+import { createExperiment_mock } from "__mocks__/mutations/experiment/createExperimentMock";
 import { getAllExtensions_mock } from "__mocks__/queries/extension/getAllExtensionsMock";
 import { getExperiment_mock } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { executeExtension_mock } from "__mocks__/mutations/extension/executeExtension";
@@ -40,6 +41,7 @@ interface AppContextAQDMockProps {
   getExperiment_mockMockMode?: keyof typeof getExperiment_mock;
   addTagToExperiment_mockMockMode?: keyof typeof addTagToExperiment_mock;
   removeTagFromExperiment_mockMockMode?: keyof typeof removeTagFromExperiment_mock;
+  createExperiment_mockMockMode?: keyof typeof createExperiment_mock;
   //Users
   getUserInformation_mockMockMode?: keyof typeof getUserInformation_mock;
   //Extensions
@@ -66,6 +68,7 @@ function AppContextAQDMock({
   getExperiment_mockMockMode = "success",
   addTagToExperiment_mockMockMode = "success",
   removeTagFromExperiment_mockMockMode = "success",
+  createExperiment_mockMockMode = "success",
   //Users
   getUserInformation_mockMockMode = "success",
   //Extensions
@@ -120,6 +123,7 @@ function AppContextAQDMock({
     ...getExperiment_mock[getExperiment_mockMockMode],
     ...addTagToExperiment_mock[addTagToExperiment_mockMockMode],
     ...removeTagFromExperiment_mock[removeTagFromExperiment_mockMockMode],
+    ...createExperiment_mock[createExperiment_mockMockMode],
     // Users
     ...getUserInformation_mock[getUserInformation_mockMockMode],
     //Extensions

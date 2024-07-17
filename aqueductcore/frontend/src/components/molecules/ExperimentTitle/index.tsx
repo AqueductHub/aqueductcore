@@ -1,6 +1,7 @@
 import { Button, ClickAwayListener, Grid, TextField, Typography, styled } from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import useDebouncedCallback from "hooks/useDebounceCallBack";
 import { DEBOUNCE_DELAY } from "constants/constants";
@@ -16,8 +17,6 @@ const ExperimentName = styled(Typography)`
   line-height: ${(props) => `${props.theme.spacing(4)}`};
 `;
 
-const ExperimentNameTitleField = styled(TextField)``;
-
 interface ExperimentTitleProps {
   handleExperimentTitleUpdate: (value: string) => void;
   experimentTitle: string;
@@ -32,13 +31,14 @@ export function ExperimentTitleUpdate({
   const [editNameStatus, setEditTitleStatus] = useState(false);
   const [inputWidth, setInputWidth] = useState<string | number>("auto");
   const [internalExperimentTitle, setInternalExperimentTitle] = useState<string>(experimentTitle);
+  const location = useLocation();
+  const navigate = useNavigate()
 
   const titleField = useRef<HTMLInputElement>(null);
   const debounced = useDebouncedCallback<string>(handleExperimentTitleUpdate, DEBOUNCE_DELAY);
-
   const handleClickAway = () => setEditTitleStatus(false);
   const handleTitleUpdate = () => {
-    setEditTitleStatus(!editNameStatus);
+    setEditTitleStatus(true);
     setTimeout(() => {
       titleField.current?.focus();
       titleField.current?.setSelectionRange(
@@ -47,6 +47,16 @@ export function ExperimentTitleUpdate({
       );
     }, 0);
   };
+
+  // Handle Just created experiment title being focused
+  useEffect(() => {
+    const isItJustCreated = location?.state && location.state?.from === 'create_new_exp';
+    if (isItJustCreated) {
+      handleTitleUpdate()
+    }
+    // remove location.state
+    navigate(".", { replace: true });
+  }, [])
 
   useEffect(() => {
     if (titleField.current) {
@@ -80,12 +90,13 @@ export function ExperimentTitleUpdate({
       <Grid item>
         {editNameStatus ? (
           <ClickAwayListener onClickAway={handleClickAway}>
-            <ExperimentNameTitleField
+            <TextField
               variant="standard"
               margin="none"
               value={internalExperimentTitle}
               fullWidth
               onChange={handleExperimentTitleUpdateInternal}
+              onSubmit={handleClickAway}
               inputRef={titleField}
               sx={{
                 py: 0,
