@@ -137,6 +137,10 @@ Read this section if you want to set up the project as a contributor.
      ```
    4. `yarn start`.
    5. The UI should be up and running on `localhost:3000`.
+   6. You will also need static frontend files. They are generates with `./scripts/build_frontend.sh`.
+   7. Also, as backend and frontend use different ports (8000 and 3000 respectively), you will need to disable
+      security checks for CORS (cross-origin resource sharing). On a MacOS+Chrome you may launch an instance of
+      chrome with security switched off: `open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security`
 
 You can use this script to install all the required packages:
 
