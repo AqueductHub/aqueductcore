@@ -226,7 +226,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   const { mutate } = useCreateExperiment()
   const navigate = useNavigate()
 
-  const handleCreatecreatedNewExperiment = () => {
+  const handleCreateNewExperiment = () => {
     mutate({
       variables: {
         title: 'New Experiment',
@@ -246,9 +246,9 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     <Container>
       <Title>{handlePageName(location.pathname)}</Title>
       {/* //Guides would be added here */}
-      <Stack direction='row' justifyContent="space-between">
+      <Stack direction='row' justifyContent="space-between" alignItems="center">
         <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
-        <AddButton title="Create New Experiment" onClick={handleCreatecreatedNewExperiment} />
+        <AddButton title="Create New Experiment" onClick={handleCreateNewExperiment} />
       </Stack>
       <Box sx={{ mt: 2 }}>
         {loading ? <LinearProgress /> :
