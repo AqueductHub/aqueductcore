@@ -426,7 +426,7 @@ async def test_file_upload_invalid_filename(
 
 
 @pytest.mark.asyncio
-async def test_file_delete_successful(
+async def test_file_delete_single_file_successful(
     client: TestClient,
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
