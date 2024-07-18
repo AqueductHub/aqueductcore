@@ -1,13 +1,15 @@
-import { LinearProgress, Typography, styled } from "@mui/material";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { LinearProgress, Stack, Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
 import { useGetAllExperiments } from "API/graphql/queries/experiment/getAllExperiments";
+import { useCreateExperiment } from "API/graphql/mutations/experiment/createExperiment";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentsListTable from "components/organisms/ExperimentsListTable";
 import useFilterExperimentsByTag from "hooks/useFilterExperimentsByTag";
 import FilterExperiments from "components/organisms/FilterExperiments";
+import { AddButton } from "components/atoms/AddButton";
 import { useDidUpdateEffect } from "helper/functions";
 import { Error } from "components/atoms/Error";
 import {
@@ -203,7 +205,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
   };
 
   const emptyListErrorMessage = (pageUrl: string) => {
-    switch(pageUrl) {
+    switch (pageUrl) {
       case "/aqd/experiments/favourites":
         return "No favourited experiment records found";
       case "/aqd/experiments/archived":
@@ -221,13 +223,33 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     setRowsPerPage(experimentRecordsRowsPerPageOptions[0]);
     setPage(0);
   };
+  const { mutate } = useCreateExperiment()
+  const navigate = useNavigate()
+
+  const handleCreateNewExperiment = () => {
+    mutate({
+      variables: {
+        title: 'New Experiment',
+        description: '',
+        tags: []
+      },
+      onCompleted(data) {
+        navigate(`/aqd/experiments/${data.createExperiment.eid}`, {
+          state: { from: 'create_new_exp' },
+        })
+      }
+    })
+  }
 
   if (error) return <Error message={error.message} />;
   return (
     <Container>
       <Title>{handlePageName(location.pathname)}</Title>
       {/* //Guides would be added here */}
-      <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
+      <Stack direction='row' justifyContent="space-between" alignItems="center">
+        <FilterExperiments filters={filters} setFilters={setFilters} handleResetPagination={handleResetPagination} />
+        <AddButton title="Create New Experiment" onClick={handleCreateNewExperiment} />
+      </Stack>
       <Box sx={{ mt: 2 }}>
         {loading ? <LinearProgress /> :
           processedExperimentData && pageInfo.count ? (
@@ -240,7 +262,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
               experimentList={processedExperimentData}
               pageInfo={pageInfo}
               maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
-            /> ) :
+            />) :
             <NoExperimentsMessage>{emptyListErrorMessage(location.pathname)}</NoExperimentsMessage>
         }
       </Box>

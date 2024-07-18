@@ -1,12 +1,14 @@
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Route, Routes } from "react-router-dom";
 
 import { filterByThisTitle } from "__mocks__/queries/experiment/getAllExperimentsWithNameFilterMock";
 import { filterByThisTag } from "__mocks__/queries/experiment/getAllExperimentsWithTagFilterMock";
 import { ARCHIVED, experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { ExperimentsDataMock, createdNewExperiment } from "__mocks__/ExperimentsDataMock";
 import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
-import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
+import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 
 // Experiment table
@@ -176,3 +178,50 @@ test("experiment table to keep the URL updated with filters - Search title", asy
 });
 
 //todo: start and end date with the URL
+
+// Create new experiment
+test("add new experiment button", () => {
+  const { getByTitle } = render(
+    <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess">
+      <Routes>
+        <Route path="/" element={<ExperimentRecordsPage />} />
+        <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
+      </Routes>
+    </AppContextAQDMock >)
+  const newExp = getByTitle("Create New Experiment")
+  expect(newExp).toBeInTheDocument()
+});
+
+test("redirect to experiment detailed title being selected", async () => {
+  const { getByTitle, findByText } = render(
+    <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess">
+      <Routes>
+        <Route path="/" element={<ExperimentRecordsPage />} />
+        <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
+      </Routes>
+    </AppContextAQDMock >)
+
+  const newExp = getByTitle("Create New Experiment")
+  userEvent.click(newExp)
+
+  //Right experiment's been chosen
+  const eid = await findByText(createdNewExperiment.eid)
+  expect(eid).toBeInTheDocument()
+});
+
+test("title being selected when new experiment is created", async () => {
+  const { getByTitle, findByTitle } = render(
+    <AppContextAQDMock getUserInformation_mockMockMode="viewOnlyAccess">
+      <Routes>
+        <Route path="/" element={<ExperimentRecordsPage />} />
+        <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
+      </Routes>
+    </AppContextAQDMock >)
+
+  const newExp = getByTitle("Create New Experiment")
+  userEvent.click(newExp)
+
+  //Title is focused
+  const editExpTitle = findByTitle("Edit experiment title")
+  expect(await editExpTitle).toHaveFocus()
+});

@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from re import compile as recompile
-from typing import Tuple
+from typing import Tuple, List, Union
 from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
@@ -73,3 +73,18 @@ def is_tag_valid(tag: str) -> bool:
     regex = recompile(pattern)
 
     return bool(regex.match(tag))
+
+
+def format_list_human_readable(arr: List[Union[str, int]]) -> str:
+    """Convert list of strings to a single string separated by commas"""
+    arr = [str(value) for value in arr]
+    if len(arr) == 1:
+        return arr[0]
+
+    if len(arr) == 2:
+        return arr[-2] + " and " + arr[-1]
+
+    if len(arr) > 2:
+        return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
+
+    return ""

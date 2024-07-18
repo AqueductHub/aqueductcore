@@ -121,7 +121,6 @@ function Viewer({
           });
         } else if (contentType?.includes("text/html")) {
           response.text().then(() => {
-            console.log('fileURL', fileURL)
             setInfo({
               data: fileURL,
               type: "HTML",
