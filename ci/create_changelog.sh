@@ -63,5 +63,5 @@ fi
 
 cd $PROJECT_ROOT
 
-echo "## $repo $tag Changes" >> $output
+echo "## $tag Changes" >> $output
 echo "$changelog" >> $output
