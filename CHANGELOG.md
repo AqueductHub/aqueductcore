@@ -1,7 +1,3 @@
-# Release Notes
-
-## Latest Changes
-
 ## 0.2.0
 
 - feat(extension): Add execution functionality in the UI by @safeamiiir in https://github.com/AqueductHub/aqueductcore/pull/134
