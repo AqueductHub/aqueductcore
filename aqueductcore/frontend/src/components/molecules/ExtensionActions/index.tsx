@@ -1,7 +1,15 @@
 import { Box, FormControl, FormControlLabel, Grid, Radio, RadioGroup, Typography, styled } from "@mui/material"
+import Markdown from "react-markdown";
 import { useEffect } from "react";
 
 import { ExtensionActionType, ExtensionType } from "types/globalTypes";
+import LinkRenderer from "components/atoms/LinkRenderer";
+
+const Container = styled(Box)`
+    height: inherit;
+    padding: ${(props) => props.theme.spacing(2.5)} ${(props) => props.theme.spacing(3)};
+    overflow-y: auto;
+`;
 
 const ExtensionActionBox = styled(Box)`
     width: 100%;
@@ -18,15 +26,18 @@ const HiddenRadio = styled(Radio)`
 `;
 
 const ActionHeader = styled(Grid, { shouldForwardProp: (prop) => prop !== "$isselected" }) <{ $isselected: boolean }>`
-    padding: 0 ${(props) => props.theme.spacing(1.5)};
+    padding: ${(props) => props.theme.spacing(1)};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: ${({ theme, $isselected }) => $isselected ? theme.palette.primary.main : theme.palette.background.default};
     border-bottom: 1px solid ${({ theme }) => theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)} 0 0;
-    &:after{clear: both;display: block;content: '';}
 `;
 
 const ActionsFormControl = styled(FormControl)`
     width: 100%;
+    overflow-y: auto;
     .MuiFormControlLabel-root {
         width: 100%;
         display: block;
@@ -38,7 +49,6 @@ const ActionsFormControl = styled(FormControl)`
 const ActionName = styled(Typography)`
     font-size: 0.9rem;
     font-weight: bold;
-    line-height: 2.37rem;
     float: left;
 `;
 
@@ -47,8 +57,9 @@ const ActionCheckbox = styled(Box)`
     line-height: 2.37rem;
 `;
 
-const ActionDescription = styled(Typography)`
+const ActionDescription = styled(Box)`
     font-size: 0.8rem;
+    overflow-wrap: break-word;
     padding: ${(props) => props.theme.spacing(0.75)} ${(props) => props.theme.spacing(1.5)};
     background-color: ${(props) =>
         props.theme.palette.mode === "dark"
@@ -81,7 +92,7 @@ function ExtensionActions({
     }, [])
 
     return (
-        <>
+        <Container>
             <ExtensionDescription>{extension?.description}</ExtensionDescription>
             <ActionsFormControl>
                 <RadioGroup
@@ -107,7 +118,9 @@ function ExtensionActions({
                                         </ActionCheckbox>
                                     </ActionHeader>
                                     <ActionDescription>
-                                        {ActionInfo.description}
+                                        <Markdown components={{ a: LinkRenderer }} >
+                                            {ActionInfo.description}
+                                        </Markdown>
                                     </ActionDescription>
                                 </ExtensionActionBox>
                             }
@@ -115,7 +128,7 @@ function ExtensionActions({
                     ))}
                 </RadioGroup>
             </ActionsFormControl>
-        </>
+        </Container>
     );
 }
 
