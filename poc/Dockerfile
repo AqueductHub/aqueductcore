@@ -1,10 +1,10 @@
 # WE WILL PROBABLY ALSO NEED A REDIS FOR TASK HISTORY PERSISTENCE
 # https://docs.celeryq.dev/en/main/getting-started/backends-and-brokers/index.html
-FROM rabbitmq:latest
+FROM rabbitmq:3.12
 
 WORKDIR /celery
 
-COPY tasks.py .
+COPY poc/tasks.py .
 
 RUN     apt-get update
 
@@ -18,6 +18,9 @@ RUN     python3 -m pip install celery==5.4.0 flower==2.0.1
 
 EXPOSE  5555
 
-CMD     rabbitmq-server & \
-            python3 -m celery --broker=amqp://guest:guest@localhost:5672// -A tasks worker --loglevel=INFO & \
-            python3 -m celery --broker=amqp://guest:guest@localhost:5672// flower --port=5555
+ENV     HOST=${HOST:-host.docker.internal}
+
+CMD     rabbitmq-server -detached ; \
+            sleep 15; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// flower --port=5555
+            # sleep 15; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A tasks worker --loglevel=INFO
+            
