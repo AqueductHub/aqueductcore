@@ -897,11 +897,8 @@ async def test_extensions():
     schema = Schema(query=Query)
     resp = await schema.execute(all_extensions_query)
     assert resp.errors is None
-    assert len(resp.data["extensions"]) == 2
-    if resp.data["extensions"][0]["name"] == "Dummy extension":
-        p_dummy = resp.data["extensions"][0]
-    else:
-        p_dummy = resp.data["extensions"][1]
+    assert len(resp.data["extensions"]) == 3
+    p_dummy = resp.data["extensions"][0]
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
     assert len(p_dummy["actions"]) == 2
     print(p_dummy)
