@@ -17,7 +17,7 @@ class TestExtensionExecutor:
 
     def test_list_extensions_ok(self):
         extensions = ExtensionsExecutor.list_extensions()
-        assert len(extensions) == 2
+        assert len(extensions) == 3
         var1 = extensions[0].actions[0].parameters[0]
         var2 = extensions[0].actions[0].parameters[1]
         var6 = extensions[0].actions[0].parameters[5]
