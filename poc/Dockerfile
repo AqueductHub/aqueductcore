@@ -21,6 +21,6 @@ EXPOSE  5555
 ENV     HOST=${HOST:-host.docker.internal}
 
 CMD     rabbitmq-server -detached ; \
-            sleep 15; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// flower --port=5555
-            # sleep 15; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A tasks worker --loglevel=INFO
+            sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// flower --port=5555 & \
+            sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A tasks worker --loglevel=INFO
             
