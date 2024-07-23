@@ -7,6 +7,7 @@ services:
       dockerfile: containers/dev/Dockerfile
     depends_on:
       - postgres
+      - rabbit-with-celery
     user: dev_user
     container_name: aqueductcore
     platform: linux/amd64
@@ -30,3 +31,25 @@ services:
       - POSTGRES_DB=aqueductcore_dev
     expose:
       - 5432
+
+  rabbit-with-celery:
+    build:
+      context: ../..
+      dockerfile: poc/Dockerfile
+    container_name: rabbit-with-celery-container
+    platform: linux/amd64
+    env_file:
+      - ../../aqueductcore/frontend/envs/.env.dev
+      - ../../envs/.env.dev
+    environment:
+      HOST: "localhost"
+    volumes:
+      # Use a named volume for the source code
+      - ../../:/workspace
+    expose:
+      # flower
+      - 5555
+      # message queue
+      - 5672
+    ports:
+      - "5555:5555"
