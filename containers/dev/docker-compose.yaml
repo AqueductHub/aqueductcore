@@ -43,9 +43,10 @@ services:
       - ../../envs/.env.dev
     environment:
       HOST: "localhost"
+      EXTENSIONS_DIR: "/external/extensions"
     volumes:
       # Use a named volume for the source code
-      - ../../:/workspace
+      - ../../external:/external
     expose:
       # flower
       - 5555

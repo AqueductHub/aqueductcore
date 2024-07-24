@@ -4,7 +4,8 @@ FROM rabbitmq:3.12
 
 WORKDIR /celery
 
-COPY poc/tasks.py .
+RUN     mkdir -p /celery/aqueductcore/backend/services
+COPY    aqueductcore/backend/services/task_executor.py /celery/aqueductcore/backend/services
 
 RUN     apt-get update
 
@@ -22,5 +23,5 @@ ENV     HOST=${HOST:-host.docker.internal}
 
 CMD     rabbitmq-server -detached ; \
             sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// flower --port=5555 & \
-            sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A tasks worker --loglevel=INFO
+            sleep 5; python3 -m celery --broker=amqp://guest:guest@${HOST}:5672// -A aqueductcore.backend.services.task_executor worker --loglevel=INFO
             
