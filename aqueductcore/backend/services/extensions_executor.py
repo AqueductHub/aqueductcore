@@ -42,6 +42,8 @@ class ExtensionsExecutor:
             return []
         for directory in Path(settings.extensions_dir_path).iterdir():
             if directory.exists() and not directory.is_file():
+                if not (directory / "manifest.yml").exists():
+                    continue
                 try:
                     extension = Extension.from_folder(directory)
                     result.append(extension)
