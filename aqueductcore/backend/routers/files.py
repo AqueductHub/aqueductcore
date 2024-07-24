@@ -292,4 +292,6 @@ async def remove_experiment_files(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({"result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"})
+    return JSONResponse({
+        "result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"
+    })
