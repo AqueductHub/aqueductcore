@@ -23,9 +23,9 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_TOKEN }}
 
       - name: Log in to registry
         uses: docker/login-action@v3
@@ -53,6 +53,10 @@ jobs:
           install.sh \
           uninstall.sh
 
+      - name: Create changelog
+        run: |
+          ci/create_changelog.sh -o current_changes.md
+
       - name: Create release and upload artifacts
         uses: ncipollo/release-action@v1.12.0
         with:
@@ -60,5 +64,15 @@ jobs:
           name: "${{ inputs.version }}"
           allowUpdates: true
           artifacts: "build/aqueduct_v${{ inputs.version }}.tar.gz"
-          generateReleaseNotes: true
+          generateReleaseNotes: false
+          bodyFile: current_changes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update CHANGELOG.md file.
+        run: |
+          cat current_changes.md | cat - CHANGELOG.md > temp && mv temp CHANGELOG.md
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Add release ${{ inputs.version }} to CHANGELOG.md file."
+          file_pattern: "CHANGELOG.md"
