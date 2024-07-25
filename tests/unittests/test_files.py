@@ -19,6 +19,7 @@ from aqueductcore.backend.context import (
 )
 from aqueductcore.backend.main import app
 from aqueductcore.backend.models import orm
+from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
 from aqueductcore.backend.services.utils import experiment_model_to_orm
@@ -425,7 +426,7 @@ async def test_file_upload_invalid_filename(
 
 
 @pytest.mark.asyncio
-async def test_file_delete_successful(
+async def test_file_delete_single_file_successful(
     client: TestClient,
     db_session: AsyncSession,
     experiments_data: List[ExperimentCreate],
@@ -465,6 +466,104 @@ async def test_file_delete_successful(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"result": f"Successfully deleted {experiment_file_name}"}
     assert not os.path.exists(file_path)
+
+@pytest.mark.asyncio
+async def test_file_delete_multiple_files_successful(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    experiment_file_names = [
+        "test_delete_file3.zip",
+        "test_delete_file2.zip",
+        "test_delete_file1.zip"
+    ]
+    experiment_dir = build_experiment_dir_absolute_path(
+        str(settings.experiments_dir_path), db_experiment.uuid
+    )
+    os.makedirs(experiment_dir, exist_ok=True)
+    for experiment_file_name in experiment_file_names:
+        file_path = os.path.join(experiment_dir, experiment_file_name)
+        with open(file_path, "wb") as file_writer:
+            file_writer.write(os.urandom(settings.upload_max_file_size_KB * BYTES_IN_KB))
+
+    request_body = {"file_list": experiment_file_names}
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"result": f"Successfully deleted {format_list_human_readable(sorted(experiment_file_names))}"}
+    for experiment_file_name in experiment_file_names:
+        file_path = os.path.join(experiment_dir, experiment_file_name)
+        assert not os.path.exists(file_path)
+
+
+@pytest.mark.asyncio
+async def test_file_delete_partial_match_failed(
+    client: TestClient,
+    db_session: AsyncSession,
+    experiments_data: List[ExperimentCreate],
+):
+    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_session.add(db_user)
+
+    db_experiment = experiment_model_to_orm(experiments_data[0])
+    db_experiment.created_by_user = db_user
+    db_session.add(db_experiment)
+    await db_session.commit()
+
+    async def override_context_dependency() -> AsyncGenerator[ServerContext, None]:
+        yield ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(
+                uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)
+            ),
+        )
+
+    app.dependency_overrides[context_dependency] = override_context_dependency
+
+    experiment_file_names = [
+        "test_delete_file3.zip",
+        "test_delete_file2.zip",
+        "test_delete_file1.zip"
+    ]
+    invalid_file = "test_delete_file4.zip"
+    experiment_dir = build_experiment_dir_absolute_path(
+        str(settings.experiments_dir_path), db_experiment.uuid
+    )
+    os.makedirs(experiment_dir, exist_ok=True)
+    for experiment_file_name in experiment_file_names:
+        file_path = os.path.join(experiment_dir, experiment_file_name)
+        with open(file_path, "wb") as file_writer:
+            file_writer.write(os.urandom(settings.upload_max_file_size_KB * BYTES_IN_KB))
+
+    request_body = {"file_list": [*experiment_file_names, invalid_file]}
+    response = client.post(
+        f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
+        json=request_body,
+    )
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json() == {'detail': f'File(s) not found - {invalid_file}'}
+
 
 @pytest.mark.asyncio
 async def test_file_delete_invalid_experiment_uuid(
@@ -580,5 +679,5 @@ async def test_file_delete_non_existing_file(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json=request_body,
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {"detail": f"File(s) not found - {non_existing_file}"}

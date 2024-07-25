@@ -273,7 +273,7 @@ async def remove_experiment_files(
 
         if invalid_files:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_409_CONFLICT,
                 detail=f"File(s) not found - {format_list_human_readable(invalid_files)}"
             )
 
@@ -292,4 +292,6 @@ async def remove_experiment_files(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({"result": f"Successfully deleted {format_list_human_readable(file_list)}"})
+    return JSONResponse({
+        "result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"
+    })

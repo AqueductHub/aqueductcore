@@ -1,15 +1,17 @@
-// import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
-import { Grid, Typography, styled } from "@mui/material";
-import { ChangeEvent, useContext } from "react";
+import { Divider, Grid, Typography, styled } from "@mui/material";
+import { ChangeEvent, useContext, useState } from "react";
 
 import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon";
+import DeleteExperimentFileModal from "components/organisms/DeleteExperimentFileModal"
 import { VisuallyHiddenInput } from "components/atoms/sharedStyledComponents/VisuallyHiddenInput";
 import { ExperimentDataType, ExperimentFileType } from "types/globalTypes";
 import { FileSelectStateContext } from "context/FileSelectProvider";
 import useFileUpload from "hooks/useUploadFile";
 import Explorer from "./Explorer";
 import Viewer from "./Viewer";
+import useFileDelete from "hooks/useDeleteFile";
 
 const SectionTitle = styled(Typography)`
 font-size: 1.15rem;
@@ -23,12 +25,24 @@ interface AttachmentProps {
 
 function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
   const { selectedFile, setSelectedFile } = useContext(FileSelectStateContext)
+  const [isDeleteExperimentFileModalOpen, setDeleteExperimentFileModalOpen] = useState(false);
   const { handleExperimentFileUpload } = useFileUpload(experimentUuid)
+  const { handleExperimentFileDelete } = useFileDelete(experimentUuid)
+  const handleOpenDeleteExperimentFileModal = () => setDeleteExperimentFileModalOpen(true);
+  const handleCloseDeleteExperimentFileModal = () => setDeleteExperimentFileModalOpen(false);
+
   function handleChangeFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       [...e.target.files].forEach(file => {
         handleExperimentFileUpload(file)
       })
+    }
+  }
+  function handleFileDelete() {
+    if (selectedFile) {
+      handleExperimentFileDelete(selectedFile)
+      setDeleteExperimentFileModalOpen(false)
+      setSelectedFile(undefined)
     }
   }
   return (
@@ -49,19 +63,28 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             <VisuallyHiddenInput type="file" multiple onChange={handleChangeFile} />
           </BorderedButtonWithIcon>
         </Grid>
-        {/* <Grid item>
+        <Grid item>
           <Divider orientation="vertical" />
-        </Grid> */}
-        {/* <Grid item>
+        </Grid>
+        <Grid item>
           <BorderedButtonWithIcon
             variant="outlined"
             size="small"
             color="neutral"
+            sx={{ ml: 0.5 }}
+            title="delete-file"
+            onClick={handleOpenDeleteExperimentFileModal}
             startIcon={<DeleteOutlineOutlinedIcon />}
+            disabled={!selectedFile}
           >
             Delete
           </BorderedButtonWithIcon>
-        </Grid> */}
+          <DeleteExperimentFileModal
+            open={isDeleteExperimentFileModalOpen}
+            onClose={handleCloseDeleteExperimentFileModal}
+            handleDeleteExperimentFile={handleFileDelete}
+          />
+        </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mt: 0 }}>
         <Grid item xs={12} lg={6}>

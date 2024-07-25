@@ -73,19 +73,19 @@ test("render page when the edit is not allowed", async () => {
 });
 
 test("remove experiment button is present in archived experiments", async () => {
-    const { findByText } = render(
+    const { findByTitle } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
             </Routes>
         </AppContextAQDMock >);
 
-    const deleteButton = await findByText("Delete");
+    const deleteButton = await findByTitle("delete-experiment");
     expect(deleteButton).toBeInTheDocument();
 });
 
 test("click on confirm deletion button results in experiment deletion", async () => {
-    const { findByText, queryByText } = render(
+    const { findByText, queryByText, findByTitle } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }}>
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
@@ -94,7 +94,7 @@ test("click on confirm deletion button results in experiment deletion", async ()
             </Routes>
         </AppContextAQDMock >);
 
-    const deleteButton = await findByText("Delete");
+    const deleteButton = await findByTitle("delete-experiment");
     await userEvent.click(deleteButton);
 
     const confirmDeletionButton = await findByText("Confirm Deletion"); // Confirm Deletion
@@ -109,7 +109,7 @@ test("click on confirm deletion button results in experiment deletion", async ()
 });
 
 test("click on confirm fails for non existing experiment", async () => {
-    const { findByText, queryByText } = render(
+    const { findByText, findByTitle, queryByText } = render(
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.uuid}`] }} removeExperiment_mockMockMode="failed">
             <Routes>
                 <Route path="/aqd/experiments/:experimentIdentifier" element={<ExperimentDetailsPage />} />
@@ -118,7 +118,7 @@ test("click on confirm fails for non existing experiment", async () => {
             </Routes>
         </AppContextAQDMock >);
 
-    const deleteButton = await findByText("Delete");
+    const deleteButton = await findByTitle("delete-experiment");
     await userEvent.click(deleteButton);
 
     const confirmDeletionButton = await findByText("Confirm Deletion"); // Confirm Deletion
