@@ -561,7 +561,7 @@ async def test_file_delete_partial_match_failed(
         f"{settings.api_prefix}{settings.files_route_prefix}/{str(db_experiment.uuid)}/delete_files",
         json=request_body,
     )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {'detail': f'File(s) not found - {invalid_file}'}
 
 

@@ -1,6 +1,6 @@
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
-import { Grid, Typography, styled } from "@mui/material";
+import { Divider, Grid, Typography, styled } from "@mui/material";
 import { ChangeEvent, useContext, useState } from "react";
 
 import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon";
@@ -63,7 +63,10 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             <VisuallyHiddenInput type="file" multiple onChange={handleChangeFile} />
           </BorderedButtonWithIcon>
         </Grid>
-        {selectedFile && <Grid item>
+        <Grid item>
+          <Divider orientation="vertical" />
+        </Grid>
+        <Grid item>
           <BorderedButtonWithIcon
             variant="outlined"
             size="small"
@@ -71,6 +74,7 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             sx={{ ml: 0.5 }}
             onClick={handleOpenDeleteExperimentFileModal}
             startIcon={<DeleteOutlineOutlinedIcon />}
+            disabled={!selectedFile}
           >
             Delete
           </BorderedButtonWithIcon>
@@ -79,7 +83,7 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             onClose={handleCloseDeleteExperimentFileModal}
             handleDeleteExperimentFile={handleFileDelete}
           />
-        </Grid>}
+        </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mt: 0 }}>
         <Grid item xs={12} lg={6}>
