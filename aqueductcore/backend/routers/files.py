@@ -6,29 +6,26 @@ from typing import List
 from uuid import UUID
 
 import pathvalidate
-from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel
 from streaming_form_data import StreamingFormDataParser
 from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import ServerContext, context_dependency
+from aqueductcore.backend.context import ServerContext, UserScope, context_dependency
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
+    AQDPermission,
 )
-from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.services.constants import MARKDOWN_EXTENSIONS
-from aqueductcore.backend.context import UserScope
 from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_uuid,
 )
-from aqueductcore.backend.errors import (
-    AQDPermission,
-)
+from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.settings import settings
 
 router = APIRouter()
@@ -223,37 +220,31 @@ async def remove_experiment_files(
     request: Request,
     experiment_uuid: UUID,
     context: Annotated[ServerContext, Depends(context_dependency)],
-    body: DeleteFileRequestBody
+    body: DeleteFileRequestBody,
 ) -> JSONResponse:
     """Router for deleting file from an experiment"""
 
     file_list = list(set(body.file_list))
     if not file_list:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File list can not be empty."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="File list can not be empty."
         )
 
     try:
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
 
-        experiment = await get_experiment_by_uuid(
-            user_info=context.user_info,
-            db_session=context.db_session,
-            experiment_uuid=experiment_uuid,
-        )
-
         if UserScope.EXPERIMENT_DELETE_ALL not in context.user_info.scopes:
             if UserScope.EXPERIMENT_DELETE_OWN not in context.user_info.scopes:
                 raise AQDPermission(
                     "The user doesn't have permission to delete files from experiment"
                 )
-
-            if experiment.created_by != context.user_info.uuid:
-                raise AQDDBExperimentNonExisting(
-                    "The user doesn't have permission to delete files from this experiment."
-                )
+        # To check if the experiment is accessible by this user
+        await get_experiment_by_uuid(
+            user_info=context.user_info,
+            db_session=context.db_session,
+            experiment_uuid=experiment_uuid,
+        )
 
         experiment_dir = build_experiment_dir_absolute_path(
             str(settings.experiments_dir_path), experiment_uuid
@@ -274,13 +265,18 @@ async def remove_experiment_files(
         if invalid_files:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"File(s) not found - {format_list_human_readable(invalid_files)}"
+                detail=f"File(s) not found - {format_list_human_readable(invalid_files)}",
             )
 
         for file_name in file_list:
             dest_file_path = os.path.join(experiment_dir, file_name)
             os.remove(dest_file_path)
 
+    except AQDPermission as error:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(error),
+        ) from error
     except AQDDBExperimentNonExisting as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -292,6 +288,6 @@ async def remove_experiment_files(
             detail="Invalid file names.",
         ) from error
 
-    return JSONResponse({
-        "result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"
-    })
+    return JSONResponse(
+        {"result": f"Successfully deleted {format_list_human_readable(sorted(file_list))}"}
+    )
