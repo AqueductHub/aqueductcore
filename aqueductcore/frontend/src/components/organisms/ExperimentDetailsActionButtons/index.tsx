@@ -230,6 +230,7 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
                     size="small"
                     color="error"
                     startIcon={<DeleteForeverOutlinedIcon color="error" />}
+                    title="delete-experiment"
                     sx={{ ml: 1 }}
                     onClick={handleOpenDeleteExperimentModal}
                 >

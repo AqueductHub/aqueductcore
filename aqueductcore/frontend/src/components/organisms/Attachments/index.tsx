@@ -72,6 +72,7 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
             size="small"
             color="neutral"
             sx={{ ml: 0.5 }}
+            title="delete-file"
             onClick={handleOpenDeleteExperimentFileModal}
             startIcon={<DeleteOutlineOutlinedIcon />}
             disabled={!selectedFile}
