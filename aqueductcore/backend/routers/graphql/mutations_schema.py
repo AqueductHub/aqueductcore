@@ -136,11 +136,10 @@ class Mutation:
         eid = dict_params[exp_parameter.name]
 
         now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        log_filename = f"{extension}-{action}-{now}.log"
+        # log_filename = f"{extension}-{action}-{now}.log"
 
-        result = ExtensionsExecutor.execute(extension, action, dict_params)
+        result = ExtensionsExecutor.execute(extension, action, dict_params, callback=lambda: print("something?"))
 
-        # this will be a callback
         # await ExtensionsExecutor.save_log_to_experiment(
         #     context=context,
         #     eid=eid,
@@ -149,6 +148,6 @@ class Mutation:
         # )
         return ExtensionExecutionResult(
             log_experiment=eid,
-            log_file=log_filename,
+            log_file="",    #log_filename,
             job_id=result.job_id,
         )
