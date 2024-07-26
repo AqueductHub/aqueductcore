@@ -13,6 +13,7 @@ import yaml
 from pydantic import BaseModel, Field
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
+from aqueductcore.backend.services.task_executor import execute_blocking, execute_non_blocking
 
 MANIFEST_FILE = "manifest.yml"
 
@@ -37,6 +38,7 @@ class ExtensionExecutionResult(BaseModel):
     return_code: int
     stdout: str
     stderr: str
+    job_id: str
 
 
 class ExtensionParameter(BaseModel):
@@ -134,7 +136,8 @@ class ExtensionAction(BaseModel):
         Returns:
             ExtensionExecutionResult: OS process results.
         """
-        my_env = os.environ.copy()
+        # my_env = os.environ.copy()
+        my_env = {}
         self.validate_values(params)
         my_env.update({key: str(val) for key, val in (extension.constants or {}).items()})
         my_env.update(params)
@@ -148,22 +151,33 @@ class ExtensionAction(BaseModel):
 
         rich_script = self.script
         if python:
-            rich_script = rich_script.replace("$python ", f"{python} ")
-        with subprocess.Popen(
-            rich_script,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=my_env,
-            cwd=cwd,
-        ) as proc:
-            out, err = proc.communicate(timeout=timeout)
-            code = proc.returncode
-            return ExtensionExecutionResult(
-                return_code=code,
-                stdout=out.decode(),
-                stderr=err.decode(),
-            )
+            rel_python = Path(python).relative_to(cwd)
+            rich_script = rich_script.replace("$python ", f"{rel_python} ")
+            # rich_script = rich_script.replace("$python ", f"{python} ")
+
+        # TODO: execute non-blocking here!!!
+        code, stdout, stderr, job_id = execute_blocking(
+            extension_directory_name=cwd.name,
+            shell_script=f"{rel_python} -m pip install .",
+            **my_env,
+        )
+        # with subprocess.Popen(
+        #     rich_script,
+        #     shell=True,
+        #     stdout=subprocess.PIPE,
+        #     stderr=subprocess.PIPE,
+        #     env=my_env,
+        #     cwd=cwd,
+        # ) as proc:
+        #     out, err = proc.communicate(timeout=timeout)
+        #     code = proc.returncode
+        
+        return ExtensionExecutionResult(
+            return_code=code,
+            stdout=stdout,
+            stderr=stderr,
+            job_id=job_id,
+        )
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
         """Return first experiment variable defined in manifest.
