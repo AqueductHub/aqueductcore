@@ -121,11 +121,9 @@ class ExtensionActionInfo:
 class ExtensionExecutionResult:
     """Result of OS process execution"""
 
-    return_code: int
-    stdout: str
-    stderr: str
     log_experiment: str
     log_file: str
+    job_id: str
 
 
 @strawberry.type

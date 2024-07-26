@@ -70,5 +70,7 @@ class TestExtensionModel:
             params={"var1": "text", "var2": 1, "var3": 2.2,
                     "var4": "20240229-5689864ffd94",
                     "var5": "text\narea", "var6": 0, "var7": "string2"},
+            python=None,
+            callback=None,
         )
         assert result.return_code == 0

@@ -3,7 +3,7 @@ import subprocess
 import time
 
 from pathlib import Path
-from typing import Tuple
+from typing import Callable, Optional, Tuple
 from celery import Celery
 from celery.result import AsyncResult
 
@@ -74,11 +74,12 @@ def execute_blocking(
 def execute_non_blocking(
     extension_directory_name: str,
     shell_script: str,
-    **kwargs
+    callback: Optional[Callable] = None,
+    **kwargs,
 ) -> AsyncResult:
-    job = run_executable.delay(
-        extension_directory_name=extension_directory_name,
-        shell_script=shell_script,
-        **kwargs
+    job = run_executable.apply_async(
+        args=(extension_directory_name, shell_script),
+        kwargs=kwargs,
+        link=callback,
     )
     return job
