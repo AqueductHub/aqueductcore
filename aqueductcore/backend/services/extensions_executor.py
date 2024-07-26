@@ -21,6 +21,7 @@ from aqueductcore.backend.services.experiment import (
     build_experiment_dir_absolute_path,
     get_experiment_by_eid,
 )
+from aqueductcore.backend.services.task_executor import execute_blocking, execute_non_blocking
 from aqueductcore.backend.settings import settings
 
 VENV_FOLDER = ".aqueduct-extension-venv"
@@ -31,6 +32,8 @@ EXEC_TIMEOUT = 600
 class ExtensionsExecutor:
     """Class to access extensions."""
 
+    # XXX: if we move this method to workers,
+    # we may keep extensions mount only there
     @classmethod
     def list_extensions(cls) -> List[Extension]:
         """List all valid extensions which are present in the folder"""
@@ -55,6 +58,8 @@ class ExtensionsExecutor:
                     )
         return sorted(result, key=lambda extension: extension.name)
 
+    # XXX: if we move this method to workers,
+    # we may keep extensions mount only there
     @classmethod
     def get_extension(cls, extension: str) -> Extension:
         """Returns extension instance given its name.
@@ -70,6 +75,8 @@ class ExtensionsExecutor:
             raise AQDValidationError(f"There should be exactly 1 extension with name {extension}")
         return extensions[0]
 
+    # XXX: if we move this method to workers,
+    # we may keep extensions mount only there
     @classmethod
     def is_venv_present(cls, extension: str) -> bool:
         """Checks if inside extension folder there is a venv folder
@@ -88,6 +95,8 @@ class ExtensionsExecutor:
             raise AQDValidationError(f"Venv `{venv_folder}` is not a folder.")
         return venv_folder.exists()
 
+    # XXX: if we move this method to workers,
+    # we may keep extensions mount only there
     @classmethod
     def create_venv_python_if_not_present(cls, extension: str) -> Path:
         """If virtual environment is not present in extension directory,
@@ -127,13 +136,19 @@ class ExtensionsExecutor:
         extension_dir = cls.get_extension(extension).folder
         requirements = extension_dir / "requirements.txt"
         if requirements.exists():
-            result = subprocess.run(
-                f"{python} -m pip install -r {requirements}",
-                shell=True,
-                cwd=extension_dir,
-                check=False,
+            rel_python = python.relative_to(extension_dir)
+            code, _, _, _ = execute_blocking(
+                extension_directory_name=extension_dir.name,
+                shell_script=f"{rel_python} -m pip install -r requirements.txt",
             )
-            return result.returncode == 0
+            return code == 0
+            # result = subprocess.run(
+            #     f"{python} -m pip install -r {requirements}",
+            #     shell=True,
+            #     cwd=extension_dir,
+            #     check=False,
+            # )
+            # return result.returncode == 0
         return False
 
     @classmethod
@@ -151,13 +166,19 @@ class ExtensionsExecutor:
         extension_dir = cls.get_extension(extension).folder
         pyproject = extension_dir / "pyproject.toml"
         if pyproject.exists():
-            result = subprocess.run(
-                f"{python} -m pip install .",
-                shell=True,
-                cwd=extension_dir,
-                check=False,
+            rel_python = python.relative_to(extension_dir)
+            code, _, _, _ = execute_blocking(
+                extension_directory_name=extension_dir.name,
+                shell_script=f"{rel_python} -m pip install .",
             )
-            return result.returncode == 0
+            return code == 0
+            # result = subprocess.run(
+            #     f"{python} -m pip install .",
+            #     shell=True,
+            #     cwd=extension_dir,
+            #     check=False,
+            # )
+            # return result.returncode == 0
         return False
 
     @classmethod
