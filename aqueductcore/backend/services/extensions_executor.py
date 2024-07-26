@@ -6,10 +6,9 @@ can read environment variables and print to stdout.
 
 import logging
 import os
-import subprocess
 import venv
 from pathlib import Path
-from typing import List
+from typing import Callable, List, Optional
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDError, AQDValidationError
@@ -182,7 +181,7 @@ class ExtensionsExecutor:
         return False
 
     @classmethod
-    def execute(cls, extension: str, action: str, params: dict) -> ExtensionExecutionResult:
+    def execute(cls, extension: str, action: str, params: dict, callback: Optional[Callable] = None) -> ExtensionExecutionResult:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result
 
@@ -201,6 +200,7 @@ class ExtensionsExecutor:
             extension=extension_object,
             params=params,
             python=python,
+            callback=callback,
         )
 
     @classmethod

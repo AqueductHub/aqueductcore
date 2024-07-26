@@ -140,16 +140,15 @@ class Mutation:
 
         result = ExtensionsExecutor.execute(extension, action, dict_params)
 
-        await ExtensionsExecutor.save_log_to_experiment(
-            context=context,
-            eid=eid,
-            log_filename=log_filename,
-            result=result,
-        )
+        # this will be a callback
+        # await ExtensionsExecutor.save_log_to_experiment(
+        #     context=context,
+        #     eid=eid,
+        #     log_filename=log_filename,
+        #     result=result,
+        # )
         return ExtensionExecutionResult(
-            return_code=result.return_code,
-            stdout=result.stdout,
-            stderr=result.stderr,
             log_experiment=eid,
             log_file=log_filename,
+            job_id=result.job_id,
         )

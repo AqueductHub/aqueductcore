@@ -287,7 +287,7 @@ execute_extension = """
                 ["var7", "string4"],
             ]
     ) {
-        returnCode, stderr, stdout
+        jobId
     }
   }
 """
@@ -672,18 +672,18 @@ async def test_execute_extension_stdout_ok(
     )
     assert resp.errors is None
     res = resp.data["executeExtension"]
-    assert res["returnCode"] == 0
-    assert res["stdout"] == (
-        "var1=abc\n"
-        "var2=111\n"
-        "var3=1.33e+03\n"
-        f"var4={exp_eid}\n"
-        "var5=some\nmultiline\n"
-        "var6=1\n"
-        "var7=string4\n"
-        "dummykey=dummyvalue\n"
-    )
-    assert res["stderr"] == ""
+    # assert res["stdout"] == (
+    #     "var1=abc\n"
+    #     "var2=111\n"
+    #     "var3=1.33e+03\n"
+    #     f"var4={exp_eid}\n"
+    #     "var5=some\nmultiline\n"
+    #     "var6=1\n"
+    #     "var7=string4\n"
+    #     "dummykey=dummyvalue\n"
+    # )
+    # assert res["stderr"] == ""
+    assert res["jobId"]
 
 
 @pytest.mark.asyncio
@@ -718,18 +718,19 @@ async def test_execute_extension_stderr_ok(
     )
     assert resp.errors is None
     res = resp.data["executeExtension"]
-    assert res["returnCode"] == 13
-    assert res["stdout"] == ""
-    assert res["stderr"] == (
-        "var1=abc\n"
-        "var2=111\n"
-        "var3=1.33e+03\n"
-        f"var4={exp_eid}\n"
-        "var5=some\nmultiline\n"
-        "var6=1\n"
-        "var7=string4\n"
-        "dummykey=dummyvalue\n"
-    )
+    # assert res["returnCode"] == 13
+    # assert res["stdout"] == ""
+    # assert res["stderr"] == (
+    #     "var1=abc\n"
+    #     "var2=111\n"
+    #     "var3=1.33e+03\n"
+    #     f"var4={exp_eid}\n"
+    #     "var5=some\nmultiline\n"
+    #     "var6=1\n"
+    #     "var7=string4\n"
+    #     "dummykey=dummyvalue\n"
+    # )
+    assert res["jobId"]
 
 
 @pytest.mark.asyncio
