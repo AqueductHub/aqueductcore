@@ -84,6 +84,42 @@ test("click the other action and params should be updated", async () => {
     }
 });
 
+test("data is persistence when switching between functions", async () => {
+
+    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByTitle("extensions")
+    await userEvent.click(extensionOpenModalButton)
+
+    const firstActionName = ExtensionsDataMock[0].actions[0].name
+    const secondActionName = ExtensionsDataMock[0].actions[1].name
+
+    const first_extension = await findByText(ExtensionsDataMock[0].name);
+    await userEvent.click(first_extension)
+
+    const firstInput = ExtensionsDataMock[0].actions[0].parameters[0].name;
+    const inputField = (await findByText(firstInput)).nextSibling?.firstChild?.firstChild?.firstChild;
+    expect(inputField).toBeInTheDocument();
+
+    if (!(inputField instanceof Element)) throw new Error("Input field is not an element");
+
+    await userEvent.clear(inputField);
+    await userEvent.type(inputField, '321');
+    expect(inputField).toHaveValue('321');
+
+    const secondActionButton = await findByText(secondActionName);
+    await userEvent.click(secondActionButton);
+
+    const secondActionFirstInput = await findByText(ExtensionsDataMock[0].actions[1].parameters[0].name);
+    expect(secondActionFirstInput).toBeInTheDocument();
+
+    const firstActionButton = await findByText(firstActionName);
+    await userEvent.click(firstActionButton);
+
+    const firstInputAfterUpdate = ExtensionsDataMock[0].actions[0].parameters[0].name;
+    const inputFieldAfterUpdate = (await findByText(firstInputAfterUpdate)).nextSibling?.firstChild?.firstChild?.firstChild;
+    expect(inputFieldAfterUpdate).toHaveValue('321');
+});
+
 test("submit the form and success modal and file selection", async () => {
 
     const { findByTitle, findByText, findAllByText } = render(<ExtensionIncludedComponent />)
@@ -106,3 +142,4 @@ test("submit the form and success modal and file selection", async () => {
     expect(file_name_items[1]).toHaveProperty('title', 'file_name')
 });
 
+// TODO: Fix needed to allow mote tests after this (file loading API will fail)
