@@ -12,7 +12,7 @@ import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
 import { FileSelectStateContext } from "context/FileSelectProvider";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { actionInExtensionsType } from "types/componentTypes";
+import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
 import { client } from "API/apolloClientConfig";
@@ -111,7 +111,6 @@ const ModalFooter = styled(Box)`
     padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
 `;
 
-
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
     const { experimentIdentifier } = useParams();
@@ -120,19 +119,30 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
-    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>();
+    const [functionFormData, setFunctionFormData] = useState<extensionActionsData>({});
     const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
-        setInputParams(selectedAction?.parameters.map(
-            item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
-                ? { name: item.name, value: experimentIdentifier }
-                : { name: item.name, value: item.defaultValue ?? "" }
-            ))
-        )
+        if (selectedAction && selectedExtension) {
+            setFunctionFormData(prevState => {
+                if (!prevState[selectedAction.name]) {
+                    return {
+                        ...prevState,
+                        [selectedAction.name]: selectedAction.parameters.map(item => ({
+                            name: item.name,
+                            value: item.dataType === ExtensionParameterDataTypes.EXPERIMENT
+                                ? experimentIdentifier
+                                : item.defaultValue ?? ""
+                        }))
+                    };
+                }
+                return prevState;
+            });
+        }
     }, [selectedExtension, selectedAction])
 
-    const isExtensionExecutable = inputParams?.every(param => param.value);
+    const isExtensionExecutable = selectedAction && functionFormData[selectedAction.name]
+        && functionFormData[selectedAction.name].every(param => param.value);
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
         handleClose()
@@ -159,7 +169,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                 variables: {
                     extension: selectedExtension,
                     action: selectedAction.name,
-                    params: formatExtensionParameters(inputParams)
+                    params: formatExtensionParameters(functionFormData[selectedAction.name])
                 },
                 onCompleted: (data) => handleOnCompletedExtensionExecution(data.executeExtension)
             })
@@ -167,7 +177,14 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     }
 
     const updateSelectedActionHandler = (option: string) => {
-        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name == option));
+        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name === option));
+    };
+
+    const updateFormData = (actionName: string, params: Array<actionInExtensionsType>) => {
+        setFunctionFormData(prevState => ({
+            ...prevState,
+            [actionName]: params
+        }));
     };
 
     return (
@@ -208,11 +225,11 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     </ModalOptionsGrid>
                     <ModalInputsGrid item xs={8}>
                         {/* right-side: Inputs */}
-                        {inputParams ?
+                        {selectedAction && functionFormData[selectedAction.name] ?
                             <ActionForm
                                 selectedAction={selectedAction}
-                                inputParams={inputParams}
-                                setInputParams={setInputParams}
+                                inputParams={functionFormData[selectedAction.name]}
+                                setInputParams={(params) => updateFormData(selectedAction.name, params)}
                             /> : null}
                     </ModalInputsGrid>
                 </ModalMain>
