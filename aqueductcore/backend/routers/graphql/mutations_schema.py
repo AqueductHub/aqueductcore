@@ -138,7 +138,10 @@ class Mutation:
         now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         # log_filename = f"{extension}-{action}-{now}.log"
 
-        result = ExtensionsExecutor.execute(extension, action, dict_params, callback=lambda: print("something?"))
+        result = ExtensionsExecutor.execute(
+            extension, action, dict_params, 
+            # callback=lambda: print("something?")
+        )
 
         # await ExtensionsExecutor.save_log_to_experiment(
         #     context=context,
@@ -150,4 +153,7 @@ class Mutation:
             log_experiment=eid,
             log_file="",    #log_filename,
             job_id=result.job_id,
+            return_code=0,
+            stdout="STUB",
+            stderr="STUB_ERR",
         )

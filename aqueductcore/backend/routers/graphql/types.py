@@ -124,6 +124,9 @@ class ExtensionExecutionResult:
     log_experiment: str
     log_file: str
     job_id: str
+    return_code: int
+    stdout: str
+    stderr: str
 
 
 @strawberry.type
