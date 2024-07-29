@@ -123,6 +123,19 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
+        if (!isOpen) {
+            setFunctionFormData(prevState => {
+                Object.entries(prevState).forEach(([key]) => {
+                    prevState[key].forEach((item) => {
+                        item.value = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name)?.defaultValue;
+                    })
+                })
+                return prevState;
+            })
+        }
+    }, [isOpen])
+
+    useEffect(() => {
         if (selectedAction && selectedExtension) {
             setFunctionFormData(prevState => {
                 if (!prevState[selectedAction.name]) {
