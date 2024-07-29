@@ -210,53 +210,55 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
             }}
         >
             <ModalContainer>
-                <ModalHeader
-                    container
-                    sx={{
-                        justifyContent: "space-between"
-                    }}
-                >
-                    <Grid item>
-                        <HeaderIcon />
-                        <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
-                        <HeaderRightIcon />
-                        <ExtensionName>{selectedExtension}</ExtensionName>
-                    </Grid>
-                    <Grid item>
-                        <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
-                    </Grid>
-                </ModalHeader>
-                <ModalMain container>
-                    <ModalOptionsGrid item xs={4}>
-                        {/* left-side: Actions */}
-                        {selectedExtensionItem?.actions.length ?
-                            <ExtensionActions
-                                extension={selectedExtensionItem}
-                                selectedAction={selectedAction}
-                                updateSelectedAction={updateSelectedActionHandler}
-                            /> : null}
-                    </ModalOptionsGrid>
-                    <ModalInputsGrid item xs={8}>
-                        {/* right-side: Inputs */}
-                        {selectedAction && functionFormData[selectedAction.name] ?
-                            <ActionForm
-                                selectedAction={selectedAction}
-                                inputParams={functionFormData[selectedAction.name]}
-                                setInputParams={(params) => updateFormData(selectedAction.name, params)}
-                            /> : null}
-                    </ModalInputsGrid>
-                </ModalMain>
-                <ModalFooter>
-                    {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
-                    <RunExtension
-                        variant="contained"
-                        onClick={() => handleExecuteExtension()}
-                        title='run_extension'
-                        disabled={!isExtensionExecutable}
+                <form onSubmit={handleExecuteExtension}>
+                    <ModalHeader
+                        container
+                        sx={{
+                            justifyContent: "space-between"
+                        }}
                     >
-                        Run Extension
-                    </RunExtension>
-                </ModalFooter>
+                        <Grid item>
+                            <HeaderIcon />
+                            <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
+                            <HeaderRightIcon />
+                            <ExtensionName>{selectedExtension}</ExtensionName>
+                        </Grid>
+                        <Grid item>
+                            <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
+                        </Grid>
+                    </ModalHeader>
+                    <ModalMain container>
+                        <ModalOptionsGrid item xs={4}>
+                            {/* left-side: Actions */}
+                            {selectedExtensionItem?.actions.length ?
+                                <ExtensionActions
+                                    extension={selectedExtensionItem}
+                                    selectedAction={selectedAction}
+                                    updateSelectedAction={updateSelectedActionHandler}
+                                /> : null}
+                        </ModalOptionsGrid>
+                        <ModalInputsGrid item xs={8}>
+                            {/* right-side: Inputs */}
+                            {selectedAction && functionFormData[selectedAction.name] ?
+                                <ActionForm
+                                    selectedAction={selectedAction}
+                                    inputParams={functionFormData[selectedAction.name]}
+                                    setInputParams={(params) => updateFormData(selectedAction.name, params)}
+                                /> : null}
+                        </ModalInputsGrid>
+                    </ModalMain>
+                    <ModalFooter>
+                        {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
+                        <RunExtension
+                            type="submit"
+                            variant="contained"
+                            title='run_extension'
+                            disabled={!isExtensionExecutable}
+                        >
+                            Run Extension
+                        </RunExtension>
+                    </ModalFooter>
+                </form>
             </ModalContainer>
         </Modal >
     )
