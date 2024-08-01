@@ -23,6 +23,7 @@ services:
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
+    platform: linux/amd64
     environment:
       - POSTGRES_USER=aqueductcore
       - POSTGRES_PASSWORD=password
