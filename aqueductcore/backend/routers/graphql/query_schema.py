@@ -141,6 +141,7 @@ class Query:
         """List of extensions available now"""
         return list(map(ExtensionInfo.from_extension, ExtensionsExecutor.list_extensions()))
 
+    # pylint: disable=unused-argument
     @strawberry.field
     async def task_status(
         self,
@@ -157,7 +158,7 @@ class Query:
             ids.append(uuid)
         if task_id in ids:
             position = ids.index(task_id)
-            vals = list(TaskStatus._value2member_map_)
+            vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
             return TaskInfo(
                 task_id=task_id,
                 eid=f"20240801-{position}",
@@ -175,9 +176,9 @@ class Query:
                 stderr_text=None,
                 result_code=None,
             )
-        else:
-            return None
+        return None
 
+    # pylint: disable=unused-argument,too-many-arguments
     @strawberry.field
     async def task_runs(
         self,
@@ -191,7 +192,7 @@ class Query:
         """ Returns information about all tasks.
         """
         result = []
-        vals = list(TaskStatus._value2member_map_)
+        vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
 
         for i in range(35):
             uuid = UUID(f"{{12345678-{i:04}-5678-1234-567812345678}}")
