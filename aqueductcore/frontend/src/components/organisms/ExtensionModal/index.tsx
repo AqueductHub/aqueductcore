@@ -123,19 +123,6 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
-        if (!isOpen) {
-            setFunctionFormData(prevState => {
-                Object.entries(prevState).forEach(([key]) => {
-                    prevState[key].forEach((item) => {
-                        item.value = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name)?.defaultValue;
-                    })
-                })
-                return prevState;
-            })
-        }
-    }, [isOpen])
-
-    useEffect(() => {
         if (selectedAction && selectedExtension) {
             setFunctionFormData(prevState => {
                 if (!prevState[selectedAction.name]) {
@@ -158,7 +145,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         && functionFormData[selectedAction.name].every(param => param.value);
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
-        handleClose()
+        handleCloseModal()
         await client.refetchQueries({
             include: "active",
         });
@@ -189,6 +176,22 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         }
     }
 
+    function handleCloseModal() {
+        handleClose()
+        resetExtensionForm()
+    }
+
+    function resetExtensionForm() {
+        setFunctionFormData(prevState => {
+            Object.entries(prevState).forEach(([key]) => {
+                prevState[key].forEach((item) => {
+                    item.value = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name)?.defaultValue;
+                })
+            })
+            return prevState;
+        })
+    }
+
     const updateSelectedActionHandler = (option: string) => {
         setSelectedAction(selectedExtensionItem?.actions.find(item => item.name === option));
     };
@@ -201,14 +204,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     };
 
     return (
-        <Modal
-            open={isOpen}
-            onClose={(event, reason) => {
-                if (reason !== 'backdropClick') {
-                    handleClose();
-                }
-            }}
-        >
+        <Modal open={isOpen}>
             <ModalContainer>
                 <form onSubmit={handleExecuteExtension}>
                     <ModalHeader
@@ -224,7 +220,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                             <ExtensionName>{selectedExtension}</ExtensionName>
                         </Grid>
                         <Grid item>
-                            <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
+                            <CloseIcon onClick={handleCloseModal} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
                         </Grid>
                     </ModalHeader>
                     <ModalMain container>
