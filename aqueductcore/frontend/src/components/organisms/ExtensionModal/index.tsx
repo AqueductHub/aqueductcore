@@ -12,7 +12,7 @@ import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
 import { FileSelectStateContext } from "context/FileSelectProvider";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { actionInExtensionsType } from "types/componentTypes";
+import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
 import { client } from "API/apolloClientConfig";
@@ -111,7 +111,6 @@ const ModalFooter = styled(Box)`
     padding: ${(props) => props.theme.spacing(2)} ${(props) => props.theme.spacing(3)};
 `;
 
-
 function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionModalProps) {
 
     const { experimentIdentifier } = useParams();
@@ -120,22 +119,33 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const selectedExtensionItem = extensions?.find(extension => extension.name === selectedExtension)
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
-    const [inputParams, setInputParams] = useState<Array<actionInExtensionsType>>();
+    const [functionFormData, setFunctionFormData] = useState<extensionActionsData>({});
     const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
-        setInputParams(selectedAction?.parameters.map(
-            item => (item.dataType === ExtensionParameterDataTypes.EXPERIMENT
-                ? { name: item.name, value: experimentIdentifier }
-                : { name: item.name, value: item.defaultValue ?? "" }
-            ))
-        )
+        if (selectedAction && selectedExtension) {
+            setFunctionFormData(prevState => {
+                if (!prevState[selectedAction.name]) {
+                    return {
+                        ...prevState,
+                        [selectedAction.name]: selectedAction.parameters.map(item => ({
+                            name: item.name,
+                            value: item.dataType === ExtensionParameterDataTypes.EXPERIMENT
+                                ? experimentIdentifier
+                                : item.defaultValue ?? ""
+                        }))
+                    };
+                }
+                return prevState;
+            });
+        }
     }, [selectedExtension, selectedAction])
 
-    const isExtensionExecutable = inputParams?.every(param => param.value);
+    const isExtensionExecutable = selectedAction && functionFormData[selectedAction.name]
+        && functionFormData[selectedAction.name].every(param => param.value);
 
     async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
-        handleClose()
+        handleCloseModal()
         await client.refetchQueries({
             include: "active",
         });
@@ -159,74 +169,92 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                 variables: {
                     extension: selectedExtension,
                     action: selectedAction.name,
-                    params: formatExtensionParameters(inputParams)
+                    params: formatExtensionParameters(functionFormData[selectedAction.name])
                 },
                 onCompleted: (data) => handleOnCompletedExtensionExecution(data.executeExtension)
             })
         }
     }
 
+    function handleCloseModal() {
+        handleClose()
+        resetExtensionForm()
+    }
+
+    function resetExtensionForm() {
+        setFunctionFormData(prevState => {
+            Object.entries(prevState).forEach(([key]) => {
+                prevState[key].forEach((item) => {
+                    item.value = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name)?.defaultValue;
+                })
+            })
+            return prevState;
+        })
+    }
+
     const updateSelectedActionHandler = (option: string) => {
-        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name == option));
+        setSelectedAction(selectedExtensionItem?.actions.find(item => item.name === option));
+    };
+
+    const updateFormData = (actionName: string, params: Array<actionInExtensionsType>) => {
+        setFunctionFormData(prevState => ({
+            ...prevState,
+            [actionName]: params
+        }));
     };
 
     return (
-        <Modal
-            open={isOpen}
-            onClose={(event, reason) => {
-                if (reason !== 'backdropClick') {
-                    handleClose();
-                }
-            }}
-        >
+        <Modal open={isOpen}>
             <ModalContainer>
-                <ModalHeader
-                    container
-                    sx={{
-                        justifyContent: "space-between"
-                    }}
-                >
-                    <Grid item>
-                        <HeaderIcon />
-                        <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
-                        <HeaderRightIcon />
-                        <ExtensionName>{selectedExtension}</ExtensionName>
-                    </Grid>
-                    <Grid item>
-                        <CloseIcon onClick={handleClose} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
-                    </Grid>
-                </ModalHeader>
-                <ModalMain container>
-                    <ModalOptionsGrid item xs={4}>
-                        {/* left-side: Actions */}
-                        {selectedExtensionItem?.actions.length ?
-                            <ExtensionActions
-                                extension={selectedExtensionItem}
-                                selectedAction={selectedAction}
-                                updateSelectedAction={updateSelectedActionHandler}
-                            /> : null}
-                    </ModalOptionsGrid>
-                    <ModalInputsGrid item xs={8}>
-                        {/* right-side: Inputs */}
-                        {inputParams ?
-                            <ActionForm
-                                selectedAction={selectedAction}
-                                inputParams={inputParams}
-                                setInputParams={setInputParams}
-                            /> : null}
-                    </ModalInputsGrid>
-                </ModalMain>
-                <ModalFooter>
-                    {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
-                    <RunExtension
-                        variant="contained"
-                        onClick={() => handleExecuteExtension()}
-                        title='run_extension'
-                        disabled={!isExtensionExecutable}
+                <form onSubmit={handleExecuteExtension}>
+                    <ModalHeader
+                        container
+                        sx={{
+                            justifyContent: "space-between"
+                        }}
                     >
-                        Run Extension
-                    </RunExtension>
-                </ModalFooter>
+                        <Grid item>
+                            <HeaderIcon />
+                            <AuthorName>{selectedExtensionItem?.authors}</AuthorName>
+                            <HeaderRightIcon />
+                            <ExtensionName>{selectedExtension}</ExtensionName>
+                        </Grid>
+                        <Grid item>
+                            <CloseIcon onClick={handleCloseModal} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
+                        </Grid>
+                    </ModalHeader>
+                    <ModalMain container>
+                        <ModalOptionsGrid item xs={4}>
+                            {/* left-side: Actions */}
+                            {selectedExtensionItem?.actions.length ?
+                                <ExtensionActions
+                                    extension={selectedExtensionItem}
+                                    selectedAction={selectedAction}
+                                    updateSelectedAction={updateSelectedActionHandler}
+                                /> : null}
+                        </ModalOptionsGrid>
+                        <ModalInputsGrid item xs={8}>
+                            {/* right-side: Inputs */}
+                            {selectedAction && functionFormData[selectedAction.name] ?
+                                <ActionForm
+                                    selectedAction={selectedAction}
+                                    inputParams={functionFormData[selectedAction.name]}
+                                    setInputParams={(params) => updateFormData(selectedAction.name, params)}
+                                /> : null}
+                        </ModalInputsGrid>
+                    </ModalMain>
+                    <ModalFooter>
+                        {loading ? <CircularProgress size={36} sx={{ mr: 3 }} /> : null}
+                        <RunExtension
+                            type="submit"
+                            variant="contained"
+                            title='run_extension'
+                            disabled={!isExtensionExecutable}
+                        >
+                            Run Extension
+                        </RunExtension>
+                    </ModalFooter>
+                </form>
             </ModalContainer>
         </Modal >
     )
