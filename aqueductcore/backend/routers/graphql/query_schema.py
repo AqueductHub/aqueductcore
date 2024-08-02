@@ -30,7 +30,6 @@ from aqueductcore.backend.routers.graphql.types import (
     UserInfo,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-from aqueductcore.backend.services.utils import timedelta_to_string
 
 
 @strawberry.input
@@ -124,14 +123,14 @@ class Query:
         task = TaskInfo(
             task_id=task_id,
             eid=f"20240801-{position}",
-            author=f"Tom-{position // 10}",
+            username=f"Tom-{position // 10}",
             extension_name=f"Mock extension name-{position // 5}",
             action_name=f"Mock action name-{position % 6}",
             started_time=datetime.now(),
             receive_time=datetime(2023, 12, 1 + position % 30, 23, 59, position, 999),
-            task_runtime=timedelta_to_string(
+            task_runtime=(
                 datetime.now() - datetime(2023, 12, 1 + position % 30, 23, 59, 59, 999)
-            ),
+            ).total_seconds(),
             ended_time=None,
             task_state=TaskStatus(vals[position % len(vals)]),
             stdout_text=None,
@@ -147,7 +146,7 @@ class Query:
 
     # pylint: disable=unused-argument
     @strawberry.field
-    async def task_status(
+    async def task(
         self,
         info: Info,
         task_id: UUID,
@@ -160,7 +159,7 @@ class Query:
 
     # pylint: disable=unused-argument
     @strawberry.field
-    async def task_runs(
+    async def tasks(
         self,
         info: Info,
         task_filter: TasksFilterInput,
@@ -174,14 +173,17 @@ class Query:
             if task is not None:
                 result.append(task)
 
-        if task_filter.author_name is not None:
-            result = [t for t in result if t.author == task_filter.author_name]
+        if task_filter.username is not None:
+            result = [t for t in result if t.username == task_filter.username]
 
-        if task_filter.experiment_id is not None:
-            result = [t for t in result if t.eid == task_filter.experiment_id]
+        if task_filter.experiment is not None:
+            result = [t for t in result if t.eid == task_filter.experiment.value]
 
         if task_filter.extension_name is not None:
             result = [t for t in result if t.extension_name == task_filter.extension_name]
+
+        if task_filter.action_name is not None:
+            result = [t for t in result if t.action_name == task_filter.action_name]
 
         if task_filter.offset is not None:
             result = result[task_filter.offset:]

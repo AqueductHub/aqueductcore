@@ -312,17 +312,20 @@ all_extensions_query = """
 
 some_tasks_runs = """
 {
-    taskRuns(
+    tasks(
         taskFilter: {
-            authorName: "Tom-0", 
-            experimentId: "20240801-0", 
+            username: "Tom-0", 
+            experiment: {
+                type: EID,
+                value: "20240801-0"
+            }, 
             extensionName: "Mock extension name-0", 
             limit: 10, 
             offset: 0
   	    }
     ) {
         actionName
-        author
+        username
         eid
         endedTime
         extensionName
@@ -341,9 +344,9 @@ some_tasks_runs = """
 
 task_status_check = """
 {
-    taskStatus(taskId: "12345678-0000-5678-1234-567812345678") {
+    task(taskId: "12345678-0000-5678-1234-567812345678") {
         actionName
-        author
+        username
         eid
         endedTime
         extensionName
@@ -958,17 +961,17 @@ async def test_extensions():
 
 
 @pytest.mark.asyncio
-async def test_task_runs():
+async def test_tasks():
     schema = Schema(query=Query)
     resp = await schema.execute(some_tasks_runs)
     assert resp.errors is None
-    assert resp.data["taskRuns"][0]["author"] == "Tom-0"
+    assert resp.data["tasks"][0]["username"] == "Tom-0"
 
 
 @pytest.mark.asyncio
-async def test_task_status():
+async def test_task():
     schema = Schema(query=Query)
     resp = await schema.execute(task_status_check)
     assert resp.errors is None
-    assert resp.data["taskStatus"]["eid"] == "20240801-0"
-    assert resp.data["taskStatus"]["author"] == "Tom-0"
+    assert resp.data["task"]["eid"] == "20240801-0"
+    assert resp.data["task"]["username"] == "Tom-0"
