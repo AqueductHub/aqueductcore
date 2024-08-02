@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Optional, cast
 from uuid import UUID
 
@@ -30,37 +30,7 @@ from aqueductcore.backend.routers.graphql.types import (
     UserInfo,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-
-
-def _timedelta_to_string(duration: timedelta) -> str:
-    if duration < timedelta(0.0):
-        return "<unknown>"
-
-    if duration < timedelta(seconds=60):
-        seconds = int(duration.total_seconds())
-        result = f"{seconds} second"
-        if seconds != 1:
-            result += "s"
-        return result
-
-    if duration < timedelta(minutes=60):
-        minutes = duration.seconds // 60
-        result = f"{minutes} minute"
-        if minutes != 1:
-            result += "s"
-        return result
-
-    if duration < timedelta(hours=24):
-        hours = duration.seconds // 3600
-        result = f"{hours} hour"
-        if hours != 1:
-            result += "s"
-        return result
-
-    result = f"{duration.days} day"
-    if duration.days != 1:
-        result += "s"
-    return result
+from aqueductcore.backend.services.utils import timedelta_to_string
 
 
 @strawberry.input
@@ -159,7 +129,7 @@ class Query:
             action_name=f"Mock action name-{position % 6}",
             started_time=datetime.now(),
             receive_time=datetime(2023, 12, 1 + position % 30, 23, 59, position, 999),
-            task_runtime=_timedelta_to_string(
+            task_runtime=timedelta_to_string(
                 datetime.now() - datetime(2023, 12, 1 + position % 30, 23, 59, 59, 999)
             ),
             ended_time=None,

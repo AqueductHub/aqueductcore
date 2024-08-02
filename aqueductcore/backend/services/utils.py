@@ -1,6 +1,6 @@
 """Utility functions for mapping ORMs to Pydantic models and vice versa."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from re import compile as recompile
 from typing import Tuple, List, Union
 from uuid import UUID, uuid4
@@ -88,3 +88,46 @@ def format_list_human_readable(arr: List[Union[str, int]]) -> str:
         return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
 
     return ""
+
+
+def timedelta_to_string(duration: timedelta) -> str:
+    """Converts time interval into a human readable string."""
+
+    hours = duration.seconds // 3600
+    minutes = (duration.seconds // 60) % 60
+    seconds = int(duration.seconds) % 60
+
+    if duration < timedelta(0.0):
+        return "<unknown>"
+
+    if duration < timedelta(seconds=60):
+        result = f"{seconds} second"
+        if seconds != 1:
+            result += "s"
+        return result
+
+    if duration < timedelta(minutes=60):
+        result = f"{minutes} minute"
+        if minutes != 1:
+            result += "s"
+        return result
+
+    if duration < timedelta(hours=24):
+        result = f"{hours} hour"
+        if hours != 1:
+            result += "s"
+        if minutes > 0:
+            result += f" {minutes} minute"
+            if minutes != 1:
+                result += "s"
+        return result
+
+    result = f"{duration.days} day"
+    if duration.days != 1:
+        result += "s"
+    if hours > 0:
+        result += f" {hours} hour"
+        if hours != 1:
+            result += "s"
+
+    return result
