@@ -25,6 +25,8 @@ from aqueductcore.backend.routers.graphql.types import (
     ExperimentData,
     Experiments,
     ExtensionInfo,
+    ExtensionParameterType,
+    KeyValuePair,
     Tags,
     TaskInfo,
     TaskStatus,
@@ -146,6 +148,19 @@ class Query:
             stdout_text=None,
             stderr_text=None,
             result_code=None,
+            parameters=[
+                KeyValuePair(
+                    value="some value",
+                    key=ExtensionParameterType(
+                        name="Parameter1",
+                        data_type="string",
+                        display_name=None,
+                        description=None,
+                        default_value=None,
+                        options=None,
+                    )
+                )
+            ]
         )
         if task.task_state in [TaskStatus.SUCCESS, TaskStatus.FAILURE]:
             task.result_code = [TaskStatus.SUCCESS, TaskStatus.FAILURE].index(task.task_state)

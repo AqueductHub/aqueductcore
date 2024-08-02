@@ -189,6 +189,14 @@ class TaskStatus(Enum):
 
 
 @strawberry.type
+class KeyValuePair:
+    """Parameter key and value"""
+
+    key: ExtensionParameterType
+    value: Optional[str]
+
+
+@strawberry.type
 class TaskInfo:
     """Full information about the scheduled task."""
 
@@ -199,6 +207,9 @@ class TaskInfo:
     username: Optional[str] = strawberry.field(description="User, who stated the task.")
     extension_name: str = strawberry.field(description="Name of the extension.")
     action_name: str = strawberry.field(description="Name of the extension action.")
+    parameters: List[KeyValuePair] = strawberry.field(
+        description="Name of the extension action."
+    )
     receive_time: datetime = strawberry.field(description="Time task was submitted.")
     started_time: datetime = strawberry.field(description="Time task was started.")
     task_runtime: float = strawberry.field(description="Total seconds of run time.")

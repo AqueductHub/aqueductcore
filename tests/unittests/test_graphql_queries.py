@@ -362,6 +362,9 @@ task_status_check = """
         taskId
         taskRuntime
         taskState
+        parameters {
+            value, key { dataType }
+        }
     }
 }
 """
@@ -979,3 +982,5 @@ async def test_task():
     assert resp.errors is None
     assert resp.data["task"]["experiment"]["eid"] == "20240801-0"
     assert resp.data["task"]["username"] == "Tom-0"
+    assert resp.data["task"]["parameters"][0]["key"]["dataType"] == "string"
+
