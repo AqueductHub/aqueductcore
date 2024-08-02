@@ -191,7 +191,9 @@ class Query:
                 result = [t for t in result if t.experiment.eid == task_filter.experiment.value]
 
             if task_filter.experiment.type == IDType.UUID:
-                result = [t for t in result if t.experiment.uuid == UUID(task_filter.experiment.value)]
+                result = [
+                    t for t in result if t.experiment.uuid == UUID(task_filter.experiment.value)
+                ]
 
         if task_filter.extension_name is not None:
             result = [t for t in result if t.extension_name == task_filter.extension_name]
