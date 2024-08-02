@@ -10,7 +10,10 @@ import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.routers.graphql.inputs import ExperimentIdentifierInput
+from aqueductcore.backend.routers.graphql.inputs import (
+    ExperimentIdentifierInput,
+    TasksFilterInput,
+)
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
     get_current_user_info,
     get_experiment,
@@ -141,6 +144,37 @@ class Query:
         """List of extensions available now"""
         return list(map(ExtensionInfo.from_extension, ExtensionsExecutor.list_extensions()))
 
+    @staticmethod
+    def _get_mock_task(task_id: UUID) -> Optional[TaskInfo]:
+        ids = [UUID(f"{{12345678-{i:04}-5678-1234-567812345678}}") for i in range(35)]
+        if task_id not in ids:
+            return None
+        position = ids.index(task_id)
+        vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
+        task = TaskInfo(
+            task_id=task_id,
+            eid=f"20240801-{position}",
+            author=f"Tom-{position // 10}",
+            extension_name=f"Mock extension name-{position // 5}",
+            action_name=f"Mock action name-{position % 6}",
+            started_time=datetime.now(),
+            receive_time=datetime(2023, 12, 1 + position % 30, 23, 59, position, 999),
+            task_runtime=_timedelta_to_string(
+                datetime.now() - datetime(2023, 12, 1 + position % 30, 23, 59, 59, 999)
+            ),
+            ended_time=None,
+            task_state=TaskStatus(vals[position % len(vals)]),
+            stdout_text=None,
+            stderr_text=None,
+            result_code=None,
+        )
+        if task.task_state in [TaskStatus.SUCCESS, TaskStatus.FAILURE]:
+            task.result_code = [TaskStatus.SUCCESS, TaskStatus.FAILURE].index(task.task_state)
+            task.stderr_text = "Some text"
+            task.stdout_text = "Some text 2"
+            task.ended_time = datetime.now()
+        return task
+
     # pylint: disable=unused-argument
     @strawberry.field
     async def task_status(
@@ -152,80 +186,35 @@ class Query:
         with a given identifier. If id is unknown,
         returns None.
         """
-        ids = []
-        for i in range(35):
-            uuid = UUID(f"{{12345678-{i:04}-5678-1234-567812345678}}")
-            ids.append(uuid)
-        if task_id in ids:
-            position = ids.index(task_id)
-            vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
-            return TaskInfo(
-                task_id=task_id,
-                eid=f"20240801-{position}",
-                author="Tom",
-                extension_name="Mock extension name",
-                action_name="Mock action name",
-                receive_time=datetime.now(),
-                started_time=datetime(2023, 12, 1 + position % 30, 23, 59, position, 999),
-                task_runtime=_timedelta_to_string(
-                    datetime.now() - datetime(2023, 12, 1 + position % 30, 23, 59, 59, 999)
-                ),
-                ended_time=None,
-                task_state=TaskStatus(vals[position % len(vals)]),
-                stdout_text=None,
-                stderr_text=None,
-                result_code=None,
-            )
-        return None
+        return Query._get_mock_task(task_id)
 
-    # pylint: disable=unused-argument,too-many-arguments
+    # pylint: disable=unused-argument
     @strawberry.field
     async def task_runs(
         self,
         info: Info,
-        author_name: Optional[str] = None,
-        extension_name: Optional[str] = None,
-        experiment_id: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
+        task_filter: TasksFilterInput,
     ) -> List[TaskInfo]:
         """ Returns information about all tasks.
         """
         result = []
-        vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
-
         for i in range(35):
             uuid = UUID(f"{{12345678-{i:04}-5678-1234-567812345678}}")
-            task = TaskInfo(
-                task_id=uuid,
-                eid=f"20240801-{i // 4}",
-                author=f"Tom-{i % 3}",
-                extension_name=f"Mock extension name {i // 10}",
-                action_name=f"Mock action name - {i % 7}",
-                receive_time=datetime.now(),
-                started_time=datetime(2023, 12, 1 + i % 30, 23, 59, i, 999),
-                task_runtime=_timedelta_to_string(
-                    datetime.now() - datetime(2023, 12, 1 + i % 30, 23, 59, 59, 999)
-                ),
-                ended_time=None,
-                task_state=TaskStatus(vals[i % len(vals)]),
-                stdout_text=None,
-                stderr_text=None,
-                result_code=None,
-            )
-            result.append(task)
+            task = Query._get_mock_task(uuid)
+            if task is not None:
+                result.append(task)
 
-        if author_name is not None:
-            result = [t for t in result if t.author == author_name]
+        if task_filter.author_name is not None:
+            result = [t for t in result if t.author == task_filter.author_name]
 
-        if experiment_id is not None:
-            result = [t for t in result if t.eid == experiment_id]
+        if task_filter.experiment_id is not None:
+            result = [t for t in result if t.eid == task_filter.experiment_id]
 
-        if extension_name is not None:
-            result = [t for t in result if t.extension_name == extension_name]
+        if task_filter.extension_name is not None:
+            result = [t for t in result if t.extension_name == task_filter.extension_name]
 
-        if offset is not None:
-            result = result[offset:]
-        if limit is not None:
-            result = result[:limit]
+        if task_filter.offset is not None:
+            result = result[task_filter.offset:]
+        if task_filter.limit is not None:
+            result = result[:task_filter.limit]
         return result
