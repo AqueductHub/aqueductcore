@@ -326,7 +326,9 @@ some_tasks_runs = """
     ) {
         actionName
         username
-        eid
+        experiment {
+            eid, title
+        }
         endedTime
         extensionName
         receiveTime
@@ -347,7 +349,9 @@ task_status_check = """
     task(taskId: "12345678-0000-5678-1234-567812345678") {
         actionName
         username
-        eid
+        experiment {
+            eid, title
+        }
         endedTime
         extensionName
         receiveTime
@@ -973,5 +977,5 @@ async def test_task():
     schema = Schema(query=Query)
     resp = await schema.execute(task_status_check)
     assert resp.errors is None
-    assert resp.data["task"]["eid"] == "20240801-0"
+    assert resp.data["task"]["experiment"]["eid"] == "20240801-0"
     assert resp.data["task"]["username"] == "Tom-0"

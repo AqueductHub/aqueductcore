@@ -12,6 +12,7 @@ from strawberry.types import Info
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentIdentifierInput,
+    IDType,
     TasksFilterInput,
 )
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
@@ -122,7 +123,16 @@ class Query:
         vals = list(TaskStatus._value2member_map_)  # pylint: disable=protected-access
         task = TaskInfo(
             task_id=task_id,
-            eid=f"20240801-{position}",
+            experiment=ExperimentData(
+                uuid=task_id,
+                title="Experiment",
+                description="Description",
+                created_at=datetime(2020, 1, 1, 0, 0),
+                updated_at=datetime(2021, 1, 1, 0, 0),
+                eid=f"20240801-{position}",
+                created_by="ninja",
+                tags=["test"],
+            ),
             username=f"Tom-{position // 10}",
             extension_name=f"Mock extension name-{position // 5}",
             action_name=f"Mock action name-{position % 6}",
@@ -177,7 +187,11 @@ class Query:
             result = [t for t in result if t.username == task_filter.username]
 
         if task_filter.experiment is not None:
-            result = [t for t in result if t.eid == task_filter.experiment.value]
+            if task_filter.experiment.type == IDType.EID:
+                result = [t for t in result if t.experiment.eid == task_filter.experiment.value]
+
+            if task_filter.experiment.type == IDType.UUID:
+                result = [t for t in result if t.experiment.uuid == UUID(task_filter.experiment.value)]
 
         if task_filter.extension_name is not None:
             result = [t for t in result if t.extension_name == task_filter.extension_name]

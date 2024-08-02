@@ -193,7 +193,7 @@ class TaskInfo:
     """Full information about the scheduled task."""
 
     task_id: UUID = strawberry.field(description="Unique identifier of the task.")
-    eid: str = strawberry.field(description="Experiment the task is associated with.")
+    experiment: Optional[ExperimentData] = strawberry.field(description="Experiment the task is associated with.")
     username: Optional[str] = strawberry.field(description="User, who stated the task.")
     extension_name: str = strawberry.field(description="Name of the extension.")
     action_name: str = strawberry.field(description="Name of the extension action.")
