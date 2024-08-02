@@ -208,7 +208,7 @@ class TaskInfo:
     extension_name: str = strawberry.field(description="Name of the extension.")
     action_name: str = strawberry.field(description="Name of the extension action.")
     parameters: List[KeyValuePair] = strawberry.field(
-        description="Name of the extension action."
+        description="List of task parameters and their values."
     )
     receive_time: datetime = strawberry.field(description="Time task was submitted.")
     started_time: datetime = strawberry.field(description="Time task was started.")
