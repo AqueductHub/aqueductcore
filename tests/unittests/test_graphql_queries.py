@@ -310,6 +310,66 @@ all_extensions_query = """
 """
 
 
+some_tasks_runs = """
+{
+    tasks(
+        taskFilter: {
+            username: "Tom-0", 
+            experiment: {
+                type: EID,
+                value: "20240801-0"
+            }, 
+            extensionName: "Mock extension name-0", 
+            limit: 10, 
+            offset: 0
+  	    }
+    ) {
+        actionName
+        username
+        experiment {
+            eid, title
+        }
+        endedTime
+        extensionName
+        receiveTime
+        resultCode
+        startedTime
+        stderrText
+        stdoutText
+        taskId
+        taskRuntime
+        taskState
+    }
+}
+"""
+
+
+task_status_check = """
+{
+    task(taskId: "12345678-0000-5678-1234-567812345678") {
+        actionName
+        username
+        experiment {
+            eid, title
+        }
+        endedTime
+        extensionName
+        receiveTime
+        resultCode
+        startedTime
+        stderrText
+        stdoutText
+        taskId
+        taskRuntime
+        taskState
+        parameters {
+            value, key { dataType }
+        }
+    }
+}
+"""
+
+
 def check_tag_values(tag_res: Dict, sample_tag: TagRead):
     assert sample_tag.name == tag_res
 
@@ -905,3 +965,22 @@ async def test_extensions():
     echo = p_dummy["actions"][0]
     assert echo["experimentVariableName"] == "var4"
     assert echo["parameters"][1]["displayName"] == "some display name"
+
+
+@pytest.mark.asyncio
+async def test_tasks():
+    schema = Schema(query=Query)
+    resp = await schema.execute(some_tasks_runs)
+    assert resp.errors is None
+    assert resp.data["tasks"][0]["username"] == "Tom-0"
+
+
+@pytest.mark.asyncio
+async def test_task():
+    schema = Schema(query=Query)
+    resp = await schema.execute(task_status_check)
+    assert resp.errors is None
+    assert resp.data["task"]["experiment"]["eid"] == "20240801-0"
+    assert resp.data["task"]["username"] == "Tom-0"
+    assert resp.data["task"]["parameters"][0]["key"]["dataType"] == "string"
+

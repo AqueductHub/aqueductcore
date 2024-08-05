@@ -1,6 +1,7 @@
-import pytest
-
-from aqueductcore.backend.services.utils import format_list_human_readable, is_tag_valid
+from aqueductcore.backend.services.utils import (
+    format_list_human_readable,
+    is_tag_valid,
+)
 
 
 def test_single_element():

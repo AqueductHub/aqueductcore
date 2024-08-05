@@ -61,3 +61,15 @@ class ExperimentRemoveInput:
     """Input type to remove experiment"""
 
     uuid: UUID
+
+
+@strawberry.input
+class TasksFilterInput:
+    """Filter for tasks list"""
+
+    username: Optional[str] = None
+    extension_name: Optional[str] = None
+    action_name: Optional[str] = None
+    experiment: Optional[ExperimentIdentifierInput] = None
+    limit: Optional[int] = None
+    offset: Optional[int] = None

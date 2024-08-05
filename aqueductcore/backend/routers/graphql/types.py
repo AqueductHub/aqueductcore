@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional, cast
 from uuid import UUID
 
@@ -173,3 +174,47 @@ class ExtensionInfo:
             authors=extension.authors,
             actions=actions,
         )
+
+
+@strawberry.enum
+class TaskStatus(Enum):
+    """Statuses of task execution"""
+
+    FAILURE = "failure"
+    PENDING = "pending"
+    RECEIVED = "received"
+    REVOKED = "revoked"
+    STARTED = "started"
+    SUCCESS = "success"
+
+
+@strawberry.type
+class KeyValuePair:
+    """Parameter key and value"""
+
+    key: ExtensionParameterType
+    value: Optional[str]
+
+
+@strawberry.type
+class TaskInfo:
+    """Full information about the scheduled task."""
+
+    task_id: UUID = strawberry.field(description="Unique identifier of the task.")
+    experiment: Optional[ExperimentData] = strawberry.field(
+        description="Experiment the task is associated with."
+    )
+    username: Optional[str] = strawberry.field(description="User, who stated the task.")
+    extension_name: str = strawberry.field(description="Name of the extension.")
+    action_name: str = strawberry.field(description="Name of the extension action.")
+    parameters: List[KeyValuePair] = strawberry.field(
+        description="List of task parameters and their values."
+    )
+    receive_time: datetime = strawberry.field(description="Time task was submitted.")
+    started_time: datetime = strawberry.field(description="Time task was started.")
+    task_runtime: float = strawberry.field(description="Total seconds of run time.")
+    ended_time: Optional[datetime] = strawberry.field(description="Time task was completed.")
+    task_state: TaskStatus = strawberry.field(description="Status of the task execution.")
+    stdout_text: Optional[str] = strawberry.field(description="Content of task stdout.")
+    stderr_text: Optional[str] = strawberry.field(description="Content of task stderr.")
+    result_code: Optional[int] = strawberry.field(description="Process result code.")
