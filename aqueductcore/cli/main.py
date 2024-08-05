@@ -1,6 +1,7 @@
 """Command line interface (CLI) for Aqueduct."""
 
 import os
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -88,3 +89,40 @@ def importer(
         sync_engine=sync_engine,
         version=__version__,
     )
+
+
+@app.command(name="worker")
+def worker():
+    """Command for starting Celery worker for Aqueduct."""
+    with subprocess.Popen(
+        [
+            "celery",
+            "-A",
+            "aqueductcore.backend.services.task_executor.celery_app",
+            "worker",
+            "-l",
+            "info",
+        ],
+    ) as process:
+        process.wait()
+
+
+@app.command(name="flower")
+def flower():
+    """Command for starting Celery Flower service for Aqueduct."""
+
+    if settings.rabbitmq_management_port is None:
+        err_console.print("RabbitMQ management port environment variable is not set.")
+        raise typer.Exit(code=1)
+
+    with subprocess.Popen(
+        [
+            "celery",
+            "-A",
+            "aqueductcore.backend.services.task_executor.celery_app",
+            "flower",
+            f"--broker-api=http://{settings.rabbitmq_username}:{settings.rabbitmq_password}"
+            f"@{settings.rabbitmq_host}:{settings.rabbitmq_management_port}/api/vhost",
+        ],
+    ) as process:
+        process.wait()
