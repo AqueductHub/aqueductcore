@@ -1,3 +1,4 @@
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { PropsWithChildren, ReactNode, useState } from "react";
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -62,6 +63,7 @@ export const drawerItems: DrawerItemType[] = [
       { text: "Archived", url: "/aqd/experiments/archived", withSearchParams: true },
     ],
   },
+  { text: "Job History", icon: <FormatListBulletedIcon />, url: "/aqd/job-history" },
   { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true },
   { text: "Settings", icon: <SettingsIcon />, url: "/settings" },
 ];
