@@ -108,21 +108,29 @@ def worker():
 
 
 @app.command(name="flower")
-def flower():
+def flower(
+    broker_api: Annotated[
+        str,
+        typer.Option(
+            "--broker-api",
+            help="RabbitMQ management API URL to pass to flower.",
+        ),
+    ] = ""
+):
     """Command for starting Celery Flower service for Aqueduct."""
 
-    if settings.rabbitmq_management_port is None:
-        err_console.print("RabbitMQ management port environment variable is not set.")
-        raise typer.Exit(code=1)
+    print(broker_api)
+    command = [
+        "celery",
+        "-A",
+        "aqueductcore.backend.services.task_executor.celery_app",
+        "flower",
+    ]
 
-    with subprocess.Popen(
-        [
-            "celery",
-            "-A",
-            "aqueductcore.backend.services.task_executor.celery_app",
-            "flower",
-            f"--broker-api=http://{settings.rabbitmq_username}:{settings.rabbitmq_password}"
-            f"@{settings.rabbitmq_host}:{settings.rabbitmq_management_port}/api/vhost",
-        ],
-    ) as process:
+    if len(broker_api) > 0:
+        command.append(
+            f"--broker-api={broker_api}",
+        )
+
+    with subprocess.Popen(command) as process:
         process.wait()

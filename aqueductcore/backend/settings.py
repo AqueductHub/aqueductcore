@@ -35,16 +35,8 @@ class Settings(BaseSettings):
     postgres_db: str
     """PostgreSQL database name."""
 
-    rabbitmq_host: str
-    """Rabbitmq hostname."""
-    rabbitmq_port: int
-    """Rabbitmq port."""
-    rabbitmq_management_port: Optional[int] = None
-    """Rabbitmq port."""
-    rabbitmq_username: str
-    """Rabbitmq username."""
-    rabbitmq_password: str
-    """Rabbitmq password."""
+    celery_message_queue: str
+    """Celery message queue connection string."""
 
     api_prefix: str = "/api"
     """Route prefix for all of the APIs."""
