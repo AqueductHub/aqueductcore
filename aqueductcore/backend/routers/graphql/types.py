@@ -122,11 +122,13 @@ class ExtensionActionInfo:
 class ExtensionExecutionResult:
     """Result of OS process execution"""
 
-    return_code: int
-    stdout: str
-    stderr: str
+    return_code: int     # obsolete
+    stdout: str          # obsolete
+    stderr: str          # obsolete
     log_experiment: str
-    log_file: str
+    log_file: str        # obsolete
+    task_id: UUID
+    task_status: TaskStatus
 
 
 @strawberry.type
@@ -211,7 +213,7 @@ class TaskInfo:
         description="List of task parameters and their values."
     )
     receive_time: datetime = strawberry.field(description="Time task was submitted.")
-    started_time: datetime = strawberry.field(description="Time task was started.")
+    started_time: Optional[datetime] = strawberry.field(description="Time task was started.")
     task_runtime: float = strawberry.field(description="Total seconds of run time.")
     ended_time: Optional[datetime] = strawberry.field(description="Time task was completed.")
     task_state: TaskStatus = strawberry.field(description="Status of the task execution.")

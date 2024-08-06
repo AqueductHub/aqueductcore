@@ -3,16 +3,18 @@
 
 from __future__ import annotations
 
-import os
-import subprocess
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from uuid import UUID
 
 import yaml
 from pydantic import BaseModel, Field
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
+from aqueductcore.backend.routers.graphql.types import TaskStatus
+from aqueductcore.backend.services.task_executor import execute_task
+
 
 MANIFEST_FILE = "manifest.yml"
 
@@ -34,9 +36,11 @@ class SupportedTypes(str, Enum):
 class ExtensionExecutionResult(BaseModel):
     """OS process execution result"""
 
-    return_code: int
-    stdout: str
-    stderr: str
+    return_code: Optional[int]
+    stdout: Optional[str]
+    stderr: Optional[str]
+    task_id: UUID
+    task_status: TaskStatus
 
 
 class ExtensionParameter(BaseModel):
@@ -121,7 +125,6 @@ class ExtensionAction(BaseModel):
         extension: Extension,
         params: dict,
         python: str | Path | None = None,
-        timeout: int = 60,
     ) -> ExtensionExecutionResult:
         """Passes parameters to the action code and awaits
         execution results
@@ -129,14 +132,12 @@ class ExtensionAction(BaseModel):
         Args:
             extension: extension instance to access settings.
             params: dictionary of names params.
-            timeout: time to wait until process finishes.
 
         Returns:
             ExtensionExecutionResult: OS process results.
         """
-        my_env = os.environ.copy()
         self.validate_values(params)
-        my_env.update({key: str(val) for key, val in (extension.constants or {}).items()})
+        my_env = {key: str(val) for key, val in (extension.constants or {}).items()}
         my_env.update(params)
         my_env["aqueduct_url"] = extension.aqueduct_url
         if extension.aqueduct_api_token is not None:
@@ -148,22 +149,23 @@ class ExtensionAction(BaseModel):
 
         rich_script = self.script
         if python:
-            rich_script = rich_script.replace("$python ", f"{python} ")
-        with subprocess.Popen(
-            rich_script,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=my_env,
-            cwd=cwd,
-        ) as proc:
-            out, err = proc.communicate(timeout=timeout)
-            code = proc.returncode
-            return ExtensionExecutionResult(
-                return_code=code,
-                stdout=out.decode(),
-                stderr=err.decode(),
-            )
+            rel_python = Path(python).relative_to(cwd)
+            rich_script = rich_script.replace("$python ", f"{rel_python} ")
+
+        task = execute_task(
+            extension_directory_name=cwd.name,
+            shell_script=rich_script,
+            execute_blocking=False,
+            **my_env,
+        )
+        # TODO: probably this is a duplication.
+        return ExtensionExecutionResult(
+            return_code=task.result_code,
+            stdout=task.std_out,
+            stderr=task.std_err,
+            task_id=task.task_id,
+            task_status=TaskStatus(task.status),
+        )
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
         """Return first experiment variable defined in manifest.
@@ -227,10 +229,10 @@ class Extension(BaseModel):
             # if there are more documents, they will be ignored
             extension_as_dict = yaml.safe_load(manifest_stream)
             extension = Extension(**extension_as_dict)
-            extension.manifest_file = str(manifest.absolute())
+            extension.manifest_file = str(manifest.resolve().absolute())
             extension.aqueduct_api_token = None
             extension.validate_object()
-            extension._folder = path
+            extension._folder = path.resolve().absolute()
             return extension
 
     def get_action(self, name: str) -> ExtensionAction:

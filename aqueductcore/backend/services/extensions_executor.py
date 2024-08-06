@@ -179,34 +179,3 @@ class ExtensionsExecutor:
             params=params,
             python=python,
         )
-
-    @classmethod
-    async def save_log_to_experiment(
-        cls,
-        context: ServerContext,
-        eid: str,
-        result: ExtensionExecutionResult,
-        log_filename: str,
-    ):
-        """Saves result of extension executions into a log file inside experiment.
-
-        context: server context with database connection.
-        eid: EID of the experiment.
-        result: object with extension execution results.
-        log_filename: name of the log file to which data is saved.
-        """
-        experiment = await get_experiment_by_eid(
-            user_info=context.user_info, db_session=context.db_session, eid=eid
-        )
-        experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment.uuid
-        )
-        # create experiment directory if it is its first file
-        if not os.path.exists(experiment_dir):
-            os.makedirs(experiment_dir)
-        destination = os.path.join(experiment_dir, log_filename)
-
-        with open(destination, "w", encoding="utf-8") as dest:
-            dest.write(f"result code:\n{result.return_code}\n======\n")
-            dest.write(f"stdout:\n{result.stdout}\n======\n")
-            dest.write(f"stderr:\n{result.stderr}\n")
