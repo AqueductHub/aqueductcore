@@ -1,26 +1,58 @@
-version: '3'
+version: "3"
+
+x-aqueduct-common: &aqueduct-common
+  platform: linux/amd64
+  image: aqueducthub/aqueductcore-dev:latest
+  restart: always
+  depends_on:
+    - postgres
+    - rabbitmq
+  environment:
+    EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
+    EXTENSIONS_DIR_PATH: /workspace/external/extensions
+    POSTGRES_USERNAME: admin
+    POSTGRES_PASSWORD: admin
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: aqueduct
+    CELERY_MESSAGE_QUEUE: amqp://guest:guest@rabbitmq:5672
+  volumes:
+    - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
+    - ${EXTENSIONS_DIR}:/workspace/external/extensions
+
 services:
   aqueduct:
-    platform: linux/amd64
-    image: aqueducthub/aqueductcore:latest
-    restart: always
-    depends_on:
-      - postgres
-    environment:
-      EXPERIMENTS_DIR_PATH: /tmp/aqueduct_experiments
-      EXTENSIONS_DIR_PATH: /workspace/external/extensions
-      POSTGRES_USERNAME: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: aqueduct
-    volumes:
-      - ${EXPERIMENTS_DIR}:/tmp/aqueduct_experiments
-      - type: bind
-        source: ${EXTENSIONS_DIR}
-        target: /workspace/external/extensions
+    <<: *aqueduct-common
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aqueduct.rule=Host(`aqueduct.localhost`)"
+    expose:
+      - 8000
+
+  aqueduct-worker:
+    <<: *aqueduct-common
+    labels:
+      - "traefik.enable=false"
+    command: aqueduct worker
+
+  aqueduct-flower:
+    <<: *aqueduct-common
+    command: aqueduct flower --broker-api http://guest:guest@rabbitmq:15672/api/vhost
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aqueduct-flower.rule=Host(`flower.localhost`)"
     ports:
-      - 80:8000
+      - 5555
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.localhost`)"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+    expose:
+      - 5672
+      - 15672
 
   postgres:
     platform: linux/amd64
@@ -30,5 +62,16 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=aqueduct
+    labels:
+      - "traefik.enable=false"
     expose:
       - 5432
+
+  reverse-proxy:
+    image: traefik:v3.1
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
