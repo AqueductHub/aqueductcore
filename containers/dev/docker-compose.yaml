@@ -7,6 +7,7 @@ services:
       dockerfile: containers/dev/Dockerfile
     depends_on:
       - postgres
+      - rabbitmq
     user: dev_user
     container_name: aqueductcore
     platform: linux/amd64
@@ -30,3 +31,9 @@ services:
       - POSTGRES_DB=aqueductcore_dev
     expose:
       - 5432
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

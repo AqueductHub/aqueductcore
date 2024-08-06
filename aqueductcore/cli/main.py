@@ -1,6 +1,7 @@
 """Command line interface (CLI) for Aqueduct."""
 
 import os
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -88,3 +89,48 @@ def importer(
         sync_engine=sync_engine,
         version=__version__,
     )
+
+
+@app.command(name="worker")
+def worker():
+    """Command for starting Celery worker for Aqueduct."""
+    with subprocess.Popen(
+        [
+            "celery",
+            "-A",
+            "aqueductcore.backend.services.task_executor.celery_app",
+            "worker",
+            "-l",
+            "info",
+        ],
+    ) as process:
+        process.wait()
+
+
+@app.command(name="flower")
+def flower(
+    broker_api: Annotated[
+        str,
+        typer.Option(
+            "--broker-api",
+            help="RabbitMQ management API URL to pass to flower.",
+        ),
+    ] = ""
+):
+    """Command for starting Celery Flower service for Aqueduct."""
+
+    print(broker_api)
+    command = [
+        "celery",
+        "-A",
+        "aqueductcore.backend.services.task_executor.celery_app",
+        "flower",
+    ]
+
+    if len(broker_api) > 0:
+        command.append(
+            f"--broker-api={broker_api}",
+        )
+
+    with subprocess.Popen(command) as process:
+        process.wait()
