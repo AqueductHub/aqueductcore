@@ -1,7 +1,10 @@
 import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 
-const ExtensionActionContainer = styled(Box)``;
+interface JobExtensionActionNameProps {
+    extensionName: string,
+    actionName: string,
+}
 
 const ExtensionName = styled(Typography)`
     font-size: 1.0rem;
@@ -10,14 +13,18 @@ const ExtensionName = styled(Typography)`
 
 const ActionName = styled(Typography)`
     font-size: 0.75rem;
+    margin-top: -${(props) => props.theme.spacing(0.5)};
 `;
 
-function JobExtensionActionName() {
+function JobExtensionActionName({
+    extensionName,
+    actionName
+}: JobExtensionActionNameProps) {
     return (
-        <ExtensionActionContainer>
-            <ExtensionName>Qiskit Simulator</ExtensionName>
-            <ActionName>Simulate Quskit Circuit</ActionName>
-        </ExtensionActionContainer>
+        <Box>
+            <ExtensionName>{extensionName}</ExtensionName>
+            <ActionName>{actionName}</ActionName>
+        </Box>
     );
 }
 

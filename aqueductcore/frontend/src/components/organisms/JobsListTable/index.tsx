@@ -6,11 +6,12 @@ import TableRow from "@mui/material/TableRow";
 import { Paper } from "@mui/material";
 import JobExperimentName from "components/atoms/JobExperimentName";
 import JobExtensionActionName from "components/atoms/JobExtensionActionName";
+import JobStatus from "components/atoms/JobStatus";
 
-function JobsListTable () {
+function JobsListTable() {
     return (
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer aria-label="sticky table">
+            <TableContainer sx={{ width: "100%" }} aria-label="sticky table">
                 <TableHead>
                     <TableRow>
                         <TableCell>
@@ -33,12 +34,20 @@ function JobsListTable () {
                 <TableBody>
                     <TableRow>
                         <TableCell>
-                            <JobExperimentName />
+                            <JobExperimentName
+                                experimentName="2 qubit gate first test result"
+                                experimentEid="20240508-2"
+                            />
                         </TableCell>
                         <TableCell>
-                            <JobExtensionActionName />
+                            <JobExtensionActionName
+                                extensionName="Qiskit Simulator"
+                                actionName="Simulate Qiskit Circuit"
+                            />
                         </TableCell>
-                        <TableCell></TableCell>
+                        <TableCell>
+                            <JobStatus status="PENDING" />
+                        </TableCell>
                         <TableCell>Jatin Lal</TableCell>
                         <TableCell>18/07/2024 10:32</TableCell>
                     </TableRow>
