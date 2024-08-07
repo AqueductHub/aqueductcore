@@ -4,10 +4,11 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Paper } from "@mui/material";
-import JobExperimentName from "components/atoms/JobExperimentName";
-import JobExtensionActionName from "components/atoms/JobExtensionActionName";
+import JobExtensionActionName from "components/molecules/JobListTableCells/JobExtensionActionName";
+import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
 
-function JobsListTable () {
+function JobsListTable() {
     return (
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer aria-label="sticky table">
@@ -38,7 +39,9 @@ function JobsListTable () {
                         <TableCell>
                             <JobExtensionActionName />
                         </TableCell>
-                        <TableCell></TableCell>
+                        <TableCell>
+                            <JobExtensionStatus />
+                        </TableCell>
                         <TableCell>Jatin Lal</TableCell>
                         <TableCell>18/07/2024 10:32</TableCell>
                     </TableRow>
