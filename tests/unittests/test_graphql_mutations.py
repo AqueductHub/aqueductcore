@@ -287,7 +287,9 @@ execute_extension = """
                 ["var7", "string4"],
             ]
     ) {
-        returnCode, stderr, stdout
+        resultCode,
+        stderrText, stdoutText,
+        taskId, taskState
     }
   }
 """

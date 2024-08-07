@@ -10,9 +10,9 @@ from uuid import UUID
 
 import yaml
 from pydantic import BaseModel, Field
+import strawberry
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
-from aqueductcore.backend.routers.graphql.types import TaskStatus
 from aqueductcore.backend.services.task_executor import execute_task
 
 
@@ -31,6 +31,18 @@ class SupportedTypes(str, Enum):
     FILE = "file"
     BOOL = "bool"
     SELECT = "select"
+
+
+@strawberry.enum
+class TaskStatus(Enum):
+    """Statuses of task execution"""
+
+    FAILURE = "failure"
+    PENDING = "pending"
+    RECEIVED = "received"
+    REVOKED = "revoked"
+    STARTED = "started"
+    SUCCESS = "success"
 
 
 class ExtensionExecutionResult(BaseModel):
