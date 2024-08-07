@@ -17,8 +17,8 @@ WAITING_TIME = 2
 
 celery_app = Celery(
     "tasks",
-    broker='pyamqp://guest@rabbit-with-celery-container//',
-    backend='rpc://',
+    broker=settings.celery_message_queue,
+    backend=settings.celery_backend,
 )
 
 

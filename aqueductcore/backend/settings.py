@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     postgres_db: str
     """PostgreSQL database name."""
 
+    celery_message_queue: str
+    """Celery message queue connection string."""
+
     api_prefix: str = "/api"
     """Route prefix for all of the APIs."""
 
@@ -52,5 +55,14 @@ class Settings(BaseSettings):
 
     extensions_dir_path: Optional[str] = None
     """Name of the directory where extensions are saved"""
+
+    @property
+    def celery_backend(self) -> str:
+        """Celery backend connection string."""
+        return (
+            f"db+postgresql://{self.postgres_username}:{self.postgres_password}"
+            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+        )
+
 
 settings = Settings()
