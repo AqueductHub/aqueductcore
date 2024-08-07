@@ -12,4 +12,4 @@ class TestExtensionModel:
                     "var4": "20240229-5689864ffd94",
                     "var5": "text\narea", "var6": 0, "var7": "string2"},
         )
-        assert result.return_code == 0
+        assert result.result_code == 0

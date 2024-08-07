@@ -9,6 +9,7 @@ from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.models.extensions import TaskStatus
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentIdentifierInput,
@@ -153,16 +154,20 @@ class Mutation:
         extension_info = ExtensionInfo.from_extension(extension_object)
         action_info = None
         parameters = []
-        for a_info in extension_info.actions:
-            if a_info.name == action:
-                action_info = a_info
+        for act_info in extension_info.actions:
+            if act_info.name == action:
+                action_info = act_info
                 break
         if action_info is not None:
             parameters = [
-                KeyValuePair(key=parameter, value=dict_params.get(parameter.name, None))
+                KeyValuePair(
+                    key=parameter,
+                    value=dict_params.get(parameter.name, None)
+                )
                 for parameter
                 in action_info.parameters
             ]
+
         return TaskInfo(
             task_id=result.task_id,
             experiment=experiment,
@@ -170,17 +175,17 @@ class Mutation:
             extension_name=extension,
             action_name=action,
             parameters=parameters,
-            task_status=result.task_status,
+            task_status=TaskStatus(result.status),
 
-            receive_time=datetime.datetime.now(),  # TODO: get from a task
-            started_time=None,  # TODO: get from a task
+            receive_time=result.receive_time,
+            started_time=None,
             task_runtime=0.0,
-            ended_time=None,
+            ended_time=result.ended_time,
 
-            std_err=None,
-            std_out=None,
-            result_code=None,
+            std_err=result.std_err,
+            std_out=result.std_out,
+            result_code=result.result_code,
 
-            # obsolete fields
+            # TODO: remove after frontend change, obsolete field
             return_code=0,
         )

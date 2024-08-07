@@ -6,14 +6,16 @@ from __future__ import annotations
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from uuid import UUID
 
 import yaml
 from pydantic import BaseModel, Field
 import strawberry
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
-from aqueductcore.backend.services.task_executor import execute_task
+from aqueductcore.backend.services.task_executor import (
+    execute_task,
+    TaskProcessExecutionResult,
+)
 
 
 MANIFEST_FILE = "manifest.yml"
@@ -43,16 +45,6 @@ class TaskStatus(Enum):
     REVOKED = "REVOKED"
     STARTED = "STARTED"
     SUCCESS = "SUCCESS"
-
-
-class ExtensionExecutionResult(BaseModel):
-    """OS process execution result"""
-
-    return_code: Optional[int]
-    stdout: Optional[str]
-    stderr: Optional[str]
-    task_id: UUID
-    task_status: TaskStatus
 
 
 class ExtensionParameter(BaseModel):
@@ -137,7 +129,7 @@ class ExtensionAction(BaseModel):
         extension: Extension,
         params: dict,
         python: str | Path | None = None,
-    ) -> ExtensionExecutionResult:
+    ) -> TaskProcessExecutionResult:
         """Passes parameters to the action code and awaits
         execution results
 
@@ -146,7 +138,7 @@ class ExtensionAction(BaseModel):
             params: dictionary of names params.
 
         Returns:
-            ExtensionExecutionResult: OS process results.
+            TaskProcessExecutionResult: OS process results.
         """
         self.validate_values(params)
         my_env = {key: str(val) for key, val in (extension.constants or {}).items()}
@@ -170,14 +162,7 @@ class ExtensionAction(BaseModel):
             execute_blocking=False,
             **my_env,
         )
-        # TODO: probably this is a duplication.
-        return ExtensionExecutionResult(
-            return_code=task.result_code,
-            stdout=task.std_out,
-            stderr=task.std_err,
-            task_id=task.task_id,
-            task_status=TaskStatus(task.status),
-        )
+        return task
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
         """Return first experiment variable defined in manifest.

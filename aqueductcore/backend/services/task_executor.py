@@ -4,6 +4,7 @@ import os
 import subprocess
 import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
 from uuid import UUID
@@ -31,6 +32,8 @@ class TaskProcessExecutionResult:
     std_out: Optional[str]
     task_id: UUID
     status: Optional[str]
+    receive_time: datetime
+    ended_time: Optional[datetime]
 
 
 @celery_app.task(bind=True)
@@ -89,21 +92,25 @@ def execute_task(
 ) -> TaskProcessExecutionResult:
     """Execute a task and wait until finished"""
 
-    print(settings.celery_message_queue)
-    print(settings.celery_backend)
     task = run_executable.delay(
         extension_directory_name=extension_directory_name,
         shell_script=shell_script,
         **kwargs
     )
-    while execute_blocking and not task.ready():
-        time.sleep(WAITING_TIME)
+    receive_time = datetime.now()
+    ended_time = None
+    if execute_blocking:
+        if not task.ready():
+            time.sleep(WAITING_TIME)
+        ended_time = datetime.now()
     result = TaskProcessExecutionResult(
         result_code=None,
         std_err=None,
         std_out=None,
         task_id=UUID(task.id),
         status=task.status,
+        receive_time=receive_time,
+        ended_time=ended_time,
     )
     if task.result is not None:
         code, out, err = task.result

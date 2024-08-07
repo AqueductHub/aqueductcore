@@ -33,8 +33,8 @@ execute_extension = """
             ]
     ) {
         resultCode,
-        stderrText, stdoutText,
-        taskId, taskState
+        stdErr, stdOut,
+        taskId, taskStatus
     }
   }
 """

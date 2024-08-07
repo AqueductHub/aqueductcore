@@ -8,14 +8,13 @@ from aqueductcore.backend.services.extensions_executor import (
 class TestExtensionExecutor:
 
     def test_extension_echo(self):
-        extension = ExtensionsExecutor.get_extension("Dummy extension")
         result = ExtensionsExecutor.execute(
             extension="Dummy extension",
             action="echo",
             params={"var1": "text", "var2": 1, "var3": 2.2, "var4": "20240229-5689864ffd94",
              "var5": "text\narea", "var6": 0, "var7": "string2"},
         )
-        assert result.return_code == 0
+        assert result.result_code == 0
 
     @pytest.mark.skip
     def test_extension_wolfram_alpha(self):
@@ -28,9 +27,9 @@ class TestExtensionExecutor:
                 "result_file": "wolfram_solution.txt",
             },
         )
-        assert result.stderr == ""
-        assert result.return_code == 0
-        assert result.stdout == "x = -i sqrt(7)\nx = i sqrt(7)\n"
+        assert result.std_err == ""
+        assert result.result_code == 0
+        assert result.std_out == "x = -i sqrt(7)\nx = i sqrt(7)\n"
 
     def test_extension_venv_is_created_execute(self):
         extension = ExtensionsExecutor.get_extension("Wolfram alpha solution extension")

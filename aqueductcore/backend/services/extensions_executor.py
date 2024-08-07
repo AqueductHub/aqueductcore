@@ -13,9 +13,9 @@ from typing import List
 from aqueductcore.backend.errors import AQDError, AQDValidationError
 from aqueductcore.backend.models.extensions import (
     Extension,
-    ExtensionExecutionResult,
     MANIFEST_FILE,
 )
+from aqueductcore.backend.services.task_executor import TaskProcessExecutionResult
 from aqueductcore.backend.settings import settings
 
 VENV_FOLDER = ".aqueduct-extension-venv"
@@ -156,7 +156,7 @@ class ExtensionsExecutor:
         return False
 
     @classmethod
-    def execute(cls, extension: str, action: str, params: dict) -> ExtensionExecutionResult:
+    def execute(cls, extension: str, action: str, params: dict) -> TaskProcessExecutionResult:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result
 
@@ -166,7 +166,7 @@ class ExtensionsExecutor:
             params: parameter of values to pass to a extension.
 
         Returns:
-            Results of process execution.
+            TaskProcessExecutionResult: Results of process execution.
         """
         extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
