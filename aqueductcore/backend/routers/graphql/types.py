@@ -118,19 +118,6 @@ class ExtensionActionInfo:
 
 
 @strawberry.type
-class ExtensionExecutionResult:
-    """Result of OS process execution"""
-
-    return_code: int     # obsolete
-    stdout: str          # obsolete
-    stderr: str          # obsolete
-    log_experiment: str
-    log_file: str        # obsolete
-    task_id: UUID
-    task_status: TaskStatus
-
-
-@strawberry.type
 class ExtensionInfo:
     """Extension information passed to the frontend"""
 
