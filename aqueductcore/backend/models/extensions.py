@@ -37,12 +37,12 @@ class SupportedTypes(str, Enum):
 class TaskStatus(Enum):
     """Statuses of task execution"""
 
-    FAILURE = "failure"
-    PENDING = "pending"
-    RECEIVED = "received"
-    REVOKED = "revoked"
-    STARTED = "started"
-    SUCCESS = "success"
+    FAILURE = "FAILURE"
+    PENDING = "PENDING"
+    RECEIVED = "RECEIVED"
+    REVOKED = "REVOKED"
+    STARTED = "STARTED"
+    SUCCESS = "SUCCESS"
 
 
 class ExtensionExecutionResult(BaseModel):

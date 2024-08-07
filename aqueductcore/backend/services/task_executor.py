@@ -17,6 +17,7 @@ WAITING_TIME = 2
 
 celery_app = Celery(
     "tasks",
+    # TODO worker does not know about this object!
     broker=settings.celery_message_queue,
     backend=settings.celery_backend,
 )
@@ -53,9 +54,9 @@ def run_executable(
     Returns:
         Tuple[int, str, str]: result code, std out, std error.
     """
-    extensions_dir = os.environ.get("EXTENSIONS_DIR", "")
+    extensions_dir = os.environ.get("EXTENSIONS_DIR_PATH", "")
     if not extensions_dir:
-        raise FileNotFoundError("EXTENSIONS_DIR environment variable should be set.")
+        raise FileNotFoundError("EXTENSIONS_DIR_PATH environment variable should be set.")
     workdir = Path(extensions_dir) / extension_directory_name
 
     myenv = os.environ.copy()
@@ -88,6 +89,9 @@ def execute_task(
     **kwargs
 ) -> TaskProcessExecutionResult:
     """Execute a task and wait until finished"""
+
+    print(settings.celery_message_queue)
+    print(settings.celery_backend)
     task = run_executable.delay(
         extension_directory_name=extension_directory_name,
         shell_script=shell_script,
