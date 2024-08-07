@@ -1,17 +1,16 @@
 """Celery task execution."""
 
-from dataclasses import dataclass
 import os
 import subprocess
 import time
-
+from dataclasses import dataclass
 from pathlib import Path
-from typing import  Optional, Tuple
-from celery import Celery
+from typing import Optional, Tuple
 from uuid import UUID
 
-from aqueductcore.backend.settings import settings
+from celery import Celery
 
+from aqueductcore.backend.settings import settings
 
 WAITING_TIME = 2
 
@@ -36,7 +35,7 @@ class TaskProcessExecutionResult:
 
 @celery_app.task(bind=True)
 def run_executable(
-    self,
+    self,   # pylint: disable=unused-argument
     extension_directory_name: str,
     shell_script: str,
     **kwargs
@@ -66,15 +65,15 @@ def run_executable(
     # from inside the process. E.g. with a file
     # extension/.status
     with subprocess.Popen(
-            shell_script,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=myenv,
-            cwd=workdir,
-        ) as proc:
-            out, err = proc.communicate(timeout=None)
-            code = proc.returncode
+        shell_script,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=myenv,
+        cwd=workdir,
+    ) as proc:
+        out, err = proc.communicate(timeout=None)
+        code = proc.returncode
     return (
         code,
         err.decode("utf-8"),
@@ -107,7 +106,7 @@ def execute_task(
         status=task.status,
     )
     if task.result is not None:
-        code, out, err = task.result  
+        code, out, err = task.result
         result.result_code = code
         result.std_out = out
         result.std_err = err

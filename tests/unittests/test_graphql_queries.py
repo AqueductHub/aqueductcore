@@ -334,11 +334,11 @@ some_tasks_runs = """
         receiveTime
         resultCode
         startedTime
-        stderrText
-        stdoutText
+        stdErr
+        stdOut
         taskId
         taskRuntime
-        taskState
+        taskStatus
     }
 }
 """
@@ -357,11 +357,11 @@ task_status_check = """
         receiveTime
         resultCode
         startedTime
-        stderrText
-        stdoutText
+        stdErr
+        stdOut
         taskId
         taskRuntime
-        taskState
+        taskStatus
         parameters {
             value, key { dataType }
         }

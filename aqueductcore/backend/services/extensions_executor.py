@@ -5,21 +5,16 @@ can read environment variables and print to stdout.
 """
 
 import logging
-import os
 import subprocess
 import venv
 from pathlib import Path
 from typing import List
 
-from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDError, AQDValidationError
 from aqueductcore.backend.models.extensions import (
     Extension,
     ExtensionExecutionResult,
-)
-from aqueductcore.backend.services.experiment import (
-    build_experiment_dir_absolute_path,
-    get_experiment_by_eid,
+    MANIFEST_FILE,
 )
 from aqueductcore.backend.settings import settings
 
@@ -42,6 +37,8 @@ class ExtensionsExecutor:
             return []
         for directory in Path(settings.extensions_dir_path).iterdir():
             if directory.exists() and not directory.is_file():
+                if not (directory / MANIFEST_FILE).exists():
+                    continue
                 try:
                     extension = Extension.from_folder(directory)
                     result.append(extension)

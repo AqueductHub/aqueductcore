@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
 from typing import List, Optional, cast
 from uuid import UUID
 
@@ -204,7 +203,10 @@ class TaskInfo:
     started_time: Optional[datetime] = strawberry.field(description="Time task was started.")
     task_runtime: float = strawberry.field(description="Total seconds of run time.")
     ended_time: Optional[datetime] = strawberry.field(description="Time task was completed.")
-    task_state: TaskStatus = strawberry.field(description="Status of the task execution.")
-    stdout_text: Optional[str] = strawberry.field(description="Content of task stdout.")
-    stderr_text: Optional[str] = strawberry.field(description="Content of task stderr.")
+    task_status: TaskStatus = strawberry.field(description="Status of the task execution.")
+    std_out: Optional[str] = strawberry.field(description="Content of task stdout.")
+    std_err: Optional[str] = strawberry.field(description="Content of task stderr.")
     result_code: Optional[int] = strawberry.field(description="Process result code.")
+
+    # obsolete fields:
+    return_code: int

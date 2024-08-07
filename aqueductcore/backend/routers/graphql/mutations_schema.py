@@ -28,10 +28,7 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
 )
 from aqueductcore.backend.routers.graphql.types import (
     ExperimentData,
-    ExtensionExecutionResult,
-    ExtensionActionInfo,
     ExtensionInfo,
-    ExtensionParameterType,
     KeyValuePair,
     TaskInfo,
 )
@@ -163,7 +160,7 @@ class Mutation:
         if action_info is not None:
             parameters = [
                 KeyValuePair(key=parameter, value=dict_params.get(parameter.name, None))
-                for parameter 
+                for parameter
                 in action_info.parameters
             ]
         return TaskInfo(
@@ -173,12 +170,17 @@ class Mutation:
             extension_name=extension,
             action_name=action,
             parameters=parameters,
-            receive_time=datetime.datetime.now(),
-            started_time=None,
-            task_runtime=0,
+            task_status=result.task_status,
+
+            receive_time=datetime.datetime.now(),  # TODO: get from a task
+            started_time=None,  # TODO: get from a task
+            task_runtime=0.0,
             ended_time=None,
-            task_state=result.task_status,
-            stdout_text=None,
-            stderr_text=None,
+
+            std_err=None,
+            std_out=None,
             result_code=None,
+
+            # obsolete fields
+            return_code=0,
         )
