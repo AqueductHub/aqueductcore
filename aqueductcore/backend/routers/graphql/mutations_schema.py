@@ -1,6 +1,5 @@
 """GraohQL Mutations Controller."""
 
-import datetime
 from typing import List, cast
 from uuid import UUID
 
