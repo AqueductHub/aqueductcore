@@ -119,10 +119,11 @@ def execute_task(
     """Execute a task and wait until finished"""
 
     receive_time = datetime.now()
-    task = run_executable.delay(
-        extension_directory_name=extension_directory_name,
-        shell_script=shell_script,
-        **kwargs
+    # retry and expiration control policies may be added here according to:
+    # https://docs.celeryq.dev/en/stable/userguide/calling.html#message-sending-retry
+    task = run_executable.apply_async(
+        (extension_directory_name, shell_script),
+        kwargs=kwargs,
     )
     result = update_task_info(task_id=task.id, wait=execute_blocking)
     result.receive_time = receive_time
