@@ -3,7 +3,6 @@
 import os
 import subprocess
 import time
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
@@ -11,6 +10,7 @@ from uuid import UUID
 
 from celery import Celery
 from celery.result import AsyncResult
+from pydantic import BaseModel
 
 from aqueductcore.backend.settings import settings
 
@@ -23,8 +23,7 @@ celery_app = Celery(
 )
 
 
-@dataclass
-class TaskProcessExecutionResult:
+class TaskProcessExecutionResult(BaseModel):
     """Result of process execution."""
 
     result_code: Optional[int]

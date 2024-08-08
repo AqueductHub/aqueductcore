@@ -154,11 +154,12 @@ class Mutation:
         )
         extension_info = ExtensionInfo.from_extension(extension_object)
         action_info = None
-        parameters = []
         for act_info in extension_info.actions:
             if act_info.name == action:
                 action_info = act_info
                 break
+
+        parameters = []
         if action_info is not None:
             parameters = [
                 KeyValuePair(
