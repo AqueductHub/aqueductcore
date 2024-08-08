@@ -191,3 +191,11 @@ class Mutation:
             # TODO: remove after frontend change, obsolete field
             return_code=0,
         )
+
+    @strawberry.mutation
+    async def cancel_task(
+        self,
+        info: Info,
+        task_id: UUID,
+    ) -> TaskInfo:
+        raise NotImplementedError()
