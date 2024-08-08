@@ -10,6 +10,7 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from celery import Celery
+from celery.result import AsyncResult
 
 from aqueductcore.backend.settings import settings
 
@@ -17,7 +18,6 @@ WAITING_TIME = 2
 
 celery_app = Celery(
     "tasks",
-    # TODO worker does not know about this object!
     broker=settings.celery_message_queue,
     backend=settings.celery_backend,
 )
@@ -79,9 +79,36 @@ def run_executable(
         code = proc.returncode
     return (
         code,
-        err.decode("utf-8"),
         out.decode("utf-8"),
+        err.decode("utf-8"),
     )
+
+
+def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+    """Updates information about a task. Waits until ready if asked."""
+    task = AsyncResult(task_id)
+    ended_time = None
+    if wait:
+        if not task.ready():
+            time.sleep(WAITING_TIME)
+        ended_time = datetime.now()
+
+    result = TaskProcessExecutionResult(
+        result_code=None,
+        std_err=None,
+        std_out=None,
+        task_id=UUID(task.id),
+        status=task.status,
+        # TODO update using database
+        receive_time=datetime.now(),
+        ended_time=ended_time,
+    )
+    if task.result is not None:
+        code, out, err = task.result
+        result.result_code = code
+        result.std_out = out
+        result.std_err = err
+    return result
 
 
 def execute_task(
@@ -92,29 +119,12 @@ def execute_task(
 ) -> TaskProcessExecutionResult:
     """Execute a task and wait until finished"""
 
+    receive_time = datetime.now()
     task = run_executable.delay(
         extension_directory_name=extension_directory_name,
         shell_script=shell_script,
         **kwargs
     )
-    receive_time = datetime.now()
-    ended_time = None
-    if execute_blocking:
-        if not task.ready():
-            time.sleep(WAITING_TIME)
-        ended_time = datetime.now()
-    result = TaskProcessExecutionResult(
-        result_code=None,
-        std_err=None,
-        std_out=None,
-        task_id=UUID(task.id),
-        status=task.status,
-        receive_time=receive_time,
-        ended_time=ended_time,
-    )
-    if task.result is not None:
-        code, out, err = task.result
-        result.result_code = code
-        result.std_out = out
-        result.std_err = err
+    result = update_task_info(task_id=task.id, wait=execute_blocking)
+    result.receive_time = receive_time
     return result
