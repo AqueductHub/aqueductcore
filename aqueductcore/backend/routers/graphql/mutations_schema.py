@@ -1,6 +1,5 @@
 """GraohQL Mutations Controller."""
 
-import datetime
 from typing import List, cast
 from uuid import UUID
 
@@ -11,10 +10,15 @@ from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
+    ExperimentIdentifierInput,
     ExperimentRemoveInput,
     ExperimentTagInput,
     ExperimentTagsInput,
     ExperimentUpdateInput,
+    IDType,
+)
+from aqueductcore.backend.routers.graphql.types import (
+    TaskStatus,
 )
 from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import (
     add_tag_to_experiment,
@@ -26,10 +30,14 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
 )
 from aqueductcore.backend.routers.graphql.types import (
     ExperimentData,
-    ExtensionExecutionResult,
+    ExtensionInfo,
+    KeyValuePair,
+    TaskInfo,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-
+from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
+    get_experiment,
+)
 
 @strawberry.type
 class Mutation:
@@ -111,7 +119,7 @@ class Mutation:
         extension: str,
         action: str,
         params: List[List[str]],
-    ) -> ExtensionExecutionResult:
+    ) -> TaskInfo:
         """The endpoint accepts extension execution requests.
 
         Args:
@@ -122,7 +130,7 @@ class Mutation:
                 list of pairs: [[key1, value1], [key2, value2], ...].
 
         Returns:
-            ExtensionExecutionResult: result of OS process execution.
+            TaskInfo: result of putting job into a queue.
         """
         dict_params = dict(params)
         context = cast(ServerContext, info.context)
@@ -134,22 +142,52 @@ class Mutation:
         if exp_parameter is None:
             raise AQDValidationError(f"Action {extension}:{action} has no experiment parameters")
         eid = dict_params[exp_parameter.name]
-
-        now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        log_filename = f"{extension}-{action}-{now}.log"
-
         result = ExtensionsExecutor.execute(extension, action, dict_params)
 
-        await ExtensionsExecutor.save_log_to_experiment(
-            context=context,
-            eid=eid,
-            log_filename=log_filename,
-            result=result,
+        ### data population after submission
+        experiment = await get_experiment(
+            context,
+            ExperimentIdentifierInput(
+                type=IDType.EID,
+                value=eid
+            )
         )
-        return ExtensionExecutionResult(
-            return_code=result.return_code,
-            stdout=result.stdout,
-            stderr=result.stderr,
-            log_experiment=eid,
-            log_file=log_filename,
+        extension_info = ExtensionInfo.from_extension(extension_object)
+        action_info = None
+        for act_info in extension_info.actions:
+            if act_info.name == action:
+                action_info = act_info
+                break
+
+        parameters = []
+        if action_info is not None:
+            parameters = [
+                KeyValuePair(
+                    key=parameter,
+                    value=dict_params.get(parameter.name, None)
+                )
+                for parameter
+                in action_info.parameters
+            ]
+
+        return TaskInfo(
+            task_id=result.task_id,
+            experiment=experiment,
+            username=context.user_info.username,
+            extension_name=extension,
+            action_name=action,
+            parameters=parameters,
+            task_status=TaskStatus(result.status),
+
+            receive_time=result.receive_time,
+            started_time=None,
+            task_runtime=0.0,
+            ended_time=result.ended_time,
+
+            std_err=result.std_err,
+            std_out=result.std_out,
+            result_code=result.result_code,
+
+            # TODO: remove after frontend change, obsolete field
+            return_code=0,
         )

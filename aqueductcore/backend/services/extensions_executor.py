@@ -5,22 +5,17 @@ can read environment variables and print to stdout.
 """
 
 import logging
-import os
 import subprocess
 import venv
 from pathlib import Path
 from typing import List
 
-from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDError, AQDValidationError
 from aqueductcore.backend.models.extensions import (
     Extension,
-    ExtensionExecutionResult,
+    MANIFEST_FILE,
 )
-from aqueductcore.backend.services.experiment import (
-    build_experiment_dir_absolute_path,
-    get_experiment_by_eid,
-)
+from aqueductcore.backend.services.task_executor import TaskProcessExecutionResult
 from aqueductcore.backend.settings import settings
 
 VENV_FOLDER = ".aqueduct-extension-venv"
@@ -42,6 +37,8 @@ class ExtensionsExecutor:
             return []
         for directory in Path(settings.extensions_dir_path).iterdir():
             if directory.exists() and not directory.is_file():
+                if not (directory / MANIFEST_FILE).exists():
+                    continue
                 try:
                     extension = Extension.from_folder(directory)
                     result.append(extension)
@@ -159,7 +156,7 @@ class ExtensionsExecutor:
         return False
 
     @classmethod
-    def execute(cls, extension: str, action: str, params: dict) -> ExtensionExecutionResult:
+    def execute(cls, extension: str, action: str, params: dict) -> TaskProcessExecutionResult:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result
 
@@ -169,7 +166,7 @@ class ExtensionsExecutor:
             params: parameter of values to pass to a extension.
 
         Returns:
-            Results of process execution.
+            TaskProcessExecutionResult: Results of process execution.
         """
         extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
@@ -179,34 +176,3 @@ class ExtensionsExecutor:
             params=params,
             python=python,
         )
-
-    @classmethod
-    async def save_log_to_experiment(
-        cls,
-        context: ServerContext,
-        eid: str,
-        result: ExtensionExecutionResult,
-        log_filename: str,
-    ):
-        """Saves result of extension executions into a log file inside experiment.
-
-        context: server context with database connection.
-        eid: EID of the experiment.
-        result: object with extension execution results.
-        log_filename: name of the log file to which data is saved.
-        """
-        experiment = await get_experiment_by_eid(
-            user_info=context.user_info, db_session=context.db_session, eid=eid
-        )
-        experiment_dir = build_experiment_dir_absolute_path(
-            str(settings.experiments_dir_path), experiment.uuid
-        )
-        # create experiment directory if it is its first file
-        if not os.path.exists(experiment_dir):
-            os.makedirs(experiment_dir)
-        destination = os.path.join(experiment_dir, log_filename)
-
-        with open(destination, "w", encoding="utf-8") as dest:
-            dest.write(f"result code:\n{result.return_code}\n======\n")
-            dest.write(f"stdout:\n{result.stdout}\n======\n")
-            dest.write(f"stderr:\n{result.stderr}\n")

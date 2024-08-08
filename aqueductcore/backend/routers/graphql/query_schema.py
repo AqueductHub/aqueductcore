@@ -144,10 +144,11 @@ class Query:
                 datetime.now() - datetime(2023, 12, 1 + position % 30, 23, 59, 59, 999)
             ).total_seconds(),
             ended_time=None,
-            task_state=TaskStatus(vals[position % len(vals)]),
-            stdout_text=None,
-            stderr_text=None,
+            task_status=TaskStatus(vals[position % len(vals)]),
+            std_out=None,
+            std_err=None,
             result_code=None,
+            return_code=0,
             parameters=[
                 KeyValuePair(
                     value="some value",
@@ -162,10 +163,10 @@ class Query:
                 )
             ]
         )
-        if task.task_state in [TaskStatus.SUCCESS, TaskStatus.FAILURE]:
-            task.result_code = [TaskStatus.SUCCESS, TaskStatus.FAILURE].index(task.task_state)
-            task.stderr_text = "Some text"
-            task.stdout_text = "Some text 2"
+        if task.task_status in [TaskStatus.SUCCESS, TaskStatus.FAILURE]:
+            task.result_code = [TaskStatus.SUCCESS, TaskStatus.FAILURE].index(task.task_status)
+            task.std_err = "Some text"
+            task.std_out = "Some text 2"
             task.ended_time = datetime.now()
         return task
 
