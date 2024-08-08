@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional, cast
 from uuid import UUID
 
@@ -10,7 +11,7 @@ import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.models.extensions import Extension, TaskStatus
+from aqueductcore.backend.models.extensions import Extension
 from aqueductcore.backend.services.experiment import get_experiment_files
 from aqueductcore.backend.settings import settings
 
@@ -162,6 +163,18 @@ class ExtensionInfo:
             authors=extension.authors,
             actions=actions,
         )
+
+
+@strawberry.enum
+class TaskStatus(Enum):
+    """Statuses of task execution"""
+
+    FAILURE = "FAILURE"
+    PENDING = "PENDING"
+    RECEIVED = "RECEIVED"
+    REVOKED = "REVOKED"
+    STARTED = "STARTED"
+    SUCCESS = "SUCCESS"
 
 
 @strawberry.type

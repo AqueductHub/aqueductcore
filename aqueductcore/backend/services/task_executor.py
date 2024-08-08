@@ -31,7 +31,7 @@ class TaskProcessExecutionResult:
     std_err: Optional[str]
     std_out: Optional[str]
     task_id: UUID
-    status: Optional[str]
+    status: str
     receive_time: datetime
     ended_time: Optional[datetime]
 

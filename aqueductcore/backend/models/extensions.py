@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel, Field
-import strawberry
 
 from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
 from aqueductcore.backend.services.task_executor import (
@@ -33,18 +32,6 @@ class SupportedTypes(str, Enum):
     FILE = "file"
     BOOL = "bool"
     SELECT = "select"
-
-
-@strawberry.enum
-class TaskStatus(Enum):
-    """Statuses of task execution"""
-
-    FAILURE = "FAILURE"
-    PENDING = "PENDING"
-    RECEIVED = "RECEIVED"
-    REVOKED = "REVOKED"
-    STARTED = "STARTED"
-    SUCCESS = "SUCCESS"
 
 
 class ExtensionParameter(BaseModel):

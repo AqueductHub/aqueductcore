@@ -8,7 +8,6 @@ from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
-from aqueductcore.backend.models.extensions import TaskStatus
 from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentCreateInput,
     ExperimentIdentifierInput,
@@ -17,6 +16,9 @@ from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentTagsInput,
     ExperimentUpdateInput,
     IDType,
+)
+from aqueductcore.backend.routers.graphql.types import (
+    TaskStatus,
 )
 from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import (
     add_tag_to_experiment,
