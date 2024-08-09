@@ -156,7 +156,7 @@ class ExtensionsExecutor:
         return False
 
     @classmethod
-    def execute(cls, extension: str, action: str, params: dict) -> TaskProcessExecutionResult:
+    async def execute(cls, extension: str, action: str, params: dict) -> TaskProcessExecutionResult:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result
 
@@ -171,7 +171,7 @@ class ExtensionsExecutor:
         extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
         python = cls.create_venv_python_if_not_present(extension=extension)
-        return action_object.execute(
+        return await action_object.execute(
             extension=extension_object,
             params=params,
             python=python,

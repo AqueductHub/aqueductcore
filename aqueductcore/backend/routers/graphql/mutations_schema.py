@@ -144,7 +144,7 @@ class Mutation:
         if exp_parameter is None:
             raise AQDValidationError(f"Action {extension}:{action} has no experiment parameters")
         eid = dict_params[exp_parameter.name]
-        result = ExtensionsExecutor.execute(extension, action, dict_params)
+        result = await ExtensionsExecutor.execute(extension, action, dict_params)
 
         ### data population after submission
         experiment = await get_experiment(
@@ -210,7 +210,7 @@ class Mutation:
             TaskInfo: status of the task after cancellation.
         """
         context = cast(ServerContext, info.context)
-        task_state = revoke_task(task_id=str(task_id), terminate=True)
+        task_state = await revoke_task(task_id=str(task_id), terminate=True)
         username = "" if context.user_info is None else context.user_info.username
 
         # TODO: TT-123 populate these values when database layer is ready

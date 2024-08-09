@@ -2,12 +2,12 @@
 
 import os
 import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
 from uuid import UUID
 
+from asyncio import sleep
 from celery import Celery
 from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
@@ -84,13 +84,13 @@ def run_executable(
     )
 
 
-def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+async def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
     ended_time = None
     if wait:
         if not task.ready():
-            time.sleep(WAITING_TIME)
+            await sleep(WAITING_TIME)
         ended_time = datetime.now()
 
     result = TaskProcessExecutionResult(
@@ -115,7 +115,7 @@ def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
     return result
 
 
-def execute_task(
+async def execute_task(
     extension_directory_name: str,
     shell_script: str,
     execute_blocking: bool = False,
@@ -130,13 +130,13 @@ def execute_task(
         (extension_directory_name, shell_script),
         kwargs=kwargs,
     )
-    result = update_task_info(task_id=task.id, wait=execute_blocking)
+    result = await update_task_info(task_id=task.id, wait=execute_blocking)
 
     result.receive_time = receive_time
     return result
 
 
-def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
+async def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
     """Cancel the task and update the status."""
 
     task = AsyncResult(task_id)
@@ -144,5 +144,4 @@ def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
     # KeyboardInterupt (SIGINT), it will not stop, and the
     # exception does not propagate.
     task.revoke(terminate=terminate, signal="SIGTERM")
-    time.sleep(WAITING_TIME)
-    return update_task_info(task_id, wait=False)
+    return await update_task_info(task_id, wait=False)
