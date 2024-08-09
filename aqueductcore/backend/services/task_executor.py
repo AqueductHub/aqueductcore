@@ -38,12 +38,12 @@ class TaskProcessExecutionResult(BaseModel):
 
 @celery_app.task(bind=True)
 def run_executable(
-    self,   # pylint: disable=unused-argument
+    self,  # pylint: disable=unused-argument
     extension_directory_name: str,
     shell_script: str,
     **kwargs
 ) -> Tuple[int, str, str]:
-    """ This code executes in a celery worker.
+    """This code executes in a celery worker.
     This call is implemented as blocking, but the aqueduct
     application sends the task, and receives the ID.
     Args:
@@ -52,7 +52,7 @@ def run_executable(
             relative name of the folder where the extension lives.
         shell_script (str):
             code to execute. Use relative file names here.
-    
+
     Returns:
         Tuple[int, str, str]: result code, std out, std error.
     """
@@ -116,10 +116,7 @@ async def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResul
 
 
 async def execute_task(
-    extension_directory_name: str,
-    shell_script: str,
-    execute_blocking: bool = False,
-    **kwargs
+    extension_directory_name: str, shell_script: str, execute_blocking: bool = False, **kwargs
 ) -> TaskProcessExecutionResult:
     """Execute a task and wait until finished"""
 
