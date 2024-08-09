@@ -163,8 +163,32 @@ export type ExperimentFileType = {
   path: ExperimentFile["path"];
   modifiedAt: ExperimentFile["modifiedAt"];
 };
+export type JobDataType = {
+  // TBD
+  experiment: {
+    title: ExperimentData['title']
+    eid: ExperimentData['eid']
+  };
+  extension: {
+    name: ExtensionInfo['name']
+    action: ExtensionActionInfo['name']
+  };
+  //!TODO: Fix these values
+  taskState: string;
+  username: string;
+  receiveTime: string;
+};
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
+  label: string;
+  minWidth?: number;
+  maxWidth?: number;
+  align?: "right" | "center";
+  ellipsis?: boolean;
+  format?: (value?: unknown) => string | React.ReactNode;
+}
+export interface JobsListColumnsType {
+  id: keyof JobDataType;
   label: string;
   minWidth?: number;
   maxWidth?: number;
