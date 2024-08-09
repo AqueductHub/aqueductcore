@@ -111,7 +111,7 @@ class ExtensionAction(BaseModel):
     script: str
     parameters: List[ExtensionParameter]
 
-    def execute(
+    async def execute(
         self,
         extension: Extension,
         params: dict,
@@ -143,7 +143,7 @@ class ExtensionAction(BaseModel):
             rel_python = Path(python).relative_to(cwd)
             rich_script = rich_script.replace("$python ", f"{rel_python} ")
 
-        task = execute_task(
+        task = await execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
             execute_blocking=False,

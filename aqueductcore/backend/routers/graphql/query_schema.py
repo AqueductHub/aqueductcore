@@ -181,6 +181,7 @@ class Query:
         with a given identifier. If id is unknown,
         returns None.
         """
+        # TODO: TT-123 add updating status and data
         return Query._get_mock_task(task_id)
 
     # pylint: disable=unused-argument

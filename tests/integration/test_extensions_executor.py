@@ -1,3 +1,4 @@
+import pytest
 import shutil
 
 from aqueductcore.backend.services.extensions_executor import (
@@ -10,14 +11,15 @@ from aqueductcore.backend.services.task_executor import (
 
 class TestExtensionExecutor:
 
-    def test_extension_echo(self):
-        result = ExtensionsExecutor.execute(
+    @pytest.mark.asyncio
+    async def test_extension_echo(self):
+        result = await ExtensionsExecutor.execute(
             extension="Dummy extension",
             action="echo",
             params={"var1": "text", "var2": 1, "var3": 2.2, "var4": "20240229-5689864ffd94",
              "var5": "text\narea", "var6": 0, "var7": "string2"},
         )
-        result = update_task_info(str(result.task_id), wait=True)
+        result = await update_task_info(str(result.task_id), wait=True)
         assert result.status == "SUCCESS"
         assert result.result_code == 0
         assert result.std_out == """var1=text
@@ -32,14 +34,15 @@ dummykey=dummyvalue
 """
         assert result.std_err == ""
 
-    def test_extension_venv_is_created_execute(self):
+    @pytest.mark.asyncio
+    async def test_extension_venv_is_created_execute(self):
         extension = ExtensionsExecutor.get_extension("Wolfram alpha solution extension")
         venv = extension.folder / VENV_FOLDER
         # make sure there is no venv
         shutil.rmtree(venv, ignore_errors=True)
         # it will fail, but after the venv creation
         try:
-            ExtensionsExecutor.execute(
+            await ExtensionsExecutor.execute(
                 "Wolfram alpha solution extension",
                 "solve as text",
                 {}

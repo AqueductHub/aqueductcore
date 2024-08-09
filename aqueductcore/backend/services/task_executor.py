@@ -2,13 +2,14 @@
 
 import os
 import subprocess
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
 from uuid import UUID
 
+from asyncio import sleep
 from celery import Celery
+from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
 from pydantic import BaseModel
 
@@ -83,13 +84,13 @@ def run_executable(
     )
 
 
-def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+async def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
     ended_time = None
     if wait:
         if not task.ready():
-            time.sleep(WAITING_TIME)
+            await sleep(WAITING_TIME)
         ended_time = datetime.now()
 
     result = TaskProcessExecutionResult(
@@ -103,14 +104,18 @@ def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
         ended_time=ended_time,
     )
     if task.result is not None:
-        code, out, err = task.result
-        result.result_code = code
-        result.std_out = out
+        known_errors = (FileNotFoundError, TaskRevokedError)
+        if isinstance(task.result, known_errors):
+            err = str(task.result)
+        else:
+            code, out, err = task.result
+            result.result_code = code
+            result.std_out = out
         result.std_err = err
     return result
 
 
-def execute_task(
+async def execute_task(
     extension_directory_name: str,
     shell_script: str,
     execute_blocking: bool = False,
@@ -125,6 +130,18 @@ def execute_task(
         (extension_directory_name, shell_script),
         kwargs=kwargs,
     )
-    result = update_task_info(task_id=task.id, wait=execute_blocking)
+    result = await update_task_info(task_id=task.id, wait=execute_blocking)
+
     result.receive_time = receive_time
     return result
+
+
+async def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
+    """Cancel the task and update the status."""
+
+    task = AsyncResult(task_id)
+    # note: SIGINT does not lead to task abort. Id you send
+    # KeyboardInterupt (SIGINT), it will not stop, and the
+    # exception does not propagate.
+    task.revoke(terminate=terminate, signal="SIGTERM")
+    return await update_task_info(task_id, wait=False)
