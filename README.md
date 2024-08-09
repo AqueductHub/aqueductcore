@@ -92,7 +92,7 @@ You can find `docker-compose.yaml` file under `aqueductcore/scripts/release` dir
 
 3. Start your browser and point it to `https://localhost`.
 
-For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/).
+A reference docker compose file for installation in the production environment is provided in [scripts/release/docker-compose.yaml](scripts/release/docker-compose.yaml). For more information please check the [documentation](https://aqueducthub.github.io/aqueductcore/).
 
 #### Development Docker Images
 
