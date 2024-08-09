@@ -8,6 +8,9 @@ import { dateFormatter } from "helper/formatters";
 import { useState } from "react";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
+import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
+import JobExtensionActionName from "components/molecules/JobListTableCells/JobExtensionActionName";
+import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 
 export const tableHeightOffset = 200;
 
@@ -27,36 +30,41 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
   {
     id: "experiment",
     label: "Experiment",
-    minWidth: 170,
+    // minWidth: 350,
     format: (experiment) => (
-      <div>{(experiment as ExperimentData).title}+{(experiment as ExperimentData).eid}</div>
+      <JobExperimentName
+        name={(experiment as ExperimentData).title}
+        eid={(experiment as ExperimentData).eid}
+      />
     ),
-
+    ellipsis: true
   },
   {
     id: "extension",
     label: "Extension",
-    minWidth: 100,
     format: (extension) => (
-      <div>{(extension as JobDataType['extension']).name}+{(extension as JobDataType['extension']).action}</div>
+      <JobExtensionActionName
+        name={(extension as JobDataType['extension']).name}
+        action={(extension as JobDataType['extension']).action}
+      />
     ),
   },
   {
     id: "taskState",
     label: "Status",
-    minWidth: 170,
-    maxWidth: 320,
-    ellipsis: true,
+    format: (status) => (
+      <JobExtensionStatus
+        status={status as JobDataType['taskState']}
+      />
+    ),
   },
   {
     id: "username",
     label: "User",
-    minWidth: 170,
   },
   {
     id: "receiveTime",
     label: "submission Time",
-    minWidth: 170,
     format: (createdAt) =>
       typeof createdAt === "string" ? dateFormatter(new Date(createdAt)) : "",
   },
@@ -66,14 +74,14 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
 const jobListData = [
   {
     experiment: {
-      title: 'title_exp',
-      eid: 'eid_exp'
+      title: 'this_is_the_longest_title',
+      eid: '20240508-100000'
     },
     extension: {
       name: 'name_ext',
       action: 'action_ext'
     },
-    taskState: 'state_1',
+    taskState: 'inProgress',
     username: 'user_name',
     receiveTime: '2023-12-25T15:43:17'
   }

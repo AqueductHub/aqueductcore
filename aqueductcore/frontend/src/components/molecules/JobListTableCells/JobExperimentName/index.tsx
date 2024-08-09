@@ -1,4 +1,5 @@
 import { Grid, styled, Typography } from "@mui/material";
+import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
 
 const ExperimentNameChip = styled(Grid)`
     margin: 0 ${(props) => props.theme.spacing(1)};
@@ -19,14 +20,14 @@ const ExperimentEid = styled(Typography)`
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
-function JobExperimentName() {
+function JobExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
     return (
         <ExperimentNameChip container>
             <Grid item>
-                <ExperimentName>2 Qubit gate first...</ExperimentName>
+                <ExperimentName noWrap>{name}</ExperimentName>
             </Grid>
             <Grid item>
-                <ExperimentEid>20240508-1</ExperimentEid>
+                <ExperimentEid>{eid}</ExperimentEid>
             </Grid>
         </ExperimentNameChip>
     );
