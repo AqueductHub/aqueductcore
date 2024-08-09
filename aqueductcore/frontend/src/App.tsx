@@ -13,6 +13,7 @@ import { AuthProvider } from "context/AuthProvider";
 import { client } from "API/apolloClientConfig";
 import SettingsPage from "pages/SettingsPage";
 import { cssVariableTheme } from "theme";
+import JobHistoryPage from "pages/JobHistoryPage";
 
 function App() {
   const themeConfig = extendTheme(cssVariableTheme);
@@ -45,6 +46,10 @@ function App() {
                 <Route
                   path="/aqd/experiments/:experimentIdentifier"
                   element={<ExperimentDetailsPage />}
+                />
+                <Route
+                  path="/aqd/job-history"
+                  element={<JobHistoryPage />}
                 />
                 <Route
                   path="/settings"

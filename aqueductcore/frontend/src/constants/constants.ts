@@ -7,6 +7,8 @@ export const DEBOUNCE_DELAY = 250; //ms
 // ########## Aqueduct ########## //
 // Pagination for Experiment Records
 export const experimentRecordsRowsPerPageOptions = [10, 25, 100];
+// Pagination for Jobs List
+export const jobListRowsPerPageOptions = [10, 25, 100];
 
 export const FAVOURITE = "__favourite__";
 export const ARCHIVED = "__archived__";
