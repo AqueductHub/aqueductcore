@@ -9,6 +9,7 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from celery import Celery
+from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
 from pydantic import BaseModel
 
@@ -103,9 +104,13 @@ def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
         ended_time=ended_time,
     )
     if task.result is not None:
-        code, out, err = task.result
-        result.result_code = code
-        result.std_out = out
+        known_errors = (FileNotFoundError, TaskRevokedError)
+        if isinstance(task.result, known_errors):
+            err = str(task.result)
+        else:
+            code, out, err = task.result
+            result.result_code = code
+            result.std_out = out
         result.std_err = err
     return result
 
@@ -126,5 +131,18 @@ def execute_task(
         kwargs=kwargs,
     )
     result = update_task_info(task_id=task.id, wait=execute_blocking)
+
     result.receive_time = receive_time
     return result
+
+
+def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
+    """Cancel the task and update the status."""
+
+    task = AsyncResult(task_id)
+    # note: SIGINT does not lead to task abort. Id you send
+    # KeyboardInterupt (SIGINT), it will not stop, and the
+    # exception does not propagate.
+    task.revoke(terminate=terminate, signal="SIGTERM")
+    time.sleep(WAITING_TIME)
+    return update_task_info(task_id, wait=False)

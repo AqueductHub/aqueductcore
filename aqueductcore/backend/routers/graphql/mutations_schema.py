@@ -35,6 +35,7 @@ from aqueductcore.backend.routers.graphql.types import (
     TaskInfo,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
+from aqueductcore.backend.services.task_executor import revoke_task
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
     get_experiment,
 )
@@ -134,6 +135,7 @@ class Mutation:
         """
         dict_params = dict(params)
         context = cast(ServerContext, info.context)
+        username = "" if context.user_info is None else context.user_info.username
         extension_object = ExtensionsExecutor.get_extension(extension)
         extension_object.aqueduct_api_token = context.user_info.token
 
@@ -173,7 +175,7 @@ class Mutation:
         return TaskInfo(
             task_id=result.task_id,
             experiment=experiment,
-            username=context.user_info.username,
+            username=username,
             extension_name=extension,
             action_name=action,
             parameters=parameters,
@@ -198,4 +200,44 @@ class Mutation:
         info: Info,
         task_id: UUID,
     ) -> TaskInfo:
-        raise NotImplementedError()
+        """Send cancellation signal to a task and return task status.
+
+        Args:
+            info: context, which includes database connection.
+            task_id: ID of the task to cancel.
+
+        Returns:
+            TaskInfo: status of the task after cancellation.
+        """
+        context = cast(ServerContext, info.context)
+        task_state = revoke_task(task_id=str(task_id), terminate=True)
+        username = "" if context.user_info is None else context.user_info.username
+
+        # TODO: TT-123 populate these values when database layer is ready
+        extension_name = ""
+        action_name = ""
+        started_time = None
+        task_runtime = 0.0
+        parameters: List[KeyValuePair] = []
+
+        return TaskInfo(
+            task_id=task_id,
+            experiment=None,
+            username=username,
+            extension_name=extension_name,
+            action_name=action_name,
+            parameters=parameters,
+            task_status=TaskStatus(task_state.status),
+
+            receive_time=task_state.receive_time,
+            started_time=started_time,
+            task_runtime=task_runtime,
+            ended_time=task_state.ended_time,
+
+            std_err=task_state.std_err,
+            std_out=task_state.std_out,
+            result_code=task_state.result_code,
+
+            # TODO: remove after frontend change, obsolete field
+            return_code=0,
+        )
