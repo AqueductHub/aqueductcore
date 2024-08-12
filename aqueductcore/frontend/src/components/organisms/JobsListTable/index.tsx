@@ -1,13 +1,14 @@
+import { Paper, Table, TablePagination } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Paper, Table, TablePagination } from "@mui/material";
-import { JobDataType, JobsListColumnsType } from "types/globalTypes";
-import { jobListRowsPerPageOptions } from "constants/constants";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
+
+import { JobDataType, JobsListColumnsType } from "types/globalTypes";
+import { jobListRowsPerPageOptions } from "constants/constants";
 
 function JobsListTable({
     JobRecordsColumns,

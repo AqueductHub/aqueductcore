@@ -1,16 +1,16 @@
 import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
-
-import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
-import JobsListTable from "components/organisms/JobsListTable";
-import { JobDataType, JobsListColumnsType } from "types/globalTypes";
-import { dateFormatter } from "helper/formatters";
 import { useState } from "react";
-import { experimentRecordsRowsPerPageOptions } from "constants/constants";
-import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
-import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
+
 import JobExtensionActionName from "components/molecules/JobListTableCells/JobExtensionActionName";
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
+import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
+import { experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { JobDataType, JobsListColumnsType } from "types/globalTypes";
+import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
+import JobsListTable from "components/organisms/JobsListTable";
+import { dateFormatter } from "helper/formatters";
 
 export const tableHeightOffset = 200;
 
