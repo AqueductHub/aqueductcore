@@ -1,11 +1,13 @@
-import Attachments from "components/organisms/Attachments";
 import { useParams } from "react-router-dom";
 import { Box, styled } from "@mui/material";
+import { useState } from "react";
 
 import { useGetExperimentById } from "API/graphql/queries/experiment/getExperimentById";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import ExperimentDetails from "components/organisms/ExperimentDetails";
+import JobDetailsModal from "components/organisms/JobDetailsModal";
 import { FileSelectProvider } from "context/FileSelectProvider";
+import Attachments from "components/organisms/Attachments";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
 
@@ -16,6 +18,10 @@ const Container = styled(Box)`
 `;
 
 function ExperimentDetailsPage() {
+  const [open, setOpen] = useState(true);
+
+  const handleClose = () => setOpen(false);
+
   const { experimentIdentifier } = useParams();
 
   const {
@@ -42,6 +48,12 @@ function ExperimentDetailsPage() {
       <FileSelectProvider>
         <ExperimentDetails experimentDetails={experimentDetails} />
         <Attachments experimentUuid={experimentDetails.uuid} experimentFiles={experimentDetails.files} />
+        <JobDetailsModal
+          isOpen={open}
+          handleClose={handleClose}
+          selectedExtension="AuEra CAST"
+          selectedAction="Run FlaiR Experiment"
+        />
       </FileSelectProvider>
     </Container>
   );
