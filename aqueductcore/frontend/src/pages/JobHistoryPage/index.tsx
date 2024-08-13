@@ -36,8 +36,7 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
         name={(experiment as ExperimentData).title}
         eid={(experiment as ExperimentData).eid}
       />
-    ),
-    ellipsis: true
+    )
   },
   {
     id: "extension",

@@ -7,13 +7,13 @@ import { Toaster } from "react-hot-toast";
 
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
-import DrawerLayout from "components/templates/drawerLayout";
 import AuthenticationPage from "pages/AuthenticationPage";
+import JobHistoryPage from "pages/JobHistoryPage";
+import SettingsPage from "pages/SettingsPage";
+import DrawerLayout from "components/templates/drawerLayout";
 import { AuthProvider } from "context/AuthProvider";
 import { client } from "API/apolloClientConfig";
-import SettingsPage from "pages/SettingsPage";
 import { cssVariableTheme } from "theme";
-import JobHistoryPage from "pages/JobHistoryPage";
 
 function App() {
   const themeConfig = extendTheme(cssVariableTheme);

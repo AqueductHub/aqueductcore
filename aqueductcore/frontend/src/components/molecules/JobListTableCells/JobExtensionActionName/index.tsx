@@ -13,7 +13,12 @@ const ActionName = styled(Typography)`
     font-size: 0.75rem;
 `;
 
-function JobExtensionActionName({ name, action }: { name: ExtensionInfo['name'], action: ExtensionActionInfo['name'] }) {
+interface JobExtensionActionNameProp {
+    name: ExtensionInfo['name'],
+    action: ExtensionActionInfo['name']
+}
+
+function JobExtensionActionName({ name, action }: JobExtensionActionNameProp) {
     return (
         <ExtensionActionContainer>
             <ExtensionName noWrap>{name}</ExtensionName>
