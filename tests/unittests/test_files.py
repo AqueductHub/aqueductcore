@@ -19,10 +19,12 @@ from aqueductcore.backend.context import (
 )
 from aqueductcore.backend.main import app
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.services.utils import format_list_human_readable
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.services.experiment import build_experiment_dir_absolute_path
-from aqueductcore.backend.services.utils import experiment_model_to_orm
+from aqueductcore.backend.services.utils import (
+    experiment_model_to_orm,
+    format_list_human_readable,
+)
 from aqueductcore.backend.settings import settings
 
 BYTES_IN_KB = 1024
@@ -467,6 +469,7 @@ async def test_file_delete_single_file_successful(
     assert response.json() == {"result": f"Successfully deleted {experiment_file_name}"}
     assert not os.path.exists(file_path)
 
+
 @pytest.mark.asyncio
 async def test_file_delete_multiple_files_successful(
     client: TestClient,
@@ -494,7 +497,7 @@ async def test_file_delete_multiple_files_successful(
     experiment_file_names = [
         "test_delete_file3.zip",
         "test_delete_file2.zip",
-        "test_delete_file1.zip"
+        "test_delete_file1.zip",
     ]
     experiment_dir = build_experiment_dir_absolute_path(
         str(settings.experiments_dir_path), db_experiment.uuid
@@ -511,7 +514,9 @@ async def test_file_delete_multiple_files_successful(
         json=request_body,
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"result": f"Successfully deleted {format_list_human_readable(sorted(experiment_file_names))}"}
+    assert response.json() == {
+        "result": f"Successfully deleted {format_list_human_readable(sorted(experiment_file_names))}"
+    }
     for experiment_file_name in experiment_file_names:
         file_path = os.path.join(experiment_dir, experiment_file_name)
         assert not os.path.exists(file_path)
@@ -544,7 +549,7 @@ async def test_file_delete_partial_match_failed(
     experiment_file_names = [
         "test_delete_file3.zip",
         "test_delete_file2.zip",
-        "test_delete_file1.zip"
+        "test_delete_file1.zip",
     ]
     invalid_file = "test_delete_file4.zip"
     experiment_dir = build_experiment_dir_absolute_path(
@@ -562,7 +567,7 @@ async def test_file_delete_partial_match_failed(
         json=request_body,
     )
     assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json() == {'detail': f'File(s) not found - {invalid_file}'}
+    assert response.json() == {"detail": f"File(s) not found - {invalid_file}"}
 
 
 @pytest.mark.asyncio

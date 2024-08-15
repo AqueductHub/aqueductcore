@@ -1,14 +1,15 @@
 import pytest
+
 from aqueductcore.backend.models.extensions import (
     Extension,
-    ExtensionAction, 
+    ExtensionAction,
     ExtensionParameter,
     SupportedTypes,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
 
 
-class TestExtensionModel:    
+class TestExtensionModel:
     @pytest.mark.parametrize(
         "extension",
         [
@@ -25,9 +26,7 @@ class TestExtensionModel:
                 authors="a@a.org",
                 aqueduct_url="",
                 actions=[
-                    ExtensionAction(
-                        name="func1", description="descr", script="", parameters=[]
-                    ),
+                    ExtensionAction(name="func1", description="descr", script="", parameters=[]),
                 ],
             ),
             Extension(
