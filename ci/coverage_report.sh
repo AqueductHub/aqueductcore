@@ -22,4 +22,4 @@ echo "Installing dependencies"
 poetry install
 
 echo "Build coverage report"
-poetry run $PROJECT_ROOT/scripts/build_coverage_report.sh
+poetry run $PROJECT_ROOT/scripts/build_coverage_report_unit_tests.sh
