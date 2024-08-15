@@ -6,16 +6,24 @@ from __future__ import annotations
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from uuid import UUID
 
 import yaml
 from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.errors import AQDFilesPathError, AQDValidationError
-from aqueductcore.backend.services.task_executor import (
-    execute_task,
-    TaskProcessExecutionResult,
+from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.errors import (
+    AQDDBExperimentNonExisting,
+    AQDFilesPathError,
+    AQDValidationError,
 )
-
+from aqueductcore.backend.models import orm
+from aqueductcore.backend.models.task import TaskRead
+from aqueductcore.backend.services.task_executor import execute_task
+from aqueductcore.backend.services.utils import task_orm_to_model
 
 MANIFEST_FILE = "manifest.yml"
 
@@ -113,20 +121,15 @@ class ExtensionAction(BaseModel):
 
     async def execute(
         self,
+        user_info: UserInfo,
+        db_session: AsyncSession,
+        experiment_uuid: UUID,
         extension: Extension,
         params: dict,
         python: str | Path | None = None,
-    ) -> TaskProcessExecutionResult:
-        """Passes parameters to the action code and awaits
-        execution results
+    ) -> TaskRead:
+        """Passes parameters to the action code and awaits for the result."""
 
-        Args:
-            extension: extension instance to access settings.
-            params: dictionary of names params.
-
-        Returns:
-            TaskProcessExecutionResult: OS process results.
-        """
         self.validate_values(params)
         my_env = {key: str(val) for key, val in (extension.constants or {}).items()}
         my_env.update(params)
@@ -143,13 +146,42 @@ class ExtensionAction(BaseModel):
             rel_python = Path(python).relative_to(cwd)
             rich_script = rich_script.replace("$python ", f"{rel_python} ")
 
+        statement = (
+            select(orm.Experiment)
+            .options(joinedload(orm.Experiment.created_by_user))
+            .options(joinedload(orm.Experiment.tasks))
+            .where(orm.Experiment.uuid == experiment_uuid)
+        )
+
+        if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+            statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
+
+        result = await db_session.execute(statement)
+
+        db_experiment = result.scalars().first()
+        if db_experiment is None:
+            raise AQDDBExperimentNonExisting(
+                "DB query failed due to non-existing experiment with the specified UUID."
+            )
+
         task = await execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
             execute_blocking=False,
             **my_env,
         )
-        return task
+
+        db_task = orm.Task(
+            task_id=str(task.task_id), action_name=self.name, extension_name=extension.name
+        )
+        db_session.add(db_task)
+
+        db_experiment.tasks.append(db_task)
+        await db_session.commit()
+
+        return await task_orm_to_model(
+            value=db_task, task_info=task, experiment_uuid=db_task.experiment.uuid
+        )
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
         """Return first experiment variable defined in manifest.

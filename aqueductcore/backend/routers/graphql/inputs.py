@@ -73,3 +73,21 @@ class TasksFilterInput:
     experiment: Optional[ExperimentIdentifierInput] = None
     limit: Optional[int] = None
     offset: Optional[int] = None
+
+
+@strawberry.input
+class ExecuteExtensionInput:
+    """Input for executing extension"""
+
+    experiment_uuid: UUID
+    extension: str
+    action: str
+    params: List[List[str]]
+
+
+@strawberry.input
+class CancelTaskInput:
+    """Input for cancelling a task"""
+
+    experiment_uuid: UUID
+    task_id: UUID

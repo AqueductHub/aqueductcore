@@ -9,13 +9,14 @@ import subprocess
 import venv
 from pathlib import Path
 from typing import List
+from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDError, AQDValidationError
-from aqueductcore.backend.models.extensions import (
-    Extension,
-    MANIFEST_FILE,
-)
-from aqueductcore.backend.services.task_executor import TaskProcessExecutionResult
+from aqueductcore.backend.models.extensions import MANIFEST_FILE, Extension
+from aqueductcore.backend.services.task_executor import TaskRead
 from aqueductcore.backend.settings import settings
 
 VENV_FOLDER = ".aqueduct-extension-venv"
@@ -156,22 +157,24 @@ class ExtensionsExecutor:
         return False
 
     @classmethod
-    async def execute(cls, extension: str, action: str, params: dict) -> TaskProcessExecutionResult:
+    async def execute(
+        cls,
+        user_info: UserInfo,
+        db_session: AsyncSession,
+        experiment_uuid: UUID,
+        extension: str,
+        action: str,
+        params: dict,
+    ) -> TaskRead:
         """For a given extension name, action name, and a dictionary
-        of parameters, runs the extension and returns execution result
-
-        Args:
-            extension: extension name.
-            action: action name inside extension.
-            params: parameter of values to pass to a extension.
-
-        Returns:
-            TaskProcessExecutionResult: Results of process execution.
-        """
+        of parameters, runs the extension and returns execution result."""
         extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
         python = cls.create_venv_python_if_not_present(extension=extension)
         return await action_object.execute(
+            user_info=user_info,
+            db_session=db_session,
+            experiment_uuid=experiment_uuid,
             extension=extension_object,
             params=params,
             python=python,

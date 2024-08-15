@@ -496,7 +496,7 @@ preferred-modules=
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=6
+max-args=8
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=7

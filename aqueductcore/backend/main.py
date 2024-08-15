@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
+from sqlalchemy.exc import IntegrityError
 
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.routers import files, frontend, graphql
@@ -17,9 +18,14 @@ from aqueductcore.backend.settings import settings
 async def lifespan(app: FastAPI):  # pylint: disable=redefined-outer-name,unused-argument
     """FastAPI process startup event handler."""
 
-    # initialise database with relations
-    async with async_engine.begin() as conn:
-        await conn.run_sync(orm.Base.metadata.create_all)
+    try:
+        # initialise database with relations
+        async with async_engine.begin() as conn:
+            await conn.run_sync(orm.Base.metadata.create_all)
+    except IntegrityError as error:
+        if "already exists" not in str(error):
+            raise
+        # ignore if tables already exist
 
     yield
 

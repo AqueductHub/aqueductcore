@@ -186,27 +186,31 @@ class KeyValuePair:
 
 
 @strawberry.type
-class TaskInfo:
+class TaskData:
     """Full information about the scheduled task."""
 
     task_id: UUID = strawberry.field(description="Unique identifier of the task.")
-    experiment: Optional[ExperimentData] = strawberry.field(
+    experiment: ExperimentData = strawberry.field(
         description="Experiment the task is associated with."
     )
-    username: Optional[str] = strawberry.field(description="User, who stated the task.")
     extension_name: str = strawberry.field(description="Name of the extension.")
     action_name: str = strawberry.field(description="Name of the extension action.")
     parameters: List[KeyValuePair] = strawberry.field(
         description="List of task parameters and their values."
     )
-    receive_time: datetime = strawberry.field(description="Time task was submitted.")
-    started_time: Optional[datetime] = strawberry.field(description="Time task was started.")
-    task_runtime: float = strawberry.field(description="Total seconds of run time.")
-    ended_time: Optional[datetime] = strawberry.field(description="Time task was completed.")
+    received_at: datetime = strawberry.field(description="Time task was submitted.")
+    ended_at: Optional[datetime] = strawberry.field(description="Time task was completed.")
     task_status: TaskStatus = strawberry.field(description="Status of the task execution.")
     std_out: Optional[str] = strawberry.field(description="Content of task stdout.")
     std_err: Optional[str] = strawberry.field(description="Content of task stderr.")
     result_code: Optional[int] = strawberry.field(description="Process result code.")
 
-    # obsolete fields:
-    return_code: int
+
+@strawberry.type(description="Paginated list of tasks.")
+class Tasks:
+    """GraphQL node"""
+
+    tasks_data: List[TaskData] = strawberry.field(description="The list of tasks in this page")
+    total_tasks_count: int = strawberry.field(
+        description="Total number of tasks in the filtered dataset"
+    )
