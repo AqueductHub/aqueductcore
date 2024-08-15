@@ -8,6 +8,12 @@ import { ExtensionParameterDataTypes } from "constants/constants";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 
+beforeAll(() => {
+    window.addEventListener('submit', (e) => {
+        e.preventDefault();
+    });
+});
+
 function ExtensionIncludedComponent() {
     return (
         <AppContextAQDMock memoryRouterProps={{ initialEntries: [`/aqd/experiments/${selected_experiment.eid}`] }}>
