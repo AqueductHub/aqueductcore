@@ -119,7 +119,6 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
     const [functionFormData, setFunctionFormData] = useState<extensionActionsData>({});
-    // const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
         if (selectedAction && selectedExtension) {
