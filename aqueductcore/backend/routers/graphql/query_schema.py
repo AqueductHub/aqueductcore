@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import List, Optional, cast
 from uuid import UUID
 
@@ -11,7 +10,9 @@ from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.routers.graphql.inputs import (
+    ExperimentFiltersInput,
     ExperimentIdentifierInput,
+    TagsFilters,
     TasksFilterInput,
 )
 from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
@@ -34,36 +35,6 @@ from aqueductcore.backend.routers.graphql.types import (
     UserInfo,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-
-
-@strawberry.input
-class ExperimentFiltersInput:
-    """Filters to be applied for experiments"""
-
-    title: Optional[str] = strawberry.field(
-        default=None, description="Search string for experiment title and EID."
-    )
-    tags: Optional[List[str]] = strawberry.field(
-        default=None, description="List of tags to filter."
-    )
-    should_include_tags: Optional[List[str]] = strawberry.field(
-        default=None, description="List of tags that should be present."
-    )
-    start_date: Optional[datetime] = strawberry.field(
-        default=None, description="Filter experiments created after this date."
-    )
-    end_date: Optional[datetime] = strawberry.field(
-        default=None, description="Filter experiments created after this date."
-    )
-
-
-@strawberry.input
-class TagsFilters:
-    """Filters to be applied for experiments"""
-
-    include_dangling: Optional[bool] = strawberry.field(
-        default=None, description="Include tags with no experiments linked."
-    )
 
 
 @strawberry.type

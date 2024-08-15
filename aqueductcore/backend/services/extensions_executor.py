@@ -16,6 +16,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDError, AQDValidationError
 from aqueductcore.backend.models.extensions import MANIFEST_FILE, Extension
+from aqueductcore.backend.services.experiment import (
+    get_all_experiments,
+    get_experiment_by_eid,
+    get_experiment_by_uuid,
+)
 from aqueductcore.backend.services.task_executor import TaskRead
 from aqueductcore.backend.settings import settings
 
@@ -164,10 +169,20 @@ class ExtensionsExecutor:
         experiment_uuid: UUID,
         extension: str,
         action: str,
-        params: dict,
+        params: List[List[str]],
     ) -> TaskRead:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result."""
+
+        dict_params = dict(params)
+        extension_object = ExtensionsExecutor.get_extension(extension)
+        extension_object.aqueduct_api_token = user_info.token
+
+        action_object = extension_object.get_action(action)
+        exp_parameter = action_object.get_default_experiment_parameter()
+        if exp_parameter is None:
+            raise AQDValidationError(f"Action {extension}:{action}" " has no experiment parameters")
+
         extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
         python = cls.create_venv_python_if_not_present(extension=extension)
@@ -176,6 +191,6 @@ class ExtensionsExecutor:
             db_session=db_session,
             experiment_uuid=experiment_uuid,
             extension=extension_object,
-            params=params,
+            params=dict_params,
             python=python,
         )

@@ -109,7 +109,7 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
-async def execute_task(
+async def _execute_task(
     extension_directory_name: str,
     shell_script: str,
     execute_blocking: bool = False,
@@ -139,7 +139,7 @@ async def revoke_task(
         select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
         statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
@@ -200,16 +200,18 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
     extension_name: Optional[str] = None,
     action_name: Optional[str] = None,
     experiment_uuid: Optional[UUID] = None,
-    order_by_creation_date: bool = False,
+    order_by_creation_date: bool = True,
 ) -> List[TaskRead]:
     """Get list of all tasks."""
     statement = select(orm.Task).options(joinedload(orm.Task.experiment))
 
     if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
+        statement = statement.join(orm.Experiment).filter(
+            orm.Experiment.created_by == user_info.uuid
+        )
 
     if experiment_uuid is not None:
-        statement = statement.filter(orm.Task.experiment.uuid == experiment_uuid)
+        statement = statement.join(orm.Experiment).filter(orm.Experiment.uuid == experiment_uuid)
 
     if action_name is not None:
         statement = statement.filter(orm.Task.action_name == action_name)

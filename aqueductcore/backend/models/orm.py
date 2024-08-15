@@ -43,7 +43,7 @@ class Task(Base):
         DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )
 
-    experiment_id = mapped_column(Uuid, ForeignKey("experiment.uuid"), nullable=False)
+    experiment_id = mapped_column(Uuid, ForeignKey("experiment.uuid"))
     experiment: Mapped[Experiment] = relationship(back_populates="tasks")
 
 

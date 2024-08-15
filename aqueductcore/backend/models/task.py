@@ -1,4 +1,4 @@
-"""Pydantic schemas to be used in crud operations"""
+"""Task pydantic schemas to be used in crud operations"""
 
 from datetime import datetime
 from typing import Optional

@@ -1,4 +1,4 @@
-"""Pydantic schemas to be used in crud operations"""
+"""Base pydantic schemas to be used in crud operations"""
 
 from pydantic import BaseModel
 

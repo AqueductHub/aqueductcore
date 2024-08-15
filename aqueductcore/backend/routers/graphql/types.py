@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional, cast
@@ -11,12 +12,18 @@ import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
+from aqueductcore.backend.models.experiment import ExperimentRead
 from aqueductcore.backend.models.extensions import Extension
-from aqueductcore.backend.services.experiment import get_experiment_files
+from aqueductcore.backend.models.task import TaskRead
+from aqueductcore.backend.services.experiment import (
+    get_experiment_by_uuid,
+    get_experiment_files,
+)
+from aqueductcore.backend.services.task_executor import get_all_tasks
 from aqueductcore.backend.settings import settings
 
 
-async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
+async def resolve_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
     """Resolve experiment files."""
     experiment_uuid = root.uuid
     result: List[ExperimentFile] = []
@@ -37,6 +44,29 @@ async def get_files(info: Info, root: ExperimentData) -> List[ExperimentFile]:
         )
 
     return result
+
+
+async def resovle_tasks(info: Info, root: ExperimentData) -> List[TaskData]:
+    """Resolve experiment's tasks."""
+    context = cast(ServerContext, info.context)
+    tasks = await get_all_tasks(
+        user_info=context.user_info, db_session=context.db_session, experiment_uuid=root.uuid
+    )
+    task_nodes = [task_model_to_node(value=item) for item in tasks]
+
+    return task_nodes
+
+
+async def resolve_experiment(info: Info, root: TaskData) -> ExperimentData:
+    """Resolve experiment's tasks."""
+    context = cast(ServerContext, info.context)
+    experiment = await get_experiment_by_uuid(
+        user_info=context.user_info,
+        db_session=context.db_session,
+        experiment_uuid=root._experiment_uuid,
+    )
+
+    return experiment_model_to_node(experiment)
 
 
 @strawberry.type(description="Single file in an experiment")
@@ -63,7 +93,10 @@ class ExperimentData:
     updated_at: datetime = strawberry.field(description="Last update date of the experiment.")
     tags: List[str] = strawberry.field(description="Tags of the experiment.")
     files: List[ExperimentFile] = strawberry.field(
-        description="List of files in an experiment.", resolver=get_files
+        description="List of files in an experiment.", resolver=resolve_files
+    )
+    tasks: List[TaskData] = strawberry.field(
+        description="List of tasks for this experiment.", resolver=resovle_tasks
     )
 
 
@@ -191,7 +224,7 @@ class TaskData:
 
     task_id: UUID = strawberry.field(description="Unique identifier of the task.")
     experiment: ExperimentData = strawberry.field(
-        description="Experiment the task is associated with."
+        description="Experiment the task is associated with.", resolver=resolve_experiment
     )
     extension_name: str = strawberry.field(description="Name of the extension.")
     action_name: str = strawberry.field(description="Name of the extension action.")
@@ -205,6 +238,8 @@ class TaskData:
     std_err: Optional[str] = strawberry.field(description="Content of task stderr.")
     result_code: Optional[int] = strawberry.field(description="Process result code.")
 
+    _experiment_uuid: strawberry.Private[UUID]
+
 
 @strawberry.type(description="Paginated list of tasks.")
 class Tasks:
@@ -214,3 +249,57 @@ class Tasks:
     total_tasks_count: int = strawberry.field(
         description="Total number of tasks in the filtered dataset"
     )
+
+
+def task_model_to_node(value: TaskRead) -> TaskData:
+    """Convert ORM Experiment to Pydantic Experiment."""
+
+    kv_params = []
+    if value.parameters is not None:
+        kv_params = [
+            KeyValuePair(key=item.key, value=item.value)
+            for item in json.loads(value.parameters).items()
+        ]
+
+    task = TaskData(
+        task_id=UUID(value.task_id),
+        extension_name=value.extension_name,
+        action_name=value.action_name,
+        task_status=TaskStatus(value.status),
+        received_at=value.received_at,
+        ended_at=value.ended_at,
+        parameters=kv_params,
+        std_err=value.std_err,
+        std_out=value.std_out,
+        result_code=value.result_code,
+        _experiment_uuid=value.experiment_uuid,
+    )
+
+    return task
+
+
+def experiment_model_to_node(value: ExperimentRead) -> ExperimentData:
+    """Convert ORM Experiment to Pydantic Experiment."""
+    experiment = ExperimentData(
+        uuid=value.uuid,
+        title=value.title,
+        description=value.description,
+        eid=value.eid,
+        created_at=value.created_at,
+        created_by=value.created_by,
+        updated_at=value.updated_at,
+        tags=[item.name for item in value.tags],
+    )
+
+    return experiment
+
+
+def experiments_node(
+    experiments_data: List[ExperimentData], total_experiments_count: int
+) -> Experiments:
+    """Convert ORM Experiment to Pydantic Experiment."""
+    experiment = Experiments(
+        experiments_data=experiments_data, total_experiments_count=total_experiments_count
+    )
+
+    return experiment

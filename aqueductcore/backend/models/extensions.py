@@ -22,7 +22,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.task import TaskRead
-from aqueductcore.backend.services.task_executor import execute_task
+from aqueductcore.backend.services.task_executor import _execute_task
 from aqueductcore.backend.services.utils import task_orm_to_model
 
 MANIFEST_FILE = "manifest.yml"
@@ -153,7 +153,7 @@ class ExtensionAction(BaseModel):
             .where(orm.Experiment.uuid == experiment_uuid)
         )
 
-        if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
             statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
         result = await db_session.execute(statement)
@@ -164,7 +164,7 @@ class ExtensionAction(BaseModel):
                 "DB query failed due to non-existing experiment with the specified UUID."
             )
 
-        task = await execute_task(
+        task = await _execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
             execute_blocking=False,
