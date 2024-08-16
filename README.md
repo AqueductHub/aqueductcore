@@ -150,11 +150,13 @@ bash scripts/install_packages.sh
 
 After executing the script, proceed with the instructions from Step 3.
 
-** If you're a Mac user, and you're receiving this error 
-```
-Error response from daemon: image with reference postgres:15-alpine was found but does not match the specified platform: wanted linux/amd64, actual: linux/arm64
-```
-The reason might be because of an image that already has been downloaded with a different architecture on the machine. That image should be removed to allow docker to pull the correct version.
+
+> **Note**
+> If you're a Mac user, and you're receiving this error 
+> ```
+> Error response from daemon: image with reference postgres:15-alpine was found but does not match the specified platform: wanted linux/amd64, actual: linux/arm64
+> ```
+> The reason might be because of an image that already has been downloaded with a different architecture on the machine. That image should be removed to allow docker to pull the correct version.
 
 ## Contributing
 
