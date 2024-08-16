@@ -4,13 +4,16 @@ import Box from "@mui/material/Box";
 import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 import { JobDataType } from "types/globalTypes";
 
-const ExtensionActionContainer = styled(Box)``;
+const ExtensionActionContainer = styled(Box)`
+    display: inline-block;
+`;
 
 const StatusBase = styled(Typography)`
     width: 92px;
     height: 25px;
     font-size: 12px;
     border-radius: ${(props) => props.theme.spacing(3)};
+    padding: ${(props) => props.theme.spacing(0.5)} ${(props) => props.theme.spacing(0.5)};
     position: relative;
     overflow: hidden;
     display: flex;

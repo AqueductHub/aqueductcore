@@ -2,9 +2,12 @@ import { Box, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
-import { ExtensionsActionParameterType } from "types/globalTypes";
+
+import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import ActionParameters from "components/molecules/ActionParameters";
+import { ExtensionsActionParameterType } from "types/globalTypes";
 import LogsViewer from "components/molecules/LogsViewer";
+import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 
 const parameters: ExtensionsActionParameterType[] = [
     {
@@ -265,6 +268,7 @@ function JobDetailsModal({isOpen, handleClose, selectedExtension, selectedAction
                         }}
                     >
                         <Grid item>
+                            <JobExtensionStatus status={TaskStatus.Pending} />
                             <AuthorName>{selectedExtension}</AuthorName>
                             <HeaderRightIcon />
                             <ExtensionName>{selectedAction}</ExtensionName>
