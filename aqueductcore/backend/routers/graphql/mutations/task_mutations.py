@@ -21,7 +21,7 @@ async def execute_extension(
         experiment_uuid=execute_extension_input.experiment_uuid,
         extension=execute_extension_input.extension,
         action=execute_extension_input.action,
-        params=execute_extension_input.params,
+        params=dict(execute_extension_input.params),
     )
 
     return task_model_to_node(task)

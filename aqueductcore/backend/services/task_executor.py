@@ -30,9 +30,13 @@ celery_app = Celery(
     broker=settings.celery_message_queue,
     backend=settings.celery_backend,
     result_persistent=True,
+    result_extended=True,
     track_started=True,
     task_track_started=True,
 )
+
+
+celery_app.conf.update(result_extended=True)
 
 
 @celery_app.task(bind=True)
@@ -94,6 +98,7 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
         task_id=UUID(task.id),
         status=task.status,
     )
+
     if task.result is not None:
         known_errors = (FileNotFoundError, TaskRevokedError)
         if isinstance(task.result, known_errors):
@@ -105,6 +110,7 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
         result.std_err = err
         result.ended_at = task.date_done
         result.kwargs = task.kwargs
+
     return result
 
 

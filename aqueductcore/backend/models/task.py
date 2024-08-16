@@ -1,7 +1,7 @@
 """Task pydantic schemas to be used in crud operations"""
 
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 from uuid import UUID
 
 from aqueductcore.backend.models.base import AQDModel
@@ -16,7 +16,7 @@ class TaskProcessExecutionResult(AQDModel):
     task_id: UUID
     status: str
     ended_at: Optional[datetime] = None
-    kwargs: Optional[str] = None
+    kwargs: Optional[Dict] = None
 
 
 class TaskBase(AQDModel):
@@ -26,7 +26,7 @@ class TaskBase(AQDModel):
     experiment_uuid: UUID
     extension_name: str
     action_name: str
-    parameters: Optional[str] = None
+    parameters: Optional[Dict] = None
     result_code: Optional[int] = None
     std_err: Optional[str] = None
     std_out: Optional[str] = None

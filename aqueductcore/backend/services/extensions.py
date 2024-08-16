@@ -146,6 +146,7 @@ class ExtensionAction(BaseModel):
             rel_python = Path(python).relative_to(cwd)
             rich_script = rich_script.replace("$python ", f"{rel_python} ")
 
+        # pylint: disable=duplicate-code
         statement = (
             select(orm.Experiment)
             .options(joinedload(orm.Experiment.created_by_user))

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional, cast
@@ -13,12 +12,12 @@ from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.models.experiment import ExperimentRead
-from aqueductcore.backend.models.extensions import Extension
 from aqueductcore.backend.models.task import TaskRead
 from aqueductcore.backend.services.experiment import (
     get_experiment_by_uuid,
     get_experiment_files,
 )
+from aqueductcore.backend.services.extensions import Extension
 from aqueductcore.backend.services.task_executor import get_all_tasks
 from aqueductcore.backend.settings import settings
 
@@ -63,7 +62,7 @@ async def resolve_experiment(info: Info, root: TaskData) -> ExperimentData:
     experiment = await get_experiment_by_uuid(
         user_info=context.user_info,
         db_session=context.db_session,
-        experiment_uuid=root._experiment_uuid,
+        experiment_uuid=root.experiment_uuid,
     )
 
     return experiment_model_to_node(experiment)
@@ -238,7 +237,7 @@ class TaskData:
     std_err: Optional[str] = strawberry.field(description="Content of task stderr.")
     result_code: Optional[int] = strawberry.field(description="Process result code.")
 
-    _experiment_uuid: strawberry.Private[UUID]
+    experiment_uuid: strawberry.Private[UUID]
 
 
 @strawberry.type(description="Paginated list of tasks.")
@@ -256,10 +255,7 @@ def task_model_to_node(value: TaskRead) -> TaskData:
 
     kv_params = []
     if value.parameters is not None:
-        kv_params = [
-            KeyValuePair(key=item.key, value=item.value)
-            for item in json.loads(value.parameters).items()
-        ]
+        kv_params = [KeyValuePair(key=key, value=value) for key, value in value.parameters.items()]
 
     task = TaskData(
         task_id=UUID(value.task_id),
@@ -272,7 +268,7 @@ def task_model_to_node(value: TaskRead) -> TaskData:
         std_err=value.std_err,
         std_out=value.std_out,
         result_code=value.result_code,
-        _experiment_uuid=value.experiment_uuid,
+        experiment_uuid=value.experiment_uuid,
     )
 
     return task

@@ -8,19 +8,14 @@ import logging
 import subprocess
 import venv
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDError, AQDValidationError
-from aqueductcore.backend.models.extensions import MANIFEST_FILE, Extension
-from aqueductcore.backend.services.experiment import (
-    get_all_experiments,
-    get_experiment_by_eid,
-    get_experiment_by_uuid,
-)
+from aqueductcore.backend.services.extensions import MANIFEST_FILE, Extension
 from aqueductcore.backend.services.task_executor import TaskRead
 from aqueductcore.backend.settings import settings
 
@@ -169,12 +164,11 @@ class ExtensionsExecutor:
         experiment_uuid: UUID,
         extension: str,
         action: str,
-        params: List[List[str]],
+        params: Dict,
     ) -> TaskRead:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result."""
 
-        dict_params = dict(params)
         extension_object = ExtensionsExecutor.get_extension(extension)
         extension_object.aqueduct_api_token = user_info.token
 
@@ -191,6 +185,6 @@ class ExtensionsExecutor:
             db_session=db_session,
             experiment_uuid=experiment_uuid,
             extension=extension_object,
-            params=dict_params,
+            params=params,
             python=python,
         )

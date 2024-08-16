@@ -1,7 +1,7 @@
 import pytest
 
 from aqueductcore.backend.errors import AQDValidationError
-from aqueductcore.backend.models.extensions import (
+from aqueductcore.backend.services.extensions import (
     Extension,
     ExtensionAction,
     ExtensionParameter,

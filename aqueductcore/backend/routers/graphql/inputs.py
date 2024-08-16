@@ -120,5 +120,4 @@ class ExecuteExtensionInput:
 class CancelTaskInput:
     """Input for cancelling a task"""
 
-    experiment_uuid: UUID
     task_id: UUID
