@@ -150,6 +150,14 @@ bash scripts/install_packages.sh
 
 After executing the script, proceed with the instructions from Step 3.
 
+
+> **Note**
+> If you're a Mac user, and you're receiving this error 
+> ```
+> Error response from daemon: image with reference postgres:15-alpine was found but does not match the specified platform: wanted linux/amd64, actual: linux/arm64
+> ```
+> The reason might be because of an image that already has been downloaded with a different architecture on the machine. That image should be removed to allow docker to pull the correct version.
+
 ## Contributing
 
 Aqueduct is an open-source project, and we greatly value all contributions. Contributions are not limited to coding; you can also help by filing issues to report bugs, enhancing our documentation, or requesting new features. We strongly recommend using the templates provided for each of these tasks. If you’re interested in contributing, please refer to our [contribution guide](/CONTRIBUTING.md) for more information. We really appreciate your consideration for contributing to Aqueduct.
