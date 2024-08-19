@@ -6,8 +6,8 @@ import { ReactNode, useState } from "react";
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import ActionParameters from "components/molecules/ActionParameters";
 import { ExtensionsActionParameterType } from "types/globalTypes";
-import LogsViewer from "components/molecules/LogsViewer";
 import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
+import LogViewer from "components/molecules/LogViewer";
 
 const parameters: ExtensionsActionParameterType[] = [
     {
@@ -83,7 +83,7 @@ const inputParams = [
     {"name": "var5", "value": "multiline"}
 ]
 
-const jobRunLogs = `Process:               OpenVPN Driver [58878]
+const jobRunLog = `Process:               OpenVPN Driver [58878]
 Path:                  /Applications/NordLayer.app/Contents/PlugIns/OpenVPN Driver.appex/Contents/MacOS/OpenVPN Driver
 Identifier:            com.nordvpn.macos.teams.packetTunnelProvider
 Version:               3.5.0 (637)
@@ -134,10 +134,10 @@ const settingItems = [
             />
     },
     {
-        id: "logs",
-        title: "Logs",
-        component: <LogsViewer
-            logs={jobRunLogs}
+        id: "log",
+        title: "Log",
+        component: <LogViewer
+            log={jobRunLog}
         />
     }
 ]
@@ -157,7 +157,6 @@ const ModalContainer = styled(Box)`
 `;
 
 const AuthorName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
     font-weight: bold;
@@ -166,19 +165,16 @@ const AuthorName = styled(Typography)`
 
 const CloseModalIcon = styled(CloseIcon)`
     cursor: pointer;
-    line-height: 3.313rem;
     vertical-align: middle;
 `;
 
 const ExtensionName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
 `;
 
 const HeaderRightIcon = styled(ChevronRightIcon)`
     font-size: 3.25rem;
-    line-height: 3.25rem;
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
@@ -205,7 +201,6 @@ const ModalHeader = styled(Grid)`
             ? props.theme.palette.common.black
             : props.theme.palette.grey[300]};
     border-radius: ${(props) => props.theme.spacing(1)} ${(props) => props.theme.spacing(1)} 0 0;
-    line-height: 3.25rem;
     border-bottom: 1px solid ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.grey[400]};
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
@@ -266,13 +261,13 @@ function JobDetailsModal({isOpen, handleClose, selectedExtension, selectedAction
                             justifyContent: "space-between"
                         }}
                     >
-                        <Grid item>
+                        <Grid item sx={{ display: "flex", alignItems: "center" }}>
                             <JobExtensionStatus status={TaskStatus.Pending} />
                             <AuthorName>{selectedExtension}</AuthorName>
                             <HeaderRightIcon />
                             <ExtensionName>{selectedAction}</ExtensionName>
                         </Grid>
-                        <Grid item>
+                        <Grid item sx={{ display: "flex", alignItems: "center" }}>
                             <CloseModalIcon onClick={handleClose} />
                         </Grid>
                     </ModalHeader>
@@ -312,7 +307,7 @@ function JobDetailsModal({isOpen, handleClose, selectedExtension, selectedAction
                                     direction="column"
                                     sx={{ boxShadow: 1, borderRadius: "4px" }}
                                     >
-                                    <Grid item sx={{ minHeight: "60vh", position: "relative", pt: 2 }}>
+                                    <Grid item sx={{ minHeight: "400px", position: "relative", pt: 2 }}>
                                         {item.component}
                                     </Grid>
                                     </Grid>

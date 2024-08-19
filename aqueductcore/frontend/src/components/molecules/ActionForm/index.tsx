@@ -1,8 +1,8 @@
 import { Box, styled } from "@mui/material";
 
+import ActionParameters from "components/molecules/ActionParameters";
 import { actionInExtensionsType } from "types/componentTypes";
 import { ExtensionActionType } from "types/globalTypes";
-import ActionParameters from "../ActionParameters";
 
 const Container = styled(Box)`
     padding: 0 ${(props) => props.theme.spacing(1)};
