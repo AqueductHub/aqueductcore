@@ -55,26 +55,22 @@ const HeaderIcon = styled(AutoAwesomeIcon)`
 
 const CloseModalIcon = styled(CloseIcon)`
     cursor: pointer;
-    line-height: 3.313rem;
     vertical-align: middle;
 `;
 
 const ExtensionName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
 `;
 
 const HeaderRightIcon = styled(ChevronRightIcon)`
     font-size: 3.25rem;
-    line-height: 3.25rem;
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
 `;
 
 const AuthorName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
     font-weight: bold;
