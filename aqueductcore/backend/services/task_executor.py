@@ -106,11 +106,11 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
         known_errors = (FileNotFoundError, TaskRevokedError)
         if isinstance(task_result, known_errors):
             err = str(task_result)
-        elif len(task_result) == 3:
+        else:
             code, out, err = task_result
             task_info.result_code = code
             task_info.std_out = out
-            task_info.std_err = err
+        task_info.std_err = err
         task_info.ended_at = task.date_done
         task_info.kwargs = task.kwargs
 
