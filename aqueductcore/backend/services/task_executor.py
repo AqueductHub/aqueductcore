@@ -94,24 +94,27 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
         if not task.ready():
             await sleep(WAITING_TIME)
 
-    result = TaskProcessExecutionResult(
+    task_info = TaskProcessExecutionResult(
         task_id=UUID(task.id),
         status=task.status,
     )
+    # property should be accessed once to have conistent results
+    # as it might change during the process.
+    task_result = task.result
 
-    if task.result is not None:
+    if task_result is not None:
         known_errors = (FileNotFoundError, TaskRevokedError)
-        if isinstance(task.result, known_errors):
-            err = str(task.result)
-        else:
-            code, out, err = task.result
-            result.result_code = code
-            result.std_out = out
-        result.std_err = err
-        result.ended_at = task.date_done
-        result.kwargs = task.kwargs
+        if isinstance(task_result, known_errors):
+            err = str(task_result)
+        elif len(task_result) == 3:
+            code, out, err = task_result
+            task_info.result_code = code
+            task_info.std_out = out
+            task_info.std_err = err
+        task_info.ended_at = task.date_done
+        task_info.kwargs = task.kwargs
 
-    return result
+    return task_info
 
 
 @validate_call(config=ConfigDict(arbitrary_types_allowed=True))
@@ -156,7 +159,7 @@ async def revoke_task(
             "DB query failed due to non-existing task with the specified task id."
         )
 
-    # note: SIGINT does not lead to task abort. Id you send
+    # note: SIGINT does not lead to task abort. If you send
     # KeyboardInterupt (SIGINT), it will not stop, and the
     # exception does not propagate.
     AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGTERM")

@@ -213,7 +213,7 @@ class TaskStatus(Enum):
 class KeyValuePair:
     """Parameter key and value"""
 
-    key: ExtensionParameterType
+    key: str
     value: Optional[str]
 
 
