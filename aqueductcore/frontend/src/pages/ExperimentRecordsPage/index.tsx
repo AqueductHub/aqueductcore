@@ -14,7 +14,7 @@ import { useDidUpdateEffect } from "helper/functions";
 import { Error } from "components/atoms/Error";
 import {
   dateFormatter,
-  processExperimentTableData,
+  experimentTableDataFormatter,
   removeFavouriteAndArchivedTag,
 } from "helper/formatters";
 import {
@@ -142,7 +142,7 @@ function ExperimentRecordsPage({ category }: { category?: ExperimentRecordsPageT
     initialExperiments: AllExperiments?.experiments?.experimentsData,
     filterByURL: true,
   });
-  const processedExperimentData = experiments ? processExperimentTableData(experiments) : undefined;
+  const processedExperimentData = experiments ? experimentTableDataFormatter(experiments) : undefined;
   const location = useLocation();
   const pageInfo = {
     page,

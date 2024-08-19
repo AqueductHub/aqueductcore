@@ -1,6 +1,7 @@
 import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 
+import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 import { JobDataType } from "types/globalTypes";
 
 const ExtensionActionContainer = styled(Box)``;
@@ -33,36 +34,36 @@ const StatusFailed = styled(StatusBase)`
 `
 const StatusCompleted = styled(StatusBase)`
         background-color: #E4FFE7;
-        border: 1px solid #67D772
+        border: 1px solid #67D772;
 `
 const StatusInProgress = styled(StatusBase)`
         background-color: #FFF5D1;
-        border: 1px solid #F8E295
+        border: 1px solid #F8E295;
 `
 const StatusPending = styled(StatusBase)`
         background-color: #F8F8F8;
-        border: 1px solid #D2D2D2
+        border: 1px solid #D2D2D2;
 `
 const StatusCancel = styled(StatusBase)`
         background-color: #EFE7FF;
-        border: 1px solid #D6C2FF
+        border: 1px solid #D6C2FF;
 `
 
-function JobExtensionStatus({ status }: { status: JobDataType['taskState'] }) {
+function JobExtensionStatus({ status }: { status: JobDataType['taskStatus'] }) {
 
-    function handleStatus(status: JobDataType['taskState']) {
+    function handleStatus(status: JobDataType['taskStatus']) {
         switch (status) {
-            case 'failed':
+            case TaskStatus.Failure:
                 return <StatusFailed>Failed</StatusFailed>
-            case 'completed':
+            case TaskStatus.Success:
                 return <StatusCompleted>Completed</StatusCompleted>
-            case 'inProgress':
-                return <StatusInProgress>In Progress</StatusInProgress>
-            case 'pending':
+            case TaskStatus.Pending:
                 return <StatusPending>Pending</StatusPending>
-            case 'cancelling':
-                return <StatusCancel>Cancelling...</StatusCancel>
-            case 'cancel':
+            case TaskStatus.Received:
+                return <StatusInProgress>Received</StatusInProgress>
+            case TaskStatus.Started:
+                return <StatusInProgress>In Progress</StatusInProgress>
+            case TaskStatus.Revoked:
                 return <StatusCancel>Cancelled</StatusCancel>
             default:
                 return <StatusBase>-</StatusBase>

@@ -11,9 +11,8 @@ export const EXECUTE_EXTENSION = gql`
   ) {
     executeExtension(extension: $extension, action: $action, params: $params) {
       returnCode
-      stderr
-      stdout
-      logFile
+      stdErr
+      stdOut
     }
   }
 `;

@@ -6,11 +6,14 @@ import JobExtensionActionName from "components/molecules/JobListTableCells/JobEx
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
+import { dateFormatter, jobHistoryTableFormatter } from "helper/formatters";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
+import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
 import { JobDataType, JobsListColumnsType } from "types/globalTypes";
 import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
 import JobsListTable from "components/organisms/JobsListTable";
-import { dateFormatter } from "helper/formatters";
+import { Loading } from "components/atoms/Loading";
+import { Error } from "components/atoms/Error";
 
 export const tableHeightOffset = 200;
 
@@ -49,11 +52,11 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
     ),
   },
   {
-    id: "taskState",
+    id: "taskStatus",
     label: "Status",
     format: (status) => (
       <JobExtensionStatus
-        status={status as JobDataType['taskState']}
+        status={status as JobDataType['taskStatus']}
       />
     ),
   },
@@ -69,23 +72,6 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
   },
 ];
 
-// TODO: this will be replaced with the Mock and some functions TT-104
-const jobListData = [
-  {
-    experiment: {
-      title: 'this_is_the_longest_title',
-      eid: '20240508-100000'
-    },
-    extension: {
-      name: 'name_ext',
-      action: 'action_ext'
-    },
-    taskState: 'inProgress',
-    username: 'user_name',
-    receiveTime: '2023-12-25T15:43:17'
-  }
-]
-
 function JobHistoryPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(experimentRecordsRowsPerPageOptions[0]);
@@ -97,13 +83,21 @@ function JobHistoryPage() {
     //!TODO: add number TT-124
     count: 100,
   };
+
+  const { data, loading, error } = useGetAllTasks();
+  const tasks = data?.tasks
+
+  if (loading) return (<Loading />)
+  if (error) return <Error message={error.message} />;
+  if (!tasks) return <></>;
+
   return (
     <Container>
       <Title>Recent Jobs</Title>
       <Box sx={{ mt: 2 }}>
         <JobsListTable
           JobRecordsColumns={JobsListColumns}
-          jobList={jobListData}
+          jobList={jobHistoryTableFormatter(tasks)}
           maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           pageInfo={pageInfo}
         />
