@@ -1,7 +1,7 @@
+import { ExperimentDataType, JobDataType, TaskType } from "types/globalTypes";
 import { actionInExtensionsType } from "types/componentTypes";
 import { Tags } from "types/graphql/__GENERATED__/graphql";
 import { ARCHIVED, FAVOURITE } from "constants/constants";
-import { ExperimentDataType } from "types/globalTypes";
 import { AQD_FILE_URI } from "constants/api";
 
 export const dateFormatter = (date: Date) => {
@@ -10,7 +10,7 @@ export const dateFormatter = (date: Date) => {
   return `${localDate} - ${localTime}`;
 };
 
-export function processExperimentTableData(experimentList: ExperimentDataType[]) {
+export function experimentTableDataFormatter(experimentList: ExperimentDataType[]) {
   return experimentList.map((experiment) => {
     const { uuid, eid, title, description, tags, createdAt, createdBy } = experiment;
 
@@ -26,6 +26,24 @@ export function processExperimentTableData(experimentList: ExperimentDataType[])
 
     return { uuid, eid, title, description, tags: filteredTags, createdAt, createdBy, star };
   });
+}
+
+export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
+  const formattedTasks = tasks.map(task => ({
+    experiment: {
+      title: task.experiment.title,
+      eid: task.experiment.eid
+    },
+    extension: {
+      name: task.extensionName,
+      action: task.actionName
+    },
+    taskStatus: task.taskStatus,
+    username: task.username,
+    receiveTime: task.receiveTime
+  }))
+
+  return formattedTasks
 }
 
 export const removeFavouriteAndArchivedTag = (tags: Tags["tagsData"]) =>

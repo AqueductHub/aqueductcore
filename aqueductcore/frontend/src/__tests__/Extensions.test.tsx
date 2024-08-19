@@ -7,7 +7,12 @@ import { ExtensionsDataMock } from "__mocks__/ExtensionsDataMock";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
-import { logFileName } from "__mocks__/constants";
+
+beforeAll(() => {
+    window.addEventListener('submit', (e) => {
+        e.preventDefault();
+    });
+});
 
 function ExtensionIncludedComponent() {
     return (
@@ -120,9 +125,9 @@ test("data is persistence when switching between functions", async () => {
     expect(inputFieldAfterUpdate).toHaveValue('321');
 });
 
-test("submit the form and success modal and file selection", async () => {
+test("submit the form and success modal", async () => {
 
-    const { findByTitle, findByText, findAllByText } = render(<ExtensionIncludedComponent />)
+    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
     const extensionOpenModalButton = await findByTitle("extensions")
     await userEvent.click(extensionOpenModalButton)
 
@@ -133,13 +138,6 @@ test("submit the form and success modal and file selection", async () => {
     await userEvent.click(runButton)
     const successModal = await findByText("Execution finished successfully")
     expect(successModal).toBeInTheDocument()
-
-    const file_name_items = await findAllByText(logFileName)
-    expect(file_name_items).toHaveLength(2)
-    //1- file being selected in the <Explorer />
-    expect(file_name_items[0].parentNode).toHaveClass('Mui-selected')
-    //1- file being opened in the <Viewer/>
-    expect(file_name_items[1]).toHaveProperty('title', 'file_name')
 });
 
 // TODO: Fix needed to allow mote tests after this (file loading API will fail)

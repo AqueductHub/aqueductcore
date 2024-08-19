@@ -5,7 +5,7 @@ import { useState } from "react";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { ExperimentRecordsColumns } from "pages/ExperimentRecordsPage";
 import { ExperimentsDataMock } from "__mocks__/ExperimentsDataMock";
-import { processExperimentTableData } from "helper/formatters";
+import { experimentTableDataFormatter } from "helper/formatters";
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
 import ExperimentsListTable from ".";
 
@@ -19,12 +19,12 @@ export const ExperimentTable = () => {
     setRowsPerPage,
     count: ExperimentsDataMock.length,
   };
-  processExperimentTableData;
+  experimentTableDataFormatter;
   return (
     <AppContextAQDMock>
       <ExperimentsListTable
         ExperimentRecordsColumns={ExperimentRecordsColumns}
-        experimentList={processExperimentTableData(ExperimentsDataMock).slice(
+        experimentList={experimentTableDataFormatter(ExperimentsDataMock).slice(
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage
         )}
@@ -57,7 +57,7 @@ test("Check if the table has pagination", async () => {
 });
 
 test("Check if the table's pagination list length is dynamically changing", async () => {
-  const processedExperimentTableData = processExperimentTableData(ExperimentsDataMock);
+  const processedExperimentTableData = experimentTableDataFormatter(ExperimentsDataMock);
   const { getByText, getAllByRole } = render(<ExperimentTable />);
 
   // Check if second pagination option is bigger than list's length
@@ -81,7 +81,7 @@ test("Check if the table's pagination list length is dynamically changing", asyn
 });
 
 test("Check if the table's pagination list next page is working", async () => {
-  const processedExperimentTableData = processExperimentTableData(ExperimentsDataMock);
+  const processedExperimentTableData = experimentTableDataFormatter(ExperimentsDataMock);
   const { getByTitle } = render(<ExperimentTable />);
   const nextPageIconButton = getByTitle("Go to next page");
   const previousPageIconButton = getByTitle("Go to previous page");

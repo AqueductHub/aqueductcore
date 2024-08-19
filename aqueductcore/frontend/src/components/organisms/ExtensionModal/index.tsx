@@ -1,18 +1,17 @@
 import { Box, Button, CircularProgress, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { useContext, useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
+import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
-import { FileSelectStateContext } from "context/FileSelectProvider";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
 import { client } from "API/apolloClientConfig";
@@ -54,22 +53,24 @@ const HeaderIcon = styled(AutoAwesomeIcon)`
     vertical-align: middle;
 `;
 
+const CloseModalIcon = styled(CloseIcon)`
+    cursor: pointer;
+    vertical-align: middle;
+`;
+
 const ExtensionName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
 `;
 
 const HeaderRightIcon = styled(ChevronRightIcon)`
     font-size: 3.25rem;
-    line-height: 3.25rem;
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
 `;
 
 const AuthorName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
     font-weight: bold;
@@ -120,7 +121,6 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const [selectedAction, setSelectedAction] = useState<ExtensionActionType | undefined>();
     const { loading, mutate } = useExecuteExtension();
     const [functionFormData, setFunctionFormData] = useState<extensionActionsData>({});
-    const { setSelectedFile } = useContext(FileSelectStateContext);
 
     useEffect(() => {
         if (selectedAction && selectedExtension) {
@@ -149,10 +149,9 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         await client.refetchQueries({
             include: "active",
         });
-        setSelectedFile(executeExtension.logFile)
         if (executeExtension.returnCode !== 0) {
             toast.error(
-                `Execution finished with the error: ${executeExtension.stderr} `,
+                `Execution finished with the error: ${executeExtension.stdErr} `,
                 { id: "exec_extension_error" }
             )
         } else {
@@ -220,7 +219,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                             <ExtensionName>{selectedExtension}</ExtensionName>
                         </Grid>
                         <Grid item>
-                            <CloseIcon onClick={handleCloseModal} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
+                            <CloseModalIcon onClick={handleCloseModal} />
                         </Grid>
                     </ModalHeader>
                     <ModalMain container>

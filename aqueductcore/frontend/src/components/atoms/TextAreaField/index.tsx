@@ -25,6 +25,11 @@ const TextAreaInput = styled(TextareaAutosize)`
     border: 1px solid ${(props) => props.theme.palette.primary.main};
   }
 
+  &:disabled{
+    color: ${(props) => props.theme.palette.text.disabled};
+    border-color: ${(props) => props.theme.palette.text.disabled};
+  }
+
   &:focus-visible {
     outline: 0;
   }

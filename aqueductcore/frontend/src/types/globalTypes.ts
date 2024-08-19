@@ -1,5 +1,4 @@
 import {
-  ExtensionExecutionResult,
   ExperimentFiltersInput,
   ExtensionParameterType,
   ExtensionActionInfo,
@@ -8,6 +7,7 @@ import {
   Experiments,
   ExtensionInfo,
   UserInfo,
+  TaskInfo,
   Tags,
 } from "./graphql/__GENERATED__/graphql";
 
@@ -92,6 +92,11 @@ export type GET_ALL_EXTENSIONS_TYPE = {
   extensions: Array<ExtensionType>;
 };
 
+//### TASKS ###
+export type GET_ALL_TASKS_TYPE = {
+  tasks: Array<TaskType>;
+};
+
 
 //############### Mutation types ###############//
 //### EXPERIMENT ###
@@ -117,10 +122,21 @@ export type CREATE_EXPERIMENT_TYPE = {
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
-  returnCode: ExtensionExecutionResult['returnCode']
-  stderr: ExtensionExecutionResult['stderr']
-  logFile: ExtensionExecutionResult['logFile']
-  stdout: ExtensionExecutionResult['stdout']
+  actionName: TaskInfo['actionName']
+  endedTime: TaskInfo['endedTime']
+  experiment: TaskInfo['experiment']
+  extensionName: TaskInfo['extensionName']
+  parameters: TaskInfo['parameters']
+  receiveTime: TaskInfo['receiveTime']
+  resultCode: TaskInfo['resultCode']
+  returnCode: TaskInfo['returnCode']
+  startedTime: TaskInfo['startedTime']
+  stdErr: TaskInfo['stdErr']
+  stdOut: TaskInfo['stdOut']
+  taskId: TaskInfo['taskId']
+  taskRuntime: TaskInfo['taskRuntime']
+  taskStatus: TaskInfo['taskStatus']
+  username: TaskInfo['username']
 }
 
 //############### Other types ###############//
@@ -163,8 +179,32 @@ export type ExperimentFileType = {
   path: ExperimentFile["path"];
   modifiedAt: ExperimentFile["modifiedAt"];
 };
+export type JobDataType = {
+  // TBD
+  experiment: {
+    title: ExperimentData['title']
+    eid: ExperimentData['eid']
+  };
+  extension: {
+    name: ExtensionInfo['name']
+    action: ExtensionActionInfo['name']
+  };
+  //!TODO: Fix these values
+  taskStatus: TaskType['taskStatus'];
+  username: TaskType['username'];
+  receiveTime: TaskInfo['receiveTime'];
+};
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
+  label: string;
+  minWidth?: number;
+  maxWidth?: number;
+  align?: "right" | "center";
+  ellipsis?: boolean;
+  format?: (value?: unknown) => string | React.ReactNode;
+}
+export interface JobsListColumnsType {
+  id: keyof JobDataType;
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -178,6 +218,7 @@ export interface ExperimentsListTableProps extends ExperimentDataType {
   star: boolean;
 }
 //### EXTENSION ###
+
 export type ExtensionType = {
   name: ExtensionInfo['name']
   authors: ExtensionInfo['authors'],
@@ -202,4 +243,20 @@ export interface ExtensionFieldBase {
   title: string,
   field: string,
   description?: string,
+}
+//### TASKS ###
+export type TaskType = {
+  extensionName: TaskInfo['extensionName']
+  actionName: TaskInfo['actionName']
+  taskStatus: TaskInfo['taskStatus']
+  username: TaskInfo['username']
+  receiveTime: TaskInfo['receiveTime']
+  resultCode: TaskInfo['resultCode']
+  stdOut: TaskInfo['stdOut']
+  stdErr: TaskInfo['stdErr']
+  experiment: {
+    uuid: ExperimentData['uuid']
+    title: ExperimentData['title']
+    eid: ExperimentData['eid']
+  }
 }
