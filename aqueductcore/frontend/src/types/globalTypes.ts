@@ -7,7 +7,7 @@ import {
   Experiments,
   ExtensionInfo,
   UserInfo,
-  TaskInfo,
+  TaskData,
   Tags,
 } from "./graphql/__GENERATED__/graphql";
 
@@ -94,7 +94,11 @@ export type GET_ALL_EXTENSIONS_TYPE = {
 
 //### TASKS ###
 export type GET_ALL_TASKS_TYPE = {
-  tasks: Array<TaskType>;
+  tasks: {
+    tasksData: Array<TaskType>
+    totalTasksCount: number;
+  }
+  __typename?: TaskData['__typename'];
 };
 
 
@@ -122,21 +126,17 @@ export type CREATE_EXPERIMENT_TYPE = {
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
-  actionName: TaskInfo['actionName']
-  endedTime: TaskInfo['endedTime']
-  experiment: TaskInfo['experiment']
-  extensionName: TaskInfo['extensionName']
-  parameters: TaskInfo['parameters']
-  receiveTime: TaskInfo['receiveTime']
-  resultCode: TaskInfo['resultCode']
-  returnCode: TaskInfo['returnCode']
-  startedTime: TaskInfo['startedTime']
-  stdErr: TaskInfo['stdErr']
-  stdOut: TaskInfo['stdOut']
-  taskId: TaskInfo['taskId']
-  taskRuntime: TaskInfo['taskRuntime']
-  taskStatus: TaskInfo['taskStatus']
-  username: TaskInfo['username']
+  actionName: TaskData['actionName']
+  endedTime: TaskData['endedAt']
+  experiment: TaskData['experiment']
+  extensionName: TaskData['extensionName']
+  parameters: TaskData['parameters']
+  receiveAt: TaskData['receivedAt']
+  resultCode: TaskData['resultCode']
+  stdErr: TaskData['stdErr']
+  stdOut: TaskData['stdOut']
+  taskId: TaskData['taskId']
+  taskStatus: TaskData['taskStatus']
 }
 
 //############### Other types ###############//
@@ -191,8 +191,7 @@ export type JobDataType = {
   };
   //!TODO: Fix these values
   taskStatus: TaskType['taskStatus'];
-  username: TaskType['username'];
-  receiveTime: TaskInfo['receiveTime'];
+  receivedAt: TaskData['receivedAt'];
 };
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
@@ -246,14 +245,13 @@ export interface ExtensionFieldBase {
 }
 //### TASKS ###
 export type TaskType = {
-  extensionName: TaskInfo['extensionName']
-  actionName: TaskInfo['actionName']
-  taskStatus: TaskInfo['taskStatus']
-  username: TaskInfo['username']
-  receiveTime: TaskInfo['receiveTime']
-  resultCode: TaskInfo['resultCode']
-  stdOut: TaskInfo['stdOut']
-  stdErr: TaskInfo['stdErr']
+  extensionName: TaskData['extensionName']
+  actionName: TaskData['actionName']
+  taskStatus: TaskData['taskStatus']
+  receivedAt: TaskData['receivedAt']
+  resultCode: TaskData['resultCode']
+  stdOut: TaskData['stdOut']
+  stdErr: TaskData['stdErr']
   experiment: {
     uuid: ExperimentData['uuid']
     title: ExperimentData['title']

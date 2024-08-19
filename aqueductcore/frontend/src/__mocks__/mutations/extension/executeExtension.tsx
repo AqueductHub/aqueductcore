@@ -31,7 +31,7 @@ export const executeExtension_mock = {
             result: {
                 data: {
                     "executeExtension": {
-                        "returnCode": 0,
+                        "resultCode": 0,
                         "stdErr": "",
                         "stdOut": `${params.map(param => param.join('=')).join('\n')}\ndummykey=dummyvalue\n`,
                         "logFile": logFileName,

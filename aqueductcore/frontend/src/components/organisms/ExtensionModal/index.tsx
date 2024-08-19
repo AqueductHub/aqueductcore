@@ -149,7 +149,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         await client.refetchQueries({
             include: "active",
         });
-        if (executeExtension.returnCode !== 0) {
+        if (executeExtension.resultCode !== 0) {
             toast.error(
                 `Execution finished with the error: ${executeExtension.stdErr} `,
                 { id: "exec_extension_error" }

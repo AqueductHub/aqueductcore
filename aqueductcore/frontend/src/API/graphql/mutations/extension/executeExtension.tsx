@@ -5,12 +5,13 @@ import { EXECUTE_EXTENSION_TYPE } from "types/globalTypes";
 
 export const EXECUTE_EXTENSION = gql`
   mutation ExecuteExtension(
+    $experimentUuid: UUID!
     $extension: String!
     $action: String!
     $params: [[String!]!]!
   ) {
-    executeExtension(extension: $extension, action: $action, params: $params) {
-      returnCode
+    executeExtension(executeExtensionInput: {experimentUuid: $experimentUuid, extension: $extension, action: $action, params: $params}) {
+      resultCode
       stdErr
       stdOut
     }
