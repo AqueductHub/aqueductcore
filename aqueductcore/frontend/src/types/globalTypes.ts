@@ -241,6 +241,7 @@ export type TaskType = {
   receiveTime: TaskInfo['receiveTime']
   resultCode: TaskInfo['resultCode']
   stdOut: TaskInfo['stdOut']
+  stdErr: TaskInfo['stdErr']
   experiment: {
     uuid: ExperimentData['uuid']
     title: ExperimentData['title']

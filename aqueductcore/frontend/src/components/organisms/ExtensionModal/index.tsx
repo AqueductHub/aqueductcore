@@ -8,10 +8,10 @@ import toast from "react-hot-toast";
 
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
+import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
 import { ExtensionParameterDataTypes } from "constants/constants";
-import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
 import { client } from "API/apolloClientConfig";
@@ -147,7 +147,6 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         await client.refetchQueries({
             include: "active",
         });
-        // setSelectedFile(executeExtension.logFile)
         if (executeExtension.returnCode !== 0) {
             toast.error(
                 `Execution finished with the error: ${executeExtension.stderr} `,

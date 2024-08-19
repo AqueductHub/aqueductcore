@@ -10,7 +10,7 @@ export const dateFormatter = (date: Date) => {
   return `${localDate} - ${localTime}`;
 };
 
-export function processExperimentTableData(experimentList: ExperimentDataType[]) {
+export function experimentTableDataFormatter(experimentList: ExperimentDataType[]) {
   return experimentList.map((experiment) => {
     const { uuid, eid, title, description, tags, createdAt, createdBy } = experiment;
 
@@ -28,7 +28,7 @@ export function processExperimentTableData(experimentList: ExperimentDataType[])
   });
 }
 
-export function processJobHistoryTableData(tasks: TaskType[]): JobDataType[] {
+export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
   const formattedTasks = tasks.map(task => ({
     experiment: {
       title: task.experiment.title,

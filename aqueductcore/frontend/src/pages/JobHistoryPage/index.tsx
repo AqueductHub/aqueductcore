@@ -6,7 +6,7 @@ import JobExtensionActionName from "components/molecules/JobListTableCells/JobEx
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
-import { dateFormatter, processJobHistoryTableData } from "helper/formatters";
+import { dateFormatter, jobHistoryTableFormatter } from "helper/formatters";
 import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
 import { JobDataType, JobsListColumnsType } from "types/globalTypes";
@@ -97,7 +97,7 @@ function JobHistoryPage() {
       <Box sx={{ mt: 2 }}>
         <JobsListTable
           JobRecordsColumns={JobsListColumns}
-          jobList={processJobHistoryTableData(tasks)}
+          jobList={jobHistoryTableFormatter(tasks)}
           maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
           pageInfo={pageInfo}
         />

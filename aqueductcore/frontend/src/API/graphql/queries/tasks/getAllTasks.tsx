@@ -12,6 +12,7 @@ export const GET_ALL_TASKS = gql`
         receiveTime
         resultCode
         stdOut
+        stdErr
         experiment {
           uuid  
           title

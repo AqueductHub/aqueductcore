@@ -11,6 +11,7 @@ export const TasksDataMock: TaskType[] = [
         "receiveTime": "2023-12-01T23:59:00.000999",
         "resultCode": 1,
         "stdOut": "Some text 2",
+        "stdErr": null,
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -25,6 +26,7 @@ export const TasksDataMock: TaskType[] = [
         "receiveTime": "2023-12-02T23:59:01.000999",
         "resultCode": null,
         "stdOut": null,
+        "stdErr": "Error!",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -39,6 +41,7 @@ export const TasksDataMock: TaskType[] = [
         "receiveTime": "2023-12-03T23:59:02.000999",
         "resultCode": null,
         "stdOut": null,
+        "stdErr": null,
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
