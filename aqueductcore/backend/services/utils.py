@@ -12,7 +12,11 @@ from aqueductcore.backend.models.experiment import (
     TagCreate,
     TagRead,
 )
-from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
+from aqueductcore.backend.models.task import (
+    TaskParamList,
+    TaskProcessExecutionResult,
+    TaskRead,
+)
 
 
 async def task_orm_to_model(
@@ -29,7 +33,9 @@ async def task_orm_to_model(
         std_err=task_info.std_err,
         std_out=task_info.std_out,
         status=task_info.status,
-        parameters=task_info.kwargs,
+        parameters=(
+            TaskParamList.model_validate_json(value.parameters) if value.parameters else None
+        ),
         result_code=task_info.result_code,
     )
 

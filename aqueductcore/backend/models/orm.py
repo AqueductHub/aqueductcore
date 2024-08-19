@@ -29,7 +29,7 @@ class User(Base):
 
     uuid = mapped_column(Uuid, primary_key=True)
     username: Mapped[str] = mapped_column(Text)
-    experiments: Mapped[List["Experiment"]] = relationship()
+    experiments: Mapped[List[Experiment]] = relationship()
 
 
 class Task(Base):
@@ -39,6 +39,7 @@ class Task(Base):
     task_id = mapped_column(String, primary_key=True)
     extension_name: Mapped[str]
     action_name: Mapped[str]
+    parameters: Mapped[Optional[str]]
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )

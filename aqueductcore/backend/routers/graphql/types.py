@@ -213,7 +213,7 @@ class TaskStatus(Enum):
 class KeyValuePair:
     """Parameter key and value"""
 
-    key: str
+    key: ExtensionParameterType
     value: Optional[str]
 
 
@@ -255,7 +255,20 @@ def task_model_to_node(value: TaskRead) -> TaskData:
 
     kv_params = []
     if value.parameters is not None:
-        kv_params = [KeyValuePair(key=key, value=value) for key, value in value.parameters.items()]
+        kv_params = [
+            KeyValuePair(
+                key=ExtensionParameterType(
+                    name=item.metadata.name,
+                    display_name=item.metadata.display_name,
+                    description=item.metadata.description,
+                    data_type=item.metadata.data_type,
+                    default_value=item.metadata.default_value,
+                    options=item.metadata.options,
+                ),
+                value=item.value,
+            )
+            for item in value.parameters.params
+        ]
 
     task = TaskData(
         task_id=UUID(value.task_id),
