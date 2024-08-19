@@ -7,8 +7,8 @@ import {
   Experiments,
   ExtensionInfo,
   UserInfo,
-  Tags,
   TaskInfo,
+  Tags,
 } from "./graphql/__GENERATED__/graphql";
 
 type NonNullish<T> = Exclude<T, null | undefined>; // Remove null and undefined from T
@@ -122,9 +122,21 @@ export type CREATE_EXPERIMENT_TYPE = {
 }
 //### EXTENSION ###
 export type EXECUTE_EXTENSION_TYPE = {
+  actionName: TaskInfo['actionName']
+  endedTime: TaskInfo['endedTime']
+  experiment: TaskInfo['experiment']
+  extensionName: TaskInfo['extensionName']
+  parameters: TaskInfo['parameters']
+  receiveTime: TaskInfo['receiveTime']
+  resultCode: TaskInfo['resultCode']
   returnCode: TaskInfo['returnCode']
-  stderr: TaskInfo['stdErr']
-  stdout: TaskInfo['stdOut']
+  startedTime: TaskInfo['startedTime']
+  stdErr: TaskInfo['stdErr']
+  stdOut: TaskInfo['stdOut']
+  taskId: TaskInfo['taskId']
+  taskRuntime: TaskInfo['taskRuntime']
+  taskStatus: TaskInfo['taskStatus']
+  username: TaskInfo['username']
 }
 
 //############### Other types ###############//

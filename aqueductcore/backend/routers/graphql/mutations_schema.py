@@ -40,6 +40,7 @@ from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
     get_experiment,
 )
 
+
 @strawberry.type
 class Mutation:
     """GraphQL mutations controller."""
@@ -148,11 +149,7 @@ class Mutation:
 
         ### data population after submission
         experiment = await get_experiment(
-            context,
-            ExperimentIdentifierInput(
-                type=IDType.EID,
-                value=eid
-            )
+            context, ExperimentIdentifierInput(type=IDType.EID, value=eid)
         )
         extension_info = ExtensionInfo.from_extension(extension_object)
         action_info = None
@@ -164,12 +161,8 @@ class Mutation:
         parameters = []
         if action_info is not None:
             parameters = [
-                KeyValuePair(
-                    key=parameter,
-                    value=dict_params.get(parameter.name, None)
-                )
-                for parameter
-                in action_info.parameters
+                KeyValuePair(key=parameter, value=dict_params.get(parameter.name, None))
+                for parameter in action_info.parameters
             ]
 
         return TaskInfo(
@@ -180,16 +173,13 @@ class Mutation:
             action_name=action,
             parameters=parameters,
             task_status=TaskStatus(result.status),
-
             receive_time=result.receive_time,
             started_time=None,
             task_runtime=0.0,
             ended_time=result.ended_time,
-
             std_err=result.std_err,
             std_out=result.std_out,
             result_code=result.result_code,
-
             # TODO: remove after frontend change, obsolete field
             return_code=0,
         )
@@ -228,16 +218,13 @@ class Mutation:
             action_name=action_name,
             parameters=parameters,
             task_status=TaskStatus(task_state.status),
-
             receive_time=task_state.receive_time,
             started_time=started_time,
             task_runtime=task_runtime,
             ended_time=task_state.ended_time,
-
             std_err=task_state.std_err,
             std_out=task_state.std_out,
             result_code=task_state.result_code,
-
             # TODO: remove after frontend change, obsolete field
             return_code=0,
         )

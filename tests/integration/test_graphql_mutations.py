@@ -43,6 +43,7 @@ mutation CancelTask($taskId: UUID!) {
 }
 """
 
+
 @pytest.mark.asyncio
 async def test_execute_extension_stdout_ok(
     db_session: AsyncSession,
@@ -83,7 +84,7 @@ async def test_execute_extension_stdout_ok(
                 ["var5", "some\\nmultiline"],
                 ["var6", "TRUE"],
                 ["var7", "string4"],
-            ]
+            ],
         },
         context_value=context,
     )
@@ -131,7 +132,7 @@ async def test_execute_extension_stderr_ok(
                 ["var5", "some\\nmultiline"],
                 ["var6", "TRUE"],
                 ["var7", "string4"],
-            ]
+            ],
         },
         context_value=context,
     )
@@ -177,7 +178,7 @@ async def test_cancel_task_ok(
                 ["width", "1000"],
                 ["height", "800"],
                 ["image_file", "123.png"],
-            ]
+            ],
         },
         context_value=context,
     )

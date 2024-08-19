@@ -25,7 +25,6 @@ const ExperimentDescription = styled(Typography)`
   border: 1px solid ${(props) => props.theme.palette.neutral.main};
   border-radius: ${(props) => props.theme.spacing(1)};
   white-space: pre-line;
-  line-height: 1.48;
 `;
 
 const EditDescriptionButton = styled(Button)`

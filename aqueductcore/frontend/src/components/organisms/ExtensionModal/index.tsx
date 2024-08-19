@@ -53,22 +53,24 @@ const HeaderIcon = styled(AutoAwesomeIcon)`
     vertical-align: middle;
 `;
 
+const CloseModalIcon = styled(CloseIcon)`
+    cursor: pointer;
+    vertical-align: middle;
+`;
+
 const ExtensionName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
 `;
 
 const HeaderRightIcon = styled(ChevronRightIcon)`
     font-size: 3.25rem;
-    line-height: 3.25rem;
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
 `;
 
 const AuthorName = styled(Typography)`
-    line-height: 3.25rem;
     font-size: 1.1rem;
     display: inline;
     font-weight: bold;
@@ -149,7 +151,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         });
         if (executeExtension.returnCode !== 0) {
             toast.error(
-                `Execution finished with the error: ${executeExtension.stderr} `,
+                `Execution finished with the error: ${executeExtension.stdErr} `,
                 { id: "exec_extension_error" }
             )
         } else {
@@ -217,7 +219,7 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                             <ExtensionName>{selectedExtension}</ExtensionName>
                         </Grid>
                         <Grid item>
-                            <CloseIcon onClick={handleCloseModal} sx={{ cursor: "pointer", lineHeight: "3.313rem", verticalAlign: "middle" }} />
+                            <CloseModalIcon onClick={handleCloseModal} />
                         </Grid>
                     </ModalHeader>
                     <ModalMain container>

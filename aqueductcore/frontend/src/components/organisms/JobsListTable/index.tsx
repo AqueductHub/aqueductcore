@@ -8,6 +8,7 @@ import { grey } from "@mui/material/colors";
 import { useState } from "react";
 
 import { JobDataType, JobsListColumnsType } from "types/globalTypes";
+import JobDetailsModal from "components/organisms/JobDetailsModal";
 import { jobListRowsPerPageOptions } from "constants/constants";
 
 function JobsListTable({
@@ -28,13 +29,15 @@ function JobsListTable({
     };
 }) {
     const [showActionId, setShowActionId] = useState("-1");
+    const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);  
     const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
-
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
+    
+    const handleCloseJobDetailsModal = () => setJobDetailsModalOpen(false);
+    const handleOpenJobDetailsModal = () => setJobDetailsModalOpen(true);
+    const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(showActionId);
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
@@ -70,7 +73,7 @@ function JobsListTable({
                                     onMouseLeave={() => setShowActionId("-1")}
                                     onClick={() =>
                                         // !TODO: after TT-122 is completed
-                                        console.log("clicked", showActionId)
+                                        handleOpenJobDetailsModal()
                                     }
                                     sx={{ cursor: "pointer" }}
                                 >
@@ -112,6 +115,12 @@ function JobsListTable({
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+            <JobDetailsModal
+                isOpen={jobDetailsModalOpen}
+                handleClose={handleCloseJobDetailsModal}
+                selectedExtension={"name_ext"}
+                selectedAction={"action_ext"}
             />
         </Paper>
     );

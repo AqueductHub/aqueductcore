@@ -6,6 +6,7 @@ from aqueductcore.backend.services.task_executor import (
     revoke_task,
 )
 
+
 class TestTaskExecutor:
 
     @pytest.mark.asyncio
