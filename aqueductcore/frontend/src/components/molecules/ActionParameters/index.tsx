@@ -18,8 +18,14 @@ import { client } from "API/apolloClientConfig";
 interface ActionParametersProps {
     parameters?: Array<ExtensionsActionParameterType>;
     inputParams: actionInExtensionsType[];
+}
+
+type ActionParametersOptionalProps = {
+    readonly: true;
+    setInputParams?: never;
+} | {
+    readonly?: false;
     setInputParams: (inputParam: actionInExtensionsType[]) => void;
-    readonly?: boolean;
 }
 
 function ActionParameters ({
@@ -27,7 +33,7 @@ function ActionParameters ({
     inputParams,
     setInputParams,
     readonly
-}: ActionParametersProps) {
+}: ActionParametersProps & ActionParametersOptionalProps) {
     const { experimentIdentifier } = useParams();
     
     const apolloCache = client.readQuery({
@@ -61,7 +67,7 @@ function ActionParameters ({
                                 field={parameterInfo.name}
                                 textFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -73,7 +79,7 @@ function ActionParameters ({
                                 field={parameterInfo.name}
                                 integerFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -85,7 +91,7 @@ function ActionParameters ({
                                 field={parameterInfo.name}
                                 floatFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -106,7 +112,7 @@ function ActionParameters ({
                                 field={parameterInfo.name}
                                 textareaFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: e.target.value }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -118,7 +124,7 @@ function ActionParameters ({
                                 field={parameterInfo.name}
                                 checkboxFieldProps={{
                                     checked: handleBooleanValue(inputParams.find((item) => item.name === parameterInfo.name)?.value ?? ''),
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.checked) }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.checked) }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -131,7 +137,7 @@ function ActionParameters ({
                                 options={parameterInfo.options || []}
                                 selectFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((e) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }])),
+                                    onChange: ((e) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: String(e.target.value) }]) : null),
                                     disabled: readonly,
                                 }}
                             />
@@ -144,7 +150,7 @@ function ActionParameters ({
                                 experimentIdentifier={experimentIdentifier || ""}
                                 fileFieldProps={{
                                     value: inputParams.find((item) => item.name === parameterInfo.name)?.value ?? '',
-                                    onChange: ((_, value) => setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: value }])),
+                                    onChange: ((_, value) => !readonly ? setInputParams([...inputParams.filter(param => param.name !== parameterInfo.name), { name: parameterInfo.name, value: value }]) : null),
                                     disabled: readonly,
                                 }}
                             />

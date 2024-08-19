@@ -131,7 +131,6 @@ const settingItems = [
                 readonly
                 parameters={parameters}
                 inputParams={inputParams}
-                setInputParams={() => {}}
             />
     },
     {

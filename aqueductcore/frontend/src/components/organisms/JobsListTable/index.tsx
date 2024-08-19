@@ -8,8 +8,8 @@ import { grey } from "@mui/material/colors";
 import { useState } from "react";
 
 import { JobDataType, JobsListColumnsType } from "types/globalTypes";
+import JobDetailsModal from "components/organisms/JobDetailsModal";
 import { jobListRowsPerPageOptions } from "constants/constants";
-import JobDetailsModal from "../JobDetailsModal";
 
 function JobsListTable({
     JobRecordsColumns,
@@ -72,6 +72,7 @@ function JobsListTable({
                                     }}
                                     onMouseLeave={() => setShowActionId("-1")}
                                     onClick={() =>
+                                        // !TODO: after TT-122 is completed
                                         handleOpenJobDetailsModal()
                                     }
                                     sx={{ cursor: "pointer" }}
