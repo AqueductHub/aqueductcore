@@ -10,6 +10,7 @@ const ExperimentName = styled(Typography)`
     border: 1px solid #ccc;
     line-height: 1.375rem;
     background-color: #FFF;
+    color: ${({ theme }) => theme.palette.grey[800]};
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
@@ -20,11 +21,20 @@ const ExperimentEid = styled(Typography)`
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
+const ExperimentNameSpan = styled(Typography)`
+    max-width: 280px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+`;
+
 function JobExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
     return (
         <ExperimentNameChip container>
             <Grid item>
-                <ExperimentName noWrap>{name}</ExperimentName>
+                <ExperimentName noWrap>
+                    <ExperimentNameSpan>{name}</ExperimentNameSpan>
+                </ExperimentName>
             </Grid>
             <Grid item>
                 <ExperimentEid>{eid}</ExperimentEid>
