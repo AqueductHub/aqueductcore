@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from uuid import UUID
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
+    ExperimentFiltersInput,
     ExperimentIdentifierInput,
     IDType,
 )
@@ -15,17 +16,15 @@ from aqueductcore.backend.routers.graphql.types import (
     ExperimentData,
     Experiments,
     UserInfo,
+    experiment_model_to_node,
+    experiments_node,
 )
-from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
 from aqueductcore.backend.services.experiment import (
     get_all_experiments,
     get_experiment_by_eid,
     get_experiment_by_uuid,
 )
 from aqueductcore.backend.services.validators import MAX_EXPERIMENTS_PER_REQUEST
-
-if TYPE_CHECKING:
-    from aqueductcore.backend.routers.graphql.query_schema import ExperimentFiltersInput
 
 
 def get_current_user_info(
@@ -65,7 +64,7 @@ async def get_expriments(
     experiment_nodes = [experiment_model_to_node(item) for item in experiments][
         offset : offset + limit
     ]
-    return Experiments(experiments_data=experiment_nodes, total_experiments_count=len(experiments))
+    return experiments_node(experiment_nodes, len(experiments))
 
 
 async def get_experiment(

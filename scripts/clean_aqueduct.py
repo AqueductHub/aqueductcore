@@ -16,9 +16,6 @@ async def clean_up():
     rmtree(str(settings.experiments_dir_path))
     os.mkdir(str(settings.experiments_dir_path))
 
-    async with async_engine.begin() as conn:
-        await conn.run_sync(orm.Base.metadata.create_all)
-
     await async_engine.dispose()
 
 

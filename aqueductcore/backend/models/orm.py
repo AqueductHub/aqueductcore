@@ -29,7 +29,23 @@ class User(Base):
 
     uuid = mapped_column(Uuid, primary_key=True)
     username: Mapped[str] = mapped_column(Text)
-    experiments: Mapped[List["Experiment"]] = relationship()
+    experiments: Mapped[List[Experiment]] = relationship()
+
+
+class Task(Base):
+    """Task details"""
+
+    __tablename__ = "task"
+    task_id = mapped_column(String, primary_key=True)
+    extension_name: Mapped[str]
+    action_name: Mapped[str]
+    parameters: Mapped[Optional[str]]
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
+    )
+
+    experiment_id = mapped_column(Uuid, ForeignKey("experiment.uuid"))
+    experiment: Mapped[Experiment] = relationship(back_populates="tasks")
 
 
 class Experiment(Base):
@@ -53,6 +69,8 @@ class Experiment(Base):
     tags: Mapped[List[Tag]] = relationship(
         secondary=experiment_tag_association, back_populates="experiments"
     )
+
+    tasks: Mapped[List[Task]] = relationship(back_populates="experiment")
 
     def __repr__(self):
         return f"<Experiment {self.title}>"

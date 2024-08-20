@@ -10,8 +10,10 @@ from aqueductcore.backend.routers.graphql.inputs import (
     ExperimentTagsInput,
     ExperimentUpdateInput,
 )
-from aqueductcore.backend.routers.graphql.types import ExperimentData
-from aqueductcore.backend.routers.graphql.utils import experiment_model_to_node
+from aqueductcore.backend.routers.graphql.types import (
+    ExperimentData,
+    experiment_model_to_node,
+)
 from aqueductcore.backend.services import experiment as experiment_service
 
 

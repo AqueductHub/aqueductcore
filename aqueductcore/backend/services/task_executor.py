@@ -2,17 +2,25 @@
 
 import os
 import subprocess
-from datetime import datetime
+from asyncio import sleep
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from uuid import UUID
 
-from asyncio import sleep
 from celery import Celery
 from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
-from pydantic import BaseModel
+from pydantic import ConfigDict, validate_call
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
+from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.errors import AQDDBTaskNonExisting
+from aqueductcore.backend.models import orm
+from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
+from aqueductcore.backend.services.utils import task_orm_to_model
 from aqueductcore.backend.settings import settings
 
 WAITING_TIME = 2
@@ -21,19 +29,14 @@ celery_app = Celery(
     "tasks",
     broker=settings.celery_message_queue,
     backend=settings.celery_backend,
+    result_persistent=True,
+    result_extended=True,
+    track_started=True,
+    task_track_started=True,
 )
 
 
-class TaskProcessExecutionResult(BaseModel):
-    """Result of process execution."""
-
-    result_code: Optional[int]
-    std_err: Optional[str]
-    std_out: Optional[str]
-    task_id: UUID
-    status: str
-    receive_time: datetime
-    ended_time: Optional[datetime]
+celery_app.conf.update(result_extended=True)
 
 
 @celery_app.task(bind=True)
@@ -41,7 +44,7 @@ def run_executable(
     self,  # pylint: disable=unused-argument
     extension_directory_name: str,
     shell_script: str,
-    **kwargs
+    **kwargs,
 ) -> Tuple[int, str, str]:
     """This code executes in a celery worker.
     This call is implemented as blocking, but the aqueduct
@@ -84,61 +87,170 @@ def run_executable(
     )
 
 
-async def update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
-    ended_time = None
     if wait:
         if not task.ready():
             await sleep(WAITING_TIME)
-        ended_time = datetime.now()
 
-    result = TaskProcessExecutionResult(
-        result_code=None,
-        std_err=None,
-        std_out=None,
+    task_info = TaskProcessExecutionResult(
         task_id=UUID(task.id),
         status=task.status,
-        # TODO update using database
-        receive_time=datetime.now(),
-        ended_time=ended_time,
     )
-    if task.result is not None:
+    # property should be accessed once to have conistent results
+    # as it might change during the process.
+    task_result = task.result
+
+    if task_result is not None:
         known_errors = (FileNotFoundError, TaskRevokedError)
-        if isinstance(task.result, known_errors):
-            err = str(task.result)
-        else:
-            code, out, err = task.result
-            result.result_code = code
-            result.std_out = out
-        result.std_err = err
-    return result
+        if isinstance(task_result, known_errors):
+            err = str(task_result)
+            task_info.std_err = err
+        elif task.ready():
+            code, out, err = task_result
+            task_info.result_code = code
+            task_info.std_out = out
+            task_info.std_err = err
+        task_info.ended_at = task.date_done
+        task_info.kwargs = task.kwargs
+
+    return task_info
 
 
-async def execute_task(
-    extension_directory_name: str, shell_script: str, execute_blocking: bool = False, **kwargs
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def _execute_task(
+    extension_directory_name: str,
+    shell_script: str,
+    execute_blocking: bool = False,
+    **kwargs,
 ) -> TaskProcessExecutionResult:
     """Execute a task and wait until finished"""
 
-    receive_time = datetime.now()
     # retry and expiration control policies may be added here according to:
     # https://docs.celeryq.dev/en/stable/userguide/calling.html#message-sending-retry
     task = run_executable.apply_async(
         (extension_directory_name, shell_script),
         kwargs=kwargs,
     )
-    result = await update_task_info(task_id=task.id, wait=execute_blocking)
 
-    result.receive_time = receive_time
+    result = await _update_task_info(task_id=task.id, wait=execute_blocking)
+
     return result
 
 
-async def revoke_task(task_id: str, terminate: bool) -> TaskProcessExecutionResult:
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def revoke_task(
+    user_info: UserInfo, db_session: AsyncSession, task_id: str, terminate: bool
+) -> TaskRead:
     """Cancel the task and update the status."""
 
-    task = AsyncResult(task_id)
-    # note: SIGINT does not lead to task abort. Id you send
+    statement = (
+        select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
+    )
+
+    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
+
+    result = await db_session.execute(statement)
+
+    db_task = result.scalars().first()
+    if db_task is None:
+        raise AQDDBTaskNonExisting(
+            "DB query failed due to non-existing task with the specified task id."
+        )
+
+    # note: SIGINT does not lead to task abort. If you send
     # KeyboardInterupt (SIGINT), it will not stop, and the
     # exception does not propagate.
-    task.revoke(terminate=terminate, signal="SIGTERM")
-    return await update_task_info(task_id, wait=False)
+    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGTERM")
+
+    task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+
+    return await task_orm_to_model(
+        value=db_task, task_info=task_info, experiment_uuid=db_task.experiment.uuid
+    )
+
+
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def get_task_by_uuid(
+    user_info: UserInfo, db_session: AsyncSession, task_id: UUID
+) -> TaskRead:
+    """Cancel the task and update the status."""
+    statement = (
+        select(orm.Task)
+        .options(joinedload(orm.Task.experiment))
+        .where(orm.Task.task_id == str(task_id))
+    )
+
+    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
+
+    result = await db_session.execute(statement)
+
+    db_task = result.scalars().first()
+    if db_task is None:
+        raise AQDDBTaskNonExisting(
+            "DB query failed due to non-existing task with the specified task id."
+        )
+
+    task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+
+    return await task_orm_to_model(
+        value=db_task, task_info=task_info, experiment_uuid=db_task.experiment.uuid
+    )
+
+
+@validate_call(config=ConfigDict(arbitrary_types_allowed=True))
+async def get_all_tasks(  # pylint: disable=too-many-arguments
+    user_info: UserInfo,
+    db_session: AsyncSession,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    extension_name: Optional[str] = None,
+    action_name: Optional[str] = None,
+    experiment_uuid: Optional[UUID] = None,
+    order_by_creation_date: bool = True,
+) -> List[TaskRead]:
+    """Get list of all tasks."""
+    statement = select(orm.Task).options(joinedload(orm.Task.experiment))
+
+    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+        statement = statement.join(orm.Experiment).filter(
+            orm.Experiment.created_by == user_info.uuid
+        )
+
+    if experiment_uuid is not None:
+        statement = statement.join(orm.Experiment).filter(orm.Experiment.uuid == experiment_uuid)
+
+    if action_name is not None:
+        statement = statement.filter(orm.Task.action_name == action_name)
+
+    if extension_name is not None:
+        statement = statement.filter(orm.Task.extension_name == extension_name)
+
+    utc_start_date = start_date.astimezone(timezone.utc) if start_date else None
+    utc_end_date = end_date.astimezone(timezone.utc) if end_date else None
+    if utc_start_date is not None and utc_end_date is not None:
+        statement = statement.filter(orm.Task.created_at.between(utc_start_date, utc_end_date))
+    elif start_date is not None:
+        statement = statement.filter(orm.Task.created_at >= utc_start_date)
+    elif end_date is not None:
+        statement = statement.filter(orm.Task.created_at <= utc_end_date)
+
+    if order_by_creation_date:
+        statement = statement.order_by(orm.Task.created_at.desc())
+
+    result = await db_session.execute(statement)
+
+    tasks_list = []
+
+    for item in result.unique().scalars().all():
+        task_info = await _update_task_info(task_id=item.task_id, wait=False)
+
+        tasks_list.append(
+            await task_orm_to_model(
+                value=item, task_info=task_info, experiment_uuid=item.experiment.uuid
+            )
+        )
+    return tasks_list

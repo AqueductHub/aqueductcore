@@ -1,14 +1,10 @@
-"""Pydantic schemas to be used in crud operations"""
+"""Experiment pydantic schemas to be used in crud operations"""
 
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
-
-
-class AQDModel(BaseModel, extra="forbid"):
-    """Base model for all pydantic models."""
+from aqueductcore.backend.models.base import AQDModel
 
 
 class TagBase(AQDModel):

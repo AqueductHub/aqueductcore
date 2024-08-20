@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
+from aqueductcore.backend.routers.graphql.inputs import TagsFilters
 from aqueductcore.backend.routers.graphql.types import Tags
 from aqueductcore.backend.services.experiment import get_all_tags
 from aqueductcore.backend.services.validators import MAX_TAGS_PER_REQUEST
-
-if TYPE_CHECKING:
-    from aqueductcore.backend.routers.graphql.query_schema import TagsFilters
 
 
 async def get_tags(

@@ -23,6 +23,10 @@ class AQDDBExperimentNonExisting(AQDError):
     """Exception raised when there is no experiment in the DB with the specified details."""
 
 
+class AQDDBTaskNonExisting(AQDError):
+    """Exception raised when there is no experiment in the DB with the specified details."""
+
+
 class AQDMaxBodySizeException(AQDError):
     """Exception raised when body size for HTTP requests exceeds maximum."""
 

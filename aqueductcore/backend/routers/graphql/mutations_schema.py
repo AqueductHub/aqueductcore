@@ -1,24 +1,20 @@
 """GraohQL Mutations Controller."""
 
-from typing import List, cast
+from typing import cast
 from uuid import UUID
 
 import strawberry
 from strawberry.types import Info
 
 from aqueductcore.backend.context import ServerContext
-from aqueductcore.backend.errors import AQDValidationError
 from aqueductcore.backend.routers.graphql.inputs import (
+    CancelTaskInput,
+    ExecuteExtensionInput,
     ExperimentCreateInput,
-    ExperimentIdentifierInput,
     ExperimentRemoveInput,
     ExperimentTagInput,
     ExperimentTagsInput,
     ExperimentUpdateInput,
-    IDType,
-)
-from aqueductcore.backend.routers.graphql.types import (
-    TaskStatus,
 )
 from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import (
     add_tag_to_experiment,
@@ -28,17 +24,11 @@ from aqueductcore.backend.routers.graphql.mutations.experiment_mutations import 
     remove_tag_from_experiment,
     update_experiment,
 )
-from aqueductcore.backend.routers.graphql.types import (
-    ExperimentData,
-    ExtensionInfo,
-    KeyValuePair,
-    TaskInfo,
+from aqueductcore.backend.routers.graphql.mutations.task_mutations import (
+    cancel_task,
+    execute_extension,
 )
-from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-from aqueductcore.backend.services.task_executor import revoke_task
-from aqueductcore.backend.routers.graphql.resolvers.experiment_resolver import (
-    get_experiment,
-)
+from aqueductcore.backend.routers.graphql.types import ExperimentData, TaskData
 
 
 @strawberry.type
@@ -116,115 +106,15 @@ class Mutation:
 
     @strawberry.mutation
     async def execute_extension(
-        self,
-        info: Info,
-        extension: str,
-        action: str,
-        params: List[List[str]],
-    ) -> TaskInfo:
-        """The endpoint accepts extension execution requests.
-
-        Args:
-            info: context, which includes database connection.
-            extension: extension name.
-            action: action name.
-            params:
-                list of pairs: [[key1, value1], [key2, value2], ...].
-
-        Returns:
-            TaskInfo: result of putting job into a queue.
-        """
-        dict_params = dict(params)
-        context = cast(ServerContext, info.context)
-        username = "" if context.user_info is None else context.user_info.username
-        extension_object = ExtensionsExecutor.get_extension(extension)
-        extension_object.aqueduct_api_token = context.user_info.token
-
-        action_object = extension_object.get_action(action)
-        exp_parameter = action_object.get_default_experiment_parameter()
-        if exp_parameter is None:
-            raise AQDValidationError(f"Action {extension}:{action} has no experiment parameters")
-        eid = dict_params[exp_parameter.name]
-        result = await ExtensionsExecutor.execute(extension, action, dict_params)
-
-        ### data population after submission
-        experiment = await get_experiment(
-            context, ExperimentIdentifierInput(type=IDType.EID, value=eid)
-        )
-        extension_info = ExtensionInfo.from_extension(extension_object)
-        action_info = None
-        for act_info in extension_info.actions:
-            if act_info.name == action:
-                action_info = act_info
-                break
-
-        parameters = []
-        if action_info is not None:
-            parameters = [
-                KeyValuePair(key=parameter, value=dict_params.get(parameter.name, None))
-                for parameter in action_info.parameters
-            ]
-
-        return TaskInfo(
-            task_id=result.task_id,
-            experiment=experiment,
-            username=username,
-            extension_name=extension,
-            action_name=action,
-            parameters=parameters,
-            task_status=TaskStatus(result.status),
-            receive_time=result.receive_time,
-            started_time=None,
-            task_runtime=0.0,
-            ended_time=result.ended_time,
-            std_err=result.std_err,
-            std_out=result.std_out,
-            result_code=result.result_code,
-            # TODO: remove after frontend change, obsolete field
-            return_code=0,
+        self, info: Info, execute_extension_input: ExecuteExtensionInput
+    ) -> TaskData:
+        """The endpoint accepts extension execution requests."""
+        return await execute_extension(
+            context=cast(ServerContext, info.context),
+            execute_extension_input=execute_extension_input,
         )
 
     @strawberry.mutation
-    async def cancel_task(
-        self,
-        info: Info,
-        task_id: UUID,
-    ) -> TaskInfo:
-        """Send cancellation signal to a task and return task status.
-
-        Args:
-            info: context, which includes database connection.
-            task_id: ID of the task to cancel.
-
-        Returns:
-            TaskInfo: status of the task after cancellation.
-        """
-        context = cast(ServerContext, info.context)
-        task_state = await revoke_task(task_id=str(task_id), terminate=True)
-        username = "" if context.user_info is None else context.user_info.username
-
-        # TODO: TT-123 populate these values when database layer is ready
-        extension_name = ""
-        action_name = ""
-        started_time = None
-        task_runtime = 0.0
-        parameters: List[KeyValuePair] = []
-
-        return TaskInfo(
-            task_id=task_id,
-            experiment=None,
-            username=username,
-            extension_name=extension_name,
-            action_name=action_name,
-            parameters=parameters,
-            task_status=TaskStatus(task_state.status),
-            receive_time=task_state.receive_time,
-            started_time=started_time,
-            task_runtime=task_runtime,
-            ended_time=task_state.ended_time,
-            std_err=task_state.std_err,
-            std_out=task_state.std_out,
-            result_code=task_state.result_code,
-            # TODO: remove after frontend change, obsolete field
-            return_code=0,
-        )
+    async def cancel_task(self, info: Info, cancel_task_input: CancelTaskInput) -> TaskData:
+        """Send cancellation signal to a task and return task status."""
+        return await cancel_task(cast(ServerContext, info.context), cancel_task_input)
