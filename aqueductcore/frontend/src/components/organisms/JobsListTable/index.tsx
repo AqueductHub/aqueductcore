@@ -29,9 +29,9 @@ function JobsListTable({
     };
 }) {
     const [showActionId, setShowActionId] = useState("-1");
-    const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);  
+    const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
     const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
-    
+
     const handleCloseJobDetailsModal = () => setJobDetailsModalOpen(false);
     const handleOpenJobDetailsModal = () => setJobDetailsModalOpen(true);
     const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
@@ -66,9 +66,9 @@ function JobsListTable({
                                     hover
                                     role="checkbox"
                                     tabIndex={-1}
-                                    key={row.receiveTime}
+                                    key={row.receivedAt}
                                     onMouseEnter={() => {
-                                        setShowActionId(row.receiveTime); // set id here
+                                        setShowActionId(row.receivedAt); // set id here
                                     }}
                                     onMouseLeave={() => setShowActionId("-1")}
                                     onClick={() =>

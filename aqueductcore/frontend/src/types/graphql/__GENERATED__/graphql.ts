@@ -21,6 +21,17 @@ export type Scalars = {
   Void: { input: any; output: any; }
 };
 
+export type CancelTaskInput = {
+  taskId: Scalars['UUID']['input'];
+};
+
+export type ExecuteExtensionInput = {
+  action: Scalars['String']['input'];
+  experimentUuid: Scalars['UUID']['input'];
+  extension: Scalars['String']['input'];
+  params: Array<Array<Scalars['String']['input']>>;
+};
+
 export type ExperimentCreateInput = {
   description: Scalars['String']['input'];
   tags: Array<Scalars['String']['input']>;
@@ -42,6 +53,8 @@ export type ExperimentData = {
   files: Array<ExperimentFile>;
   /** Tags of the experiment. */
   tags: Array<Scalars['String']['output']>;
+  /** List of tasks for this experiment. */
+  tasks: Array<TaskData>;
   /** Title of the experiment. */
   title: Scalars['String']['output'];
   /** Last update date of the experiment. */
@@ -149,9 +162,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   addTagToExperiment: ExperimentData;
   addTagsToExperiment: ExperimentData;
-  cancelTask: TaskInfo;
+  cancelTask: TaskData;
   createExperiment: ExperimentData;
-  executeExtension: TaskInfo;
+  executeExtension: TaskData;
   removeExperiment?: Maybe<Scalars['Void']['output']>;
   removeTagFromExperiment: ExperimentData;
   updateExperiment: ExperimentData;
@@ -169,7 +182,7 @@ export type MutationAddTagsToExperimentArgs = {
 
 
 export type MutationCancelTaskArgs = {
-  taskId: Scalars['UUID']['input'];
+  cancelTaskInput: CancelTaskInput;
 };
 
 
@@ -179,9 +192,7 @@ export type MutationCreateExperimentArgs = {
 
 
 export type MutationExecuteExtensionArgs = {
-  action: Scalars['String']['input'];
-  extension: Scalars['String']['input'];
-  params: Array<Array<Scalars['String']['input']>>;
+  executeExtensionInput: ExecuteExtensionInput;
 };
 
 
@@ -207,8 +218,8 @@ export type Query = {
   extensions: Array<ExtensionInfo>;
   getCurrentUserInfo: UserInfo;
   tags: Tags;
-  task?: Maybe<TaskInfo>;
-  tasks: Array<TaskInfo>;
+  task?: Maybe<TaskData>;
+  tasks: Tasks;
 };
 
 
@@ -237,7 +248,9 @@ export type QueryTaskArgs = {
 
 
 export type QueryTasksArgs = {
-  taskFilter: TasksFilterInput;
+  filters?: InputMaybe<TasksFilterInput>;
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
 };
 
 /** Paginated list of experiments */
@@ -254,37 +267,30 @@ export type TagsFilters = {
   includeDangling?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type TaskInfo = {
-  __typename?: 'TaskInfo';
+export type TaskData = {
+  __typename?: 'TaskData';
   /** Name of the extension action. */
   actionName: Scalars['String']['output'];
   /** Time task was completed. */
-  endedTime?: Maybe<Scalars['DateTime']['output']>;
+  endedAt?: Maybe<Scalars['DateTime']['output']>;
   /** Experiment the task is associated with. */
-  experiment?: Maybe<ExperimentData>;
+  experiment: ExperimentData;
   /** Name of the extension. */
   extensionName: Scalars['String']['output'];
   /** List of task parameters and their values. */
   parameters: Array<KeyValuePair>;
   /** Time task was submitted. */
-  receiveTime: Scalars['DateTime']['output'];
+  receivedAt: Scalars['DateTime']['output'];
   /** Process result code. */
   resultCode?: Maybe<Scalars['Int']['output']>;
-  returnCode: Scalars['Int']['output'];
-  /** Time task was started. */
-  startedTime?: Maybe<Scalars['DateTime']['output']>;
   /** Content of task stderr. */
   stdErr?: Maybe<Scalars['String']['output']>;
   /** Content of task stdout. */
   stdOut?: Maybe<Scalars['String']['output']>;
   /** Unique identifier of the task. */
   taskId: Scalars['UUID']['output'];
-  /** Total seconds of run time. */
-  taskRuntime: Scalars['Float']['output'];
   /** Status of the task execution. */
   taskStatus: TaskStatus;
-  /** User, who stated the task. */
-  username?: Maybe<Scalars['String']['output']>;
 };
 
 export enum TaskStatus {
@@ -295,6 +301,15 @@ export enum TaskStatus {
   Started = 'STARTED',
   Success = 'SUCCESS'
 }
+
+/** Paginated list of tasks. */
+export type Tasks = {
+  __typename?: 'Tasks';
+  /** The list of tasks in this page */
+  tasksData: Array<TaskData>;
+  /** Total number of tasks in the filtered dataset */
+  totalTasksCount: Scalars['Int']['output'];
+};
 
 export type TasksFilterInput = {
   actionName?: InputMaybe<Scalars['String']['input']>;
@@ -355,13 +370,14 @@ export type UpdateExperimentNameMutationVariables = Exact<{
 export type UpdateExperimentNameMutation = { __typename?: 'Mutation', updateExperiment: { __typename?: 'ExperimentData', uuid: any, title: string, description?: string | null, eid: string } };
 
 export type ExecuteExtensionMutationVariables = Exact<{
+  experimentUuid: Scalars['UUID']['input'];
   extension: Scalars['String']['input'];
   action: Scalars['String']['input'];
   params: Array<Array<Scalars['String']['input']> | Scalars['String']['input']> | Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type ExecuteExtensionMutation = { __typename?: 'Mutation', executeExtension: { __typename?: 'TaskInfo', returnCode: number, stdErr?: string | null, stdOut?: string | null } };
+export type ExecuteExtensionMutation = { __typename?: 'Mutation', executeExtension: { __typename?: 'TaskData', resultCode?: number | null, stdErr?: string | null, stdOut?: string | null } };
 
 export type GetAllExperimentsQueryVariables = Exact<{
   offset: Scalars['Int']['input'];
@@ -401,6 +417,15 @@ export type GetAllExtensionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllExtensionsQuery = { __typename?: 'Query', extensions: Array<{ __typename?: 'ExtensionInfo', name: string, authors: string, description?: string | null, actions: Array<{ __typename?: 'ExtensionActionInfo', description?: string | null, experimentVariableName?: string | null, name: string, parameters: Array<{ __typename?: 'ExtensionParameterType', dataType: string, defaultValue?: string | null, description?: string | null, displayName?: string | null, name: string, options?: Array<string> | null }> }> }> };
 
+export type GetAllTasksQueryVariables = Exact<{
+  offset: Scalars['Int']['input'];
+  limit: Scalars['Int']['input'];
+  filters?: InputMaybe<TasksFilterInput>;
+}>;
+
+
+export type GetAllTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'Tasks', tasksData: Array<{ __typename?: 'TaskData', extensionName: string, actionName: string, taskStatus: TaskStatus, receivedAt: any, resultCode?: number | null, stdOut?: string | null, stdErr?: string | null, experiment: { __typename?: 'ExperimentData', createdBy: string, uuid: any, title: string, eid: string } }> } };
+
 export type GetCurrentUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -412,11 +437,12 @@ export const CreateExperimentDocument = {"kind":"Document","definitions":[{"kind
 export const RemoveExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"experimentRemoveInput"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}}]}}]}]}}]} as unknown as DocumentNode<RemoveExperimentMutation, RemoveExperimentMutationVariables>;
 export const RemoveTagFromExperimentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeTagFromExperiment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tag"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeTagFromExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"experimentTagInput"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"tag"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tag"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}}]}}]}}]} as unknown as DocumentNode<RemoveTagFromExperimentMutation, RemoveTagFromExperimentMutationVariables>;
 export const UpdateExperimentNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateExperimentName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"experimentUpdateInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateExperiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uuid"}}},{"kind":"Argument","name":{"kind":"Name","value":"experimentUpdateInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"experimentUpdateInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"eid"}}]}}]}}]} as unknown as DocumentNode<UpdateExperimentNameMutation, UpdateExperimentNameMutationVariables>;
-export const ExecuteExtensionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ExecuteExtension"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"extension"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"action"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"executeExtension"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"extension"},"value":{"kind":"Variable","name":{"kind":"Name","value":"extension"}}},{"kind":"Argument","name":{"kind":"Name","value":"action"},"value":{"kind":"Variable","name":{"kind":"Name","value":"action"}}},{"kind":"Argument","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returnCode"}},{"kind":"Field","name":{"kind":"Name","value":"stdErr"}},{"kind":"Field","name":{"kind":"Name","value":"stdOut"}}]}}]}}]} as unknown as DocumentNode<ExecuteExtensionMutation, ExecuteExtensionMutationVariables>;
+export const ExecuteExtensionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ExecuteExtension"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"experimentUuid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"extension"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"action"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"params"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"executeExtension"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"executeExtensionInput"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"experimentUuid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"experimentUuid"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"extension"},"value":{"kind":"Variable","name":{"kind":"Name","value":"extension"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"action"},"value":{"kind":"Variable","name":{"kind":"Name","value":"action"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"params"},"value":{"kind":"Variable","name":{"kind":"Name","value":"params"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resultCode"}},{"kind":"Field","name":{"kind":"Name","value":"stdErr"}},{"kind":"Field","name":{"kind":"Name","value":"stdOut"}}]}}]}}]} as unknown as DocumentNode<ExecuteExtensionMutation, ExecuteExtensionMutationVariables>;
 export const GetAllExperimentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllExperiments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentFiltersInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"experiments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"experimentsData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"eid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalExperimentsCount"}}]}}]}}]} as unknown as DocumentNode<GetAllExperimentsQuery, GetAllExperimentsQueryVariables>;
 export const GetAllTagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllTags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tagsData"}}]}}]}}]} as unknown as DocumentNode<GetAllTagsQuery, GetAllTagsQueryVariables>;
 export const GetExperimentByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getExperimentById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"experimentIdentifier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentIdentifierInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"experiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"experimentIdentifier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"experimentIdentifier"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"tags"}},{"kind":"Field","name":{"kind":"Name","value":"eid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"modifiedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetExperimentByIdQuery, GetExperimentByIdQueryVariables>;
 export const GetExperimentFilesByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getExperimentFilesById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"experimentIdentifier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentIdentifierInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"experiment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"experimentIdentifier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"experimentIdentifier"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"modifiedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetExperimentFilesByIdQuery, GetExperimentFilesByIdQueryVariables>;
 export const GetAllExtensionNamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllExtensionNames"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetAllExtensionNamesQuery, GetAllExtensionNamesQueryVariables>;
 export const GetAllExtensionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllExtensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"authors"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"actions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"experimentVariableName"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"parameters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataType"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"options"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAllExtensionsQuery, GetAllExtensionsQueryVariables>;
+export const GetAllTasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllTasks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TasksFilterInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tasksData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"extensionName"}},{"kind":"Field","name":{"kind":"Name","value":"actionName"}},{"kind":"Field","name":{"kind":"Name","value":"taskStatus"}},{"kind":"Field","name":{"kind":"Name","value":"receivedAt"}},{"kind":"Field","name":{"kind":"Name","value":"resultCode"}},{"kind":"Field","name":{"kind":"Name","value":"stdOut"}},{"kind":"Field","name":{"kind":"Name","value":"stdErr"}},{"kind":"Field","name":{"kind":"Name","value":"experiment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"uuid"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"eid"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAllTasksQuery, GetAllTasksQueryVariables>;
 export const GetCurrentUserInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCurrentUserInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCurrentUserInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"scopes"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserInfoQuery, GetCurrentUserInfoQueryVariables>;

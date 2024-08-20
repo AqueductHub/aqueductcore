@@ -39,8 +39,8 @@ export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
       action: task.actionName
     },
     taskStatus: task.taskStatus,
-    username: task.username,
-    receiveTime: task.receiveTime
+    // username: task.username,
+    receivedAt: task.receivedAt
   }))
 
   return formattedTasks

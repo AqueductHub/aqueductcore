@@ -60,12 +60,12 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
       />
     ),
   },
+  // {
+  //   id: "experiment",
+  //   label: "User",
+  // },
   {
-    id: "username",
-    label: "User",
-  },
-  {
-    id: "receiveTime",
+    id: "receivedAt",
     label: "submission Time",
     format: (createdAt) =>
       typeof createdAt === "string" ? dateFormatter(new Date(createdAt)) : "",
@@ -75,17 +75,23 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
 function JobHistoryPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(experimentRecordsRowsPerPageOptions[0]);
+  const { data, loading, error } = useGetAllTasks({
+    variables: {
+      offset: page * rowsPerPage,
+      limit: rowsPerPage,
+      filters: {},
+    },
+    fetchPolicy: "network-only",
+  });
   const pageInfo = {
     page,
     setPage,
     rowsPerPage,
     setRowsPerPage,
-    //!TODO: add number TT-124
-    count: 100,
+    count: data?.tasks.totalTasksCount || 0,
   };
 
-  const { data, loading, error } = useGetAllTasks();
-  const tasks = data?.tasks
+  const tasks = data?.tasks.tasksData
 
   if (loading) return (<Loading />)
   if (error) return <Error message={error.message} />;

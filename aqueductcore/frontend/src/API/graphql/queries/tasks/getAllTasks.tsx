@@ -3,21 +3,24 @@ import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 import { GET_ALL_TASKS_TYPE } from "types/globalTypes";
 
 export const GET_ALL_TASKS = gql`
-  query getAllTasks {
-    tasks(taskFilter: {}) {
+  query getAllTasks($offset: Int!, $limit: Int!, $filters: TasksFilterInput) {
+    tasks(offset: $offset, limit: $limit, filters: $filters) {
+      tasksData {
         extensionName
         actionName
         taskStatus
-        username
-        receiveTime
+        receivedAt
         resultCode
         stdOut
         stdErr
         experiment {
+          createdBy
           uuid  
           title
           eid
         }
+      }
+      totalTasksCount
     }
   }
 `;
