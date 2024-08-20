@@ -207,14 +207,17 @@ const ModalHeader = styled(Grid)`
 
 const ModalMain = styled(Box)`
     height: 600px;
-    background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[400] : theme.palette.grey[200]};
+    background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.grey[200]};
 `;
 
 const JobDetailsBox = styled(Box)`
     width: calc(100% - ${(props) => props.theme.spacing(8)});
     margin-left: ${(props) => props.theme.spacing(4)};
     margin-top: ${(props) => props.theme.spacing(2)};
-    background-color: white;
+    background-color: ${(props) =>
+        props.theme.palette.mode === "dark"
+            ? props.theme.palette.background.card
+            : props.theme.palette.common.white};
     border-radius: ${(props) => props.theme.spacing(1)};
     height: 400px;
     overflow: auto;
