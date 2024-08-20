@@ -1,5 +1,4 @@
 import { PaletteColor } from "@mui/material";
-// import { ThemeOptions } from "@mui/material/styles";
 
 export type PaletteMode = "light" | "dark";
 
@@ -44,12 +43,25 @@ declare module "@mui/material/styles" {
   interface TypeNotification {
     alert: string;
   }
+  interface TypeChip {
+    failedBackground: string;
+    failedBorder: string;
+    completedBackground: string;
+    completedBorder: string;
+    inProgressBackground: string;
+    inProgressBorder: string;
+    pendingBackground: string;
+    pendingBorder: string;
+    cancelledBackground: string;
+    cancelledBorder: string;
+  }
   interface Palette {
     disabled: PaletteColor;
     neutral: PaletteColor;
     border: TypeBorder;
     fill: TypeFill;
     notification: TypeNotification;
+    chip: TypeChip;
   }
 }
 declare module "@mui/material/Button" {
@@ -184,6 +196,18 @@ export const cssVariableTheme = {
           surfaceCommonTransparent100: "var(--color-transparent-white-8, #ffffff14)",
           surfaceCommonTransparent50: "var(--color-transparent-white-5, #ffffff0d)",
         },
+        chip: {
+          failedBackground: "#FFE2E2",
+          completedBackground: "#E4FFE7",
+          inProgressBackground: "#FFF5D1",
+          pendingBackground: "#F8F8F8",
+          cancelledBackground: "#EFE7FF",
+          failedBorder: "#FF9C9C",
+          completedBorder: "#67D772",
+          inProgressBorder: "#F8E295",
+          pendingBorder: "#D2D2D2",
+          cancelledBorder: "#D6C2FF"
+        },
         notification: {
           alert: "var(--color-others-red, #D13438)",
         },
@@ -257,6 +281,18 @@ export const cssVariableTheme = {
           surfaceCommon50: "var(--color-grey-50, #F8F8F8)",
           surfaceCommonTransparent100: "var(--color-transparent-black-8, #00000014)",
           surfaceCommonTransparent50: "var(--color-transparent-black-5, #0000000d)",
+        },
+        chip: {
+          failedBackground: "#5E3634",
+          completedBackground: "#344633",
+          inProgressBackground: "#635626",
+          pendingBackground: "#5A5A5A",
+          cancelledBackground: "#3B2764",
+          failedBorder: "#B83F3F",
+          completedBorder: "#1AA328",
+          inProgressBorder: "#E2B000",
+          pendingBorder: "#B3B3B3",
+          cancelledBorder: "#956BEB"
         },
         notification: {
           alert: "var(--color-others-red, #D13438)",

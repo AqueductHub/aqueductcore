@@ -32,24 +32,24 @@ const StatusBase = styled(Typography)`
     }
 `;
 const StatusFailed = styled(StatusBase)`
-        background-color: #FFE2E2;
-        border: 1px solid #FF9C9C;
+    background-color: ${({ theme }) => theme.palette.chip.failedBackground};
+    border: 1px solid ${({ theme }) => theme.palette.chip.failedBorder};
 `
 const StatusCompleted = styled(StatusBase)`
-        background-color: #E4FFE7;
-        border: 1px solid #67D772;
+    background-color: ${({ theme }) => theme.palette.chip.completedBackground};
+    border: 1px solid ${({ theme }) => theme.palette.chip.completedBorder};
 `
 const StatusInProgress = styled(StatusBase)`
-        background-color: #FFF5D1;
-        border: 1px solid #F8E295;
+    background-color: ${({ theme }) => theme.palette.chip.inProgressBackground};
+    border: 1px solid ${({ theme }) => theme.palette.chip.inProgressBorder};
 `
 const StatusPending = styled(StatusBase)`
-        background-color: #F8F8F8;
-        border: 1px solid #D2D2D2;
+    background-color: ${({ theme }) => theme.palette.chip.pendingBackground};
+    border: 1px solid ${({ theme }) => theme.palette.chip.pendingBorder};
 `
 const StatusCancel = styled(StatusBase)`
-        background-color: #EFE7FF;
-        border: 1px solid #D6C2FF;
+    background-color: ${({ theme }) => theme.palette.chip.cancelledBackground};
+    border: 1px solid ${({ theme }) => theme.palette.chip.cancelledBorder};
 `
 
 function JobExtensionStatus({ status }: { status: JobDataType['taskStatus'] }) {
