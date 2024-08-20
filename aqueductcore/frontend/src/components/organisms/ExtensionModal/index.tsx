@@ -1,20 +1,21 @@
 import { Box, Button, CircularProgress, Grid, Modal, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import { FormEvent, useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
-import { FormEvent, useEffect, useState } from "react";
+import { ApolloError } from "@apollo/client";
 import toast from "react-hot-toast";
 
 import { GET_EXPERIMENT_BY_ID } from "API/graphql/queries/experiment/getExperimentById";
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
 import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
-import { EXECUTE_EXTENSION_TYPE, ExtensionActionType } from "types/globalTypes";
 import ExtensionActions from "components/molecules/ExtensionActions";
 import { ExtensionParameterDataTypes } from "constants/constants";
 import { formatExtensionParameters } from "helper/formatters";
 import ActionForm from "components/molecules/ActionForm";
+import { ExtensionActionType } from "types/globalTypes";
 import { client } from "API/apolloClientConfig";
 
 interface ExtensionModalProps {
@@ -145,22 +146,26 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
     const isExtensionExecutable = selectedAction && functionFormData[selectedAction.name]
         && functionFormData[selectedAction.name].every(param => param.value);
 
-    async function handleOnCompletedExtensionExecution(executeExtension: EXECUTE_EXTENSION_TYPE) {
+    async function handleOnCompletedExtensionExecution() {
         handleCloseModal()
         await client.refetchQueries({
             include: "active",
         });
-        if (executeExtension.resultCode !== 0) {
-            toast.error(
-                `Execution finished with the error: ${executeExtension.stdErr} `,
-                { id: "exec_extension_error" }
-            )
-        } else {
-            toast.success(
-                "Execution finished successfully",
-                { id: "exec_extension_success" }
-            )
-        }
+        toast.success(
+            "Execution finished successfully",
+            { id: "exec_extension_success" }
+        )
+    }
+
+    async function handleOnErrorExtensionExecution(error: ApolloError) {
+        handleCloseModal()
+        await client.refetchQueries({
+            include: "active",
+        });
+        toast.error(
+            `Execution finished with the error: ${error.message} `,
+            { id: "exec_extension_error" }
+        )
     }
 
     const apolloCache = client.readQuery({
@@ -184,7 +189,8 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
                     action: selectedAction.name,
                     params: formatExtensionParameters(functionFormData[selectedAction.name])
                 },
-                onCompleted: (data) => handleOnCompletedExtensionExecution(data.executeExtension)
+                onCompleted: handleOnCompletedExtensionExecution,
+                onError: handleOnErrorExtensionExecution
             })
         }
     }
