@@ -29,7 +29,6 @@ export function experimentTableDataFormatter(experimentList: ExperimentDataType[
 }
 
 export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
-  console.log("tasks", tasks)
   const formattedTasks = tasks.map(task => ({
     experiment: {
       title: task.experiment.title,

@@ -3,9 +3,10 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+import { GET_EXPERIMENT_BY_ID } from "API/graphql/queries/experiment/getExperimentById";
 import { useExecuteExtension } from "API/graphql/mutations/extension/executeExtension";
 import { useGetAllExtensions } from "API/graphql/queries/extension/getAllExtensions";
 import { actionInExtensionsType, extensionActionsData } from "types/componentTypes";
@@ -162,10 +163,23 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         }
     }
 
-    function handleExecuteExtension() {
+    const apolloCache = client.readQuery({
+        query: GET_EXPERIMENT_BY_ID,
+        variables: {
+            experimentIdentifier: {
+                type: "EID",
+                value: experimentIdentifier,
+            },
+        },
+    });
+
+    function handleExecuteExtension(e: FormEvent) {
+        e.preventDefault()
+        const experimentUuid = apolloCache.experiment.uuid
         if (selectedAction) {
             mutate({
                 variables: {
+                    experimentUuid,
                     extension: selectedExtension,
                     action: selectedAction.name,
                     params: formatExtensionParameters(functionFormData[selectedAction.name])
