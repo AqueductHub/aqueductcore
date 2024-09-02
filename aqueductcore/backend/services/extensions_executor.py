@@ -169,7 +169,7 @@ class ExtensionsExecutor:
         """For a given extension name, action name, and a dictionary
         of parameters, runs the extension and returns execution result."""
 
-        extension_object = ExtensionsExecutor.get_extension(extension)
+        extension_object = cls.get_extension(extension)
         extension_object.aqueduct_api_token = user_info.token
 
         action_object = extension_object.get_action(action)
@@ -177,7 +177,6 @@ class ExtensionsExecutor:
         if exp_parameter is None:
             raise AQDValidationError(f"Action {extension}:{action}" " has no experiment parameters")
 
-        extension_object = cls.get_extension(extension)
         action_object = extension_object.get_action(action)
         python = cls.create_venv_python_if_not_present(extension=extension)
         return await action_object.execute(
