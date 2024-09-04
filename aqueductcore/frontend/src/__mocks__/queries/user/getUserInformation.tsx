@@ -22,7 +22,12 @@ export const getUserInformation_mock = {
                             "experiment::create::own",
                             "experiment::delete::all",
                             "experiment::edit::all",
-                            "experiment::edit::own"
+                            "experiment::edit::own",
+                            "job::view::own",
+                            "job::view::all",
+                            "job::create",
+                            "job::cancel::own",
+                            "job::cancel::all"
                         ],
                     }
                 }
@@ -39,11 +44,14 @@ export const getUserInformation_mock = {
             result: {
                 data: {
                     getCurrentUserInfo: {
-                        username: "admin",
+                        username: "user",
                         "scopes": [
                             "experiment::view::own",
                             "experiment::delete::own",
                             "experiment::create::own",
+                            "jobs::view::own",
+                            "jobs::create",
+                            "jobs::cancel::own"
                         ]
                     }
                 }
