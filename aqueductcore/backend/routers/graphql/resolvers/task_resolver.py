@@ -38,7 +38,7 @@ async def get_tasks(
         order_by_creation_date=True,
     )
     task_nodes = [task_model_to_node(value=item) for item in tasks][offset : offset + limit]
-    return Tasks(tasks_data=task_nodes, total_tasks_count=len(task_nodes))
+    return Tasks(tasks_data=task_nodes, total_tasks_count=len(tasks))
 
 
 async def get_task(context: ServerContext, task_id: UUID) -> Optional[TaskData]:
