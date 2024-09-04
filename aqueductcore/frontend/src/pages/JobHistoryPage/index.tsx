@@ -7,10 +7,10 @@ import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtens
 import JobExperimentName from "components/molecules/JobListTableCells/JobExperimentName";
 import { drawerTopOffset, mainPadding } from "components/templates/drawerLayout";
 import { dateFormatter, jobHistoryTableFormatter } from "helper/formatters";
-import { experimentRecordsRowsPerPageOptions } from "constants/constants";
 import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
 import { JobDataType, JobsListColumnsType } from "types/globalTypes";
 import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
+import { jobListRowsPerPageOptions } from "constants/constants";
 import JobsListTable from "components/organisms/JobsListTable";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
@@ -74,7 +74,7 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
 
 function JobHistoryPage() {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(experimentRecordsRowsPerPageOptions[0]);
+  const [rowsPerPage, setRowsPerPage] = useState(jobListRowsPerPageOptions[0]);
   const { data, loading, error } = useGetAllTasks({
     variables: {
       offset: page * rowsPerPage,
