@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDFilesPathError,

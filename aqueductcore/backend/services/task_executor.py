@@ -194,7 +194,6 @@ async def get_task_by_uuid(
     # cannot view any tasks
     if not user_info.can_view_task_owned_by(user_info.uuid):
         raise AQDPermission("User has no permission to view tasks")
-    
     # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)

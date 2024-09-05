@@ -14,7 +14,7 @@ from streaming_form_data.targets import FileTarget
 from streaming_form_data.validators import MaxSizeValidator, ValidationError
 from typing_extensions import Annotated
 
-from aqueductcore.backend.context import ServerContext, UserScope, context_dependency
+from aqueductcore.backend.context import ServerContext, context_dependency
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDMaxBodySizeException,
@@ -236,10 +236,10 @@ async def remove_experiment_files(
 
         # TODO: this is a non-exhaustive check.
         # It just checks it has no delete permissions at all
-        if not context.user_info.can_delete_experiment_owned_by(context.user_info.username):
-                raise AQDPermission(
-                    "The user doesn't have permission to delete files from experiment"
-                )
+        if not context.user_info.can_delete_experiment_owned_by(context.user_info.uuid):
+            raise AQDPermission(
+                "The user doesn't have permission to delete files from experiment"
+            )
         # To check if the experiment is accessible by this user
         await get_experiment_by_uuid(
             user_info=context.user_info,
