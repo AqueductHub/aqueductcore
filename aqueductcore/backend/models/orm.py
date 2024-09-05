@@ -30,6 +30,7 @@ class User(Base):
     uuid = mapped_column(Uuid, primary_key=True)
     username: Mapped[str] = mapped_column(Text)
     experiments: Mapped[List[Experiment]] = relationship()
+    tasks: Mapped[List[Task]] = relationship()
 
 
 class Task(Base):
@@ -44,6 +45,7 @@ class Task(Base):
         DateTime(timezone=True), server_default=func.now()  # pylint: disable=not-callable
     )
     created_by: Mapped[Uuid] = mapped_column(ForeignKey("user.uuid"), nullable=False)
+    created_by_user: Mapped[User] = relationship(back_populates="tasks")
     experiment_id = mapped_column(Uuid, ForeignKey("experiment.uuid"))
     experiment: Mapped[Experiment] = relationship(back_populates="tasks")
 

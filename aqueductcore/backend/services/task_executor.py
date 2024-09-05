@@ -149,6 +149,9 @@ async def revoke_task(
         select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
     )
 
+    # TODO: this is not specified in ERD
+    # but it implies, as user cannot launch a task
+    # without edit permission.
     if not user_info.can_edit_any_experiment():
         statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
 
@@ -157,8 +160,12 @@ async def revoke_task(
     db_task = result.scalars().first()
     if db_task is None:
         raise AQDDBTaskNonExisting(
-            "DB query failed due to non-existing task with the specified task id."
+            "DB query failed as task does not exist, or user has no access to cancel it."
         )
+    if not user_info.can_view_experiment_owned_by(db_task.experiment.created_by_user.uuid):
+        raise AQDPermission("User has no permission access experiment associated with the tasks.")
+    if not user_info.can_cancel_task_owned_by(db_task.created_by_user.uuid):
+        raise AQDPermission("User has no permission to cancel tasks.")
 
     # note: SIGINT does not lead to task abort. If you send
     # KeyboardInterupt (SIGINT), it will not stop, and the

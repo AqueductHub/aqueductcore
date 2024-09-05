@@ -12,9 +12,12 @@ from typing import Dict, List
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 from aqueductcore.backend.context import UserInfo
-from aqueductcore.backend.errors import AQDError, AQDValidationError
+from aqueductcore.backend.errors import AQDError, AQDPermission, AQDValidationError
+from aqueductcore.backend.models import orm
 from aqueductcore.backend.services.extensions import MANIFEST_FILE, Extension
 from aqueductcore.backend.services.task_executor import TaskRead
 from aqueductcore.backend.settings import settings
@@ -176,6 +179,19 @@ class ExtensionsExecutor:
         exp_parameter = action_object.get_default_experiment_parameter()
         if exp_parameter is None:
             raise AQDValidationError(f"Action {extension}:{action}" " has no experiment parameters")
+
+        query = (
+            select(orm.Experiment)
+            .options(joinedload(orm.Experiment.created_by_user))
+            .where(orm.Experiment.uuid == experiment_uuid)
+        )
+        cursor = await db_session.execute(query)
+        experiment = cursor.scalars().first()
+        if experiment is None:
+            raise AQDValidationError("Experiment not found in the database.")
+
+        if user_info.can_create_task_in_experiment_owned_by(experiment.created_by_user.uuid):
+            raise AQDPermission("User has no permission to start tasks in this experiment.")
 
         action_object = extension_object.get_action(action)
         python = cls.create_venv_python_if_not_present(extension=extension)

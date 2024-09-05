@@ -112,16 +112,25 @@ class UserInfo(BaseModel):
         """ Has a permission to cancel own task."""
         return UserScope.JOB_CANCEL_OWN in self.scopes
 
-    def can_cancel_task_owned_by(self, owner: str) -> bool:
+    def can_cancel_task_owned_by(self, owner: UUID) -> bool:
         """ Has a permission to cancel a task, owned by some user."""
         return (
             self.can_cancel_any_task()
-            or (self.can_cancel_own_task() and owner == self.username)
+            or (self.can_cancel_own_task() and owner == self.uuid)
         )
 
     def can_create_task(self) -> bool:
         """ Has a permission to start jobs."""
         return UserScope.JOB_CREATE in self.scopes
+
+    def can_create_task_in_experiment_owned_by(self, owner: UUID) -> bool:
+        """ Has a permission to start jobs inside an experiment
+        with a specified owner."""
+        return (
+            self.can_create_task()
+            and self.can_view_experiment_owned_by(owner)
+            and self.can_edit_experiment_owned_by(owner)
+        )
 
 
 class ServerContext(BaseContext):
