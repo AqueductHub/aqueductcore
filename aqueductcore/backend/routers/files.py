@@ -234,8 +234,9 @@ async def remove_experiment_files(
         for file_name in file_list:
             pathvalidate.validate_filename(file_name)
 
-        if UserScope.EXPERIMENT_DELETE_ALL not in context.user_info.scopes:
-            if UserScope.EXPERIMENT_DELETE_OWN not in context.user_info.scopes:
+        # TODO: this is a non-exhaustive check.
+        # It just checks it has no delete permissions at all
+        if not context.user_info.can_delete_experiment_owned_by(context.user_info.username):
                 raise AQDPermission(
                     "The user doesn't have permission to delete files from experiment"
                 )

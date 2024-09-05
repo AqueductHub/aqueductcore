@@ -78,8 +78,9 @@ async def get_all_experiments(  # pylint: disable=too-many-arguments
         .options(joinedload(orm.Experiment.created_by_user))
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    if not user_info.can_view_any_experiment():
         statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
+    # TODO: no check for no scopes at all
 
     if title_filter is not None:
         statement = statement.filter(
@@ -150,8 +151,9 @@ async def get_experiment_by_uuid(
         .where(orm.Experiment.uuid == experiment_uuid)
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    if not user_info.can_view_any_experiment():
         statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
+    # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)
 
@@ -184,8 +186,9 @@ async def get_experiment_by_eid(
         .where(orm.Experiment.eid == eid)
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    if not user_info.can_view_any_experiment():
         statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
+    # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)
 
@@ -264,7 +267,7 @@ async def create_experiment(
             f"You can have a maximum of {MAX_EXPERIMENT_TAGS_NUM} tags in an experiment."
         )
 
-    if UserScope.EXPERIMENT_CREATE_OWN not in user_info.scopes:
+    if not user_info.can_create_experiment():
         raise AQDPermission(
             "The user doesn't have the required permission(s) to create experiments."
         )
@@ -344,7 +347,7 @@ async def update_experiment(
         .where(orm.Experiment.uuid == experiment_uuid)
     )
 
-    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+    if not user_info.can_edit_any_experiment():
         statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
@@ -379,7 +382,7 @@ async def add_tags_to_experiment(
         .options(joinedload(orm.Experiment.created_by_user))
         .filter(orm.Experiment.uuid == experiment_uuid)
     )
-    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+    if not user_info.can_edit_any_experiment():
         experiment_statement = experiment_statement.filter(
             orm.Experiment.created_by == user_info.uuid
         )
@@ -427,7 +430,7 @@ async def remove_tag_from_experiment(
         .options(joinedload(orm.Experiment.created_by_user))
         .filter(orm.Experiment.uuid == experiment_uuid)
     )
-    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+    if not user_info.can_edit_any_experiment():
         experiment_statement = experiment_statement.filter(
             orm.Experiment.created_by == user_info.uuid
         )
@@ -501,10 +504,10 @@ async def remove_experiment(
 
     get_experiment_statement = select(orm.Experiment).where(orm.Experiment.uuid == experiment_uuid)
 
-    if UserScope.EXPERIMENT_DELETE_ALL not in user_info.scopes:
-        if UserScope.EXPERIMENT_DELETE_OWN not in user_info.scopes:
-            raise AQDPermission("The user doesn't have the permission to remove the experiment.")
+    if not user_info.can_delete_experiment_owned_by(user_info.username):
+        raise AQDPermission("The user doesn't have the permission to remove the experiment.")
 
+    if not user_info.can_delete_any_experiment():
         get_experiment_statement = get_experiment_statement.filter(
             orm.Experiment.created_by == user_info.uuid
         )

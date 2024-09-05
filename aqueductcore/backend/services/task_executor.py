@@ -16,8 +16,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.context import UserInfo, UserScope
-from aqueductcore.backend.errors import AQDDBTaskNonExisting
+from aqueductcore.backend.context import UserInfo
+from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
 from aqueductcore.backend.services.utils import task_orm_to_model
@@ -149,7 +149,7 @@ async def revoke_task(
         select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
     )
 
-    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+    if not user_info.can_edit_any_experiment():
         statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
 
     result = await db_session.execute(statement)
@@ -183,8 +183,19 @@ async def get_task_by_uuid(
         .where(orm.Task.task_id == str(task_id))
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    # experiment should be visible
+    if not user_info.can_view_any_experiment():
         statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
+
+    # if only own tasks visible
+    if not user_info.can_view_any_task():
+        statement = statement.filter(orm.Task.created_by == user_info.uuid)
+
+    # cannot view any tasks
+    if not user_info.can_view_task_owned_by(user_info.uuid):
+        raise AQDPermission("User has no permission to view tasks")
+    
+    # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)
 
@@ -215,10 +226,17 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
     """Get list of all tasks."""
     statement = select(orm.Task).options(joinedload(orm.Task.experiment))
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    if not user_info.can_view_any_experiment():
         statement = statement.join(orm.Experiment).filter(
             orm.Experiment.created_by == user_info.uuid
         )
+    if not user_info.can_view_any_task():
+        statement = statement.filter(orm.Task.created_by == user_info.uuid)
+
+    # cannot view any tasks
+    if not user_info.can_view_task_owned_by(user_info.uuid):
+        # raise AQDPermission("User has no permission to view tasks")
+        return []
 
     if experiment_uuid is not None:
         statement = statement.join(orm.Experiment).filter(orm.Experiment.uuid == experiment_uuid)

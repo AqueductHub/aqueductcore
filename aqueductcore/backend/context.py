@@ -40,6 +40,78 @@ class UserInfo(BaseModel):
     scopes: Set[UserScope]
     token: Optional[str] = None
 
+    def can_view_any_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_VIEW_ALL in self.scopes
+
+    def can_view_own_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_DELETE_OWN in self.scopes
+
+    def can_only_view_own_experiment(self) -> bool:
+        return (
+            not self.can_view_any_experiment()
+            and self.can_view_own_experiment()
+        )
+
+    def can_view_experiment_owned_by(self, owner: UUID) -> bool:
+        return (
+            self.can_view_any_experiment()
+            or (self.can_view_own_experiment() and owner == self.uuid)
+        )
+
+    def can_delete_any_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_DELETE_ALL in self.scopes
+
+    def can_delete_own_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_DELETE_OWN in self.scopes
+
+    def can_delete_experiment_owned_by(self, owner: UUID) -> bool:
+        return (
+            self.can_delete_any_experiment()
+            or (self.can_delete_own_experiment() and owner == self.uuid)
+        )
+
+    def can_edit_any_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_EDIT_ALL in self.scopes
+
+    def can_edit_own_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_EDIT_OWN in self.scopes
+
+    def can_edit_experiment_owned_by(self, owner: UUID) -> bool:
+        return (
+            self.can_edit_any_experiment()
+            or (self.can_edit_own_experiment() and owner == self.uuid)
+        )
+
+    def can_create_experiment(self) -> bool:
+        return UserScope.EXPERIMENT_CREATE_OWN in self.scopes
+
+    def can_view_any_task(self) -> bool:
+        return UserScope.JOB_VIEW_ALL in self.scopes
+
+    def can_view_own_task(self) -> bool:
+        return UserScope.JOB_VIEW_OWN in self.scopes
+
+    def can_view_task_owned_by(self, owner: UUID) -> bool:
+        return (
+            self.can_view_any_task()
+            or (self.can_view_own_task() and owner == self.uuid)
+        )
+
+    def can_cancel_any_task(self) -> bool:
+        return UserScope.JOB_CANCEL_ALL in self.scopes
+
+    def can_cancel_own_task(self) -> bool:
+        return UserScope.JOB_CANCEL_OWN in self.scopes
+
+    def can_cancel_task_owned_by(self, owner: str) -> bool:
+        return (
+            self.can_cancel_any_task()
+            or (self.can_cancel_own_task() and owner == self.username)
+        )
+
+    def can_create_task(self) -> bool:
+        return UserScope.JOB_CREATE in self.scopes
+
 
 class ServerContext(BaseContext):
     """Server context class."""

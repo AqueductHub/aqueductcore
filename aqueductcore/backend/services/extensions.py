@@ -144,7 +144,7 @@ class ExtensionAction(BaseModel):
             .where(orm.Experiment.uuid == experiment_uuid)
         )
 
-        if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        if not user_info.can_edit_any_experiment():
             statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
         result = await db_session.execute(statement)
@@ -167,6 +167,7 @@ class ExtensionAction(BaseModel):
             action_name=self.name,
             extension_name=extension.name,
             parameters=params_json,
+            create_by=user_info.uuid,
         )
         db_session.add(db_task)
 
