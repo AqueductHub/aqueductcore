@@ -74,6 +74,7 @@ class TaskBase(AQDModel):
     status: str
     received_at: datetime
     ended_at: Optional[datetime] = None
+    created_by: UUID
 
 
 class TaskCreate(TaskBase):

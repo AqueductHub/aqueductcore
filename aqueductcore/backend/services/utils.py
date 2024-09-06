@@ -16,6 +16,7 @@ from aqueductcore.backend.models.task import (
     TaskParamList,
     TaskProcessExecutionResult,
     TaskRead,
+    TaskCreate,
 )
 
 
@@ -37,9 +38,26 @@ async def task_orm_to_model(
             TaskParamList.model_validate_json(value.parameters) if value.parameters else None
         ),
         result_code=task_info.result_code,
+        created_by=UUID(str(value.created_by)),
     )
 
     return task
+
+
+def task_model_to_orm(
+    value: TaskCreate,
+) -> orm.Task:
+    """Convert ORM Experiment to Pydantic Model"""
+    return orm.Task(
+        task_id=value.task_id,
+        action_name=value.action_name,
+        extension_name=value.extension_name,
+        parameters=(
+            value.parameters.model_dump_json() if value.parameters else None
+        ),
+        created_by=value.created_by,
+        experiment_id=value.experiment_uuid,
+    )
 
 
 async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:

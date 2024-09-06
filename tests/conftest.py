@@ -14,8 +14,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
+from aqueductcore.backend.models.task import TaskCreate
 from aqueductcore.backend.settings import settings
-from tests.unittests.initial_data import experiment_data
+from tests.unittests.initial_data import experiment_data, task_data, user_data
 
 async_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
 
@@ -42,6 +43,17 @@ async def db_session():
 def experiments_data() -> List[ExperimentCreate]:
     data = experiment_data
     return data
+
+
+@pytest.fixture()
+def tasks_data() -> List[TaskCreate]:
+    data = task_data
+    return data
+
+
+@pytest.fixture()
+def users_data() -> List[orm.User]:
+    return user_data
 
 
 @pytest_asyncio.fixture

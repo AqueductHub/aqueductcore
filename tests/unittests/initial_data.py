@@ -1,7 +1,12 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
+from aqueductcore.backend.models import orm
+
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
+from aqueductcore.backend.models.task import (
+    ExtensionParameterBase, SupportedTypes, TaskCreate, TaskParamList, TaskParam
+)
 
 user_uuid = uuid4()
 experiment_data = [
@@ -292,4 +297,62 @@ experiment_data = [
         tags=[],
         eid=f"{datetime.now(timezone.utc).strftime('%Y%m%d')}-40",
     ),
+]
+
+user_data = [
+    orm.User(uuid=UUID(int=0), username="admin"),
+    orm.User(uuid=UUID(int=1), username="manager"),
+    orm.User(uuid=UUID(int=2), username="user"),
+]
+
+task_data = [
+    TaskCreate(
+        task_id=str(UUID(int=1000 + i)),
+        experiment_uuid=experiment.uuid,
+        action_name="dummy action",
+        extension_name="dummy extension",
+        parameters=TaskParamList(
+            params=[
+                TaskParam(
+                    value=str(experiment.uuid),
+                    metadata=ExtensionParameterBase(
+                        name="experiment",
+                        description="123",
+                        data_type=SupportedTypes.EXPERIMENT,
+                    )
+                )
+            ]
+        ),
+        result_code=0,
+        status="SUCCESS",
+        received_at=datetime.now(),
+        ended_at=datetime.now(),
+        created_by=user_data[i % len(user_data)].uuid,
+    )
+    for i, experiment in enumerate(experiment_data)
+] + [
+     TaskCreate(
+        task_id=str(UUID(int=1100 + i)),
+        experiment_uuid=experiment.uuid,
+        action_name="dummy action",
+        extension_name="dummy extension",
+        parameters=TaskParamList(
+            params=[
+                TaskParam(
+                    value=str(experiment.uuid),
+                    metadata=ExtensionParameterBase(
+                        name="experiment",
+                        description="123",
+                        data_type=SupportedTypes.EXPERIMENT,
+                    )
+                )
+            ]
+        ),
+        result_code=0,
+        status="SUCCESS",
+        received_at=datetime.now(),
+        ended_at=datetime.now(),
+        created_by=user_data[(3 - i) % len(user_data)].uuid,
+    )
+    for i, experiment in enumerate(experiment_data)
 ]

@@ -46,7 +46,7 @@ class UserInfo(BaseModel):
 
     def can_view_own_experiment(self) -> bool:
         """ Has permission to view own experiment."""
-        return UserScope.EXPERIMENT_DELETE_OWN in self.scopes
+        return UserScope.EXPERIMENT_VIEW_OWN in self.scopes
 
     def can_view_experiment_owned_by(self, owner: UUID) -> bool:
         """ Has permission to view an experiment owned by some user."""
