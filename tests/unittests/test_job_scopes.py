@@ -26,9 +26,9 @@ from aqueductcore.backend.services.utils import (
     task_model_to_orm,
 )
 
-async_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
-async_session = async_sessionmaker(
-    bind=async_engine, expire_on_commit=False, autoflush=True
+jobs_async_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+jobs_async_session = async_sessionmaker(
+    bind=jobs_async_engine, expire_on_commit=False,
 )
 
 
@@ -103,8 +103,8 @@ async def my_db_session(
 ):
     """Session for SQLAlchemy."""
 
-    async with async_session() as session:
-        async with async_engine.begin() as conn:
+    async with jobs_async_session() as session:
+        async with jobs_async_engine.begin() as conn:
             await conn.run_sync(orm.Base.metadata.create_all)
             await fill_db_session(
                 session,
@@ -115,10 +115,10 @@ async def my_db_session(
 
         yield session
 
-    async with async_engine.begin() as conn:
+    async with jobs_async_engine.begin() as conn:
         await conn.run_sync(orm.Base.metadata.drop_all)
 
-    await async_engine.dispose()
+    await jobs_async_engine.dispose()
 
 
 async def fill_db_session(
@@ -140,7 +140,6 @@ async def fill_db_session(
     for i, task in enumerate(tasks_data):
         db_task = task_model_to_orm(task)
         session.add(db_task)
-    await session.flush()
     return session
 
 
