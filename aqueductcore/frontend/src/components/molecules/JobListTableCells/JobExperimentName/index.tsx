@@ -21,19 +21,12 @@ const ExperimentEid = styled(Typography)`
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
-const ExperimentNameSpan = styled(Typography)`
-    max-width: 280px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-`;
-
 function JobExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
     return (
         <ExperimentNameChip container>
             <Grid item>
                 <ExperimentName noWrap>
-                    <ExperimentNameSpan>{name}</ExperimentNameSpan>
+                    {name}
                 </ExperimentName>
             </Grid>
             <Grid item>
