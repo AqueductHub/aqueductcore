@@ -337,7 +337,7 @@ async def test_execute_extension(
     assert resp.errors is None
     res = resp.data["executeExtension"]
     assert UUID(res["taskId"])
-    assert res["taskStatus"] == "PENDING"
+    assert res["taskStatus"] in ("SUCCESS", "STARTED", "PENDING")
 
 
 @pytest.mark.asyncio

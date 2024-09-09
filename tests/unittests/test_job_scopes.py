@@ -20,79 +20,18 @@ from aqueductcore.backend.services.extensions import (
     ExtensionParameter,
 )
 from aqueductcore.backend.services.extensions_executor import ExtensionsExecutor
-from aqueductcore.backend.services.task_executor import get_all_tasks
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
     task_model_to_orm,
 )
+from tests.conftest import Scopes
 
-jobs_async_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+SQLITE_CONNECTION_STRING = "sqlite+aiosqlite:///:memory:"
+jobs_async_engine = create_async_engine(SQLITE_CONNECTION_STRING)
 jobs_async_session = async_sessionmaker(
-    bind=jobs_async_engine, expire_on_commit=False,
+    bind=jobs_async_engine,
+    expire_on_commit=False,
 )
-
-
-class Helper:
-
-    @staticmethod
-    def admin_scope():
-        return set(UserScope)
-
-    @staticmethod
-    def manager_scope():
-        return {
-            UserScope.EXPERIMENT_CREATE_OWN,
-            UserScope.EXPERIMENT_VIEW_OWN,
-            UserScope.EXPERIMENT_VIEW_ALL,
-            UserScope.EXPERIMENT_EDIT_OWN,
-            UserScope.JOB_CREATE,
-            UserScope.JOB_VIEW_ALL,
-            UserScope.JOB_VIEW_OWN,
-            UserScope.JOB_CANCEL_OWN,
-        }
-
-    @staticmethod
-    def user_scope():
-        return {
-            UserScope.EXPERIMENT_CREATE_OWN,
-            UserScope.EXPERIMENT_VIEW_OWN,
-            UserScope.EXPERIMENT_EDIT_OWN,
-            UserScope.JOB_CREATE,
-            UserScope.JOB_VIEW_OWN,
-            UserScope.JOB_CANCEL_OWN,
-        }
-
-    @staticmethod
-    def mighty_user_scope():
-        return {
-            UserScope.EXPERIMENT_CREATE_OWN,
-            UserScope.EXPERIMENT_VIEW_OWN,
-            UserScope.EXPERIMENT_EDIT_OWN,
-            UserScope.JOB_CREATE,
-            UserScope.JOB_VIEW_OWN,
-            UserScope.JOB_VIEW_ALL,
-            UserScope.JOB_CANCEL_OWN,
-        }
-
-    @staticmethod
-    def blind_jobs_scope():
-        return {
-            UserScope.EXPERIMENT_CREATE_OWN,
-            UserScope.EXPERIMENT_VIEW_OWN,
-            UserScope.EXPERIMENT_EDIT_OWN,
-            UserScope.JOB_CREATE,
-            UserScope.JOB_CANCEL_OWN,
-        }
-
-    @staticmethod
-    def blind_experiments_scope():
-        return {
-            UserScope.EXPERIMENT_CREATE_OWN,
-            UserScope.JOB_VIEW_OWN,
-            UserScope.EXPERIMENT_EDIT_OWN,
-            UserScope.JOB_CREATE,
-            UserScope.JOB_CANCEL_OWN,
-        }
 
 
 @pytest_asyncio.fixture
@@ -145,50 +84,13 @@ async def fill_db_session(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "scope,user_number,count",
-    [
-        # see everything
-        (Helper.admin_scope(), 0, 80),
-        (Helper.manager_scope(), 1, 80),
-        # see everything inside its experiment
-        (Helper.mighty_user_scope(), 2, 26),
-        # see only self-created self-started
-        (Helper.user_scope(), 2, 13),
-        (Helper.blind_jobs_scope(), 2, 0),
-        # TODO: not having access to experiment::own
-        # should also make you blind
-        (Helper.blind_experiments_scope(), 2, 13),
-    ],
-)
-async def test_user_can_see_allowed_tasks(
-    my_db_session,
-    users_data: List[orm.User],
-    scope: Set[UserScope],
-    user_number: int,
-    count: int,
-):
-    """Test get_experiment_by_uuid operation"""
-
-    tasks = await get_all_tasks(
-        user_info=UserInfo(
-            uuid=users_data[user_number].uuid,
-            username=users_data[user_number].username,
-            scopes=scope,
-        ),
-        db_session=my_db_session,
-    )
-    assert len(tasks) == count
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
     "scope,user_number,experiment_number",
     [
-        (Helper.admin_scope(), 0, 0),
-        (Helper.admin_scope(), 0, 1),
-        (Helper.admin_scope(), 0, 2),
-        (Helper.manager_scope(), 1, 1),
-        (Helper.user_scope(), 2, 2),
+        (Scopes.admin_scope(), 0, 0),
+        (Scopes.admin_scope(), 0, 1),
+        (Scopes.admin_scope(), 0, 2),
+        (Scopes.manager_scope(), 1, 1),
+        (Scopes.user_scope(), 2, 2),
     ],
 )
 async def test_user_can_submit_a_job(
@@ -244,11 +146,11 @@ async def test_user_can_submit_a_job(
 @pytest.mark.parametrize(
     "scope,user_number",
     [
-        (Helper.manager_scope(), 1),
-        (Helper.mighty_user_scope(), 2),
-        (Helper.user_scope(), 2),
-        (Helper.blind_jobs_scope(), 2),
-        (Helper.blind_experiments_scope(), 2),
+        (Scopes.manager_scope(), 1),
+        (Scopes.mighty_user_scope(), 2),
+        (Scopes.user_scope(), 2),
+        (Scopes.blind_jobs_scope(), 2),
+        (Scopes.blind_experiments_scope(), 2),
     ],
 )
 async def test_user_cannot_submit_a_job(

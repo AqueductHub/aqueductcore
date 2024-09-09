@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import UUID
@@ -155,6 +156,7 @@ class ExtensionAction(BaseModel):
                 "DB query failed due to non-existing experiment with the specified UUID."
             )
 
+        start_time = datetime.now().astimezone(timezone.utc)
         task = await _execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
@@ -167,7 +169,9 @@ class ExtensionAction(BaseModel):
             action_name=self.name,
             extension_name=extension.name,
             parameters=params_json,
-            create_by=user_info.uuid,
+            created_by=user_info.uuid,
+            created_at=start_time,
+            status=task.status,
         )
         db_session.add(db_task)
 

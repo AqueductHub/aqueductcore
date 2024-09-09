@@ -191,7 +191,6 @@ class ExtensionsExecutor:
             raise AQDValidationError("Experiment not found in the database.")
 
         if not user_info.can_create_task_in_experiment_owned_by(experiment.created_by_user.uuid):
-            print(user_info, experiment.created_by_user.uuid)
             raise AQDPermission("User has no permission to start tasks in this experiment.")
 
         action_object = extension_object.get_action(action)

@@ -91,7 +91,7 @@ async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResu
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
     if wait:
-        if not task.ready():
+        while not task.ready():
             await sleep(WAITING_TIME)
 
     task_info = TaskProcessExecutionResult(
@@ -146,15 +146,17 @@ async def revoke_task(
     """Cancel the task and update the status."""
 
     statement = (
-        select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
+        select(orm.Task)
+        .join(orm.Experiment)
+        .where(orm.Task.experiment_id == orm.Experiment.uuid)
+        .filter(orm.Task.task_id == task_id)
     )
 
     # TODO: this is not specified in ERD
     # but it implies, as user cannot launch a task
     # without edit permission.
     if not user_info.can_edit_any_experiment():
-        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
-
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
     result = await db_session.execute(statement)
 
     db_task = result.scalars().first()
@@ -162,9 +164,10 @@ async def revoke_task(
         raise AQDDBTaskNonExisting(
             "DB query failed as task does not exist, or user has no access to cancel it."
         )
-    if not user_info.can_view_experiment_owned_by(db_task.experiment.created_by_user.uuid):
+    created_by_user_id = UUID(str(db_task.created_by))
+    if not user_info.can_view_experiment_owned_by(created_by_user_id):
         raise AQDPermission("User has no permission access experiment associated with the tasks.")
-    if not user_info.can_cancel_task_owned_by(db_task.created_by_user.uuid):
+    if not user_info.can_cancel_task_owned_by(created_by_user_id):
         raise AQDPermission("User has no permission to cancel tasks.")
 
     # note: SIGINT does not lead to task abort. If you send
@@ -175,7 +178,7 @@ async def revoke_task(
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
     return await task_orm_to_model(
-        value=db_task, task_info=task_info, experiment_uuid=db_task.experiment.uuid
+        value=db_task, task_info=task_info, experiment_uuid=db_task.experiment_id
     )
 
 

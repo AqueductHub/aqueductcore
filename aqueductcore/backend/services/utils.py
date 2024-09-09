@@ -39,6 +39,7 @@ async def task_orm_to_model(
         ),
         result_code=task_info.result_code,
         created_by=UUID(str(value.created_by)),
+        created_at=value.created_at,
     )
 
     return task
@@ -57,6 +58,8 @@ def task_model_to_orm(
         ),
         created_by=value.created_by,
         experiment_id=value.experiment_uuid,
+        status=value.status,
+        created_at=value.created_at,
     )
 
 
