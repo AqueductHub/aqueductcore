@@ -204,7 +204,11 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
         setFunctionFormData(prevState => {
             Object.entries(prevState).forEach(([key]) => {
                 prevState[key].forEach((item) => {
-                    item.value = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name)?.defaultValue;
+                    const parameter = selectedExtensionItem?.actions.find((action) => action.name === key)?.parameters.find((parameter) => parameter.name === item.name);
+                    //To not remove ExperimentUuid from parameters
+                    if (parameter?.dataType !== ExtensionParameterDataTypes.EXPERIMENT) {
+                        item.value = parameter?.defaultValue
+                    }
                 })
             })
             return prevState;

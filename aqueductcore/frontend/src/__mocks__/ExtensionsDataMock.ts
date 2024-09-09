@@ -3,13 +3,13 @@ import { ExtensionType } from "types/globalTypes";
 
 export const ExtensionsDataMock: ExtensionType[] = [
     {
-        "name": "Dummy extension",
-        "description": "This extension prints environment variables passed to it. No requests to Aqueduct sent.\n",
+        "name": "extension_1",
+        "description": "Description 1 \n next line of desc",
         "authors": "aqueduct@riverlane.com",
         "actions": [
             {
-                "description": "Print values to stdout",
-                "name": "echo",
+                "description": "first action description",
+                "name": "action_1",
                 "experimentVariableName": "var4",
                 "parameters": [
                     {
@@ -76,8 +76,8 @@ export const ExtensionsDataMock: ExtensionType[] = [
                 ]
             },
             {
-                "description": "Print values to stdout",
-                "name": "echo_stderr",
+                "description": "second action description",
+                "name": "action_2",
                 "experimentVariableName": "var4",
                 "parameters": [
                     {
@@ -146,8 +146,8 @@ export const ExtensionsDataMock: ExtensionType[] = [
         ],
     },
     {
-        "name": "Wolfram alpha solution extension",
-        "description": "This extension solves mathematical problems using Wolfram|Alpha cloud engine. To run the extension, please obtain an App ID at https://developer.wolframalpha.com/access\n",
+        "name": "extension_2",
+        "description": "Description 2 \n next line of desc",
         "authors": "aqueduct@riverlane.com",
         "actions": [
             {

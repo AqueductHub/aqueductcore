@@ -23,6 +23,7 @@ export const executeExtension_mock = {
             request: {
                 query: EXECUTE_EXTENSION,
                 variables: {
+                    "experimentUuid": selected_experiment.uuid,
                     "extension": extensionName,
                     "action": actionName,
                     "params": params
