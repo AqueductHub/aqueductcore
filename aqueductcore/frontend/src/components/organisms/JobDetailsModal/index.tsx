@@ -5,111 +5,10 @@ import { ReactNode, useState } from "react";
 
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import ActionParameters from "components/molecules/ActionParameters";
+import { useGetTask } from "API/graphql/queries/tasks/getTask";
 import LogViewer from "components/molecules/LogViewer";
 import { dateFormatter } from "helper/formatters";
 import { TaskType } from "types/globalTypes";
-import { useGetTask } from "API/graphql/queries/tasks/getTask";
-
-// const parameters: ExtensionsActionParameterType[] = [
-//     {
-//         "dataType": "str",
-//         "defaultValue": "1",
-//         "description": "variable 1",
-//         "displayName": null,
-//         "name": "var1",
-//         "options": null
-//     },
-//     {
-//         "dataType": "int",
-//         "defaultValue": null,
-//         "description": "variable 2",
-//         "displayName": "some display name",
-//         "name": "var2",
-//         "options": null
-//     },
-//     {
-//         "dataType": "float",
-//         "defaultValue": null,
-//         "description": "variable 3",
-//         "displayName": null,
-//         "name": "var3",
-//         "options": null
-//     },
-//     {
-//         "dataType": "experiment",
-//         "defaultValue": null,
-//         "description": "variable 4",
-//         "displayName": null,
-//         "name": "var4",
-//         "options": null
-//     },
-//     {
-//         "dataType": "textarea",
-//         "defaultValue": null,
-//         "description": "variable 5 multiline",
-//         "displayName": null,
-//         "name": "var5",
-//         "options": null
-//     },
-//     {
-//         "dataType": "bool",
-//         "defaultValue": "1",
-//         "description": "boolean variable",
-//         "displayName": null,
-//         "name": "var6",
-//         "options": null
-//     },
-//     {
-//         "dataType": "select",
-//         "defaultValue": "string three",
-//         "description": "select / combobox",
-//         "displayName": null,
-//         "name": "var7",
-//         "options": [
-//             "string1",
-//             "string2",
-//             "string three",
-//             "string4"
-//         ]
-//     }
-// ]
-
-// const inputParams = [
-//     { "name": "var4", "value": "240611-32" },
-//     { "name": "var6", "value": "1" },
-//     { "name": "var7", "value": "string three" },
-//     { "name": "var1", "value": "string" },
-//     { "name": "var2", "value": "123" },
-//     { "name": "var3", "value": "123.456" },
-//     { "name": "var5", "value": "multiline" }
-// ]
-
-const jobRunLog = `Process:               OpenVPN Driver [58878]
-Path:                  /Applications/NordLayer.app/Contents/PlugIns/OpenVPN Driver.appex/Contents/MacOS/OpenVPN Driver
-Identifier:            com.nordvpn.macos.teams.packetTunnelProvider
-Version:               3.5.0 (637)
-App Item ID:           1488888843
-App External ID:       867475105
-Code Type:             ARM-64 (Native)
-Parent Process:        launchd [1]
-User ID:               501
-
-Date/Time:             2024-07-30 16:04:25.0854 +0100
-OS Version:            macOS 14.3.1 (23D60)
-Report Version:        12
-Anonymous UUID:        E2278324-231C-F87F-B352-E3E268C448D6
-
-Sleep/Wake UUID:       26469B16-F200-4A24-ABA6-0D34CEB2988B
-
-Time Awake Since Boot: 120000 seconds
-Time Since Wake:       15 seconds
-
-System Integrity Protection: enabled
-
-Crashed Thread:        3
-
-Exception Type:        EXC_BREAKPOINT (SIGTRAP)
-`;
 
 interface JobDetailsModalProps {
     isOpen: boolean
@@ -245,6 +144,44 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
 
     if (!task) return <></>
 
+    const jobRunLog = [
+        {
+            label: "experiment",
+            value: task.experiment.title
+        },
+        {
+            label: "extensionName",
+            value: task.extensionName
+        },
+        {
+            label: "ActionName",
+            value: task.actionName
+        },
+        {
+            label: "receivedAt",
+            value: task.receivedAt
+        },
+        {
+            label: "taskId",
+            value: task.taskId
+        },
+        {
+            label: "taskStatus",
+            value: task.taskStatus
+        },
+        {
+            label: "resultCode",
+            value: task.resultCode
+        },
+        {
+            label: "stdErr",
+            value: task.stdErr
+        },
+        {
+            label: "stdOut",
+            value: task.stdOut
+        }
+    ]
     const parameters = task.parameters.map(param => param.key)
     const inputParams = task.parameters.map(param => ({ name: param.key.name, value: param.value }))
     const taskDetailsItems = [
