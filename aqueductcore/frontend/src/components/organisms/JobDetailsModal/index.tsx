@@ -204,7 +204,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
     ]
 
     return (
-        <Modal open={isOpen}>
+        <Modal open={isOpen} onClose={handleClose}>
             <ModalContainer>
                 <ModalHeader
                     container
