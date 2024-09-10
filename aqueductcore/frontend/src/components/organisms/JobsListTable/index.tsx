@@ -29,7 +29,7 @@ function JobsListTable({
     };
 }) {
     const [showActionId, setShowActionId] = useState("-1");
-    const [taskId, setTaskId] = useState("-1");
+    const [taskId, setTaskId] = useState();
     const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
     const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
 

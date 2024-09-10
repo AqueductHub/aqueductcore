@@ -140,6 +140,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         variables: {
             taskId
         },
+        skip: !taskId
     })
     const task = data?.task
 
