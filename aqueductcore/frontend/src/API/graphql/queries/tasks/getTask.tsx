@@ -1,4 +1,5 @@
 import { gql, QueryHookOptions, useQuery } from "@apollo/client";
+import toast from "react-hot-toast";
 
 import { GET_TASK_TYPE } from "types/globalTypes";
 
@@ -36,7 +37,13 @@ export const GET_TASK = gql`
 
 export function useGetTask(options?: QueryHookOptions) {
   const extensions = useQuery<GET_TASK_TYPE>(GET_TASK, {
-    ...options
+    ...options,
+    onError(error) {
+      console.log("Opening Task Details failed", error);
+      toast.error(error.message, {
+        id: "open_task_error",
+      })
+    }
   });
   return extensions;
 }

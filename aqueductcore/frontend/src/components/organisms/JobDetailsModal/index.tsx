@@ -9,6 +9,7 @@ import { useGetTask } from "API/graphql/queries/tasks/getTask";
 import LogViewer from "components/molecules/LogViewer";
 import { dateFormatter } from "helper/formatters";
 import { TaskType } from "types/globalTypes";
+import { Loading } from "components/atoms/Loading";
 
 interface JobDetailsModalProps {
     isOpen: boolean
@@ -135,13 +136,14 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         setValue(newValue);
     };
 
-    const { data } = useGetTask({
+    const { loading, data } = useGetTask({
         variables: {
             taskId
         },
     })
     const task = data?.task
 
+    if (loading) return <Loading isGlobal />
     if (!task) return <></>
 
     const jobRunLog = [
