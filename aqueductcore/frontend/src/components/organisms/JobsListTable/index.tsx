@@ -72,7 +72,6 @@ function JobsListTable({
                                     }}
                                     onMouseLeave={() => setShowActionId("-1")}
                                     onClick={() => {
-                                        // !TODO: after TT-122 is completed
                                         handleOpenJobDetailsModal()
                                         setTaskId(row['taskId'])
                                     }

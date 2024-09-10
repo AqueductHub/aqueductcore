@@ -185,7 +185,6 @@ export type ExperimentFileType = {
   modifiedAt: ExperimentFile["modifiedAt"];
 };
 export type JobDataType = {
-  // TBD
   experiment: {
     title: ExperimentData['title']
     eid: ExperimentData['eid']
@@ -195,9 +194,9 @@ export type JobDataType = {
     action: ExtensionActionInfo['name']
   };
   taskId: TaskType['taskId']
-  //!TODO: Fix these values
   taskStatus: TaskType['taskStatus'];
   receivedAt: TaskData['receivedAt'];
+  // TODO: Add username
 };
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
