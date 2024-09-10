@@ -75,7 +75,6 @@ class TaskBase(AQDModel):
     received_at: datetime
     ended_at: Optional[datetime] = None
     created_by: UUID
-    created_at: datetime
 
 
 class TaskCreate(TaskBase):
