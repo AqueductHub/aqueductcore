@@ -29,6 +29,7 @@ function JobsListTable({
     };
 }) {
     const [showActionId, setShowActionId] = useState("-1");
+    const [taskId, setTaskId] = useState("-1");
     const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
     const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
 
@@ -41,7 +42,6 @@ function JobsListTable({
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
     return (
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight }}>
@@ -71,9 +71,11 @@ function JobsListTable({
                                         setShowActionId(row.receivedAt); // set id here
                                     }}
                                     onMouseLeave={() => setShowActionId("-1")}
-                                    onClick={() =>
+                                    onClick={() => {
                                         // !TODO: after TT-122 is completed
                                         handleOpenJobDetailsModal()
+                                        setTaskId(row['taskId'])
+                                    }
                                     }
                                     sx={{ cursor: "pointer" }}
                                 >
@@ -119,8 +121,7 @@ function JobsListTable({
             <JobDetailsModal
                 isOpen={jobDetailsModalOpen}
                 handleClose={handleCloseJobDetailsModal}
-                selectedExtension={"name_ext"}
-                selectedAction={"action_ext"}
+                taskId={taskId}
             />
         </Paper>
     );

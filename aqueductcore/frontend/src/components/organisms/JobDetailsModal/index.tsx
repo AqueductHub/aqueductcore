@@ -5,83 +5,84 @@ import { ReactNode, useState } from "react";
 
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
 import ActionParameters from "components/molecules/ActionParameters";
-import { ExtensionsActionParameterType } from "types/globalTypes";
-import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 import LogViewer from "components/molecules/LogViewer";
+import { dateFormatter } from "helper/formatters";
+import { TaskType } from "types/globalTypes";
+import { useGetTask } from "API/graphql/queries/tasks/getTask";
 
-const parameters: ExtensionsActionParameterType[] = [
-    {
-        "dataType": "str",
-        "defaultValue": "1",
-        "description": "variable 1",
-        "displayName": null,
-        "name": "var1",
-        "options": null
-    },
-    {
-        "dataType": "int",
-        "defaultValue": null,
-        "description": "variable 2",
-        "displayName": "some display name",
-        "name": "var2",
-        "options": null
-    },
-    {
-        "dataType": "float",
-        "defaultValue": null,
-        "description": "variable 3",
-        "displayName": null,
-        "name": "var3",
-        "options": null
-    },
-    {
-        "dataType": "experiment",
-        "defaultValue": null,
-        "description": "variable 4",
-        "displayName": null,
-        "name": "var4",
-        "options": null
-    },
-    {
-        "dataType": "textarea",
-        "defaultValue": null,
-        "description": "variable 5 multiline",
-        "displayName": null,
-        "name": "var5",
-        "options": null
-    },
-    {
-        "dataType": "bool",
-        "defaultValue": "1",
-        "description": "boolean variable",
-        "displayName": null,
-        "name": "var6",
-        "options": null
-    },
-    {
-        "dataType": "select",
-        "defaultValue": "string three",
-        "description": "select / combobox",
-        "displayName": null,
-        "name": "var7",
-        "options": [
-            "string1",
-            "string2",
-            "string three",
-            "string4"
-        ]
-    }
-]
+// const parameters: ExtensionsActionParameterType[] = [
+//     {
+//         "dataType": "str",
+//         "defaultValue": "1",
+//         "description": "variable 1",
+//         "displayName": null,
+//         "name": "var1",
+//         "options": null
+//     },
+//     {
+//         "dataType": "int",
+//         "defaultValue": null,
+//         "description": "variable 2",
+//         "displayName": "some display name",
+//         "name": "var2",
+//         "options": null
+//     },
+//     {
+//         "dataType": "float",
+//         "defaultValue": null,
+//         "description": "variable 3",
+//         "displayName": null,
+//         "name": "var3",
+//         "options": null
+//     },
+//     {
+//         "dataType": "experiment",
+//         "defaultValue": null,
+//         "description": "variable 4",
+//         "displayName": null,
+//         "name": "var4",
+//         "options": null
+//     },
+//     {
+//         "dataType": "textarea",
+//         "defaultValue": null,
+//         "description": "variable 5 multiline",
+//         "displayName": null,
+//         "name": "var5",
+//         "options": null
+//     },
+//     {
+//         "dataType": "bool",
+//         "defaultValue": "1",
+//         "description": "boolean variable",
+//         "displayName": null,
+//         "name": "var6",
+//         "options": null
+//     },
+//     {
+//         "dataType": "select",
+//         "defaultValue": "string three",
+//         "description": "select / combobox",
+//         "displayName": null,
+//         "name": "var7",
+//         "options": [
+//             "string1",
+//             "string2",
+//             "string three",
+//             "string4"
+//         ]
+//     }
+// ]
 
-const inputParams = [
-    {"name": "var4", "value": "240611-32"},
-    {"name": "var6", "value": "1"},
-    {"name": "var7", "value": "string three"},
-    {"name": "var1", "value": "string"},
-    {"name": "var2", "value": "123"},
-    {"name": "var3", "value": "123.456"},
-    {"name": "var5", "value": "multiline"}
-]
+// const inputParams = [
+//     { "name": "var4", "value": "240611-32" },
+//     { "name": "var6", "value": "1" },
+//     { "name": "var7", "value": "string three" },
+//     { "name": "var1", "value": "string" },
+//     { "name": "var2", "value": "123" },
+//     { "name": "var3", "value": "123.456" },
+//     { "name": "var5", "value": "multiline" }
+// ]
 
 const jobRunLog = `Process:               OpenVPN Driver [58878]
 Path:                  /Applications/NordLayer.app/Contents/PlugIns/OpenVPN Driver.appex/Contents/MacOS/OpenVPN Driver
@@ -113,34 +114,14 @@ Exception Type:        EXC_BREAKPOINT (SIGTRAP)
 interface JobDetailsModalProps {
     isOpen: boolean
     handleClose: () => void
-    selectedExtension: string
-    selectedAction: string
+    taskId: TaskType['taskId']
 }
 
 export type settingItemType = {
     id: string
     title: string
     component: ReactNode
-  }
-
-const settingItems = [
-    {
-        id: "parameters",
-        title: "Parameters",
-        component: <ActionParameters 
-                readonly
-                parameters={parameters}
-                inputParams={inputParams}
-            />
-    },
-    {
-        id: "log",
-        title: "Log",
-        component: <LogViewer
-            log={jobRunLog}
-        />
-    }
-]
+}
 
 const ModalContainer = styled(Box)`
     position: absolute;
@@ -156,7 +137,7 @@ const ModalContainer = styled(Box)`
             : props.theme.palette.common.white};
 `;
 
-const AuthorName = styled(Typography)`
+const ExtensionName = styled(Typography)`
     font-size: 1.1rem;
     display: inline;
     font-weight: bold;
@@ -168,7 +149,7 @@ const CloseModalIcon = styled(CloseIcon)`
     vertical-align: middle;
 `;
 
-const ExtensionName = styled(Typography)`
+const ActionName = styled(Typography)`
     font-size: 1.1rem;
     display: inline;
 `;
@@ -237,88 +218,118 @@ interface TabPanelProps {
     index: number;
     value: number;
 }
-  
+
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
-    
+
     return (
         <div role="tabpanel" hidden={value !== index} {...other}>
-        {value === index && <Box>{children}</Box>}
+            {value === index && <Box>{children}</Box>}
         </div>
     );
-} 
-  
-function JobDetailsModal({isOpen, handleClose, selectedExtension, selectedAction}: JobDetailsModalProps) {
+}
+
+function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) {
     const [value, setValue] = useState(0);
-    
+
     const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
-      };
+    };
+
+    const { data } = useGetTask({
+        variables: {
+            taskId
+        },
+    })
+    const task = data?.task
+
+    if (!task) return <></>
+
+    const parameters = task.parameters.map(param => param.key)
+    const inputParams = task.parameters.map(param => ({ name: param.key.name, value: param.value }))
+    const taskDetailsItems = [
+        {
+            id: "parameters",
+            title: "Parameters",
+            component: <ActionParameters
+                readonly
+                parameters={parameters}
+                inputParams={inputParams}
+            />
+        },
+        {
+            id: "log",
+            title: "Log",
+            component: <LogViewer
+                log={jobRunLog}
+            />
+        }
+    ]
 
     return (
         <Modal open={isOpen}>
             <ModalContainer>
                 <ModalHeader
-                        container
+                    container
+                    sx={{
+                        justifyContent: "space-between"
+                    }}
+                >
+                    <Grid item sx={{ display: "flex", alignItems: "center" }}>
+                        <JobExtensionStatus status={task.taskStatus} />
+                        <ExtensionName>{task.extensionName}</ExtensionName>
+                        <HeaderRightIcon />
+                        <ActionName>{task.actionName}</ActionName>
+                    </Grid>
+                    <Grid item sx={{ display: "flex", alignItems: "center" }}>
+                        <CloseModalIcon onClick={handleClose} />
+                    </Grid>
+                </ModalHeader>
+                <ModalMain sx={{ pt: 2, pl: 2, pr: 2 }}>
+                    <List>
+                        <ListItem>
+                            <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
+                            <ExperimentDetailsContent>admin</ExperimentDetailsContent>
+                        </ListItem>
+                        <ListItem>
+                            <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
+                            <ExperimentDetailsContent>{dateFormatter(new Date(task.receivedAt))}</ExperimentDetailsContent>
+                        </ListItem>
+                    </List>
+                    <TabsBox
                         sx={{
-                            justifyContent: "space-between"
-                        }}
-                    >
-                        <Grid item sx={{ display: "flex", alignItems: "center" }}>
-                            <JobExtensionStatus status={TaskStatus.Pending} />
-                            <AuthorName>{selectedExtension}</AuthorName>
-                            <HeaderRightIcon />
-                            <ExtensionName>{selectedAction}</ExtensionName>
-                        </Grid>
-                        <Grid item sx={{ display: "flex", alignItems: "center" }}>
-                            <CloseModalIcon onClick={handleClose} />
-                        </Grid>
-                    </ModalHeader>
-                    <ModalMain sx={{ pt: 2, pl: 2, pr: 2}}>
-                        <List>
-                            <ListItem>
-                                <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
-                                <ExperimentDetailsContent>admin</ExperimentDetailsContent>
-                            </ListItem>
-                            <ListItem>
-                                <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
-                                <ExperimentDetailsContent>04/07/2024 11:52:31</ExperimentDetailsContent>
-                            </ListItem>
-                        </List>
-                        <TabsBox
-                            sx={{
                             borderBottom: 1,
                             borderColor: "divider",
-                            }}
-                        >
-                            <Tabs variant="fullWidth" value={value} onChange={handleChangeTab}>
-                                {settingItems.map((item) => (
-                                    <Tab
+                        }}
+                    >
+                        <Tabs variant="fullWidth" value={value} onChange={handleChangeTab}>
+                            {taskDetailsItems.map((item) => (
+                                <Tab
                                     key={item.title}
                                     label={item.title}
-                                    />
-                                ))}
-                            </Tabs>
-                        </TabsBox>
-                        <JobDetailsBox>
-                            <Container>
-                                {settingItems.map((item, index) => (
+                                />
+                            ))}
+                        </Tabs>
+                    </TabsBox>
+                    <JobDetailsBox>
+                        <Container>
+                            {taskDetailsItems.map((item, index) => (
                                 <TabPanel value={value} index={index} key={item.id}>
                                     <Grid
-                                    container
-                                    justifyContent="center"
-                                    direction="column"
-                                    sx={{ boxShadow: 1, borderRadius: "4px" }}
+                                        container
+                                        justifyContent="center"
+                                        direction="column"
+                                        sx={{ boxShadow: 1, borderRadius: "4px" }}
                                     >
-                                    <Grid item sx={{ minHeight: "400px", position: "relative", pt: 2 }}>
-                                        {item.component}
-                                    </Grid>
+                                        <Grid item sx={{ minHeight: "400px", position: "relative", pt: 2 }}>
+                                            {item.component}
+                                        </Grid>
                                     </Grid>
                                 </TabPanel>
-                                ))}
-                            </Container>
-                        </JobDetailsBox>
-                    </ModalMain>
+                            ))}
+                        </Container>
+                    </JobDetailsBox>
+                </ModalMain>
             </ModalContainer>
         </Modal>
     );

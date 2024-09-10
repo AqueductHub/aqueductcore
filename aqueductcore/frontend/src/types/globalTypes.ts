@@ -9,6 +9,7 @@ import {
   UserInfo,
   TaskData,
   Tags,
+  KeyValuePair,
 } from "./graphql/__GENERATED__/graphql";
 
 type NonNullish<T> = Exclude<T, null | undefined>; // Remove null and undefined from T
@@ -100,6 +101,10 @@ export type GET_ALL_TASKS_TYPE = {
   }
   __typename?: TaskData['__typename'];
 };
+export type GET_TASK_TYPE = {
+  task: TaskWithParamsType
+  __typename?: TaskData['__typename'];
+};
 
 
 //############### Mutation types ###############//
@@ -189,6 +194,7 @@ export type JobDataType = {
     name: ExtensionInfo['name']
     action: ExtensionActionInfo['name']
   };
+  taskId: TaskType['taskId']
   //!TODO: Fix these values
   taskStatus: TaskType['taskStatus'];
   receivedAt: TaskData['receivedAt'];
@@ -244,7 +250,7 @@ export interface ExtensionFieldBase {
   description?: string,
 }
 //### TASKS ###
-export type TaskType = {
+export interface TaskType {
   extensionName: TaskData['extensionName']
   actionName: TaskData['actionName']
   taskStatus: TaskData['taskStatus']
@@ -252,9 +258,25 @@ export type TaskType = {
   resultCode: TaskData['resultCode']
   stdOut: TaskData['stdOut']
   stdErr: TaskData['stdErr']
+  taskId: TaskData['taskId']
   experiment: {
     uuid: ExperimentData['uuid']
     title: ExperimentData['title']
     eid: ExperimentData['eid']
   }
 }
+export interface TaskWithParamsType extends TaskType {
+  parameters: Array<{
+    key: ParamsType,
+    value: KeyValuePair['value']
+  }>
+}
+export interface ParamsType {
+  dataType: ExtensionParameterType['dataType']
+  name: ExtensionParameterType['name']
+  displayName: ExtensionParameterType['displayName']
+  defaultValue: ExtensionParameterType['defaultValue']
+  description: ExtensionParameterType['description']
+  options: ExtensionParameterType['options']
+}
+
