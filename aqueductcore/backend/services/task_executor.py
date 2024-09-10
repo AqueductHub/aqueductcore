@@ -87,7 +87,7 @@ def run_executable(
     )
 
 
-async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionResult:
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
     if wait:
