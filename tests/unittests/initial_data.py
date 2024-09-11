@@ -328,6 +328,7 @@ task_data = [
         received_at=datetime.now(),
         ended_at=datetime.now(),
         created_by=user_data[i % len(user_data)].uuid,
+        created_by_username=user_data[i % len(user_data)].username,
     )
     for i, experiment in enumerate(experiment_data)
 ] + [
@@ -353,6 +354,7 @@ task_data = [
         received_at=datetime.now(),
         ended_at=datetime.now(),
         created_by=user_data[(3 - i) % len(user_data)].uuid,
+        created_by_username=user_data[i % len(user_data)].username,
     )
     for i, experiment in enumerate(experiment_data)
 ]

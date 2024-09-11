@@ -230,6 +230,7 @@ class TaskData:
     parameters: List[KeyValuePair] = strawberry.field(
         description="List of task parameters and their values."
     )
+    created_by: str = strawberry.field(description="Creator of the task.")
     received_at: datetime = strawberry.field(description="Time task was submitted.")
     ended_at: Optional[datetime] = strawberry.field(description="Time task was completed.")
     task_status: TaskStatus = strawberry.field(description="Status of the task execution.")
@@ -275,6 +276,7 @@ def task_model_to_node(value: TaskRead) -> TaskData:
         extension_name=value.extension_name,
         action_name=value.action_name,
         task_status=TaskStatus(value.status),
+        created_by=value.created_by_username,
         received_at=value.received_at,
         ended_at=value.ended_at,
         parameters=kv_params,

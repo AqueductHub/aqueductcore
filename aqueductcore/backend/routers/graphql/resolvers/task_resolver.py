@@ -35,6 +35,7 @@ async def get_tasks(
         db_session=context.db_session,
         extension_name=filters.extension_name if filters else None,
         action_name=filters.action_name if filters else None,
+        username=filters.username if filters else None,
         order_by_creation_date=True,
     )
     task_nodes = [task_model_to_node(value=item) for item in tasks][offset : offset + limit]

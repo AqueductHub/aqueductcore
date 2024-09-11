@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from re import compile as recompile
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
@@ -21,9 +21,15 @@ from aqueductcore.backend.models.task import (
 
 
 async def task_orm_to_model(
-    value: orm.Task, task_info: TaskProcessExecutionResult, experiment_uuid: UUID
+    value: orm.Task,
+    task_info: TaskProcessExecutionResult,
+    experiment_uuid: UUID,
+    username: Optional[str] = None,
 ) -> TaskRead:
     """Convert ORM Experiment to Pydantic Model"""
+    if username is None:
+        username = value.created_by_user.username
+
     task = TaskRead(
         task_id=value.task_id,
         experiment_uuid=experiment_uuid,
@@ -39,6 +45,7 @@ async def task_orm_to_model(
         ),
         result_code=task_info.result_code,
         created_by=UUID(str(value.created_by)),
+        created_by_username=username,
     )
 
     return task

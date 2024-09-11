@@ -174,12 +174,12 @@ class ExtensionAction(BaseModel):
             status=task.status,
         )
         db_session.add(db_task)
-
         db_experiment.tasks.append(db_task)
         await db_session.commit()
-
         return await task_orm_to_model(
-            value=db_task, task_info=task, experiment_uuid=db_task.experiment.uuid
+            value=db_task, task_info=task,
+            experiment_uuid=db_task.experiment.uuid,
+            username=user_info.username,
         )
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:
