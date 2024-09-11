@@ -244,8 +244,7 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
 
     # cannot view any tasks
     if not user_info.can_view_task_owned_by(user_info.uuid):
-        # raise AQDPermission("User has no permission to view tasks")
-        return []
+        raise AQDPermission("User has no permission to view any tasks.")
 
     if experiment_uuid is not None:
         statement = statement.join(orm.Experiment).filter(orm.Experiment.uuid == experiment_uuid)

@@ -88,7 +88,6 @@ async def fill_db_session(
         (Scopes.mighty_user_scope(), 2, 26),
         # see only self-created self-started
         (Scopes.user_scope(), 2, 13),
-        (Scopes.blind_jobs_scope(), 2, 0),
         # TODO: not having access to experiment::own
         # should also make you blind
         (Scopes.blind_experiments_scope(), 2, 13),
@@ -110,6 +109,31 @@ async def test_user_can_see_allowed_tasks(
         db_session=my_db_session,
     )
     assert len(tasks) == count
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "scope,user_number,count",
+    [
+        (Scopes.blind_jobs_scope(), 2, 0),
+    ],
+)
+async def test_user_cannot_see_allowed_tasks(
+    my_db_session,
+    users_data: List[orm.User],
+    scope: Set[UserScope],
+    user_number: int,
+    count: int,
+):
+    with pytest.raises(AQDPermission):
+        await get_all_tasks(
+            user_info=UserInfo(
+                uuid=users_data[user_number].uuid,
+                username=users_data[user_number].username,
+                scopes=scope,
+            ),
+            db_session=my_db_session,
+        )
 
 
 @pytest.mark.asyncio
