@@ -13,10 +13,10 @@ from aqueductcore.backend.models.experiment import (
     TagRead,
 )
 from aqueductcore.backend.models.task import (
+    TaskCreate,
     TaskParamList,
     TaskProcessExecutionResult,
     TaskRead,
-    TaskCreate,
 )
 
 
@@ -59,12 +59,9 @@ def task_model_to_orm(
         task_id=value.task_id,
         action_name=value.action_name,
         extension_name=value.extension_name,
-        parameters=(
-            value.parameters.model_dump_json() if value.parameters else None
-        ),
+        parameters=(value.parameters.model_dump_json() if value.parameters else None),
         created_by=value.created_by,
         experiment_id=value.experiment_uuid,
-        status=value.status,
         created_at=value.received_at,
     )
 

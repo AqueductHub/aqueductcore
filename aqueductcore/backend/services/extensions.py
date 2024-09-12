@@ -171,7 +171,6 @@ class ExtensionAction(BaseModel):
             parameters=params_json,
             created_by=user_info.uuid,
             created_at=start_time,
-            status=task.status,
         )
         db_session.add(db_task)
         db_experiment.tasks.append(db_task)

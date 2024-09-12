@@ -48,7 +48,6 @@ class Task(Base):
     created_by_user: Mapped[User] = relationship(back_populates="tasks")
     experiment_id = mapped_column(Uuid, ForeignKey("experiment.uuid"))
     experiment: Mapped[Experiment] = relationship(back_populates="tasks")
-    status: Mapped[str]
 
 
 class Experiment(Base):

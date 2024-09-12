@@ -71,7 +71,6 @@ class TaskBase(AQDModel):
     result_code: Optional[int] = None
     std_err: Optional[str] = None
     std_out: Optional[str] = None
-    status: str
     received_at: datetime
     ended_at: Optional[datetime] = None
     created_by: UUID
@@ -84,3 +83,5 @@ class TaskCreate(TaskBase):
 
 class TaskRead(TaskBase):
     """Model for reading a task."""
+
+    status: str
