@@ -901,7 +901,6 @@ async def test_extensions():
     p_dummy = resp.data["extensions"][0]
     assert p_dummy["authors"] == "aqueduct@riverlane.com"
     assert len(p_dummy["actions"]) == 2
-    print(p_dummy)
     echo = p_dummy["actions"][0]
     assert echo["experimentVariableName"] == "var4"
     assert echo["parameters"][1]["displayName"] == "some display name"

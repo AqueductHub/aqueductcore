@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import UUID
@@ -13,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import (
     AQDDBExperimentNonExisting,
     AQDFilesPathError,
@@ -144,7 +145,7 @@ class ExtensionAction(BaseModel):
             .where(orm.Experiment.uuid == experiment_uuid)
         )
 
-        if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
+        if not user_info.can_edit_any_experiment():
             statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
 
         result = await db_session.execute(statement)
@@ -155,6 +156,7 @@ class ExtensionAction(BaseModel):
                 "DB query failed due to non-existing experiment with the specified UUID."
             )
 
+        start_time = datetime.now().astimezone(timezone.utc)
         task = await _execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
@@ -167,14 +169,17 @@ class ExtensionAction(BaseModel):
             action_name=self.name,
             extension_name=extension.name,
             parameters=params_json,
+            created_by=user_info.uuid,
+            created_at=start_time,
+            status=task.status,
         )
         db_session.add(db_task)
-
         db_experiment.tasks.append(db_task)
         await db_session.commit()
-
         return await task_orm_to_model(
-            value=db_task, task_info=task, experiment_uuid=db_task.experiment.uuid
+            value=db_task, task_info=task,
+            experiment_uuid=db_task.experiment.uuid,
+            username=user_info.username,
         )
 
     def get_default_experiment_parameter(self) -> Optional[ExtensionParameter]:

@@ -7,7 +7,12 @@ const defined_scopes = {
     EXPERIMENT_EDIT_ALL: "experiment::edit::all",
     EXPERIMENT_DELETE_OWN: "experiment::delete::own",
     EXPERIMENT_DELETE_ALL: "experiment::delete::all",
-    EXPERIMENT_CREATE_OWN: "experiment::create::own"
+    EXPERIMENT_CREATE_OWN: "experiment::create::own",
+    JOB_VIEW_OWN: "job::view::own",
+    JOB_VIEW_ALL: "job::view::all",
+    JOB_CREATE: "job::create",
+    JOB_CANCEL_OWN: "job::cancel::own",
+    JOB_CANCEL_ALL: "job::cancel::all"
 }
 
 export function isUserAbleToEditExperiment(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {

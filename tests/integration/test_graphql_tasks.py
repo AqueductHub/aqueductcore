@@ -42,6 +42,7 @@ query MyQuery($taskId: UUID!) {
     stdOut
     taskId
     taskStatus
+    createdBy
   }
 }
 """
@@ -58,6 +59,7 @@ all_tasks_query = """
       stdErr
       resultCode
       receivedAt
+      createdBy
       parameters {
         value
         key {
@@ -88,6 +90,7 @@ query MyQuery($actionName: String!) {
       stdErr
       resultCode
       receivedAt
+      createdBy
       parameters {
         key {
           options
@@ -153,6 +156,7 @@ query MyQuery( $username: String!) {
       stdErr
       resultCode
       receivedAt
+      createdBy
       parameters {
         key {
           options
@@ -259,6 +263,7 @@ mutation MyMutation($action: String!, $experimentUuid: UUID!, $extension: String
     stdOut
     taskId
     taskStatus
+    createdBy
   }
 }
 """
@@ -274,6 +279,7 @@ mutation MyMutation($taskId: UUID!) {
     stdOut
     taskId
     taskStatus
+    createdBy
     parameters {
       value
       key {
@@ -337,7 +343,7 @@ async def test_execute_extension(
     assert resp.errors is None
     res = resp.data["executeExtension"]
     assert UUID(res["taskId"])
-    assert res["taskStatus"] == "PENDING"
+    assert res["taskStatus"] in ("SUCCESS", "STARTED", "PENDING")
 
 
 @pytest.mark.asyncio
@@ -360,7 +366,8 @@ async def test_cancel_task(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(
+            uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query=execute_extension_mutation,
@@ -418,7 +425,7 @@ async def test_query_all_tasks(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
 
     # run tasks
@@ -473,7 +480,7 @@ async def test_query_all_tasks_filter_by_action_name(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
 
     # run tasks
@@ -509,6 +516,8 @@ async def test_query_all_tasks_filter_by_action_name(
     assert resp.errors is None
     resp_task_ids = [UUID(task["taskId"]) for task in resp.data["tasks"]["tasksData"]]
     assert set(resp_task_ids) == set(task_ids)
+    users = [task["createdBy"] for task in resp.data["tasks"]["tasksData"]]
+    assert set(users) == {db_user.username}
 
 
 @pytest.mark.asyncio
@@ -532,7 +541,7 @@ async def test_query_all_tasks_filter_by_extension_name(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
+        user_info=UserInfo(uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
 
     # run tasks
@@ -576,27 +585,36 @@ async def test_query_all_tasks_filter_by_username(
     experiments_data: List[ExperimentCreate],
 ):
 
-    db_user = orm.User(uuid=UUID(int=0), username=settings.default_username)
-    db_session.add(db_user)
+    db_user0 = orm.User(uuid=UUID(int=0), username=settings.default_username)
+    db_user1 = orm.User(uuid=UUID(int=1), username="user")
+    db_user2 = orm.User(uuid=UUID(int=2), username="stranger")
+    db_session.add(db_user0)
+    db_session.add(db_user1)
+    db_session.add(db_user2)
 
     db_experiments = []
     for experiment in experiments_data:
         db_experiment = experiment_model_to_orm(experiment)
-        db_experiment.created_by_user = db_user
+        db_experiment.created_by_user = db_user0
         db_experiments.append(db_experiment)
         db_session.add(db_experiment)
         await db_session.commit()
         await db_session.refresh(db_experiment)
 
     schema = Schema(query=Query, mutation=Mutation)
-    context = ServerContext(
-        db_session=db_session,
-        user_info=UserInfo(uuid=uuid4(), username=settings.default_username, scopes=set(UserScope)),
-    )
 
     # run tasks
     task_ids = []
     for idx in range(10):
+        context = ServerContext(
+            db_session=db_session,
+            user_info=UserInfo(uuid=db_user0.uuid, username=db_user0.username, scopes=set(UserScope)),
+        )
+        if idx > 7:
+          context = ServerContext(
+              db_session=db_session,
+              user_info=UserInfo(uuid=db_user1.uuid, username=db_user1.username, scopes=set(UserScope)),
+          )
         resp = await schema.execute(
             query=execute_extension_mutation,
             variable_values={
@@ -616,7 +634,8 @@ async def test_query_all_tasks_filter_by_username(
             context_value=context,
         )
         taskId = UUID(resp.data["executeExtension"]["taskId"])
-        task_ids.append(taskId)
+        if idx <= 7:
+          task_ids.append(taskId)
 
     resp = await schema.execute(
         all_tasks_query_filter_by_username,

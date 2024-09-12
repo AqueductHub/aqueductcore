@@ -16,8 +16,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from aqueductcore.backend.context import UserInfo, UserScope
-from aqueductcore.backend.errors import AQDDBTaskNonExisting
+from aqueductcore.backend.context import UserInfo
+from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
 from aqueductcore.backend.services.utils import task_orm_to_model
@@ -87,11 +87,11 @@ def run_executable(
     )
 
 
-async def _update_task_info(task_id: str, wait=True) -> TaskProcessExecutionResult:
+async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionResult:
     """Updates information about a task. Waits until ready if asked."""
     task = AsyncResult(task_id)
     if wait:
-        if not task.ready():
+        while not task.ready():
             await sleep(WAITING_TIME)
 
     task_info = TaskProcessExecutionResult(
@@ -146,19 +146,30 @@ async def revoke_task(
     """Cancel the task and update the status."""
 
     statement = (
-        select(orm.Task).options(joinedload(orm.Task.experiment)).where(orm.Task.task_id == task_id)
+        select(orm.Task, orm.User, orm.Experiment)
+        .join(orm.User, orm.Task.created_by_user)
+        .join(orm.Experiment, orm.Task.experiment)
+        .filter(orm.Task.task_id == task_id)
     )
 
-    if UserScope.EXPERIMENT_EDIT_ALL not in user_info.scopes:
-        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
-
+    # TODO: this is not specified in ERD
+    # but it implies, as user cannot launch a task
+    # without edit permission.
+    if not user_info.can_edit_any_experiment():
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
     result = await db_session.execute(statement)
 
-    db_task = result.scalars().first()
-    if db_task is None:
+    db_tuple = result.first()
+    if db_tuple is None:
         raise AQDDBTaskNonExisting(
-            "DB query failed due to non-existing task with the specified task id."
+            "DB query failed as task does not exist, or user has no access to cancel it."
         )
+    db_task, db_user, _ = db_tuple
+    created_by_user_id = UUID(str(db_task.created_by))
+    if not user_info.can_view_experiment_owned_by(created_by_user_id):
+        raise AQDPermission("User has no permission access experiment associated with the tasks.")
+    if not user_info.can_cancel_task_owned_by(created_by_user_id):
+        raise AQDPermission("User has no permission to cancel tasks.")
 
     # note: SIGINT does not lead to task abort. If you send
     # KeyboardInterupt (SIGINT), it will not stop, and the
@@ -168,7 +179,9 @@ async def revoke_task(
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
     return await task_orm_to_model(
-        value=db_task, task_info=task_info, experiment_uuid=db_task.experiment.uuid
+        value=db_task, task_info=task_info,
+        experiment_uuid=db_task.experiment_id,
+        username=db_user.username,
     )
 
 
@@ -183,8 +196,18 @@ async def get_task_by_uuid(
         .where(orm.Task.task_id == str(task_id))
     )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
+    # experiment should be visible
+    if not user_info.can_view_any_experiment():
         statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
+
+    # if only own tasks visible
+    if not user_info.can_view_any_task():
+        statement = statement.filter(orm.Task.created_by == user_info.uuid)
+
+    # cannot view any tasks
+    if not user_info.can_view_task_owned_by(user_info.uuid):
+        raise AQDPermission("User has no permission to view tasks")
+    # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)
 
@@ -209,25 +232,39 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
     end_date: Optional[datetime] = None,
     extension_name: Optional[str] = None,
     action_name: Optional[str] = None,
+    username: Optional[str] = None,
     experiment_uuid: Optional[UUID] = None,
     order_by_creation_date: bool = True,
 ) -> List[TaskRead]:
     """Get list of all tasks."""
-    statement = select(orm.Task).options(joinedload(orm.Task.experiment))
+    statement = (
+        select(orm.Task, orm.User)
+            .join(orm.User, orm.Task.created_by_user)
+            .join(orm.Experiment, orm.Task.experiment)
+    )
 
-    if UserScope.EXPERIMENT_VIEW_ALL not in user_info.scopes:
-        statement = statement.join(orm.Experiment).filter(
+    if not user_info.can_view_any_experiment():
+        statement = statement.filter(
             orm.Experiment.created_by == user_info.uuid
         )
+    if not user_info.can_view_any_task():
+        statement = statement.filter(orm.Task.created_by == user_info.uuid)
+
+    # cannot view any tasks
+    if not user_info.can_view_task_owned_by(user_info.uuid):
+        raise AQDPermission("User has no permission to view any tasks.")
 
     if experiment_uuid is not None:
-        statement = statement.join(orm.Experiment).filter(orm.Experiment.uuid == experiment_uuid)
+        statement = statement.filter(orm.Experiment.uuid == experiment_uuid)
 
     if action_name is not None:
         statement = statement.filter(orm.Task.action_name == action_name)
 
     if extension_name is not None:
         statement = statement.filter(orm.Task.extension_name == extension_name)
+
+    if username is not None:
+        statement = statement.filter(orm.User.username == username)
 
     utc_start_date = start_date.astimezone(timezone.utc) if start_date else None
     utc_end_date = end_date.astimezone(timezone.utc) if end_date else None
@@ -245,12 +282,12 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
 
     tasks_list = []
 
-    for item in result.unique().scalars().all():
+    for item, _ in result.unique().all():
         task_info = await _update_task_info(task_id=item.task_id, wait=False)
-
         tasks_list.append(
             await task_orm_to_model(
-                value=item, task_info=task_info, experiment_uuid=item.experiment.uuid
+                value=item, task_info=task_info,
+                experiment_uuid=item.experiment.uuid,
             )
         )
     return tasks_list

@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from re import compile as recompile
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
@@ -16,13 +16,20 @@ from aqueductcore.backend.models.task import (
     TaskParamList,
     TaskProcessExecutionResult,
     TaskRead,
+    TaskCreate,
 )
 
 
 async def task_orm_to_model(
-    value: orm.Task, task_info: TaskProcessExecutionResult, experiment_uuid: UUID
+    value: orm.Task,
+    task_info: TaskProcessExecutionResult,
+    experiment_uuid: UUID,
+    username: Optional[str] = None,
 ) -> TaskRead:
     """Convert ORM Experiment to Pydantic Model"""
+    if username is None:
+        username = value.created_by_user.username
+
     task = TaskRead(
         task_id=value.task_id,
         experiment_uuid=experiment_uuid,
@@ -37,9 +44,29 @@ async def task_orm_to_model(
             TaskParamList.model_validate_json(value.parameters) if value.parameters else None
         ),
         result_code=task_info.result_code,
+        created_by=UUID(str(value.created_by)),
+        created_by_username=username,
     )
 
     return task
+
+
+def task_model_to_orm(
+    value: TaskCreate,
+) -> orm.Task:
+    """Convert ORM Experiment to Pydantic Model"""
+    return orm.Task(
+        task_id=value.task_id,
+        action_name=value.action_name,
+        extension_name=value.extension_name,
+        parameters=(
+            value.parameters.model_dump_json() if value.parameters else None
+        ),
+        created_by=value.created_by,
+        experiment_id=value.experiment_uuid,
+        status=value.status,
+        created_at=value.received_at,
+    )
 
 
 async def experiment_orm_to_model(value: orm.Experiment) -> ExperimentRead:
