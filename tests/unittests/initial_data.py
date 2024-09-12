@@ -2,10 +2,13 @@ from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from aqueductcore.backend.models import orm
-
 from aqueductcore.backend.models.experiment import ExperimentCreate, TagCreate
 from aqueductcore.backend.models.task import (
-    ExtensionParameterBase, SupportedTypes, TaskCreate, TaskParamList, TaskParam
+    ExtensionParameterBase,
+    SupportedTypes,
+    TaskCreate,
+    TaskParam,
+    TaskParamList,
 )
 
 user_uuid = uuid4()
@@ -319,12 +322,11 @@ task_data = [
                         name="experiment",
                         description="123",
                         data_type=SupportedTypes.EXPERIMENT,
-                    )
+                    ),
                 )
             ]
         ),
         result_code=0,
-        status="SUCCESS",
         received_at=datetime.now(),
         ended_at=datetime.now(),
         created_by=user_data[i % len(user_data)].uuid,
@@ -332,7 +334,7 @@ task_data = [
     )
     for i, experiment in enumerate(experiment_data)
 ] + [
-     TaskCreate(
+    TaskCreate(
         task_id=str(UUID(int=1100 + i)),
         experiment_uuid=experiment.uuid,
         action_name="dummy action",
@@ -345,12 +347,11 @@ task_data = [
                         name="experiment",
                         description="123",
                         data_type=SupportedTypes.EXPERIMENT,
-                    )
+                    ),
                 )
             ]
         ),
         result_code=0,
-        status="SUCCESS",
         received_at=datetime.now(),
         ended_at=datetime.now(),
         created_by=user_data[(3 - i) % len(user_data)].uuid,
