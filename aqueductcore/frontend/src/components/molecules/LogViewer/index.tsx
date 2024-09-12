@@ -1,7 +1,9 @@
 import { Box, styled } from "@mui/material";
 
+import { logArray } from "types/componentTypes";
+
 interface LogViewerProps {
-    log: string
+    log: logArray
 }
 
 const LogViewerBox = styled(Box)`
@@ -15,12 +17,14 @@ const LogText = styled("pre")`
     font-family: monospace;
 `;
 
-const prettyPrint = (log: string) => {
-    return log;
-  };
+const prettyPrint = (log: LogViewerProps['log']) => {
+    return log.map(logItem => (
+        `${logItem.label}: \t\t ${logItem.value} \n`
+    ))
+};
 
 
-function LogViewer ({log}: LogViewerProps) {
+function LogViewer({ log }: LogViewerProps) {
     return (
         <LogViewerBox>
             <LogText>{prettyPrint(log)}</LogText>

@@ -26,6 +26,7 @@ import { executeExtension_mock } from "__mocks__/mutations/extension/executeExte
 import { getUserInformation_mock } from "__mocks__/queries/user/getUserInformation";
 import { getAllTags_mock } from "__mocks__/queries/experiment/getAllTagsMock";
 import { getAllTasks_mock } from "__mocks__/queries/tasks/getAllTasks";
+import { getTask_mock } from "__mocks__/queries/tasks/getTask";
 import { ApolloOptions } from "constants/apolloOptions";
 
 interface AppContextAQDMockProps {
@@ -51,6 +52,7 @@ interface AppContextAQDMockProps {
   executeExtension_mockMockMode?: keyof typeof executeExtension_mock;
   //Tasks
   getAllTasks_mockMockMode?: keyof typeof getAllTasks_mock
+  getTask_mockMockMode?: keyof typeof getTask_mock
   //Others
   children: PropsWithChildren["children"];
   memoryRouterProps?: MemoryRouterProps
@@ -80,6 +82,7 @@ function AppContextAQDMock({
   executeExtension_mockMockMode = "success",
   // Tasks
   getAllTasks_mockMockMode = "success",
+  getTask_mockMockMode = "success",
   //Others
   memoryRouterProps,
   browserRouter,
@@ -136,7 +139,8 @@ function AppContextAQDMock({
     ...getAllExtensions_mock[getAllExtensions_mockMockMode],
     ...executeExtension_mock[executeExtension_mockMockMode],
     //Tasks
-    ...getAllTasks_mock[getAllTasks_mockMockMode]
+    ...getAllTasks_mock[getAllTasks_mockMockMode],
+    ...getTask_mock[getTask_mockMockMode]
   ];
 
   const cache = new InMemoryCache({ ...ApolloOptions, addTypename: false })

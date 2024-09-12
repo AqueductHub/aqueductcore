@@ -12,6 +12,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": 1,
         "stdOut": "Some text 2",
         "stdErr": null,
+        "taskId": "caab6b1e-d275-4bb3-9803-967d03eb843d",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -27,6 +28,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": null,
         "stdOut": null,
         "stdErr": "Error!",
+        "taskId": "2640eb24-5d99-493c-8a44-5ade9df8769a",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -42,6 +44,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": null,
         "stdOut": null,
         "stdErr": null,
+        "taskId": "9aec85cc-032a-4daf-b0f2-67d04d25455c",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -49,3 +52,102 @@ export const TasksDataMock: TaskType[] = [
         }
     }
 ]
+export const TaskParams = [
+    {
+        "key": {
+            "dataType": "str",
+            "name": "var1",
+            "displayName": null,
+            "defaultValue": "1",
+            "description": "variable 1",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "1",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "int",
+            "name": "var2",
+            "displayName": "some display name",
+            "defaultValue": null,
+            "description": "variable 2",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "2",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "float",
+            "name": "var3",
+            "displayName": null,
+            "defaultValue": null,
+            "description": "variable 3",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "3",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "experiment",
+            "name": "var4",
+            "displayName": null,
+            "defaultValue": null,
+            "description": "variable 4",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "240812-50",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "textarea",
+            "name": "var5",
+            "displayName": null,
+            "defaultValue": null,
+            "description": "variable 5 multiline",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "4",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "bool",
+            "name": "var6",
+            "displayName": null,
+            "defaultValue": "1",
+            "description": "boolean variable",
+            "options": null,
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "1",
+        "__typename": "KeyValuePair"
+    },
+    {
+        "key": {
+            "dataType": "select",
+            "name": "var7",
+            "displayName": null,
+            "defaultValue": "string three",
+            "description": "select / combobox",
+            "options": [
+                "string1",
+                "string2",
+                "string three",
+                "string4"
+            ],
+            "__typename": "ExtensionParameterType"
+        },
+        "value": "string three",
+        "__typename": "KeyValuePair"
+    }
+]
+export const SampleTaskId = TasksDataMock[0].taskId

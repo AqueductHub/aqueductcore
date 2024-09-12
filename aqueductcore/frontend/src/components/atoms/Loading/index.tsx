@@ -7,7 +7,18 @@ const Container = styled("div")`
   top: -124px;
   position: relative;
 `;
-export const Loading = () => {
+const ContainerGlobal = styled("div")`
+  width: calc(100% + 24px);
+  left: -24px;
+  top: 0px;
+  position: absolute;
+`;
+export const Loading = ({ isGlobal }: { isGlobal?: boolean }) => {
+  if (isGlobal) return (
+    <ContainerGlobal>
+      <LinearProgress color="primary" />
+    </ContainerGlobal>
+  )
   return (
     <Container>
       <LinearProgress color="primary" />
