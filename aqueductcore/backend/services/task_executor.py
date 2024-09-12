@@ -179,7 +179,8 @@ async def revoke_task(
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
     return await task_orm_to_model(
-        value=db_task, task_info=task_info,
+        value=db_task,
+        task_info=task_info,
         experiment_uuid=db_task.experiment_id,
         username=db_user.username,
     )
@@ -239,14 +240,12 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
     """Get list of all tasks."""
     statement = (
         select(orm.Task, orm.User)
-            .join(orm.User, orm.Task.created_by_user)
-            .join(orm.Experiment, orm.Task.experiment)
+        .options(joinedload(orm.Task.created_by_user))
+        .options(joinedload(orm.Task.experiment))
     )
 
     if not user_info.can_view_any_experiment():
-        statement = statement.filter(
-            orm.Experiment.created_by == user_info.uuid
-        )
+        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
     if not user_info.can_view_any_task():
         statement = statement.filter(orm.Task.created_by == user_info.uuid)
 
@@ -286,7 +285,8 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
         task_info = await _update_task_info(task_id=item.task_id, wait=False)
         tasks_list.append(
             await task_orm_to_model(
-                value=item, task_info=task_info,
+                value=item,
+                task_info=task_info,
                 experiment_uuid=item.experiment.uuid,
             )
         )
