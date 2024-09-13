@@ -1,4 +1,4 @@
-import { Box, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
+import { Box, Button, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
@@ -59,6 +59,11 @@ const HeaderRightIcon = styled(ChevronRightIcon)`
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
+`;
+
+const CancelTaskButton = styled(Button)`
+    background-color: transparent;
+    margin-right: ${(props) => props.theme.spacing(2)};
 `;
 
 const ExperimentDetailsTitle = styled(Typography)`
@@ -226,16 +231,23 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                     </Grid>
                 </ModalHeader>
                 <ModalMain sx={{ pt: 2, pl: 2, pr: 2 }}>
-                    <List>
-                        <ListItem>
-                            <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
-                            <ExperimentDetailsContent>admin</ExperimentDetailsContent>
-                        </ListItem>
-                        <ListItem>
-                            <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
-                            <ExperimentDetailsContent>{dateFormatter(new Date(task.receivedAt))}</ExperimentDetailsContent>
-                        </ListItem>
-                    </List>
+                    <Grid justifyContent="space-between" container>
+                        <Grid item>
+                            <List>
+                                <ListItem>
+                                    <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
+                                    <ExperimentDetailsContent>admin</ExperimentDetailsContent>
+                                </ListItem>
+                                <ListItem>
+                                    <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
+                                    <ExperimentDetailsContent>{dateFormatter(new Date(task.receivedAt))}</ExperimentDetailsContent>
+                                </ListItem>
+                            </List>
+                        </Grid>
+                        <Grid item>
+                            <CancelTaskButton variant="outlined" size="small" color="error">Cancel</CancelTaskButton>
+                        </Grid>
+                    </Grid>
                     <TabsBox
                         sx={{
                             borderBottom: 1,
