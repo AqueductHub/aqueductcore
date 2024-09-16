@@ -18,10 +18,10 @@ test("cancel button should not get rendered for failed task", async () => {
     expect(cancelTaskButton).not.toBeInTheDocument();
 });
 
-test("cancel button should not get rendered for failed task", async () => {
+test("cancel button should get rendered for failed task", async () => {
     const { findByText } = render(
         <AppContextAQDMock>
-            <JobDetailsModal isOpen={true} handleClose={mockHandleClose} taskId={SampleTaskId} />
+            <JobDetailsModal isOpen={true} handleClose={mockHandleClose} taskId={PendingTaskId} />
         </AppContextAQDMock>
     );
 
@@ -58,7 +58,7 @@ test("clicking on cancel task button cancels task", async () => {
     });
 });
 
-test.only("clicking on cancel from confirmation modal closes modal", async () => {
+test("clicking on cancel from confirmation modal closes modal", async () => {
     const { queryByText, findByTitle } = render(
         <AppContextAQDMock>
             <JobDetailsModal isOpen={true} handleClose={mockHandleClose} taskId={PendingTaskId} />
