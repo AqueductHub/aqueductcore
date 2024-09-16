@@ -116,8 +116,11 @@ function AppContextAQDMock({
     }),
   });
 
-  // from https://stackoverflow.com/questions/48828759/unit-test-raises-error-because-of-getcontext-is-not-implemented
-  HTMLCanvasElement.prototype.getContext = jest.fn();
+  // Check if it's being rendered in a browser or testing environment
+  if (typeof jest !== "undefined") {
+    // from https://stackoverflow.com/questions/48828759/unit-test-raises-error-because-of-getcontext-is-not-implemented
+    HTMLCanvasElement.prototype.getContext = jest.fn();
+  }
 
   const themeConfig = extendTheme(cssVariableTheme);
   const mocks = [

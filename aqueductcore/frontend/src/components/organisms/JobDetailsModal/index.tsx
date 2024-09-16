@@ -256,7 +256,10 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                             </List>
                         </Grid>
                         <Grid item>
-                            {task.taskStatus in [TaskStatus.Pending, TaskStatus.Received, TaskStatus.Started] &&
+                            {
+                                (task.taskStatus == TaskStatus.Pending ||
+                                task.taskStatus == TaskStatus.Received ||
+                                task.taskStatus == TaskStatus.Started) &&
                                 <CancelTaskButton
                                     variant="outlined"
                                     size="small"

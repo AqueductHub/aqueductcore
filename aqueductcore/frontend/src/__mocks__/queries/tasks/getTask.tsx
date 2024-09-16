@@ -1,5 +1,5 @@
 
-import { SampleTaskId, TaskParams, TasksDataMock } from "__mocks__/TasksDataMock";
+import { PendingTaskId, SampleTaskId, TaskParams, TasksDataMock } from "__mocks__/TasksDataMock";
 import { GET_TASK } from "API/graphql/queries/tasks/getTask";
 
 const request = {
@@ -19,6 +19,23 @@ export const getTask_mock = {
                 data: {
                     task: {
                         ...TasksDataMock.find(task => task.taskId === SampleTaskId),
+                        parameters: TaskParams
+                    }
+                },
+            },
+            maxUsageCount: Number.POSITIVE_INFINITY,
+        },
+        {
+            request: {
+                ...request,
+                variables: {
+                    taskId: PendingTaskId
+                }
+            },
+            result: {
+                data: {
+                    task: {
+                        ...TasksDataMock.find(task => task.taskId === PendingTaskId),
                         parameters: TaskParams
                     }
                 },
