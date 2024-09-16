@@ -146,30 +146,30 @@ async def revoke_task(
     """Cancel the task and update the status."""
 
     statement = (
-        select(orm.Task, orm.User, orm.Experiment)
-        .join(orm.User, orm.Task.created_by_user)
-        .join(orm.Experiment, orm.Task.experiment)
+        select(orm.Task)
+        .options(joinedload(orm.Task.created_by_user))
+        .options(joinedload(orm.Task.experiment))
         .filter(orm.Task.task_id == task_id)
     )
-
-    # TODO: this is not specified in ERD
-    # but it implies, as user cannot launch a task
-    # without edit permission.
-    if not user_info.can_edit_any_experiment():
-        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
     result = await db_session.execute(statement)
 
-    db_tuple = result.first()
-    if db_tuple is None:
+    db_task = result.scalars().first()
+    if db_task is None:
         raise AQDDBTaskNonExisting(
             "DB query failed as task does not exist, or user has no access to cancel it."
         )
-    db_task, db_user, _ = db_tuple
-    created_by_user_id = UUID(str(db_task.created_by))
-    if not user_info.can_view_experiment_owned_by(created_by_user_id):
-        raise AQDPermission("User has no permission access experiment associated with the tasks.")
-    if not user_info.can_cancel_task_owned_by(created_by_user_id):
-        raise AQDPermission("User has no permission to cancel tasks.")
+
+    experiment_user = UUID(str(db_task.experiment.created_by))
+    task_user = UUID(str(db_task.created_by))
+
+    if not user_info.can_edit_experiment_owned_by(experiment_user):
+        raise AQDPermission("User has no permission to edit experiment associated with the tasks.")
+    if not user_info.can_view_experiment_owned_by(experiment_user):
+        raise AQDPermission(
+            "User has no permission to access experiment associated with the tasks."
+    )
+    if not user_info.can_cancel_task_owned_by(task_user):
+        raise AQDPermission("User has no permission to cancel tasks of this user.")
 
     # note: SIGINT does not lead to task abort. If you send
     # KeyboardInterupt (SIGINT), it will not stop, and the
@@ -178,11 +178,12 @@ async def revoke_task(
 
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
+    username = db_task.created_by_user.username
     return await task_orm_to_model(
         value=db_task,
         task_info=task_info,
         experiment_uuid=db_task.experiment_id,
-        username=db_user.username,
+        username=username,
     )
 
 
@@ -194,21 +195,9 @@ async def get_task_by_uuid(
     statement = (
         select(orm.Task)
         .options(joinedload(orm.Task.experiment))
+        .options(joinedload(orm.Task.created_by_user))
         .where(orm.Task.task_id == str(task_id))
     )
-
-    # experiment should be visible
-    if not user_info.can_view_any_experiment():
-        statement = statement.filter(orm.Task.experiment.created_by == user_info.uuid)
-
-    # if only own tasks visible
-    if not user_info.can_view_any_task():
-        statement = statement.filter(orm.Task.created_by == user_info.uuid)
-
-    # cannot view any tasks
-    if not user_info.can_view_task_owned_by(user_info.uuid):
-        raise AQDPermission("User has no permission to view tasks")
-    # TODO: no check for no scopes at all
 
     result = await db_session.execute(statement)
 
@@ -217,6 +206,18 @@ async def get_task_by_uuid(
         raise AQDDBTaskNonExisting(
             "DB query failed due to non-existing task with the specified task id."
         )
+
+    # cannot view this task, based on the user
+    if not user_info.can_view_task_owned_by(UUID(str(db_task.created_by))):
+        raise AQDPermission("User has no permission to see any tasks.")
+    # TODO: no check for no scopes at all
+
+    # experiment should be visible
+    if not user_info.can_view_any_experiment():
+        if db_task.experiment.created_by != user_info.uuid:
+            raise AQDPermission(
+                "User has no permission to see this task."
+            )
 
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
@@ -239,13 +240,11 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
 ) -> List[TaskRead]:
     """Get list of all tasks."""
     statement = (
-        select(orm.Task, orm.User)
+        select(orm.Task)
         .options(joinedload(orm.Task.created_by_user))
         .options(joinedload(orm.Task.experiment))
     )
 
-    if not user_info.can_view_any_experiment():
-        statement = statement.filter(orm.Experiment.created_by == user_info.uuid)
     if not user_info.can_view_any_task():
         statement = statement.filter(orm.Task.created_by == user_info.uuid)
 
@@ -261,9 +260,6 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
 
     if extension_name is not None:
         statement = statement.filter(orm.Task.extension_name == extension_name)
-
-    if username is not None:
-        statement = statement.filter(orm.User.username == username)
 
     utc_start_date = start_date.astimezone(timezone.utc) if start_date else None
     utc_end_date = end_date.astimezone(timezone.utc) if end_date else None
@@ -281,7 +277,14 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
 
     tasks_list = []
 
-    for item, _ in result.unique().all():
+    for item in result.unique().scalars().all():
+        # sql filters fails to apply to a join-loaded collections,
+        # so we post process the result set:
+        if not user_info.can_view_experiment_owned_by(UUID(str(item.experiment.created_by))):
+            continue
+        if username is not None and item.created_by_user.username != username:
+            continue
+
         task_info = await _update_task_info(task_id=item.task_id, wait=False)
         tasks_list.append(
             await task_orm_to_model(
