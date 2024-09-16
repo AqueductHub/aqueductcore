@@ -1,5 +1,6 @@
 import { CANCEL_TASK } from "API/graphql/mutations/extension/cancelTask";
 import { PendingTaskId, SampleTaskId } from "__mocks__/TasksDataMock";
+import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 
 export const cancelTask_mock = {
     success: [
@@ -13,7 +14,7 @@ export const cancelTask_mock = {
             result: {
                 data: {
                     "cancelTask": {
-                        "resultCode": 5,
+                        "resultCode": TaskStatus.Revoked,
                         "__typename": "CancelTaskResult"
                     }
                 }
@@ -29,7 +30,7 @@ export const cancelTask_mock = {
             result: {
                 data: {
                     "cancelTask": {
-                        "resultCode": 5,
+                        "resultCode": TaskStatus.Revoked,
                         "__typename": "CancelTaskResult"
                     }
                 }

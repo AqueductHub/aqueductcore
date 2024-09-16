@@ -25,10 +25,10 @@ import { getExperiment_mock } from "__mocks__/queries/experiment/getExperimentBy
 import { executeExtension_mock } from "__mocks__/mutations/extension/executeExtension";
 import { getUserInformation_mock } from "__mocks__/queries/user/getUserInformation";
 import { getAllTags_mock } from "__mocks__/queries/experiment/getAllTagsMock";
+import { cancelTask_mock } from "__mocks__/mutations/extension/cancelTask";
 import { getAllTasks_mock } from "__mocks__/queries/tasks/getAllTasks";
 import { getTask_mock } from "__mocks__/queries/tasks/getTask";
 import { ApolloOptions } from "constants/apolloOptions";
-import { cancelTask_mock } from "__mocks__/mutations/extension/cancelTask";
 
 interface AppContextAQDMockProps {
   //Experiments
