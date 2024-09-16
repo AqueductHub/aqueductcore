@@ -33,7 +33,8 @@ export const cancelTask_mock = {
                         "__typename": "CancelTaskResult"
                     }
                 }
-            }
+            },
+            maxUsageCount: Number.POSITIVE_INFINITY
         }
     ]
 }
