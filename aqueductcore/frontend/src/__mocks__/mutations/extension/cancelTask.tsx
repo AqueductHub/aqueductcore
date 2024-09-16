@@ -3,7 +3,7 @@ import { TasksDataMock } from "__mocks__/TasksDataMock";
 
 const taskId = TasksDataMock
 
-export const removeTask_mock = {
+export const cancelTask_mock = {
     success: [
         {
             request: {

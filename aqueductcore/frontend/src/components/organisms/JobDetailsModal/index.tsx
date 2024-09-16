@@ -4,12 +4,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
 
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import { useCancelTask } from "API/graphql/mutations/extension/cancelTask";
 import ActionParameters from "components/molecules/ActionParameters";
 import { useGetTask } from "API/graphql/queries/tasks/getTask";
 import LogViewer from "components/molecules/LogViewer";
 import { dateFormatter } from "helper/formatters";
 import { TaskType } from "types/globalTypes";
 import { Loading } from "components/atoms/Loading";
+import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 
 interface JobDetailsModalProps {
     isOpen: boolean
@@ -136,6 +138,7 @@ function TabPanel(props: TabPanelProps) {
 
 function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) {
     const [value, setValue] = useState(0);
+    const { mutate: mutateCancelTask } = useCancelTask();
 
     const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -147,6 +150,14 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         },
         skip: !taskId
     })
+
+    const handleCancelTask = () => {
+        mutateCancelTask({
+            variables: {
+                taskId: taskId
+            }
+        });
+    }
     const task = data?.task
 
     if (loading) return <Loading isGlobal />
@@ -245,7 +256,13 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                             </List>
                         </Grid>
                         <Grid item>
-                            <CancelTaskButton variant="outlined" size="small" color="error">Cancel</CancelTaskButton>
+                            {task.taskStatus in [TaskStatus.Pending, TaskStatus.Received, TaskStatus.Started] &&
+                                <CancelTaskButton
+                                    variant="outlined"
+                                    size="small"
+                                    color="error"
+                                    onClick={handleCancelTask}
+                                >Cancel</CancelTaskButton>}
                         </Grid>
                     </Grid>
                     <TabsBox
