@@ -78,7 +78,7 @@ function ExtensionsList() {
             </div>
             {extensions?.length ? <Popper
                 sx={{
-                    zIndex: 1,
+                    zIndex: 9,
                 }}
                 open={open}
                 anchorEl={anchorRef.current}
