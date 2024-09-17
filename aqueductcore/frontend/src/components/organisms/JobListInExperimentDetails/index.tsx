@@ -4,9 +4,9 @@ import { useState } from "react";
 
 import JobExtensionActionName from "components/molecules/JobListTableCells/JobExtensionActionName";
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import { ExperimentDataType, JobDataType, JobsListColumnsType } from "types/globalTypes";
 import { dateFormatter, jobHistoryTableFormatter } from "helper/formatters";
 import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
-import { JobDataType, JobsListColumnsType } from "types/globalTypes";
 import ExtensionsList from "components/organisms/ExtensionsList";
 import { jobListRowsPerPageOptions } from "constants/constants";
 import JobsListTable from "components/organisms/JobsListTable";
@@ -52,14 +52,19 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
     },
 ];
 
-function JobListInExperimentDetails() {
+function JobListInExperimentDetails({ experimentUuid }: { experimentUuid: ExperimentDataType['uuid'] }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(jobListRowsPerPageOptions[0]);
     const { data, loading, error } = useGetAllTasks({
         variables: {
             offset: page * rowsPerPage,
             limit: rowsPerPage,
-            filters: {},
+            filters: {
+                experiment: {
+                    type: "UUID",
+                    value: experimentUuid
+                }
+            },
         },
         fetchPolicy: "network-only",
     });

@@ -152,7 +152,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
           />
         </Grid>
         <Grid item xs={12} xl={6}>
-          <JobListInExperimentDetails />
+          <JobListInExperimentDetails experimentUuid={experimentDetails.uuid} />
         </Grid>
       </Grid>
     </>
