@@ -1,7 +1,7 @@
+import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { GET_ALL_TASKS } from "API/graphql/queries/tasks/getAllTasks";
-import { TasksDataMock } from "__mocks__/TasksDataMock";
 import { jobListRowsPerPageOptions } from "constants/constants";
-import { selected_experiment } from "../experiment/getExperimentByIdMock";
+import { TasksDataMock } from "__mocks__/TasksDataMock";
 
 const request = {
     query: GET_ALL_TASKS,
