@@ -44,10 +44,10 @@ function ConfirmActionModal({ title, message, warning, open, onClose, handleConf
                 </ConfirmActionAlert>}
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
                     <Grid item>
-                        <Button variant="contained" color="error" onClick={handleConfirmAction}>Confirm Deletion</Button>
+                        <Button variant="contained" color="error" title="confirmAction" onClick={handleConfirmAction}>Confirm Deletion</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" color="neutral" onClick={onClose}>Cancel</Button>
+                        <Button variant="contained" color="neutral" title="closeModal" onClick={onClose}>Cancel</Button>
                     </Grid>
                     <Grid item></Grid>
                 </Grid>

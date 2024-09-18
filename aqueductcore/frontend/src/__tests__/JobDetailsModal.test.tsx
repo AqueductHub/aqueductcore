@@ -47,7 +47,7 @@ test("clicking on cancel task button cancels task", async () => {
         expect(cancelTaskConfirmationModalTitle).toBeInTheDocument();
     });
 
-    const cancelTaskConfirmationButton = await findByTitle(/confirmCancelTask/)
+    const cancelTaskConfirmationButton = await findByTitle(/confirmAction/)
     expect(cancelTaskConfirmationButton).toBeInTheDocument();
 
     await userEvent.click(cancelTaskConfirmationButton);
@@ -69,12 +69,11 @@ test("clicking on cancel from confirmation modal closes modal", async () => {
     expect(cancelTaskButton).toBeInTheDocument();
     
     await userEvent.click(cancelTaskButton);
-    await userEvent.click(cancelTaskButton);
 
-    const cancelTaskConfirmationModalTitle = queryByText(/Are you sure you want to cancel this task ?/)
+    const cancelTaskConfirmationModalTitle = queryByText(/Are you sure you want to cancel this task?/)
     expect(cancelTaskConfirmationModalTitle).toBeInTheDocument();
 
-    const cancelTaskAbortButton = await findByTitle(/abortCancelTask/)
+    const cancelTaskAbortButton = await findByTitle(/closeModal/)
     expect(cancelTaskAbortButton).toBeInTheDocument();
 
     await userEvent.click(cancelTaskAbortButton);
