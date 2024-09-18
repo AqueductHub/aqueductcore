@@ -11,8 +11,6 @@ export const CANCEL_TASK = gql`
             taskId
             resultCode
             taskStatus
-            stdOut
-            stdErr
         }
     }
 `;

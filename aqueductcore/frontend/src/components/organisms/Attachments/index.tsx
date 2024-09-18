@@ -4,9 +4,9 @@ import { Divider, Grid, Typography, styled } from "@mui/material";
 import { ChangeEvent, useContext, useState } from "react";
 
 import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon";
-import DeleteExperimentFileModal from "components/organisms/DeleteExperimentFileModal"
 import { VisuallyHiddenInput } from "components/atoms/sharedStyledComponents/VisuallyHiddenInput";
 import { ExperimentDataType, ExperimentFileType } from "types/globalTypes";
+import ConfirmActionModal from "components/organisms/ConfirmActionModal";
 import { FileSelectStateContext } from "context/FileSelectProvider";
 import useFileUpload from "hooks/useUploadFile";
 import Explorer from "./Explorer";
@@ -79,10 +79,13 @@ function Attachments({ experimentUuid, experimentFiles }: AttachmentProps) {
           >
             Delete
           </BorderedButtonWithIcon>
-          <DeleteExperimentFileModal
+          <ConfirmActionModal
+            title="Delete File"
+            message="Are you sure you want to delete this file?"
+            warning="This action cannot be undone"
             open={isDeleteExperimentFileModalOpen}
             onClose={handleCloseDeleteExperimentFileModal}
-            handleDeleteExperimentFile={handleFileDelete}
+            handleConfirmAction={handleFileDelete}
           />
         </Grid>
       </Grid>
