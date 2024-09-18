@@ -73,7 +73,7 @@ function ExtensionsList() {
                     endIcon={<ArrowDropDownIcon />}
                     title='extensions'
                 >
-                    Extensions
+                    New Job
                 </BorderedButtonWithIcon>
             </div>
             {extensions?.length ? <Popper
