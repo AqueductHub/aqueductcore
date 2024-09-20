@@ -102,6 +102,8 @@ class TasksFilterInput:
     extension_name: Optional[str] = None
     action_name: Optional[str] = None
     experiment: Optional[ExperimentIdentifierInput] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     limit: Optional[int] = None
     offset: Optional[int] = None
 

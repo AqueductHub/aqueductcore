@@ -14,7 +14,7 @@ from celery.result import AsyncResult
 from pydantic import ConfigDict, validate_call
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
@@ -167,7 +167,7 @@ async def revoke_task(
     if not user_info.can_view_experiment_owned_by(experiment_user):
         raise AQDPermission(
             "User has no permission to access experiment associated with the tasks."
-    )
+        )
     if not user_info.can_cancel_task_owned_by(task_user):
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
@@ -215,9 +215,7 @@ async def get_task_by_uuid(
     # experiment should be visible
     if not user_info.can_view_any_experiment():
         if db_task.experiment.created_by != user_info.uuid:
-            raise AQDPermission(
-                "User has no permission to see this task."
-            )
+            raise AQDPermission("User has no permission to see this task.")
 
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
@@ -241,8 +239,10 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
     """Get list of all tasks."""
     statement = (
         select(orm.Task)
-        .options(joinedload(orm.Task.created_by_user))
-        .options(joinedload(orm.Task.experiment))
+        .join(orm.Task.created_by_user)
+        .join(orm.Task.experiment)
+        .options(selectinload(orm.Task.created_by_user))
+        .options(selectinload(orm.Task.experiment))
     )
 
     if not user_info.can_view_any_task():
