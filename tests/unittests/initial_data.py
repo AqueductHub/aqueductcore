@@ -337,8 +337,8 @@ task_data = [
     TaskCreate(
         task_id=str(UUID(int=1100 + i)),
         experiment_uuid=experiment.uuid,
-        action_name="dummy action",
-        extension_name="dummy extension",
+        action_name="dummy action two",
+        extension_name="dummy extension two",
         parameters=TaskParamList(
             params=[
                 TaskParam(
