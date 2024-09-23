@@ -34,7 +34,7 @@ async def get_tasks(
         experiment = filters.experiment
         if str(experiment.type) != "IDType.UUID":  # type: ignore
             raise AQDValidationError(
-                f"Only UUID is supported as experiment identifier in Task filter"
+                "Only UUID is supported as experiment identifier in Task filter"
             )
 
     tasks = await get_all_tasks(
