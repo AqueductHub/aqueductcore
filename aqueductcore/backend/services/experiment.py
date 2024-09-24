@@ -8,6 +8,7 @@ from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
 
+from celery import current_app
 from pydantic import ConfigDict, Field, validate_call
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,6 +24,7 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
+from aqueductcore.backend.services.task_executor import get_all_tasks
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_experiment_uuid_and_eid,
@@ -525,12 +527,25 @@ async def remove_experiment(
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_uuid == experiment_uuid
     )
-
     await db_session.execute(remove_experiment_tag_links_statement)
+
     remove_experiment_statement = delete(orm.Experiment).where(
         orm.Experiment.uuid == experiment_uuid
     )
     await db_session.execute(remove_experiment_statement)
+
+    experiment_tasks = await get_all_tasks(
+        user_info=user_info, db_session=db_session, experiment_uuid=experiment_uuid
+    )
+    for task in experiment_tasks:
+        app = current_app._get_current_object()
+        backend = app.backend
+        backend.delete(task.task_id)
+
+    remove_all_experiment_tasks_statement = delete(orm.Task).where(
+        orm.Task.experiment_id == experiment_uuid
+    )
+    await db_session.execute(remove_all_experiment_tasks_statement)
 
     rmtree(folder_path, ignore_errors=True)
 
