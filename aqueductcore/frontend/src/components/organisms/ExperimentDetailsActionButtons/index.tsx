@@ -9,15 +9,14 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
+import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon"
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { useRemoveExperiment } from "API/graphql/mutations/experiment/removeExperiment";
+import ConfirmActionModal from 'components/organisms/ConfirmActionModal';
 import { isArchived, isFavourite } from "helper/formatters"
 import { ARCHIVED, FAVOURITE } from "constants/constants";
 import { ExperimentDataType } from "types/globalTypes";
-
-import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon"
-import DeleteExperimentModal from "components/organisms/DeleteExperimentModal";
 
 interface ExperimentDetailsActionButtonsProps {
     isEditable?: boolean,
@@ -236,10 +235,13 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
                 >
                     Delete
                 </BorderedButtonWithIcon>
-                <DeleteExperimentModal
+                <ConfirmActionModal
+                    title="Delete Experiment"
+                    message="Are you sure you want to delete this experiment?"
+                    warning="This action cannot be undone."
                     open={isDeleteExperimentModalOpen}
                     onClose={handleCloseDeleteExperimentModal}
-                    handleDeleteExperiment={handleDeleteExperiment}
+                    handleConfirmAction={handleDeleteExperiment}
                 />
             </Grid>}
         </>

@@ -25,6 +25,7 @@ import { getExperiment_mock } from "__mocks__/queries/experiment/getExperimentBy
 import { executeExtension_mock } from "__mocks__/mutations/extension/executeExtension";
 import { getUserInformation_mock } from "__mocks__/queries/user/getUserInformation";
 import { getAllTags_mock } from "__mocks__/queries/experiment/getAllTagsMock";
+import { cancelTask_mock } from "__mocks__/mutations/extension/cancelTask";
 import { getAllTasks_mock } from "__mocks__/queries/tasks/getAllTasks";
 import { getTask_mock } from "__mocks__/queries/tasks/getTask";
 import { ApolloOptions } from "constants/apolloOptions";
@@ -53,6 +54,7 @@ interface AppContextAQDMockProps {
   //Tasks
   getAllTasks_mockMockMode?: keyof typeof getAllTasks_mock
   getTask_mockMockMode?: keyof typeof getTask_mock
+  cancelTask_mockMockMode?: keyof typeof cancelTask_mock
   //Others
   children: PropsWithChildren["children"];
   memoryRouterProps?: MemoryRouterProps
@@ -83,6 +85,7 @@ function AppContextAQDMock({
   // Tasks
   getAllTasks_mockMockMode = "success",
   getTask_mockMockMode = "success",
+  cancelTask_mockMockMode = "success",
   //Others
   memoryRouterProps,
   browserRouter,
@@ -113,8 +116,11 @@ function AppContextAQDMock({
     }),
   });
 
-  // from https://stackoverflow.com/questions/48828759/unit-test-raises-error-because-of-getcontext-is-not-implemented
-  HTMLCanvasElement.prototype.getContext = jest.fn();
+  // Check if it's being rendered in a browser or testing environment
+  if (typeof jest !== "undefined") {
+    // from https://stackoverflow.com/questions/48828759/unit-test-raises-error-because-of-getcontext-is-not-implemented
+    HTMLCanvasElement.prototype.getContext = jest.fn();
+  }
 
   const themeConfig = extendTheme(cssVariableTheme);
   const mocks = [
@@ -140,7 +146,8 @@ function AppContextAQDMock({
     ...executeExtension_mock[executeExtension_mockMockMode],
     //Tasks
     ...getAllTasks_mock[getAllTasks_mockMockMode],
-    ...getTask_mock[getTask_mockMockMode]
+    ...getTask_mock[getTask_mockMockMode],
+    ...cancelTask_mock[cancelTask_mockMockMode]
   ];
 
   const cache = new InMemoryCache({ ...ApolloOptions, addTypename: false })

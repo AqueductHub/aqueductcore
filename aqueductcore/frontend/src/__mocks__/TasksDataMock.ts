@@ -150,4 +150,5 @@ export const TaskParams = [
         "__typename": "KeyValuePair"
     }
 ]
-export const SampleTaskId = TasksDataMock[0].taskId
+export const SampleTaskId = TasksDataMock[0].taskId;
+export const PendingTaskId = TasksDataMock[1].taskId;

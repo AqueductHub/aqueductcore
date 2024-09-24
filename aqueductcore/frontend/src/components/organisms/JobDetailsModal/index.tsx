@@ -1,15 +1,20 @@
-import { Box, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
+import { Box, Button, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
+import toast from "react-hot-toast";
 
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import { useCancelTask } from "API/graphql/mutations/extension/cancelTask";
+import ConfirmActionModal from "components/organisms/ConfirmActionModal";
 import ActionParameters from "components/molecules/ActionParameters";
+import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 import { useGetTask } from "API/graphql/queries/tasks/getTask";
 import LogViewer from "components/molecules/LogViewer";
-import { dateFormatter } from "helper/formatters";
-import { TaskType } from "types/globalTypes";
 import { Loading } from "components/atoms/Loading";
+import { dateFormatter } from "helper/formatters";
+import { client } from "API/apolloClientConfig";
+import { TaskType } from "types/globalTypes";
 
 interface JobDetailsModalProps {
     isOpen: boolean
@@ -59,6 +64,11 @@ const HeaderRightIcon = styled(ChevronRightIcon)`
     vertical-align: top;
     padding: ${(props) => props.theme.spacing(1.25)};
     margin: 0 ${(props) => props.theme.spacing(-0.5)};
+`;
+
+const CancelTaskButton = styled(Button)`
+    background-color: transparent;
+    margin-right: ${(props) => props.theme.spacing(2)};
 `;
 
 const ExperimentDetailsTitle = styled(Typography)`
@@ -131,6 +141,16 @@ function TabPanel(props: TabPanelProps) {
 
 function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) {
     const [value, setValue] = useState(0);
+    const { mutate: mutateCancelTask, loading: loadingCancelTask } = useCancelTask();
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState<boolean>(false);
+    
+    const closeConfirmationModal = () => {
+        setIsConfirmationModalOpen(false);
+    }
+
+    const openConfirmationModal = () => {
+        setIsConfirmationModalOpen(true);
+    }
 
     const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -142,7 +162,30 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         },
         skip: !taskId
     })
+
+    const handleCancelTask = async () => {
+        closeConfirmationModal();
+        await mutateCancelTask({
+            variables: {
+                taskId: taskId
+            },
+            async onCompleted() {
+                toast.success("Task cancelled successfully", {
+                    id: "task_cancelled",
+                });
+                await client.refetchQueries({
+                    include: "active",
+                });
+            },
+            onError() {
+                toast.error("Cancel task failed", {
+                    id: "cancel_error",
+                });
+            }
+        });
+    }
     const task = data?.task
+    const isTaskCancelleable = task?.taskStatus == TaskStatus.Pending || task?.taskStatus == TaskStatus.Received || task?.taskStatus == TaskStatus.Started;
 
     if (loading) return <Loading isGlobal />
     if (!task) return <></>
@@ -226,16 +269,31 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                     </Grid>
                 </ModalHeader>
                 <ModalMain sx={{ pt: 2, pl: 2, pr: 2 }}>
-                    <List>
-                        <ListItem>
-                            <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
-                            <ExperimentDetailsContent>admin</ExperimentDetailsContent>
-                        </ListItem>
-                        <ListItem>
-                            <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
-                            <ExperimentDetailsContent>{dateFormatter(new Date(task.receivedAt))}</ExperimentDetailsContent>
-                        </ListItem>
-                    </List>
+                    <Grid justifyContent="space-between" container>
+                        <Grid item>
+                            <List>
+                                <ListItem>
+                                    <ExperimentDetailsTitle>Created By: </ExperimentDetailsTitle>
+                                    <ExperimentDetailsContent>admin</ExperimentDetailsContent>
+                                </ListItem>
+                                <ListItem>
+                                    <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>
+                                    <ExperimentDetailsContent>{dateFormatter(new Date(task.receivedAt))}</ExperimentDetailsContent>
+                                </ListItem>
+                            </List>
+                        </Grid>
+                        <Grid item>
+                            {isTaskCancelleable ? loadingCancelTask ? <div>loding</div>: <CancelTaskButton
+                                variant="outlined"
+                                size="small"
+                                color="error"
+                                onClick={openConfirmationModal}
+                                title="cancelTask"
+                            >Cancel
+                            </CancelTaskButton> : null
+                            }
+                        </Grid>
+                    </Grid>
                     <TabsBox
                         sx={{
                             borderBottom: 1,
@@ -270,6 +328,13 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                         </Container>
                     </JobDetailsBox>
                 </ModalMain>
+                <ConfirmActionModal
+                    title="Cancel Task"
+                    message="Are you sure you want to cancel this task?"
+                    open={isConfirmationModalOpen}
+                    onClose={closeConfirmationModal}
+                    handleConfirmAction={handleCancelTask}
+                />
             </ModalContainer>
         </Modal>
     );
