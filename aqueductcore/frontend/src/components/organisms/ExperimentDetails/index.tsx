@@ -14,10 +14,10 @@ import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper
 import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/experiment/updateExperiment";
+import JobListInExperimentDetails from "components/organisms/JobListInExperimentDetails";
 import { useGetCurrentUserInfo } from "API/graphql/queries/user/getUserInformation";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
-import ExtensionsList from "components/organisms/ExtensionsList";
 import { ExperimentDataType } from "types/globalTypes";
 
 const BackButton = styled(Button)`
@@ -131,7 +131,6 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
                   <CircularProgress size="1.2rem" sx={{ mr: 5 }} />
                 )}
               </Grid>}
-            <ExtensionsList />
             <ExperimentDetailsActionButtons
               isEditable={isEditable}
               isDeletable={isDeletable}
@@ -144,11 +143,18 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
         experimentDetails={experimentDetails}
         isEditable={isEditable}
       />
-      <ExperimentDescriptionUpdate
-        isEditable={isEditable}
-        experimentDescription={experimentDetails.description ? experimentDetails.description : ""}
-        handleExperimentDescriptionUpdate={handleExperimentDescriptionUpdate}
-      />
+      <Grid container spacing={1}>
+        <Grid item xs={12} xl={6}>
+          <ExperimentDescriptionUpdate
+            isEditable={isEditable}
+            experimentDescription={experimentDetails.description ? experimentDetails.description : ""}
+            handleExperimentDescriptionUpdate={handleExperimentDescriptionUpdate}
+          />
+        </Grid>
+        <Grid item xs={12} xl={6}>
+          <JobListInExperimentDetails experimentUuid={experimentDetails.uuid} />
+        </Grid>
+      </Grid>
     </>
   );
 }

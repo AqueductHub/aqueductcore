@@ -73,12 +73,12 @@ function ExtensionsList() {
                     endIcon={<ArrowDropDownIcon />}
                     title='extensions'
                 >
-                    Extensions
+                    New Job
                 </BorderedButtonWithIcon>
             </div>
             {extensions?.length ? <Popper
                 sx={{
-                    zIndex: 1,
+                    zIndex: 9,
                 }}
                 open={open}
                 anchorEl={anchorRef.current}
