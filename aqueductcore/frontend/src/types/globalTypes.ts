@@ -147,6 +147,7 @@ export type EXECUTE_EXTENSION_TYPE = {
 export type CANCEL_TASK_TYPE = {
   taskId: TaskData['taskId']
   resultCode: TaskData['resultCode']
+  taskStatus: TaskData['taskStatus']
 }
 
 //############### Other types ###############//

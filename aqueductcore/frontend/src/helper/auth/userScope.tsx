@@ -39,3 +39,15 @@ export function isUserAbleToDeleteExperiment(userInfo: UserInfo, createdBy: Expe
     return false
 }
 
+export function isUserAbleToCancelTask(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
+    for (const item of userInfo.scopes) {
+        if (
+            item === defined_scopes.JOB_CANCEL_OWN ||
+            item === defined_scopes.JOB_CANCEL_ALL && userInfo.username === createdBy
+        ) {
+            return true
+        }
+    }
+    return false
+}
+
