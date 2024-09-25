@@ -30,9 +30,10 @@ async def get_tasks(
             f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
         )
 
-    if filters:
+    experiment = None
+    if filters is not None:
         experiment = filters.experiment
-        if str(experiment.type) != "IDType.UUID":  # type: ignore
+        if experiment is not None and experiment.type != "IDType.UUID":
             raise AQDValidationError(
                 "Only UUID is supported as experiment identifier in Task filter"
             )
