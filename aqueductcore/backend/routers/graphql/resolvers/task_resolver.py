@@ -7,7 +7,7 @@ from uuid import UUID
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
-from aqueductcore.backend.routers.graphql.inputs import TasksFilterInput
+from aqueductcore.backend.routers.graphql.inputs import TasksFilterInput, IDType
 from aqueductcore.backend.routers.graphql.types import (
     TaskData,
     Tasks,
@@ -33,7 +33,7 @@ async def get_tasks(
     experiment = None
     if filters is not None:
         experiment = filters.experiment
-        if experiment is not None and experiment.type != "IDType.UUID":
+        if experiment is not None and experiment.type != IDType.UUID:
             raise AQDValidationError(
                 "Only UUID is supported as experiment identifier in Task filter"
             )
