@@ -63,6 +63,15 @@ export function isUserAbleToCancelTask(userInfo: UserInfo, createdBy: Experiment
     return false
 }
 
+export function isUserAbleToCreateTask(userInfo: UserInfo) {
+    for (const item of userInfo.scopes) {
+        if (item === defined_scopes.JOB_CREATE) {
+            return true
+        }
+    }
+    return false
+}
+
 export function isUserAbleToCancelTask(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
     for (const item of userInfo.scopes) {
         if (
