@@ -190,10 +190,9 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         });
     }
     const task = data?.task
-    const isTaskCancellableByUser = Boolean(userInfo && isUserAbleToCancelTask(userInfo.getCurrentUserInfo, 'admin'))
+    const isTaskCancellableByUser = Boolean(userInfo && task && isUserAbleToCancelTask(userInfo.getCurrentUserInfo, task.createdBy))
     const isTaskInCancellableState = task?.taskStatus == TaskStatus.Pending || task?.taskStatus == TaskStatus.Received || task?.taskStatus == TaskStatus.Started;
     const isTaskCancellable = isTaskCancellableByUser && isTaskInCancellableState
-
     if (loading) return <Loading isGlobal />
     if (!task) return <></>
 

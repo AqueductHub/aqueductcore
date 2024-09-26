@@ -264,6 +264,7 @@ export interface TaskType {
   stdOut: TaskData['stdOut']
   stdErr: TaskData['stdErr']
   taskId: TaskData['taskId']
+  createdBy: TaskData['createdBy']
   experiment: {
     uuid: ExperimentData['uuid']
     title: ExperimentData['title']
