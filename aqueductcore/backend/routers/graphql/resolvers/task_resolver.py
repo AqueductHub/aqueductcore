@@ -30,12 +30,23 @@ async def get_tasks(
             f"Maximum allowed limit for experiments is {MAX_EXPERIMENTS_PER_REQUEST}"
         )
 
+    experiment = None
+    if filters is not None:
+        experiment = filters.experiment
+        if experiment is not None and experiment.type != "IDType.UUID":
+            raise AQDValidationError(
+                "Only UUID is supported as experiment identifier in Task filter"
+            )
+
     tasks = await get_all_tasks(
         user_info=context.user_info,
         db_session=context.db_session,
+        start_date=filters.start_date if filters else None,
+        end_date=filters.end_date if filters else None,
         extension_name=filters.extension_name if filters else None,
         action_name=filters.action_name if filters else None,
         username=filters.username if filters else None,
+        experiment_uuid=experiment.value if experiment else None,  # type: ignore
         order_by_creation_date=True,
     )
     task_nodes = [task_model_to_node(value=item) for item in tasks][offset : offset + limit]
