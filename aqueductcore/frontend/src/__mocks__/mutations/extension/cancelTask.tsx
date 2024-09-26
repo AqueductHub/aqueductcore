@@ -14,7 +14,9 @@ export const cancelTask_mock = {
             result: {
                 data: {
                     "cancelTask": {
-                        "resultCode": TaskStatus.Revoked,
+                        "taskId": "id-0",
+                        "taskStatus": TaskStatus.Revoked,
+                        "resultCode": 0,
                         "__typename": "CancelTaskResult"
                     }
                 }
@@ -30,7 +32,9 @@ export const cancelTask_mock = {
             result: {
                 data: {
                     "cancelTask": {
-                        "resultCode": TaskStatus.Revoked,
+                        "taskId": "id-1",
+                        "taskStatus": TaskStatus.Revoked,
+                        "resultCode": 0,
                         "__typename": "CancelTaskResult"
                     }
                 }

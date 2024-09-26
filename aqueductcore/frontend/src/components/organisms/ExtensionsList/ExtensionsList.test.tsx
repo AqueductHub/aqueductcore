@@ -13,12 +13,12 @@ test("renders ExtensionsList", () => {
 });
 
 test("open extension list", async () => {
-    const { getByTitle, findByText } = render(
+    const { getByText, findByText } = render(
         <AppContextAQDMock>
             <ExtensionsList />
         </AppContextAQDMock>);
 
-    const extensions_button = getByTitle('extensions')
+    const extensions_button = getByText('New Task')
     await userEvent.click(extensions_button)
     const extension_1 = await findByText(ExtensionsDataMock[0].name)
     const extension_2 = await findByText(ExtensionsDataMock[1].name)

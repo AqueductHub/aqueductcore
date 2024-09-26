@@ -16,7 +16,6 @@ export const GET_TASK = gql`
         taskId
         createdBy
         experiment {
-          createdBy
           uuid  
           title
           eid

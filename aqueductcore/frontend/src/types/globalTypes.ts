@@ -202,7 +202,7 @@ export type JobDataType = {
   taskId: TaskType['taskId']
   taskStatus: TaskType['taskStatus'];
   receivedAt: TaskData['receivedAt'];
-  // TODO: Add username
+  createdBy: TaskData['createdBy'];
 };
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;

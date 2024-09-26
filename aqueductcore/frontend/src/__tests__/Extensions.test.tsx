@@ -28,8 +28,8 @@ test("render page extensions with no error", async () => {
 });
 
 test("list of extension in the dropdown when clicked", async () => {
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const { findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     // Check extensions to be listed in the dropdown
@@ -41,8 +41,8 @@ test("list of extension in the dropdown when clicked", async () => {
 
 test("author's name in the modal", async () => {
 
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const { findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     const first_extension = await findByText(ExtensionsDataMock[0].name);
@@ -54,8 +54,8 @@ test("author's name in the modal", async () => {
 
 test("list of actions in the extension", async () => {
 
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const { findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     const first_extension = await findByText(ExtensionsDataMock[0].name);
@@ -70,8 +70,8 @@ test("list of actions in the extension", async () => {
 
 test("click the other action and params should be updated", async () => {
 
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const { findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     const first_extension = await findByText(ExtensionsDataMock[0].name);
@@ -91,8 +91,8 @@ test("click the other action and params should be updated", async () => {
 
 test("data is persistence when switching between functions", async () => {
 
-    const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const { findByText } = render(<ExtensionIncludedComponent />)
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     const firstActionName = ExtensionsDataMock[0].actions[0].name
@@ -128,7 +128,7 @@ test("data is persistence when switching between functions", async () => {
 test.skip("submit the form and success modal", async () => {
 
     const { findByTitle, findByText } = render(<ExtensionIncludedComponent />)
-    const extensionOpenModalButton = await findByTitle("extensions")
+    const extensionOpenModalButton = await findByText("New Task")
     await userEvent.click(extensionOpenModalButton)
 
     const first_extension = await findByText(ExtensionsDataMock[0].name);

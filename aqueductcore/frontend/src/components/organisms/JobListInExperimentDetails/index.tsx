@@ -40,10 +40,10 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
             />
         ),
     },
-    // {
-    //   id: "experiment",
-    //   label: "User",
-    // },
+    {
+        id: "createdBy",
+        label: "User",
+    },
     {
         id: "receivedAt",
         label: "submission Time",

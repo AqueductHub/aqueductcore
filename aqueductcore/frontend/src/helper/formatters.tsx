@@ -40,7 +40,7 @@ export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
       action: task.actionName
     },
     taskStatus: task.taskStatus,
-    // username: task.username,
+    createdBy: task.createdBy,
     receivedAt: task.receivedAt
   }))
 
