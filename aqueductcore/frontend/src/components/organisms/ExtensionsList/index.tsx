@@ -66,7 +66,7 @@ function ExtensionsList() {
             <div
                 ref={anchorRef}
             >
-                <Tooltip title={!isTaskExecutable ? "User has no permission to run a task in this experiment." : 'extensions'}>
+                <Tooltip title={!isTaskExecutable ? "User has no permission to run a task in this experiment." : "extensions"}>
                     <span>
                         <BorderedButtonWithIcon
                             size="small"
