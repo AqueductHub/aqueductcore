@@ -2,14 +2,14 @@ import { Grid, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 
-import JobExtensionActionName from "components/molecules/JobListTableCells/JobExtensionActionName";
-import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
-import { ExperimentDataType, JobDataType, JobsListColumnsType } from "types/globalTypes";
-import { dateFormatter, jobHistoryTableFormatter } from "helper/formatters";
+import TaskExtensionActionName from "components/molecules/TaskListTableCells/TaskExtensionActionName";
+import TaskExtensionStatus from "components/molecules/TaskListTableCells/TaskExtensionStatus";
+import { ExperimentDataType, TaskDataType, TasksListColumnsType } from "types/globalTypes";
+import { dateFormatter, taskHistoryTableFormatter } from "helper/formatters";
 import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
 import ExtensionsList from "components/organisms/ExtensionsList";
-import { jobListRowsPerPageOptions } from "constants/constants";
-import JobsListTable from "components/organisms/JobsListTable";
+import { taskListRowsPerPageOptions } from "constants/constants";
+import TasksListTable from "components/organisms/TasksListTable";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
 
@@ -20,14 +20,14 @@ const Title = styled(Box)`
   margin-top: ${(props) => `${props.theme.spacing(3)}`};
 `;
 
-export const JobsListColumns: readonly JobsListColumnsType[] = [
+export const TasksListColumns: readonly TasksListColumnsType[] = [
     {
         id: "extension",
         label: "Extension",
         format: (extension) => (
-            <JobExtensionActionName
-                name={(extension as JobDataType['extension']).name}
-                action={(extension as JobDataType['extension']).action}
+            <TaskExtensionActionName
+                name={(extension as TaskDataType['extension']).name}
+                action={(extension as TaskDataType['extension']).action}
             />
         ),
     },
@@ -35,8 +35,8 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
         id: "taskStatus",
         label: "Status",
         format: (status) => (
-            <JobExtensionStatus
-                status={status as JobDataType['taskStatus']}
+            <TaskExtensionStatus
+                status={status as TaskDataType['taskStatus']}
             />
         ),
     },
@@ -52,9 +52,9 @@ export const JobsListColumns: readonly JobsListColumnsType[] = [
     },
 ];
 
-function JobListInExperimentDetails({ experimentUuid }: { experimentUuid: ExperimentDataType['uuid'] }) {
+function TaskListInExperimentDetails({ experimentUuid }: { experimentUuid: ExperimentDataType['uuid'] }) {
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(jobListRowsPerPageOptions[0]);
+    const [rowsPerPage, setRowsPerPage] = useState(taskListRowsPerPageOptions[0]);
     const { data, loading, error } = useGetAllTasks({
         variables: {
             offset: page * rowsPerPage,
@@ -87,7 +87,7 @@ function JobListInExperimentDetails({ experimentUuid }: { experimentUuid: Experi
             <Grid container>
                 <Grid item xs={6}>
                     <Box display="flex" justifyContent="flex-start">
-                        <Title>Experiment Jobs</Title>
+                        <Title>Experiment Tasks</Title>
                     </Box>
                 </Grid>
                 <Grid item xs={6} >
@@ -97,9 +97,9 @@ function JobListInExperimentDetails({ experimentUuid }: { experimentUuid: Experi
                 </Grid>
             </Grid>
             <Box sx={{ mt: 2 }}>
-                <JobsListTable
-                    JobRecordsColumns={JobsListColumns}
-                    jobList={jobHistoryTableFormatter(tasks)}
+                <TasksListTable
+                    TaskRecordsColumns={TasksListColumns}
+                    taskList={taskHistoryTableFormatter(tasks)}
                     maxHeight={`calc(100vh - ${tableHeightOffset}px)`}
                     pageInfo={pageInfo}
                 />
@@ -108,4 +108,4 @@ function JobListInExperimentDetails({ experimentUuid }: { experimentUuid: Experi
     );
 }
 
-export default JobListInExperimentDetails;
+export default TaskListInExperimentDetails;

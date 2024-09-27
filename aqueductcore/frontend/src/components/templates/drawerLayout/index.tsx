@@ -63,7 +63,7 @@ export const drawerItems: DrawerItemType[] = [
       { text: "Archived", url: "/aqd/experiments/archived", withSearchParams: true },
     ],
   },
-  { text: "Job History", icon: <FormatListBulletedIcon />, url: "/aqd/job-history" },
+  { text: "Task History", icon: <FormatListBulletedIcon />, url: "/aqd/task-history" },
   { text: "Documentation", icon: <DescriptionIcon />, url: `${process.env.REACT_APP_DOCUMENTATION_LINK}`, openInNewTab: true },
   { text: "Settings", icon: <SettingsIcon />, url: "/settings" },
 ];

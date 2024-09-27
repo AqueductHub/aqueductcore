@@ -1,6 +1,6 @@
 import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { GET_ALL_TASKS } from "API/graphql/queries/tasks/getAllTasks";
-import { jobListRowsPerPageOptions } from "constants/constants";
+import { taskListRowsPerPageOptions } from "constants/constants";
 import { TasksDataMock } from "__mocks__/TasksDataMock";
 
 const request = {
@@ -14,15 +14,15 @@ export const getAllTasks_mock = {
                 ...request,
                 variables: {
                     offset: 0,
-                    limit: jobListRowsPerPageOptions[0],
+                    limit: taskListRowsPerPageOptions[0],
                     filters: {}
                 }
             },
             result: {
                 data: {
                     tasks: {
-                        tasksData: TasksDataMock.slice(0, jobListRowsPerPageOptions[0]),
-                        totalTasksCount: TasksDataMock.slice(0, jobListRowsPerPageOptions[0]).length
+                        tasksData: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]),
+                        totalTasksCount: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]).length
                     }
                 },
             },
@@ -33,7 +33,7 @@ export const getAllTasks_mock = {
                 ...request,
                 variables: {
                     offset: 0,
-                    limit: jobListRowsPerPageOptions[0],
+                    limit: taskListRowsPerPageOptions[0],
                     filters: {
                         experiment: {
                             type: 'UUID',
@@ -45,8 +45,8 @@ export const getAllTasks_mock = {
             result: {
                 data: {
                     tasks: {
-                        tasksData: TasksDataMock.slice(0, jobListRowsPerPageOptions[0]),
-                        totalTasksCount: TasksDataMock.slice(0, jobListRowsPerPageOptions[0]).length
+                        tasksData: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]),
+                        totalTasksCount: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]).length
                     }
                 },
             },

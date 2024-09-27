@@ -7,18 +7,18 @@ import TableRow from "@mui/material/TableRow";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
 
-import { JobDataType, JobsListColumnsType } from "types/globalTypes";
-import JobDetailsModal from "components/organisms/JobDetailsModal";
-import { jobListRowsPerPageOptions } from "constants/constants";
+import { TaskDataType, TasksListColumnsType } from "types/globalTypes";
+import TaskDetailsModal from "components/organisms/TaskDetailsModal";
+import { taskListRowsPerPageOptions } from "constants/constants";
 
-function JobsListTable({
-    JobRecordsColumns,
-    jobList,
+function TasksListTable({
+    TaskRecordsColumns,
+    taskList,
     maxHeight,
     pageInfo,
 }: {
-    JobRecordsColumns: readonly JobsListColumnsType[];
-    jobList: JobDataType[];
+    TaskRecordsColumns: readonly TasksListColumnsType[];
+    taskList: TaskDataType[];
     maxHeight?: string;
     pageInfo: {
         page: number;
@@ -30,11 +30,11 @@ function JobsListTable({
 }) {
     const [showActionId, setShowActionId] = useState("-1");
     const [taskId, setTaskId] = useState();
-    const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
+    const [taskDetailsModalOpen, setTaskDetailsModalOpen] = useState(false);
     const { page, setPage, rowsPerPage, setRowsPerPage, count } = pageInfo;
 
-    const handleCloseJobDetailsModal = () => setJobDetailsModalOpen(false);
-    const handleOpenJobDetailsModal = () => setJobDetailsModalOpen(true);
+    const handleCloseTaskDetailsModal = () => setTaskDetailsModalOpen(false);
+    const handleOpenTaskDetailsModal = () => setTaskDetailsModalOpen(true);
     const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +48,7 @@ function JobsListTable({
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            {JobRecordsColumns.map((column) => (
+                            {TaskRecordsColumns.map((column) => (
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
@@ -60,7 +60,7 @@ function JobsListTable({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {jobList.map((row) => {
+                        {taskList.map((row) => {
                             return (
                                 <TableRow
                                     hover
@@ -72,13 +72,13 @@ function JobsListTable({
                                     }}
                                     onMouseLeave={() => setShowActionId("-1")}
                                     onClick={() => {
-                                        handleOpenJobDetailsModal()
+                                        handleOpenTaskDetailsModal()
                                         setTaskId(row['taskId'])
                                     }
                                     }
                                     sx={{ cursor: "pointer" }}
                                 >
-                                    {JobRecordsColumns.map((column) => {
+                                    {TaskRecordsColumns.map((column) => {
                                         const value = row[column.id];
                                         return (
                                             <TableCell
@@ -109,7 +109,7 @@ function JobsListTable({
                 sx={{
                     borderTop: `1px solid ${grey[300]}`,
                 }}
-                rowsPerPageOptions={jobListRowsPerPageOptions}
+                rowsPerPageOptions={taskListRowsPerPageOptions}
                 component="div"
                 count={count}
                 rowsPerPage={rowsPerPage}
@@ -117,13 +117,13 @@ function JobsListTable({
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            <JobDetailsModal
-                isOpen={jobDetailsModalOpen}
-                handleClose={handleCloseJobDetailsModal}
+            <TaskDetailsModal
+                isOpen={taskDetailsModalOpen}
+                handleClose={handleCloseTaskDetailsModal}
                 taskId={taskId}
             />
         </Paper>
     );
 }
 
-export default JobsListTable;
+export default TasksListTable;

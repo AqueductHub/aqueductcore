@@ -14,7 +14,7 @@ import { isUserAbleToDeleteExperiment, isUserAbleToEditExperiment } from "helper
 import ExperimentDetailsActionButtons from "components/organisms/ExperimentDetailsActionButtons";
 import { ExperimentDescriptionUpdate } from "components/molecules/ExperimentDescription";
 import { useUpdateExperiment } from "API/graphql/mutations/experiment/updateExperiment";
-import JobListInExperimentDetails from "components/organisms/JobListInExperimentDetails";
+import TaskListInExperimentDetails from "components/organisms/TaskListInExperimentDetails";
 import { useGetCurrentUserInfo } from "API/graphql/queries/user/getUserInformation";
 import ExperimentDetailsData from "components/organisms/ExperimentDetailsData";
 import { ExperimentTitleUpdate } from "components/molecules/ExperimentTitle";
@@ -152,7 +152,7 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
           />
         </Grid>
         <Grid item xs={12} xl={6}>
-          <JobListInExperimentDetails experimentUuid={experimentDetails.uuid} />
+          <TaskListInExperimentDetails experimentUuid={experimentDetails.uuid} />
         </Grid>
       </Grid>
     </>

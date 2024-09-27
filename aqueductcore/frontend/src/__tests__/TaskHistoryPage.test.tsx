@@ -1,12 +1,12 @@
 import { render } from "@testing-library/react";
 
 import AppContextAQDMock from "__mocks__/AppContextAQDMock";
-import JobHistoryPage from "pages/JobHistoryPage";
+import TaskHistoryPage from "pages/TaskHistoryPage";
 
-test("render job history page with no error", async () => {
+test("render task history page with no error", async () => {
     render(
         <AppContextAQDMock>
-            <JobHistoryPage />
+            <TaskHistoryPage />
         </AppContextAQDMock>
     )
 });

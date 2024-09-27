@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 
-import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import TaskExtensionStatus from "components/molecules/TaskListTableCells/TaskExtensionStatus";
 import { useGetCurrentUserInfo } from "API/graphql/queries/user/getUserInformation";
 import { useCancelTask } from "API/graphql/mutations/extension/cancelTask";
 import ConfirmActionModal from "components/organisms/ConfirmActionModal";
@@ -18,7 +18,7 @@ import { dateFormatter } from "helper/formatters";
 import { client } from "API/apolloClientConfig";
 import { TaskType } from "types/globalTypes";
 
-interface JobDetailsModalProps {
+interface TaskDetailsModalProps {
     isOpen: boolean
     handleClose: () => void
     taskId: TaskType['taskId']
@@ -103,7 +103,7 @@ const ModalMain = styled(Box)`
     background-color: ${({ theme }) => theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.grey[200]};
 `;
 
-const JobDetailsBox = styled(Box)`
+const TaskDetailsBox = styled(Box)`
     width: calc(100% - ${(props) => props.theme.spacing(8)});
     margin-left: ${(props) => props.theme.spacing(4)};
     margin-top: ${(props) => props.theme.spacing(2)};
@@ -141,7 +141,7 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
-function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) {
+function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps) {
     const [value, setValue] = useState(0);
     const { mutate: mutateCancelTask, loading: loadingCancelTask } = useCancelTask();
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState<boolean>(false);
@@ -196,7 +196,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
     if (loading) return <Loading isGlobal />
     if (!task) return <></>
 
-    const jobRunLog = [
+    const taskRunLog = [
         {
             label: "experiment",
             value: task.experiment.title
@@ -250,7 +250,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
             id: "log",
             title: "Log",
             component: <LogViewer
-                log={jobRunLog}
+                log={taskRunLog}
             />
         }
     ]
@@ -265,7 +265,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                     }}
                 >
                     <Grid item sx={{ display: "flex", alignItems: "center" }}>
-                        <JobExtensionStatus status={task.taskStatus} />
+                        <TaskExtensionStatus status={task.taskStatus} />
                         <ExtensionName>{task.extensionName}</ExtensionName>
                         <HeaderRightIcon />
                         <ActionName>{task.actionName}</ActionName>
@@ -315,7 +315,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                             ))}
                         </Tabs>
                     </TabsBox>
-                    <JobDetailsBox>
+                    <TaskDetailsBox>
                         <Container>
                             {taskDetailsItems.map((item, index) => (
                                 <TabPanel value={value} index={index} key={item.id}>
@@ -332,7 +332,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                                 </TabPanel>
                             ))}
                         </Container>
-                    </JobDetailsBox>
+                    </TaskDetailsBox>
                 </ModalMain>
                 <ConfirmActionModal
                     title="Cancel Task"
@@ -346,4 +346,4 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
     );
 }
 
-export default JobDetailsModal;
+export default TaskDetailsModal;

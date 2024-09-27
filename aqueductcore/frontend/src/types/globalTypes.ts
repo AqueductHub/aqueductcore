@@ -190,7 +190,7 @@ export type ExperimentFileType = {
   path: ExperimentFile["path"];
   modifiedAt: ExperimentFile["modifiedAt"];
 };
-export type JobDataType = {
+export type TaskDataType = {
   experiment: {
     title: ExperimentData['title']
     eid: ExperimentData['eid']
@@ -213,8 +213,8 @@ export interface ExperimentRecordsColumnsType {
   ellipsis?: boolean;
   format?: (value?: unknown) => string | React.ReactNode;
 }
-export interface JobsListColumnsType {
-  id: keyof JobDataType;
+export interface TasksListColumnsType {
+  id: keyof TaskDataType;
   label: string;
   minWidth?: number;
   maxWidth?: number;
