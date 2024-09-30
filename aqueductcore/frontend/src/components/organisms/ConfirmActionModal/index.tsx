@@ -5,6 +5,7 @@ interface confirmationModalProps {
     title: string;
     message: string;
     warning?: string;
+    confirmButtonText?: string
     open: boolean;
     onClose: () => void;
     handleConfirmAction: () => void;
@@ -28,7 +29,7 @@ const ConfirmationModal = styled(Box)`
   padding: ${(props) => props.theme.spacing(4)};
 `;
 
-function ConfirmActionModal({ title, message, warning, open, onClose, handleConfirmAction }: confirmationModalProps) {
+function ConfirmActionModal({ title, message, warning, confirmButtonText, open, onClose, handleConfirmAction }: confirmationModalProps) {
     return (
         <Modal
             open={open}
@@ -44,10 +45,10 @@ function ConfirmActionModal({ title, message, warning, open, onClose, handleConf
                 </ConfirmActionAlert>}
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
                     <Grid item>
-                        <Button variant="contained" color="error" title="confirmAction" onClick={handleConfirmAction}>Confirm Deletion</Button>
+                        <Button variant="contained" color="error" title="confirmAction" onClick={handleConfirmAction}>{confirmButtonText ?? "Confirm Deletion"}</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" color="neutral" title="closeModal" onClick={onClose}>Cancel</Button>
+                        <Button variant="contained" color="neutral" title="closeModal" onClick={onClose}>Close</Button>
                     </Grid>
                     <Grid item></Grid>
                 </Grid>

@@ -337,6 +337,7 @@ function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps
                 <ConfirmActionModal
                     title="Cancel Task"
                     message="Are you sure you want to cancel this task?"
+                    confirmButtonText="Cancel Task"
                     open={isConfirmationModalOpen}
                     onClose={closeConfirmationModal}
                     handleConfirmAction={handleCancelTask}
