@@ -147,6 +147,7 @@ export type EXECUTE_EXTENSION_TYPE = {
 export type CANCEL_TASK_TYPE = {
   taskId: TaskData['taskId']
   resultCode: TaskData['resultCode']
+  taskStatus: TaskData['taskStatus']
 }
 
 //############### Other types ###############//
@@ -201,7 +202,7 @@ export type JobDataType = {
   taskId: TaskType['taskId']
   taskStatus: TaskType['taskStatus'];
   receivedAt: TaskData['receivedAt'];
-  // TODO: Add username
+  createdBy: TaskData['createdBy'];
 };
 export interface ExperimentRecordsColumnsType {
   id: keyof ExperimentsListTableProps;
@@ -263,6 +264,7 @@ export interface TaskType {
   stdOut: TaskData['stdOut']
   stdErr: TaskData['stdErr']
   taskId: TaskData['taskId']
+  createdBy: TaskData['createdBy']
   experiment: {
     uuid: ExperimentData['uuid']
     title: ExperimentData['title']

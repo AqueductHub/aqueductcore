@@ -16,10 +16,11 @@ const defined_scopes = {
 }
 
 export function isUserAbleToEditExperiment(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
-    for (const item of userInfo.scopes) {
+    const isExperimentOwner = userInfo.username === createdBy
+    for (const scope of userInfo.scopes) {
         if (
-            item === defined_scopes.EXPERIMENT_EDIT_ALL ||
-            item === defined_scopes.EXPERIMENT_EDIT_OWN && userInfo.username === createdBy
+            scope === defined_scopes.EXPERIMENT_EDIT_ALL ||
+            (scope === defined_scopes.EXPERIMENT_EDIT_OWN && isExperimentOwner)
         ) {
             return true
         }
@@ -28,10 +29,33 @@ export function isUserAbleToEditExperiment(userInfo: UserInfo, createdBy: Experi
 }
 
 export function isUserAbleToDeleteExperiment(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
-    for (const item of userInfo.scopes) {
+    const isExperimentOwner = userInfo.username === createdBy
+    for (const scope of userInfo.scopes) {
         if (
-            item === defined_scopes.EXPERIMENT_DELETE_ALL ||
-            item === defined_scopes.EXPERIMENT_DELETE_OWN && userInfo.username === createdBy
+            scope === defined_scopes.EXPERIMENT_DELETE_ALL ||
+            (scope === defined_scopes.EXPERIMENT_DELETE_OWN && isExperimentOwner)
+        ) {
+            return true
+        }
+    }
+    return false
+}
+
+export function isUserAbleToCreateTask(userInfo: UserInfo) {
+    for (const scope of userInfo.scopes) {
+        if (scope === defined_scopes.JOB_CREATE) {
+            return true
+        }
+    }
+    return false
+}
+
+export function isUserAbleToCancelTask(userInfo: UserInfo, createdBy: ExperimentData['createdBy']) {
+    const isExperimentOwner = userInfo.username === createdBy
+    for (const scope of userInfo.scopes) {
+        if (
+            scope === defined_scopes.JOB_CANCEL_OWN ||
+            (scope === defined_scopes.JOB_CANCEL_ALL && isExperimentOwner)
         ) {
             return true
         }

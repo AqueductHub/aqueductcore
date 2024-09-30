@@ -5,11 +5,13 @@ import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 
 import JobExtensionStatus from "components/molecules/JobListTableCells/JobExtensionStatus";
+import { useGetCurrentUserInfo } from "API/graphql/queries/user/getUserInformation";
 import { useCancelTask } from "API/graphql/mutations/extension/cancelTask";
 import ConfirmActionModal from "components/organisms/ConfirmActionModal";
 import ActionParameters from "components/molecules/ActionParameters";
 import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
 import { useGetTask } from "API/graphql/queries/tasks/getTask";
+import { isUserAbleToCancelTask } from "helper/auth/userScope";
 import LogViewer from "components/molecules/LogViewer";
 import { Loading } from "components/atoms/Loading";
 import { dateFormatter } from "helper/formatters";
@@ -143,7 +145,8 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
     const [value, setValue] = useState(0);
     const { mutate: mutateCancelTask, loading: loadingCancelTask } = useCancelTask();
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState<boolean>(false);
-    
+    const { data: userInfo } = useGetCurrentUserInfo()
+
     const closeConfirmationModal = () => {
         setIsConfirmationModalOpen(false);
     }
@@ -173,6 +176,8 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                 toast.success("Task cancelled successfully", {
                     id: "task_cancelled",
                 });
+                // TODO: if service workers are down, it shows success! which is wrong, and it should be:
+                // TODO: Task is not cancelled successfully, it might because celery workers are not up and running
                 await client.refetchQueries({
                     include: "active",
                 });
@@ -185,8 +190,9 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
         });
     }
     const task = data?.task
-    const isTaskCancelleable = task?.taskStatus == TaskStatus.Pending || task?.taskStatus == TaskStatus.Received || task?.taskStatus == TaskStatus.Started;
-
+    const isTaskCancellableByUser = Boolean(userInfo && task && isUserAbleToCancelTask(userInfo.getCurrentUserInfo, task.createdBy))
+    const isTaskInCancellableState = task && [TaskStatus.Pending, TaskStatus.Received, TaskStatus.Started].includes(task?.taskStatus)
+    const isTaskCancellable = isTaskCancellableByUser && isTaskInCancellableState
     if (loading) return <Loading isGlobal />
     if (!task) return <></>
 
@@ -283,7 +289,7 @@ function JobDetailsModal({ isOpen, handleClose, taskId }: JobDetailsModalProps) 
                             </List>
                         </Grid>
                         <Grid item>
-                            {isTaskCancelleable ? loadingCancelTask ? <div>loding</div>: <CancelTaskButton
+                            {isTaskCancellable ? loadingCancelTask ? <div>loading</div> : <CancelTaskButton
                                 variant="outlined"
                                 size="small"
                                 color="error"
