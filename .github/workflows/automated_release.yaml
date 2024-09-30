@@ -37,9 +37,9 @@ jobs:
       name: automated-release
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_TOKEN }}
 
       - name: Get current release version and calculate next patch version
         id: next_version_step
