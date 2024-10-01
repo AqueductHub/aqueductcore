@@ -1,7 +1,9 @@
 """Celery task execution."""
 
 import os
+import signal
 import subprocess
+import psutil
 from asyncio import sleep
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,10 +40,26 @@ celery_app = Celery(
 
 celery_app.conf.update(result_extended=True)
 
+extension_process = None
+task_object = None
+
+def _sig_handler(signo, _):
+    if extension_process is not None:
+        extension_process.send_signal(signo)
+        psutil_child_process = psutil.Process(extension_process.pid)
+        for grand_child in psutil_child_process.children(recursive=True):
+            grand_child.send_signal(signo)
+
+    if task_object is not None:
+        task_object.update_state(state='REVOKED')
+        task_object.send_event("task-revoked", terminated=True, signum=signo, expired=False)
+    # We don't re-raise; we assume extension will stop and we
+    # return the code
+
 
 @celery_app.task(bind=True)
 def run_executable(
-    self,  # pylint: disable=unused-argument
+    self,
     extension_directory_name: str,
     shell_script: str,
     **kwargs,
@@ -59,6 +77,8 @@ def run_executable(
     Returns:
         Tuple[int, str, str]: result code, std out, std error.
     """
+    global extension_process, task_object
+    signal.signal(signal.SIGINT, _sig_handler)
     extensions_dir = os.environ.get("EXTENSIONS_DIR_PATH", "")
     if not extensions_dir:
         raise FileNotFoundError("EXTENSIONS_DIR_PATH environment variable should be set.")
@@ -67,6 +87,7 @@ def run_executable(
     myenv = os.environ.copy()
     myenv.update(kwargs)
 
+    extension_process = None
     # TODO: add mechanism to update statuses
     # from inside the process. E.g. with a file
     # extension/.status
@@ -77,7 +98,10 @@ def run_executable(
         stderr=subprocess.PIPE,
         env=myenv,
         cwd=workdir,
+        bufsize=0,
     ) as proc:
+        extension_process = proc
+        task_object = self
         out, err = proc.communicate(timeout=None)
         code = proc.returncode
     return (
@@ -103,8 +127,11 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
     task_result = task.result
 
     if task_result is not None:
-        known_errors = (FileNotFoundError, TaskRevokedError)
-        if isinstance(task_result, known_errors):
+        known_errors = (FileNotFoundError, TaskRevokedError, Exception, KeyboardInterrupt)
+        if isinstance(task_result, KeyboardInterrupt):
+            task_info.std_err = "cancelled"
+            task_info.result_code = signal.SIGINT
+        elif isinstance(task_result, known_errors):
             err = str(task_result)
             task_info.std_err = err
         elif task.ready():
@@ -114,7 +141,6 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
             task_info.std_err = err
         task_info.ended_at = task.date_done
         task_info.kwargs = task.kwargs
-
     return task_info
 
 
@@ -171,12 +197,10 @@ async def revoke_task(
     if not user_info.can_cancel_task_owned_by(task_user):
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
-    # note: SIGINT does not lead to task abort. If you send
-    # KeyboardInterupt (SIGINT), it will not stop, and the
-    # exception does not propagate.
-    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGTERM")
-
+    task = AsyncResult(db_task.task_id)
+    task.revoke(terminate=terminate, signal="SIGINT")
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+    print(task_info)
 
     username = db_task.created_by_user.username
     return await task_orm_to_model(
