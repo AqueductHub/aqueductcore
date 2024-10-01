@@ -41,8 +41,17 @@ function TaskExperimentName({ name, eid }: { name: ExperimentData['title'], eid:
                 <ExperimentEid>{eid}</ExperimentEid>
             </Grid>
             <Grid item>
-                <IconButton size="small" onClick={handleOpenExperimentDetailsPage} title="Open experiment details">
-                    <OpenInNewIcon />
+                <IconButton
+                    size="small"
+                    onClick={handleOpenExperimentDetailsPage}
+                    title="View experiment"
+                    sx={{
+                        ml: 1,
+                        alignItems: "flex-end",
+                        fontSize: '1.2rem'
+                    }}
+                >
+                    <OpenInNewIcon sx={{ fontSize: '1.2rem' }} />
                 </IconButton>
             </Grid>
         </ExperimentNameChip>
