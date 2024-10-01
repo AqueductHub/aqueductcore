@@ -2,7 +2,7 @@ import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 
 import { TaskStatus } from "types/graphql/__GENERATED__/graphql";
-import { JobDataType } from "types/globalTypes";
+import { TaskDataType } from "types/globalTypes";
 
 const ExtensionActionContainer = styled(Box)`
     display: inline-block;
@@ -55,9 +55,9 @@ const StatusCancel = styled(StatusBase)`
     border: 1px solid ${({ theme }) => theme.palette.chip.cancelledBorder};
 `;
 
-function JobExtensionStatus({ status }: { status: JobDataType['taskStatus'] }) {
+function TaskExtensionStatus({ status }: { status: TaskDataType['taskStatus'] }) {
 
-    function handleStatus(status: JobDataType['taskStatus']) {
+    function handleStatus(status: TaskDataType['taskStatus']) {
         switch (status) {
             case TaskStatus.Failure:
                 return <StatusFailed>Failed</StatusFailed>
@@ -83,4 +83,4 @@ function JobExtensionStatus({ status }: { status: JobDataType['taskStatus'] }) {
     );
 }
 
-export default JobExtensionStatus;
+export default TaskExtensionStatus;

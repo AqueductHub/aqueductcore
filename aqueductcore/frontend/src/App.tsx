@@ -8,7 +8,7 @@ import { Toaster } from "react-hot-toast";
 import ExperimentRecordsPage from "pages/ExperimentRecordsPage";
 import ExperimentDetailsPage from "pages/ExperimentDetailsPage";
 import AuthenticationPage from "pages/AuthenticationPage";
-import JobHistoryPage from "pages/JobHistoryPage";
+import TaskHistoryPage from "pages/TaskHistoryPage";
 import SettingsPage from "pages/SettingsPage";
 import DrawerLayout from "components/templates/drawerLayout";
 import { AuthProvider } from "context/AuthProvider";
@@ -48,8 +48,8 @@ function App() {
                   element={<ExperimentDetailsPage />}
                 />
                 <Route
-                  path="/aqd/job-history"
-                  element={<JobHistoryPage />}
+                  path="/aqd/task-history"
+                  element={<TaskHistoryPage />}
                 />
                 <Route
                   path="/settings"

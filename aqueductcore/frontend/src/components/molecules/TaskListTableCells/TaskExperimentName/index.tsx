@@ -21,7 +21,7 @@ const ExperimentEid = styled(Typography)`
     padding: 0 ${(props) => props.theme.spacing(2)};
 `;
 
-function JobExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
+function TaskExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
     return (
         <ExperimentNameChip container>
             <Grid item>
@@ -36,4 +36,4 @@ function JobExperimentName({ name, eid }: { name: ExperimentData['title'], eid: 
     );
 }
 
-export default JobExperimentName;
+export default TaskExperimentName;

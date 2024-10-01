@@ -13,12 +13,12 @@ const ActionName = styled(Typography)`
     font-size: 0.75rem;
 `;
 
-interface JobExtensionActionNameProp {
+interface TaskExtensionActionNameProp {
     name: ExtensionInfo['name'],
     action: ExtensionActionInfo['name']
 }
 
-function JobExtensionActionName({ name, action }: JobExtensionActionNameProp) {
+function TaskExtensionActionName({ name, action }: TaskExtensionActionNameProp) {
     return (
         <ExtensionActionContainer>
             <ExtensionName noWrap>{name}</ExtensionName>
@@ -27,4 +27,4 @@ function JobExtensionActionName({ name, action }: JobExtensionActionNameProp) {
     );
 }
 
-export default JobExtensionActionName;
+export default TaskExtensionActionName;

@@ -1,4 +1,4 @@
-import { ExperimentDataType, JobDataType, TaskType } from "types/globalTypes";
+import { ExperimentDataType, TaskDataType, TaskType } from "types/globalTypes";
 import { actionInExtensionsType } from "types/componentTypes";
 import { Tags } from "types/graphql/__GENERATED__/graphql";
 import { ARCHIVED, FAVOURITE } from "constants/constants";
@@ -28,7 +28,7 @@ export function experimentTableDataFormatter(experimentList: ExperimentDataType[
   });
 }
 
-export function jobHistoryTableFormatter(tasks: TaskType[]): JobDataType[] {
+export function taskHistoryTableFormatter(tasks: TaskType[]): TaskDataType[] {
   const formattedTasks = tasks.map(task => ({
     taskId: task.taskId,
     experiment: {
