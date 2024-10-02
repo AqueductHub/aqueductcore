@@ -1,4 +1,7 @@
-import { Grid, styled, Typography } from "@mui/material";
+import { Grid, IconButton, styled, Typography } from "@mui/material";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { MouseEvent } from 'react';
+
 import { ExperimentData } from "types/graphql/__GENERATED__/graphql";
 
 const ExperimentNameChip = styled(Grid)`
@@ -22,8 +25,13 @@ const ExperimentEid = styled(Typography)`
 `;
 
 function TaskExperimentName({ name, eid }: { name: ExperimentData['title'], eid: ExperimentData['eid'] }) {
+    function handleOpenExperimentDetailsPage(e: MouseEvent) {
+        e.stopPropagation()
+        window.open(`/aqd/experiments/${eid}`)
+    }
+
     return (
-        <ExperimentNameChip container>
+        <ExperimentNameChip container alignItems='center'>
             <Grid item>
                 <ExperimentName noWrap>
                     {name}
@@ -31,6 +39,19 @@ function TaskExperimentName({ name, eid }: { name: ExperimentData['title'], eid:
             </Grid>
             <Grid item>
                 <ExperimentEid>{eid}</ExperimentEid>
+            </Grid>
+            <Grid item>
+                <IconButton
+                    size="small"
+                    onClick={handleOpenExperimentDetailsPage}
+                    title="View experiment"
+                    sx={{
+                        ml: 1,
+                        alignItems: "flex-end"
+                    }}
+                >
+                    <OpenInNewIcon sx={{ fontSize: '1.2rem' }} />
+                </IconButton>
             </Grid>
         </ExperimentNameChip>
     );
