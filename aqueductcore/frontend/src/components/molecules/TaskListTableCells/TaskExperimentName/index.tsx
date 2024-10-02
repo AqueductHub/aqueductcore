@@ -47,8 +47,7 @@ function TaskExperimentName({ name, eid }: { name: ExperimentData['title'], eid:
                     title="View experiment"
                     sx={{
                         ml: 1,
-                        alignItems: "flex-end",
-                        fontSize: '1.2rem'
+                        alignItems: "flex-end"
                     }}
                 >
                     <OpenInNewIcon sx={{ fontSize: '1.2rem' }} />
