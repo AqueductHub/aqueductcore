@@ -10,8 +10,9 @@ from sqlalchemy.exc import IntegrityError
 
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.routers import files, frontend, graphql
-from aqueductcore.backend.session import async_engine
+from aqueductcore.backend.session import async_engine, get_session
 from aqueductcore.backend.settings import settings
+from aqueductcore.backend.services.task_executor import TaskSuccessMonitor
 
 
 @asynccontextmanager
@@ -22,6 +23,8 @@ async def lifespan(app: FastAPI):  # pylint: disable=redefined-outer-name,unused
         # initialise database with relations
         async with async_engine.begin() as conn:
             await conn.run_sync(orm.Base.metadata.create_all)
+        async with get_session() as db_session:
+            TaskSuccessMonitor.start_monitoring_thread(db_session)
     except IntegrityError as error:
         if "already exists" not in str(error):
             raise

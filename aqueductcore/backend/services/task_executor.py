@@ -1,27 +1,34 @@
 """Celery task execution."""
 
+import asyncio
 import os
+import re
 import signal
 import subprocess
-import psutil
 from asyncio import sleep
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional, Tuple
+from threading import Thread
+from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
+import kombu.exceptions
+import psutil
 from celery import Celery
 from celery.backends.base import TaskRevokedError
+from celery.events import EventReceiver
 from celery.result import AsyncResult
+from kombu import Connection
 from pydantic import ConfigDict, validate_call
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
+from aqueductcore.backend.models.task import (TaskProcessExecutionResult,
+                                              TaskRead)
 from aqueductcore.backend.services.utils import task_orm_to_model
 from aqueductcore.backend.settings import settings
 
@@ -40,21 +47,75 @@ celery_app = Celery(
 
 celery_app.conf.update(result_extended=True)
 
+class TaskSuccessMonitor:
+
+    _thread: Optional[Thread] = None
+    monitored_cancelled_tasks: Dict[str, Any] = {}
+    _db_session = None
+
+    @staticmethod
+    def _update_task_results(task_id: str, result_code: int, stdout: str, stderr: str):
+        print(".>>>!!!!>>>")
+        # TODO: persist somewhere to override existing values received from Celery?
+        # Or convince Celery it did not fail?
+
+
+    @staticmethod
+    def _handle_task_succeeded_event(event):
+        event_type = event.get("type", "")
+        if event_type == 'task-succeeded':
+            uuid = event.get("uuid", None)
+            if uuid not in TaskSuccessMonitor.monitored_cancelled_tasks:
+                return
+            else:
+                TaskSuccessMonitor.monitored_cancelled_tasks.pop(uuid)
+                result = event.get("result", None)
+                match = re.findall(r"^\((-?[0-9]+), '(.*)', '(.*)'\)$", result, re.DOTALL)
+                if match:
+                    code, stdout, stderr = match[0]
+                    code = int(code)
+                    if uuid is not None:
+                        TaskSuccessMonitor._update_task_results(uuid, code, stdout, stderr)
+
+    @staticmethod
+    def _task_success_monitor():
+        with Connection(
+            settings.celery_message_queue,
+        ) as conn:
+            # restart if OperationalError only
+            while True:
+                try:
+                    recv = EventReceiver(
+                        channel=conn,
+                        handlers={
+                            "task-succeeded": TaskSuccessMonitor._handle_task_succeeded_event
+                        }
+                    )
+                    recv.capture(limit=None, timeout=None, wakeup=True)
+                except kombu.exceptions.OperationalError:
+                    pass
+
+    @staticmethod
+    def start_monitoring_thread(db_session) -> Thread:
+        TaskSuccessMonitor._db_session = db_session
+        TaskSuccessMonitor._thread = Thread(
+            target=TaskSuccessMonitor._task_success_monitor,
+            daemon=True,  # stops in main function stops
+        )
+        TaskSuccessMonitor._thread.start()
+        print("Monitoring thread started")
+        return TaskSuccessMonitor._thread
+
+
 extension_process = None
 task_object = None
 
-def _sig_handler(signo, _):
+def _worker_signal_handler(signo, _):
     if extension_process is not None:
         extension_process.send_signal(signo)
         psutil_child_process = psutil.Process(extension_process.pid)
         for grand_child in psutil_child_process.children(recursive=True):
             grand_child.send_signal(signo)
-
-    if task_object is not None:
-        task_object.update_state(state='REVOKED')
-        task_object.send_event("task-revoked", terminated=True, signum=signo, expired=False)
-    # We don't re-raise; we assume extension will stop and we
-    # return the code
 
 
 @celery_app.task(bind=True)
@@ -78,7 +139,7 @@ def run_executable(
         Tuple[int, str, str]: result code, std out, std error.
     """
     global extension_process, task_object
-    signal.signal(signal.SIGINT, _sig_handler)
+    signal.signal(signal.SIGINT, _worker_signal_handler)
     extensions_dir = os.environ.get("EXTENSIONS_DIR_PATH", "")
     if not extensions_dir:
         raise FileNotFoundError("EXTENSIONS_DIR_PATH environment variable should be set.")
@@ -129,16 +190,16 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
     if task_result is not None:
         known_errors = (FileNotFoundError, TaskRevokedError, Exception, KeyboardInterrupt)
         if isinstance(task_result, KeyboardInterrupt):
-            task_info.std_err = "cancelled"
-            task_info.result_code = signal.SIGINT
+            task_info.result_code = -signal.SIGINT
+            task_info.std_err = str(task_result)
         elif isinstance(task_result, known_errors):
-            err = str(task_result)
-            task_info.std_err = err
+            task_info.std_err = str(task_result)
         elif task.ready():
-            code, out, err = task_result
-            task_info.result_code = code
-            task_info.std_out = out
-            task_info.std_err = err
+            if len(task_result) == 3:
+                code, out, err = task_result
+                task_info.result_code = code
+                task_info.std_out = out
+                task_info.std_err = err
         task_info.ended_at = task.date_done
         task_info.kwargs = task.kwargs
     return task_info
@@ -198,10 +259,9 @@ async def revoke_task(
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
     task = AsyncResult(db_task.task_id)
+    TaskSuccessMonitor.monitored_cancelled_tasks[task_id] = db_task
     task.revoke(terminate=terminate, signal="SIGINT")
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
-    print(task_info)
-
     username = db_task.created_by_user.username
     return await task_orm_to_model(
         value=db_task,
