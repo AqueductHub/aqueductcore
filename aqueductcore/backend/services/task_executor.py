@@ -11,7 +11,6 @@ from uuid import UUID
 from celery import Celery
 from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
-from celery.states import FAILURE, SUCCESS
 from pydantic import ConfigDict, validate_call
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
