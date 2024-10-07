@@ -1,6 +1,7 @@
 """Celery task execution."""
 
 import os
+import signal
 import subprocess
 from asyncio import sleep
 from datetime import datetime, timezone
@@ -8,6 +9,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 from uuid import UUID
 
+import psutil
 from celery import Celery
 from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
@@ -19,7 +21,8 @@ from sqlalchemy.orm import joinedload, selectinload
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
+from aqueductcore.backend.models.task import (TaskProcessExecutionResult,
+                                              TaskRead)
 from aqueductcore.backend.services.utils import task_orm_to_model
 from aqueductcore.backend.settings import settings
 
@@ -37,11 +40,20 @@ celery_app = Celery(
 
 
 celery_app.conf.update(result_extended=True)
+extension_process = None  # pylint: disable=invalid-name
+
+def _worker_signal_handler(signo, _):
+    global extension_process  # pylint: disable=global-statement
+    if extension_process is not None:
+        psutil_child_process = psutil.Process(extension_process.pid)
+        for grand_child in psutil_child_process.children(recursive=True):
+            grand_child.send_signal(signo)
+        extension_process.send_signal(signo)
 
 
 @celery_app.task(bind=True)
-def run_executable(
-    self,  # pylint: disable=unused-argument
+def run_executable(  # pylint: disable=unused-argument
+    self,
     extension_directory_name: str,
     shell_script: str,
     **kwargs,
@@ -59,6 +71,8 @@ def run_executable(
     Returns:
         Tuple[int, str, str]: result code, std out, std error.
     """
+    global extension_process  # pylint: disable=global-statement
+    signal.signal(signal.SIGINT, _worker_signal_handler)
     extensions_dir = os.environ.get("EXTENSIONS_DIR_PATH", "")
     if not extensions_dir:
         raise FileNotFoundError("EXTENSIONS_DIR_PATH environment variable should be set.")
@@ -78,6 +92,7 @@ def run_executable(
         env=myenv,
         cwd=workdir,
     ) as proc:
+        extension_process = proc
         out, err = proc.communicate(timeout=None)
         code = proc.returncode
     return (
@@ -103,15 +118,22 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
     task_result = task.result
 
     if task_result is not None:
-        known_errors = (FileNotFoundError, TaskRevokedError)
-        if isinstance(task_result, known_errors):
-            err = str(task_result)
-            task_info.std_err = err
+        known_errors = (FileNotFoundError, TaskRevokedError, Exception)
+        if isinstance(task_result, KeyboardInterrupt):
+            # raised an uncaught exception
+            task_info.result_code = -signal.SIGINT
+            task_info.std_err = str(task_result)
+        elif isinstance(task_result, known_errors):
+            task_info.std_err = str(task_result)
         elif task.ready():
-            code, out, err = task_result
-            task_info.result_code = code
-            task_info.std_out = out
-            task_info.std_err = err
+            # in case the result format is incorrect
+            if len(task_result) == 3:
+                code, out, err = task_result
+                task_info.result_code = code
+                task_info.std_out = out
+                task_info.std_err = err
+            else:
+                task_info.std_err = str(task_result)
         task_info.ended_at = task.date_done
         task_info.kwargs = task.kwargs
 
@@ -171,11 +193,7 @@ async def revoke_task(
     if not user_info.can_cancel_task_owned_by(task_user):
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
-    # note: SIGINT does not lead to task abort. If you send
-    # KeyboardInterupt (SIGINT), it will not stop, and the
-    # exception does not propagate.
-    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGTERM")
-
+    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGINT")
     task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
 
     username = db_task.created_by_user.username
