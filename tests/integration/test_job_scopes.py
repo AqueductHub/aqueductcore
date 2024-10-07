@@ -6,16 +6,17 @@ from uuid import UUID
 
 import pytest
 import pytest_asyncio
-
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from aqueductcore.backend.errors import AQDPermission, AQDDBTaskNonExisting
 from aqueductcore.backend.context import UserInfo, UserScope
+from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentCreate
 from aqueductcore.backend.models.task import TaskCreate
 from aqueductcore.backend.services.task_executor import (
-    get_all_tasks, get_task_by_uuid, revoke_task,
+    get_all_tasks,
+    get_task_by_uuid,
+    revoke_task,
 )
 from aqueductcore.backend.services.utils import (
     experiment_model_to_orm,
@@ -171,7 +172,7 @@ async def test_user_can_see_a_task(
             ),
             db_session=my_db_session,
         )
-        assert task.task_id == str(task_id)
+        assert task.uuid == str(task_id)
     else:
         with pytest.raises(AQDPermission):
             await get_task_by_uuid(
@@ -219,7 +220,7 @@ async def test_user_can_cancel_tasks(
                     scopes=scope,
                 ),
                 db_session=my_db_session,
-                task_id=tasks_data[task_number].task_id,
+                task_id=tasks_data[task_number].uuid,
                 terminate=False,
             )
     else:
@@ -230,7 +231,7 @@ async def test_user_can_cancel_tasks(
                 scopes=scope,
             ),
             db_session=my_db_session,
-            task_id=tasks_data[task_number].task_id,
+            task_id=tasks_data[task_number].uuid,
             terminate=False,
         )
-        assert task.task_id == tasks_data[task_number].task_id
+        assert task.uuid == tasks_data[task_number].uuid

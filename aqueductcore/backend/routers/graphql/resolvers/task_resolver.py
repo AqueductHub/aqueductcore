@@ -7,7 +7,7 @@ from uuid import UUID
 
 from aqueductcore.backend.context import ServerContext
 from aqueductcore.backend.errors import AQDValidationError
-from aqueductcore.backend.routers.graphql.inputs import TasksFilterInput, IDType
+from aqueductcore.backend.routers.graphql.inputs import IDType, TasksFilterInput
 from aqueductcore.backend.routers.graphql.types import (
     TaskData,
     Tasks,

@@ -33,7 +33,7 @@ async def cancel_task(context: ServerContext, cancel_task_input: CancelTaskInput
     task = await revoke_task(
         user_info=context.user_info,
         db_session=context.db_session,
-        task_id=str(cancel_task_input.task_id),
+        task_id=str(cancel_task_input.uuid),
         terminate=True,
     )
 

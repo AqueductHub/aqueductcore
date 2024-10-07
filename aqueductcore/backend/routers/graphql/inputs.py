@@ -122,4 +122,4 @@ class ExecuteExtensionInput:
 class CancelTaskInput:
     """Input for cancelling a task"""
 
-    task_id: UUID
+    uuid: UUID

@@ -16,7 +16,7 @@ class TaskProcessExecutionResult(AQDModel):
     result_code: Optional[int] = None
     std_err: Optional[str] = None
     std_out: Optional[str] = None
-    task_id: UUID
+    uuid: UUID
     status: str
     ended_at: Optional[datetime] = None
     kwargs: Optional[Dict] = None
@@ -63,7 +63,7 @@ class TaskParamList(AQDModel):
 class TaskBase(AQDModel):
     """Base model for a task."""
 
-    task_id: str
+    uuid: str
     experiment_uuid: UUID
     extension_name: str
     action_name: str

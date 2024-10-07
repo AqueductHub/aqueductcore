@@ -366,8 +366,7 @@ async def test_cancel_task(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
+        user_info=UserInfo(uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query=execute_extension_mutation,
@@ -608,13 +607,17 @@ async def test_query_all_tasks_filter_by_username(
     for idx in range(10):
         context = ServerContext(
             db_session=db_session,
-            user_info=UserInfo(uuid=db_user0.uuid, username=db_user0.username, scopes=set(UserScope)),
+            user_info=UserInfo(
+                uuid=db_user0.uuid, username=db_user0.username, scopes=set(UserScope)
+            ),
         )
         if idx > 7:
-          context = ServerContext(
-              db_session=db_session,
-              user_info=UserInfo(uuid=db_user1.uuid, username=db_user1.username, scopes=set(UserScope)),
-          )
+            context = ServerContext(
+                db_session=db_session,
+                user_info=UserInfo(
+                    uuid=db_user1.uuid, username=db_user1.username, scopes=set(UserScope)
+                ),
+            )
         resp = await schema.execute(
             query=execute_extension_mutation,
             variable_values={
@@ -635,7 +638,7 @@ async def test_query_all_tasks_filter_by_username(
         )
         taskId = UUID(resp.data["executeExtension"]["taskId"])
         if idx <= 7:
-          task_ids.append(taskId)
+            task_ids.append(taskId)
 
     resp = await schema.execute(
         all_tasks_query_filter_by_username,
