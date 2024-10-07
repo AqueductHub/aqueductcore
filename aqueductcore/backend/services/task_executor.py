@@ -11,6 +11,7 @@ from uuid import UUID
 from celery import Celery
 from celery.backends.base import TaskRevokedError
 from celery.result import AsyncResult
+from celery.states import FAILURE, SUCCESS
 from pydantic import ConfigDict, validate_call
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -80,11 +81,10 @@ def run_executable(
     ) as proc:
         out, err = proc.communicate(timeout=None)
         code = proc.returncode
-    return (
-        code,
-        out.decode("utf-8"),
-        err.decode("utf-8"),
-    )
+        args = (code, out.decode("utf-8"), err.decode("utf-8"))
+        if code != 0:
+            raise ChildProcessError(args)
+    return args
 
 
 async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionResult:
@@ -103,8 +103,15 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
     task_result = task.result
 
     if task_result is not None:
-        known_errors = (FileNotFoundError, TaskRevokedError)
-        if isinstance(task_result, known_errors):
+        known_errors = (FileNotFoundError, TaskRevokedError, AttributeError, Exception)
+        if isinstance(task_result, ChildProcessError):
+            if task_result.args is not None and len(task_result.args) > 0:
+                if len(task_result.args[0]) == 3:
+                    code, out, err = task_result.args[0]
+                    task_info.result_code = code
+                    task_info.std_out = out
+                    task_info.std_err = err
+        elif isinstance(task_result, known_errors):
             err = str(task_result)
             task_info.std_err = err
         elif task.ready():
