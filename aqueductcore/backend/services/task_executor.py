@@ -43,7 +43,7 @@ celery_app.conf.update(result_extended=True)
 extension_process = None  # pylint: disable=invalid-name
 
 def _worker_signal_handler(signo, _):
-    global extension_process  # pylint: disable=global-statement
+    global extension_process  # pylint: disable=global-statement,global-variable-not-assigned
     if extension_process is not None:
         psutil_child_process = psutil.Process(extension_process.pid)
         for grand_child in psutil_child_process.children(recursive=True):
