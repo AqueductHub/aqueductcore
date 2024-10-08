@@ -12,7 +12,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": 1,
         "stdOut": "Some text 2",
         "stdErr": null,
-        "taskId": "caab6b1e-d275-4bb3-9803-967d03eb843d",
+        "uuid": "caab6b1e-d275-4bb3-9803-967d03eb843d",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -28,7 +28,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": null,
         "stdOut": null,
         "stdErr": "Error!",
-        "taskId": "2640eb24-5d99-493c-8a44-5ade9df8769a",
+        "uuid": "2640eb24-5d99-493c-8a44-5ade9df8769a",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -44,7 +44,7 @@ export const TasksDataMock: TaskType[] = [
         "resultCode": null,
         "stdOut": null,
         "stdErr": null,
-        "taskId": "9aec85cc-032a-4daf-b0f2-67d04d25455c",
+        "uuid": "9aec85cc-032a-4daf-b0f2-67d04d25455c",
         "experiment": {
             uuid: ExperimentsDataMock[0].uuid,
             title: ExperimentsDataMock[0].title,
@@ -150,5 +150,5 @@ export const TaskParams = [
         "__typename": "KeyValuePair"
     }
 ]
-export const SampleTaskId = TasksDataMock[0].taskId;
-export const PendingTaskId = TasksDataMock[1].taskId;
+export const SampleTaskId = TasksDataMock[0].uuid;
+export const PendingTaskId = TasksDataMock[1].uuid;

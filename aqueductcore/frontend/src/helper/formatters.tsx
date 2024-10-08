@@ -30,7 +30,7 @@ export function experimentTableDataFormatter(experimentList: ExperimentDataType[
 
 export function taskHistoryTableFormatter(tasks: TaskType[]): TaskDataType[] {
   const formattedTasks = tasks.map(task => ({
-    taskId: task.taskId,
+    taskId: task.uuid,
     experiment: {
       title: task.experiment.title,
       eid: task.experiment.eid

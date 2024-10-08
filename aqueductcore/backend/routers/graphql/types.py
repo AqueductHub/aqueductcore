@@ -221,7 +221,7 @@ class KeyValuePair:
 class TaskData:
     """Full information about the scheduled task."""
 
-    task_id: UUID = strawberry.field(description="Unique identifier of the task.")
+    uuid: UUID = strawberry.field(description="Unique identifier of the task.")
     experiment: ExperimentData = strawberry.field(
         description="Experiment the task is associated with.", resolver=resolve_experiment
     )
@@ -272,7 +272,7 @@ def task_model_to_node(value: TaskRead) -> TaskData:
         ]
 
     task = TaskData(
-        task_id=UUID(value.task_id),
+        uuid=UUID(value.task_id),
         extension_name=value.extension_name,
         action_name=value.action_name,
         task_status=TaskStatus(value.status),
