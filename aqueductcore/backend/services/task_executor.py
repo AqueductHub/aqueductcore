@@ -21,8 +21,7 @@ from sqlalchemy.orm import joinedload, selectinload
 from aqueductcore.backend.context import UserInfo
 from aqueductcore.backend.errors import AQDDBTaskNonExisting, AQDPermission
 from aqueductcore.backend.models import orm
-from aqueductcore.backend.models.task import (TaskProcessExecutionResult,
-                                              TaskRead)
+from aqueductcore.backend.models.task import TaskProcessExecutionResult, TaskRead
 from aqueductcore.backend.services.utils import task_orm_to_model
 from aqueductcore.backend.settings import settings
 
@@ -42,8 +41,9 @@ celery_app = Celery(
 celery_app.conf.update(result_extended=True)
 extension_process = None  # pylint: disable=invalid-name
 
+
 def worker_signal_handler(signo, _):
-    """ Handle SIGINT signal and propagate it to child and grandchild processes. """
+    """Handle SIGINT signal and propagate it to child and grandchild processes."""
     global extension_process  # pylint: disable=global-statement,global-variable-not-assigned
     if extension_process is not None:
         psutil_child_process = psutil.Process(extension_process.pid)
