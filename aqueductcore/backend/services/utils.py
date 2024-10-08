@@ -31,7 +31,7 @@ async def task_orm_to_model(
         username = value.created_by_user.username
 
     task = TaskRead(
-        task_id=value.uuid,
+        uuid=value.uuid,
         experiment_uuid=experiment_uuid,
         extension_name=value.extension_name,
         action_name=value.action_name,
@@ -56,7 +56,7 @@ def task_model_to_orm(
 ) -> orm.Task:
     """Convert ORM Experiment to Pydantic Model"""
     return orm.Task(
-        task_id=value.task_id,
+        uuid=value.uuid,
         action_name=value.action_name,
         extension_name=value.extension_name,
         parameters=(value.parameters.model_dump_json() if value.parameters else None),
@@ -133,9 +133,11 @@ def format_list_human_readable(arr: List[Union[str, int]]) -> str:
 
     if not str_arr:
         return ""
-    elif len(str_arr) == 1:
+
+    if len(str_arr) == 1:
         return str_arr[0]
-    elif len(str_arr) == 2:
+
+    if len(str_arr) == 2:
         return " and ".join(str_arr)
-    else:
-        return f"{', '.join(str_arr[:-1])} and {str_arr[-1]}"
+
+    return f"{', '.join(str_arr[:-1])} and {str_arr[-1]}"
