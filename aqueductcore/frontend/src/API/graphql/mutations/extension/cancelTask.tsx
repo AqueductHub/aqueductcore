@@ -8,7 +8,7 @@ export const CANCEL_TASK = gql`
         $taskId: UUID!
     ) {
         cancelTask(cancelTaskInput: {taskId: $taskId}) {
-            taskId
+            uuid
             resultCode
             taskStatus
         }

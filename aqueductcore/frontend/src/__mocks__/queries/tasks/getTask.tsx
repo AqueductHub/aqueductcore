@@ -18,7 +18,7 @@ export const getTask_mock = {
             result: {
                 data: {
                     task: {
-                        ...TasksDataMock.find(task => task.taskId === SampleTaskId),
+                        ...TasksDataMock.find(task => task.uuid === SampleTaskId),
                         parameters: TaskParams
                     }
                 },
@@ -35,7 +35,7 @@ export const getTask_mock = {
             result: {
                 data: {
                     task: {
-                        ...TasksDataMock.find(task => task.taskId === PendingTaskId),
+                        ...TasksDataMock.find(task => task.uuid === PendingTaskId),
                         parameters: TaskParams
                     }
                 },
