@@ -272,7 +272,7 @@ def task_model_to_node(value: TaskRead) -> TaskData:
         ]
 
     task = TaskData(
-        uuid=UUID(value.task_id),
+        uuid=UUID(value.uuid),
         extension_name=value.extension_name,
         action_name=value.action_name,
         task_status=TaskStatus(value.status),

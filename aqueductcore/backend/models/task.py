@@ -63,7 +63,7 @@ class TaskParamList(AQDModel):
 class TaskBase(AQDModel):
     """Base model for a task."""
 
-    task_id: str
+    uuid: str
     experiment_uuid: UUID
     extension_name: str
     action_name: str
