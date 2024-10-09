@@ -42,7 +42,7 @@ celery_app = Celery(
 celery_app.conf.update(result_extended=True)
 extension_process = None  # pylint: disable=invalid-name
 
-def _worker_signal_handler(signo, _):
+def worker_signal_handler(signo, _):
     global extension_process  # pylint: disable=global-statement,global-variable-not-assigned
     if extension_process is not None:
         psutil_child_process = psutil.Process(extension_process.pid)
@@ -72,7 +72,7 @@ def run_executable(  # pylint: disable=unused-argument
         Tuple[int, str, str]: result code, std out, std error.
     """
     global extension_process  # pylint: disable=global-statement
-    signal.signal(signal.SIGINT, _worker_signal_handler)
+    signal.signal(signal.SIGINT, worker_signal_handler)
     extensions_dir = os.environ.get("EXTENSIONS_DIR_PATH", "")
     if not extensions_dir:
         raise FileNotFoundError("EXTENSIONS_DIR_PATH environment variable should be set.")
@@ -118,12 +118,8 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
     task_result = task.result
 
     if task_result is not None:
-        known_errors = (FileNotFoundError, TaskRevokedError, Exception)
-        if isinstance(task_result, KeyboardInterrupt):
-            # raised an uncaught exception
-            task_info.result_code = -signal.SIGINT
-            task_info.std_err = str(task_result)
-        elif isinstance(task_result, known_errors):
+        known_exceptions = (FileNotFoundError, KeyboardInterrupt, TaskRevokedError, Exception)
+        if isinstance(task_result, known_exceptions):
             task_info.std_err = str(task_result)
         elif task.ready():
             # in case the result format is incorrect
