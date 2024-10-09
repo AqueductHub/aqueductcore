@@ -539,14 +539,6 @@ async def remove_experiment(
     )
     await db_session.execute(remove_experiment_statement)
 
-    experiment_tasks = await get_all_tasks(
-        user_info=user_info, db_session=db_session, experiment_uuid=experiment_uuid
-    )
-    for task in experiment_tasks:
-        app = current_app._get_current_object()  # pylint: disable=W0212
-        backend = app.backend
-        backend.delete(task.uuid)
-
     rmtree(folder_path, ignore_errors=True)
 
     await db_session.commit()
