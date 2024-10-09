@@ -37,7 +37,7 @@ class Task(Base):
     """Task details"""
 
     __tablename__ = "task"
-    task_id = mapped_column(String, primary_key=True)
+    uuid = mapped_column(String, primary_key=True)
     extension_name: Mapped[str]
     action_name: Mapped[str]
     parameters: Mapped[Optional[str]]

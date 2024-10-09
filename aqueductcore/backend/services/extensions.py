@@ -165,7 +165,7 @@ class ExtensionAction(BaseModel):
         )
 
         db_task = orm.Task(
-            task_id=str(task.task_id),
+            uuid=str(task.task_id),
             action_name=self.name,
             extension_name=extension.name,
             parameters=params_json,
@@ -176,7 +176,8 @@ class ExtensionAction(BaseModel):
         db_experiment.tasks.append(db_task)
         await db_session.commit()
         return await task_orm_to_model(
-            value=db_task, task_info=task,
+            value=db_task,
+            task_info=task,
             experiment_uuid=db_task.experiment.uuid,
             username=user_info.username,
         )
