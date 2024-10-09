@@ -524,6 +524,11 @@ async def remove_experiment(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_uuid=experiment_uuid
     )
 
+    remove_all_experiment_tasks_statement = delete(orm.Task).where(
+        orm.Task.experiment_id == experiment_uuid
+    )
+    await db_session.execute(remove_all_experiment_tasks_statement)
+
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_uuid == experiment_uuid
     )
@@ -540,12 +545,7 @@ async def remove_experiment(
     for task in experiment_tasks:
         app = current_app._get_current_object()
         backend = app.backend
-        backend.delete(task.task_id)
-
-    remove_all_experiment_tasks_statement = delete(orm.Task).where(
-        orm.Task.experiment_id == experiment_uuid
-    )
-    await db_session.execute(remove_all_experiment_tasks_statement)
+        backend.delete(task.uuid)
 
     rmtree(folder_path, ignore_errors=True)
 
