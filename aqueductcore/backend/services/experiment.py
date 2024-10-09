@@ -543,7 +543,7 @@ async def remove_experiment(
         user_info=user_info, db_session=db_session, experiment_uuid=experiment_uuid
     )
     for task in experiment_tasks:
-        app = current_app._get_current_object()
+        app = current_app._get_current_object()  # pylint: disable=W0212
         backend = app.backend
         backend.delete(task.uuid)
 
