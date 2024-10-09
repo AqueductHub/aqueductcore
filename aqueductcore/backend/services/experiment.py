@@ -8,7 +8,6 @@ from shutil import rmtree
 from typing import Callable, List, Optional, Tuple
 from uuid import UUID
 
-from celery import current_app
 from pydantic import ConfigDict, Field, validate_call
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,7 +23,6 @@ from aqueductcore.backend.errors import (
 )
 from aqueductcore.backend.models import orm
 from aqueductcore.backend.models.experiment import ExperimentRead, TagCreate, TagRead
-from aqueductcore.backend.services.task_executor import get_all_tasks
 from aqueductcore.backend.services.utils import (
     experiment_orm_to_model,
     generate_experiment_uuid_and_eid,
