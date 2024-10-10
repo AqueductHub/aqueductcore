@@ -97,6 +97,8 @@ def run_executable(  # pylint: disable=unused-argument
         out, err = proc.communicate(timeout=None)
         code = proc.returncode
         args = (code, out.decode("utf-8"), err.decode("utf-8"))
+        if abs(code) == signal.SIGINT:
+            raise KeyboardInterrupt()
         if code != 0:
             raise ChildProcessError(args)
     return args
