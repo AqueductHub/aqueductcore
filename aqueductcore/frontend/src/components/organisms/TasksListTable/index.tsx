@@ -12,11 +12,13 @@ import TaskDetailsModal from "components/organisms/TaskDetailsModal";
 import { taskListRowsPerPageOptions } from "constants/constants";
 
 function TasksListTable({
+    rowsPerPageOptions = taskListRowsPerPageOptions,
     TaskRecordsColumns,
     taskList,
     maxHeight,
     pageInfo,
 }: {
+    rowsPerPageOptions?: number[]
     TaskRecordsColumns: readonly TasksListColumnsType[];
     taskList: TaskDataType[];
     maxHeight?: string;
@@ -109,7 +111,7 @@ function TasksListTable({
                 sx={{
                     borderTop: `1px solid ${grey[300]}`,
                 }}
-                rowsPerPageOptions={taskListRowsPerPageOptions}
+                rowsPerPageOptions={rowsPerPageOptions}
                 component="div"
                 count={count}
                 rowsPerPage={rowsPerPage}
