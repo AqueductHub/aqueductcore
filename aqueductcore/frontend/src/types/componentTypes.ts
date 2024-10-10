@@ -19,7 +19,7 @@ export type FileSelectContextType = {
     setSelectedFile: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
-export type logArray = Array<{
+export type logType = {
     label: string,
     value: string | number | undefined | null
-}>
+}

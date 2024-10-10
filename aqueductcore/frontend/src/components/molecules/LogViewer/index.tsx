@@ -1,9 +1,10 @@
+import { isNullish } from "@apollo/client/cache/inmemory/helpers";
 import { Box, styled } from "@mui/material";
 
-import { logArray } from "types/componentTypes";
+import { logType } from "types/componentTypes";
 
 interface LogViewerProps {
-    log: logArray
+    log: logType[]
 }
 
 const LogViewerBox = styled(Box)`
@@ -18,8 +19,14 @@ const LogText = styled("pre")`
 `;
 
 const prettyPrint = (log: LogViewerProps['log']) => {
-    return log.map(logItem => (
-        `${logItem.label}: \t\t ${logItem.value} \n`
+    function prettifyValue(value: logType['value']) {
+        if (value && String(value).includes('\n'))
+            return String(value).split('\n').map(valueItem => `\n\t\t\t${valueItem}`).join('')
+        else
+            return `\t\t"${value}"`
+    }
+    return log.filter(logItem => !isNullish(logItem)).map(logItem => (
+        `${logItem.label}: ${prettifyValue(logItem.value)}\n`
     ))
 };
 
