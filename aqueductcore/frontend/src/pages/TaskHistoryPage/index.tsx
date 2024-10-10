@@ -66,7 +66,7 @@ export const TasksListColumns: readonly TasksListColumnsType[] = [
   },
   {
     id: "receivedAt",
-    label: "submission Time",
+    label: "Submission Time",
     format: (createdAt) =>
       typeof createdAt === "string" ? dateFormatter(new Date(createdAt)) : "",
   },
