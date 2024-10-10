@@ -139,12 +139,12 @@ function ExperimentDetails({ experimentDetails }: ExperimentDetailsProps) {
           </Box>
         </Grid>
       </Grid>
-      <ExperimentDetailsData
-        experimentDetails={experimentDetails}
-        isEditable={isEditable}
-      />
       <Grid container spacing={1}>
         <Grid item xs={12} xl={6}>
+          <ExperimentDetailsData
+            experimentDetails={experimentDetails}
+            isEditable={isEditable}
+          />
           <ExperimentDescriptionUpdate
             isEditable={isEditable}
             experimentDescription={experimentDetails.description ? experimentDetails.description : ""}
