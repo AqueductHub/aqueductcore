@@ -13,7 +13,7 @@ export const GET_TASK = gql`
         resultCode
         stdOut
         stdErr
-        taskId
+        uuid
         createdBy
         experiment {
           uuid  

@@ -31,7 +31,7 @@ async def task_orm_to_model(
         username = value.created_by_user.username
 
     task = TaskRead(
-        task_id=value.task_id,
+        uuid=value.uuid,
         experiment_uuid=experiment_uuid,
         extension_name=value.extension_name,
         action_name=value.action_name,
@@ -56,7 +56,7 @@ def task_model_to_orm(
 ) -> orm.Task:
     """Convert ORM Experiment to Pydantic Model"""
     return orm.Task(
-        task_id=value.task_id,
+        uuid=value.uuid,
         action_name=value.action_name,
         extension_name=value.extension_name,
         parameters=(value.parameters.model_dump_json() if value.parameters else None),
@@ -128,15 +128,16 @@ def is_tag_valid(tag: str) -> bool:
 
 
 def format_list_human_readable(arr: List[Union[str, int]]) -> str:
-    """Convert list of strings to a single string separated by commas"""
-    arr = [str(value) for value in arr]
-    if len(arr) == 1:
-        return arr[0]
+    """Convert a list of strings or integers to a human-readable string."""
+    str_arr = [str(value) for value in arr]
 
-    if len(arr) == 2:
-        return arr[-2] + " and " + arr[-1]
+    if not str_arr:
+        return ""
 
-    if len(arr) > 2:
-        return ", ".join(arr[:-2]) + ", " + arr[-2] + " and " + arr[-1]
+    if len(str_arr) == 1:
+        return str_arr[0]
 
-    return ""
+    if len(str_arr) == 2:
+        return " and ".join(str_arr)
+
+    return f"{', '.join(str_arr[:-1])} and {str_arr[-1]}"

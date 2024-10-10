@@ -21,7 +21,7 @@ import { TaskType } from "types/globalTypes";
 interface TaskDetailsModalProps {
     isOpen: boolean
     handleClose: () => void
-    taskId: TaskType['taskId']
+    taskId: TaskType['uuid']
 }
 
 export type settingItemType = {
@@ -215,7 +215,7 @@ function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps
         },
         {
             label: "taskId",
-            value: task.taskId
+            value: task.uuid
         },
         {
             label: "taskStatus",

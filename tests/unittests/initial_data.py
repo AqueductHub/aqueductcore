@@ -310,7 +310,7 @@ user_data = [
 
 task_data = [
     TaskCreate(
-        task_id=str(UUID(int=1000 + i)),
+        uuid=str(UUID(int=1000 + i)),
         experiment_uuid=experiment.uuid,
         action_name="dummy action",
         extension_name="dummy extension",
@@ -335,7 +335,7 @@ task_data = [
     for i, experiment in enumerate(experiment_data)
 ] + [
     TaskCreate(
-        task_id=str(UUID(int=1100 + i)),
+        uuid=str(UUID(int=1100 + i)),
         experiment_uuid=experiment.uuid,
         action_name="dummy action two",
         extension_name="dummy extension two",
