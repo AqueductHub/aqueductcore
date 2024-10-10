@@ -96,11 +96,10 @@ def run_executable(  # pylint: disable=unused-argument
         extension_process = proc
         out, err = proc.communicate(timeout=None)
         code = proc.returncode
-    return (
-        code,
-        out.decode("utf-8"),
-        err.decode("utf-8"),
-    )
+        args = (code, out.decode("utf-8"), err.decode("utf-8"))
+        if code != 0:
+            raise ChildProcessError(args)
+    return args
 
 
 async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionResult:
@@ -120,7 +119,14 @@ async def _update_task_info(task_id: str, wait=False) -> TaskProcessExecutionRes
 
     if task_result is not None:
         known_exceptions = (FileNotFoundError, KeyboardInterrupt, TaskRevokedError, Exception)
-        if isinstance(task_result, known_exceptions):
+        if isinstance(task_result, ChildProcessError):
+            if task_result.args is not None and len(task_result.args) > 0:
+                if len(task_result.args[0]) == 3:
+                    code, out, err = task_result.args[0]
+                    task_info.result_code = code
+                    task_info.std_out = out
+                    task_info.std_err = err
+        elif isinstance(task_result, known_exceptions):
             task_info.std_err = str(task_result)
         elif task.ready():
             # in case the result format is incorrect
