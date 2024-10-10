@@ -85,3 +85,7 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
   });
   return stabilizedThis.map((el) => el[0]);
 }
+
+export function isNullish(value: unknown): value is null | undefined {
+  return value === null || value === undefined;
+}

@@ -1,7 +1,7 @@
-import { isNullish } from "@apollo/client/cache/inmemory/helpers";
 import { Box, styled } from "@mui/material";
 
 import { logType } from "types/componentTypes";
+import { isNullish } from "helper/functions";
 
 interface LogViewerProps {
     log: logType[]
