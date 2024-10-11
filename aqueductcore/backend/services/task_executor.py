@@ -198,8 +198,8 @@ async def revoke_task(
     if not user_info.can_cancel_task_owned_by(task_user):
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
-    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGINT")
-    task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+    AsyncResult(db_task.uuid).revoke(terminate=terminate, signal="SIGINT")
+    task_info = await _update_task_info(task_id=db_task.uuid, wait=False)
 
     username = db_task.created_by_user.username
     return await task_orm_to_model(
