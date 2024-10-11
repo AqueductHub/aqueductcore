@@ -5,10 +5,10 @@ import { useState } from "react";
 import TaskExtensionActionName from "components/molecules/TaskListTableCells/TaskExtensionActionName";
 import TaskExtensionStatus from "components/molecules/TaskListTableCells/TaskExtensionStatus";
 import { ExperimentDataType, TaskDataType, TasksListColumnsType } from "types/globalTypes";
+import { taskListRowsPerPageOptionsInExperimentDetailsPage } from "constants/constants";
 import { dateFormatter, taskHistoryTableFormatter } from "helper/formatters";
 import { useGetAllTasks } from "API/graphql/queries/tasks/getAllTasks";
 import ExtensionsList from "components/organisms/ExtensionsList";
-import { taskListRowsPerPageOptions } from "constants/constants";
 import TasksListTable from "components/organisms/TasksListTable";
 import { Loading } from "components/atoms/Loading";
 import { Error } from "components/atoms/Error";
@@ -54,7 +54,7 @@ export const TasksListColumns: readonly TasksListColumnsType[] = [
 
 function TaskListInExperimentDetails({ experimentUuid }: { experimentUuid: ExperimentDataType['uuid'] }) {
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(taskListRowsPerPageOptions[0]);
+    const [rowsPerPage, setRowsPerPage] = useState(taskListRowsPerPageOptionsInExperimentDetailsPage[0]);
     const { data, loading, error } = useGetAllTasks({
         variables: {
             offset: page * rowsPerPage,
@@ -98,6 +98,7 @@ function TaskListInExperimentDetails({ experimentUuid }: { experimentUuid: Exper
             </Grid>
             <Box sx={{ mt: 2 }}>
                 <TasksListTable
+                    rowsPerPageOptions={taskListRowsPerPageOptionsInExperimentDetailsPage}
                     TaskRecordsColumns={TasksListColumns}
                     taskList={taskHistoryTableFormatter(tasks)}
                     maxHeight={`calc(100vh - ${tableHeightOffset}px)`}

@@ -1,7 +1,8 @@
 import { selected_experiment } from "__mocks__/queries/experiment/getExperimentByIdMock";
 import { GET_ALL_TASKS } from "API/graphql/queries/tasks/getAllTasks";
-import { taskListRowsPerPageOptions } from "constants/constants";
+import { taskListRowsPerPageOptions, taskListRowsPerPageOptionsInExperimentDetailsPage } from "constants/constants";
 import { TasksDataMock } from "__mocks__/TasksDataMock";
+import { createdNewExperiment } from "__mocks__/ExperimentsDataMock";
 
 const request = {
     query: GET_ALL_TASKS,
@@ -33,7 +34,7 @@ export const getAllTasks_mock = {
                 ...request,
                 variables: {
                     offset: 0,
-                    limit: taskListRowsPerPageOptions[0],
+                    limit: taskListRowsPerPageOptionsInExperimentDetailsPage[0],
                     filters: {
                         experiment: {
                             type: 'UUID',
@@ -45,8 +46,33 @@ export const getAllTasks_mock = {
             result: {
                 data: {
                     tasks: {
-                        tasksData: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]),
-                        totalTasksCount: TasksDataMock.slice(0, taskListRowsPerPageOptions[0]).length
+                        tasksData: TasksDataMock.slice(0, taskListRowsPerPageOptionsInExperimentDetailsPage[0]),
+                        totalTasksCount: TasksDataMock.slice(0, taskListRowsPerPageOptionsInExperimentDetailsPage[0]).length
+                    }
+                },
+            },
+            maxUsageCount: Number.POSITIVE_INFINITY,
+        },
+        // New experiment mock data (it's being used in ExperimentRecordsPage.test.tsx) with no task
+        {
+            request: {
+                ...request,
+                variables: {
+                    offset: 0,
+                    limit: taskListRowsPerPageOptionsInExperimentDetailsPage[0],
+                    filters: {
+                        experiment: {
+                            type: 'UUID',
+                            value: createdNewExperiment.uuid
+                        }
+                    }
+                }
+            },
+            result: {
+                data: {
+                    tasks: {
+                        tasksData: [],
+                        totalTasksCount: 0
                     }
                 },
             },

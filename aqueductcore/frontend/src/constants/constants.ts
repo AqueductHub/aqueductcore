@@ -8,7 +8,9 @@ export const DEBOUNCE_DELAY = 250; //ms
 // Pagination for Experiment Records
 export const experimentRecordsRowsPerPageOptions = [10, 25, 100];
 // Pagination for Tasks List
-export const taskListRowsPerPageOptions = [3];
+export const taskListRowsPerPageOptions = [10, 25, 100];
+// Pagination for Tasks List in experiment details page
+export const taskListRowsPerPageOptionsInExperimentDetailsPage = [3];
 
 export const FAVOURITE = "__favourite__";
 export const ARCHIVED = "__archived__";
