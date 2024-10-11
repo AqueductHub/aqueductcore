@@ -289,7 +289,7 @@ function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps
                             </List>
                         </Grid>
                         <Grid item>
-                            {isTaskCancellable ? loadingCancelTask ? <CircularProgress sx={{ mr: 4 }} /> : <CancelTaskButton
+                            {isTaskCancellable ? loadingCancelTask ? <CircularProgress size={32} sx={{ mr: 4 }} /> : <CancelTaskButton
                                 variant="outlined"
                                 size="small"
                                 color="error"
