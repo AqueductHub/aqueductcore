@@ -53,7 +53,7 @@ test("clicking on cancel task button cancels task", async () => {
     await userEvent.click(cancelTaskConfirmationButton);
 
     await waitFor(() => {
-        const cancelTaskConfirmationMessage = queryByText("Task cancelled successfully");
+        const cancelTaskConfirmationMessage = queryByText("Cancelation request sent");
         expect(cancelTaskConfirmationMessage).toBeInTheDocument();
     });
 });

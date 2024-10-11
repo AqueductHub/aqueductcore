@@ -1,4 +1,4 @@
-import { Box, Button, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, List, ListItem, Modal, Tab, Tabs, Typography, styled } from "@mui/material"
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useState } from "react";
@@ -173,11 +173,11 @@ function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps
                 taskId: taskId
             },
             async onCompleted() {
-                toast.success("Task cancelled successfully", {
+                toast.success("Cancelation request sent", {
                     id: "task_cancelled",
                 });
-                // TODO: if service workers are down, it shows success! which is wrong, and it should be:
-                // TODO: Task is not cancelled successfully, it might because celery workers are not up and running
+                // if service workers are down, it shows success!
+                // but the message is about request submission only.
                 await client.refetchQueries({
                     include: "active",
                 });
@@ -289,7 +289,7 @@ function TaskDetailsModal({ isOpen, handleClose, taskId }: TaskDetailsModalProps
                             </List>
                         </Grid>
                         <Grid item>
-                            {isTaskCancellable ? loadingCancelTask ? <div>loading</div> : <CancelTaskButton
+                            {isTaskCancellable ? loadingCancelTask ? <CircularProgress size={32} sx={{ mr: 4 }} /> : <CancelTaskButton
                                 variant="outlined"
                                 size="small"
                                 color="error"
