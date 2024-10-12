@@ -52,7 +52,7 @@ async def test_extension_echo(
             "var7": "string2",
         },
     )
-    task_info = await _update_task_info(str(result.task_id), wait=True)
+    task_info = await _update_task_info(str(result.uuid), wait=True)
     assert task_info.status == "SUCCESS"
     assert task_info.result_code == 0
     assert (
