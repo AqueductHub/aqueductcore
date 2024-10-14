@@ -522,11 +522,16 @@ async def remove_experiment(
         experiments_root_dir=str(settings.experiments_dir_path), experiment_uuid=experiment_uuid
     )
 
+    remove_all_experiment_tasks_statement = delete(orm.Task).where(
+        orm.Task.experiment_id == experiment_uuid
+    )
+    await db_session.execute(remove_all_experiment_tasks_statement)
+
     remove_experiment_tag_links_statement = delete(orm.experiment_tag_association).where(
         orm.experiment_tag_association.c.experiment_uuid == experiment_uuid
     )
-
     await db_session.execute(remove_experiment_tag_links_statement)
+
     remove_experiment_statement = delete(orm.Experiment).where(
         orm.Experiment.uuid == experiment_uuid
     )
