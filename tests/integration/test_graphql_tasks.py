@@ -40,7 +40,7 @@ query MyQuery($taskId: UUID!) {
     resultCode
     stdErr
     stdOut
-    taskId
+    uuid
     taskStatus
     createdBy
   }
@@ -54,7 +54,7 @@ all_tasks_query = """
       actionName
       endedAt
       taskStatus
-      taskId
+      uuid
       stdOut
       stdErr
       resultCode
@@ -85,7 +85,7 @@ query MyQuery($actionName: String!) {
   tasks(limit: 100, offset: 0, filters: {actionName: $actionName}) {
     tasksData {
       taskStatus
-      taskId
+      uuid
       stdOut
       stdErr
       resultCode
@@ -119,7 +119,7 @@ query MyQuery($extensionName: String!) {
   tasks(limit: 100, offset: 0, filters: {extensionName: $extensionName}) {
     tasksData {
       taskStatus
-      taskId
+      uuid
       stdOut
       stdErr
       resultCode
@@ -151,7 +151,7 @@ query MyQuery( $username: String!) {
   tasks(limit: 100, offset: 0, filters: {username: $username}) {
     tasksData {
       taskStatus
-      taskId
+      uuid
       stdOut
       stdErr
       resultCode
@@ -184,7 +184,7 @@ query MyQuery($type: IDType = UUID, $value: String!) {
   tasks(limit: 100, offset: 0, filters: {experiment: {type: $type, value: $value}}) {
     tasksData {
       taskStatus
-      taskId
+      uuid
       stdOut
       stdErr
       resultCode
@@ -261,7 +261,7 @@ mutation MyMutation($action: String!, $experimentUuid: UUID!, $extension: String
     resultCode
     stdErr
     stdOut
-    taskId
+    uuid
     taskStatus
     createdBy
   }
@@ -277,7 +277,7 @@ mutation MyMutation($taskId: UUID!) {
     resultCode
     stdErr
     stdOut
-    taskId
+    uuid
     taskStatus
     createdBy
     parameters {
@@ -342,7 +342,7 @@ async def test_execute_extension(
     )
     assert resp.errors is None
     res = resp.data["executeExtension"]
-    assert UUID(res["taskId"])
+    assert UUID(res["uuid"])
     assert res["taskStatus"] in ("SUCCESS", "STARTED", "PENDING")
 
 
@@ -366,8 +366,7 @@ async def test_cancel_task(
     schema = Schema(query=Query, mutation=Mutation)
     context = ServerContext(
         db_session=db_session,
-        user_info=UserInfo(
-            uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
+        user_info=UserInfo(uuid=db_user.uuid, username=db_user.username, scopes=set(UserScope)),
     )
     resp = await schema.execute(
         query=execute_extension_mutation,
@@ -387,7 +386,7 @@ async def test_cancel_task(
         },
         context_value=context,
     )
-    taskId = UUID(resp.data["executeExtension"]["taskId"])
+    taskId = UUID(resp.data["executeExtension"]["uuid"])
     assert isinstance(taskId, UUID)
     resp = await schema.execute(
         query=cancel_task_mutation,
@@ -396,7 +395,7 @@ async def test_cancel_task(
     )
 
     res = resp.data["cancelTask"]
-    assert UUID(res["taskId"])
+    assert UUID(res["uuid"])
 
     # TODO: if we don't wait, most probably this status
     # will be "PENDING", so after a cycle of waiting this will update
@@ -449,13 +448,13 @@ async def test_query_all_tasks(
             },
             context_value=context,
         )
-        taskId = UUID(resp.data["executeExtension"]["taskId"])
+        taskId = UUID(resp.data["executeExtension"]["uuid"])
         task_ids.append(taskId)
 
     resp = await schema.execute(all_tasks_query, context_value=context)
 
     assert resp.errors is None
-    resp_task_ids = [UUID(task["taskId"]) for task in resp.data["tasks"]["tasksData"]]
+    resp_task_ids = [UUID(task["uuid"]) for task in resp.data["tasks"]["tasksData"]]
     assert set(resp_task_ids) == set(task_ids)
 
 
@@ -504,7 +503,7 @@ async def test_query_all_tasks_filter_by_action_name(
             },
             context_value=context,
         )
-        taskId = UUID(resp.data["executeExtension"]["taskId"])
+        taskId = UUID(resp.data["executeExtension"]["uuid"])
         task_ids.append(taskId)
 
     resp = await schema.execute(
@@ -514,7 +513,7 @@ async def test_query_all_tasks_filter_by_action_name(
     )
 
     assert resp.errors is None
-    resp_task_ids = [UUID(task["taskId"]) for task in resp.data["tasks"]["tasksData"]]
+    resp_task_ids = [UUID(task["uuid"]) for task in resp.data["tasks"]["tasksData"]]
     assert set(resp_task_ids) == set(task_ids)
     users = [task["createdBy"] for task in resp.data["tasks"]["tasksData"]]
     assert set(users) == {db_user.username}
@@ -565,7 +564,7 @@ async def test_query_all_tasks_filter_by_extension_name(
             },
             context_value=context,
         )
-        taskId = UUID(resp.data["executeExtension"]["taskId"])
+        taskId = UUID(resp.data["executeExtension"]["uuid"])
         task_ids.append(taskId)
 
     resp = await schema.execute(
@@ -575,7 +574,7 @@ async def test_query_all_tasks_filter_by_extension_name(
     )
 
     assert resp.errors is None
-    resp_task_ids = [UUID(task["taskId"]) for task in resp.data["tasks"]["tasksData"]]
+    resp_task_ids = [UUID(task["uuid"]) for task in resp.data["tasks"]["tasksData"]]
     assert set(resp_task_ids) == set(task_ids)
 
 
@@ -608,13 +607,17 @@ async def test_query_all_tasks_filter_by_username(
     for idx in range(10):
         context = ServerContext(
             db_session=db_session,
-            user_info=UserInfo(uuid=db_user0.uuid, username=db_user0.username, scopes=set(UserScope)),
+            user_info=UserInfo(
+                uuid=db_user0.uuid, username=db_user0.username, scopes=set(UserScope)
+            ),
         )
         if idx > 7:
-          context = ServerContext(
-              db_session=db_session,
-              user_info=UserInfo(uuid=db_user1.uuid, username=db_user1.username, scopes=set(UserScope)),
-          )
+            context = ServerContext(
+                db_session=db_session,
+                user_info=UserInfo(
+                    uuid=db_user1.uuid, username=db_user1.username, scopes=set(UserScope)
+                ),
+            )
         resp = await schema.execute(
             query=execute_extension_mutation,
             variable_values={
@@ -633,9 +636,9 @@ async def test_query_all_tasks_filter_by_username(
             },
             context_value=context,
         )
-        taskId = UUID(resp.data["executeExtension"]["taskId"])
+        taskId = UUID(resp.data["executeExtension"]["uuid"])
         if idx <= 7:
-          task_ids.append(taskId)
+            task_ids.append(taskId)
 
     resp = await schema.execute(
         all_tasks_query_filter_by_username,
@@ -644,5 +647,5 @@ async def test_query_all_tasks_filter_by_username(
     )
 
     assert resp.errors is None
-    resp_task_ids = [UUID(task["taskId"]) for task in resp.data["tasks"]["tasksData"]]
+    resp_task_ids = [UUID(task["uuid"]) for task in resp.data["tasks"]["tasksData"]]
     assert set(resp_task_ids) == set(task_ids)

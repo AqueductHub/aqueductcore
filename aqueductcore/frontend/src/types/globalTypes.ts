@@ -140,12 +140,12 @@ export type EXECUTE_EXTENSION_TYPE = {
   resultCode: TaskData['resultCode']
   stdErr: TaskData['stdErr']
   stdOut: TaskData['stdOut']
-  taskId: TaskData['taskId']
+  taskId: TaskData['uuid']
   taskStatus: TaskData['taskStatus']
 }
 
 export type CANCEL_TASK_TYPE = {
-  taskId: TaskData['taskId']
+  taskId: TaskData['uuid']
   resultCode: TaskData['resultCode']
   taskStatus: TaskData['taskStatus']
 }
@@ -199,7 +199,7 @@ export type TaskDataType = {
     name: ExtensionInfo['name']
     action: ExtensionActionInfo['name']
   };
-  taskId: TaskType['taskId']
+  taskId: TaskType['uuid'];
   taskStatus: TaskType['taskStatus'];
   receivedAt: TaskData['receivedAt'];
   createdBy: TaskData['createdBy'];
@@ -263,7 +263,7 @@ export interface TaskType {
   resultCode: TaskData['resultCode']
   stdOut: TaskData['stdOut']
   stdErr: TaskData['stdErr']
-  taskId: TaskData['taskId']
+  uuid: TaskData['uuid']
   createdBy: TaskData['createdBy']
   experiment: {
     uuid: ExperimentData['uuid']

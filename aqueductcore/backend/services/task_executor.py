@@ -176,7 +176,7 @@ async def revoke_task(
         select(orm.Task)
         .options(joinedload(orm.Task.created_by_user))
         .options(joinedload(orm.Task.experiment))
-        .filter(orm.Task.task_id == task_id)
+        .filter(orm.Task.uuid == task_id)
     )
     result = await db_session.execute(statement)
 
@@ -198,8 +198,8 @@ async def revoke_task(
     if not user_info.can_cancel_task_owned_by(task_user):
         raise AQDPermission("User has no permission to cancel tasks of this user.")
 
-    AsyncResult(db_task.task_id).revoke(terminate=terminate, signal="SIGINT")
-    task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+    AsyncResult(db_task.uuid).revoke(terminate=terminate, signal="SIGINT")
+    task_info = await _update_task_info(task_id=db_task.uuid, wait=False)
 
     username = db_task.created_by_user.username
     return await task_orm_to_model(
@@ -219,7 +219,7 @@ async def get_task_by_uuid(
         select(orm.Task)
         .options(joinedload(orm.Task.experiment))
         .options(joinedload(orm.Task.created_by_user))
-        .where(orm.Task.task_id == str(task_id))
+        .where(orm.Task.uuid == str(task_id))
     )
 
     result = await db_session.execute(statement)
@@ -240,7 +240,7 @@ async def get_task_by_uuid(
         if db_task.experiment.created_by != user_info.uuid:
             raise AQDPermission("User has no permission to see this task.")
 
-    task_info = await _update_task_info(task_id=db_task.task_id, wait=False)
+    task_info = await _update_task_info(task_id=db_task.uuid, wait=False)
 
     return await task_orm_to_model(
         value=db_task, task_info=task_info, experiment_uuid=db_task.experiment.uuid
@@ -308,7 +308,7 @@ async def get_all_tasks(  # pylint: disable=too-many-arguments
         if username is not None and item.created_by_user.username != username:
             continue
 
-        task_info = await _update_task_info(task_id=item.task_id, wait=False)
+        task_info = await _update_task_info(task_id=item.uuid, wait=False)
         tasks_list.append(
             await task_orm_to_model(
                 value=item,
