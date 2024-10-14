@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 
 import { BorderedButtonWithIcon } from "components/atoms/sharedStyledComponents/BorderedButtonWithIcon"
+import { copyToClipboardFailedWithMessage, copyToClipboardWithSuccessMessage } from 'helper/functions';
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { useRemoveExperiment } from "API/graphql/mutations/experiment/removeExperiment";
@@ -140,16 +141,8 @@ function ExperimentDetailsActionButtons({ isEditable, isDeletable, experimentDet
         navigator.clipboard
             .writeText(`${window.location.origin}/aqd/experiments/${experimentDetails.eid}`)
             .then(
-                () => {
-                    toast.success("Copied to clipboard!", {
-                        id: "clipboard",
-                    });
-                },
-                () => {
-                    toast.error("Failed! \n Please copy page's URL manually.", {
-                        id: "clipboard-failed",
-                    });
-                }
+                () => copyToClipboardWithSuccessMessage(), //Success
+                () => copyToClipboardFailedWithMessage("Failed! \n Please copy page's URL manually.") //Failure
             );
     }
 

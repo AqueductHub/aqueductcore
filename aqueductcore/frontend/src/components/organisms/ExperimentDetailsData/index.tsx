@@ -3,6 +3,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
+import { copyToClipboardFailedWithMessage, copyToClipboardWithSuccessMessage } from "helper/functions";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { dateFormatter, removeFavouriteAndArchivedTag } from "helper/formatters";
@@ -79,16 +80,8 @@ function ExperimentDetailsData({ experimentDetails, isEditable }: experimentDeta
         navigator.clipboard
             .writeText(experimentDetails.eid)
             .then(
-                () => {
-                    toast.success("Copied to clipboard!", {
-                        id: "clipboard",
-                    });
-                },
-                () => {
-                    toast.error("Failed! \n Please copy EID manually.", {
-                        id: "clipboard-failed",
-                    });
-                }
+                () => copyToClipboardWithSuccessMessage(), //Success
+                () => copyToClipboardFailedWithMessage("Failed! \n Please copy EID manually.") //Failure
             );
     }
 
