@@ -1,11 +1,13 @@
-import { Box, Chip, Grid, List, ListItem, Typography, styled } from "@mui/material"
-import { useGetAllTags } from "API/graphql/queries/experiment/getAllTags";
+import { Box, Chip, Grid, IconButton, List, ListItem, Typography, styled } from "@mui/material"
+import LinkIcon from "@mui/icons-material/Link";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
+import { copyToClipboardFailedWithMessage, copyToClipboardWithSuccessMessage } from "helper/functions";
 import { useRemoveTagFromExperiment } from "API/graphql/mutations/experiment/removeTagFromExperiment";
 import { useAddTagToExperiment } from "API/graphql/mutations/experiment/addTagToExperiment";
 import { dateFormatter, removeFavouriteAndArchivedTag } from "helper/formatters";
+import { useGetAllTags } from "API/graphql/queries/experiment/getAllTags";
 import { ExperimentDataType, TagType } from "types/globalTypes";
 import { MAX_TAGS_VISIBLE_LENGTH } from "constants/constants";
 import { EditTags } from "components/molecules/EditTags";
@@ -14,7 +16,6 @@ const ExperimentDetailsTitle = styled(Typography)`
   font-weight: 400;
   font-size: 0.9rem;
   margin-right: ${(props) => `${props.theme.spacing(1)}`};
-  line-height: ${(props) => `${props.theme.spacing(3)}`};
   padding: ${(props) => `${props.theme.spacing(0.75)}`} ${(props) => `${props.theme.spacing(1)}`};
 `;
 
@@ -22,7 +23,6 @@ const ExperimentDetailsContent = styled(Typography)`
   font-weight: 500;
   font-weight: bold;
   font-size: 0.9rem;
-  line-height: ${(props) => `${props.theme.spacing(3)}`};
 `;
 
 interface experimentDetailsDataProps {
@@ -75,13 +75,28 @@ function ExperimentDetailsData({ experimentDetails, isEditable }: experimentDeta
             });
         }
     };
+
+    function handleCopyEIDToClipboard() {
+        navigator.clipboard
+            .writeText(experimentDetails.eid)
+            .then(
+                () => copyToClipboardWithSuccessMessage(), //Success
+                () => copyToClipboardFailedWithMessage("Failed! \n Please copy EID manually.") //Failure
+            );
+    }
+
     return (
         <Grid container sx={{ mt: 2 }}>
             <Grid item sx={{ mr: 4 }}>
                 <List>
                     <ListItem sx={{ pl: 1, pr: 1 }}>
                         <ExperimentDetailsTitle>Experiment ID: </ExperimentDetailsTitle>
-                        <ExperimentDetailsContent>{experimentDetails.eid}</ExperimentDetailsContent>
+                        <ExperimentDetailsContent>
+                            {experimentDetails.eid}
+                        </ExperimentDetailsContent>
+                        <IconButton size="small" aria-label="copy-eid" onClick={handleCopyEIDToClipboard} >
+                            <LinkIcon />
+                        </IconButton>
                     </ListItem>
                     <ListItem sx={{ pl: 1, pr: 1 }}>
                         <ExperimentDetailsTitle>Time Created: </ExperimentDetailsTitle>

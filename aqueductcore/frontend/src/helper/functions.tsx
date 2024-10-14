@@ -1,8 +1,9 @@
 import { DependencyList, FocusEvent, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 import dayjs from "dayjs";
 
-import { SortOrder } from "types/componentTypes";
 import { ExperimentFileType } from "types/globalTypes";
+import { SortOrder } from "types/componentTypes";
 
 // ################## DOM related functions ################## //
 export const focusInCurrentTarget = ({
@@ -84,4 +85,20 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
+}
+
+export function isNullish(value: unknown): value is null | undefined {
+  return value === null || value === undefined;
+}
+
+// ################## Copy to Clipboard Functions ################## //
+export function copyToClipboardWithSuccessMessage(message?: string): void | PromiseLike<void> {
+  toast.success(message ?? "Copied to clipboard!", {
+    id: "clipboard",
+  });
+}
+export function copyToClipboardFailedWithMessage(message?: string): void | PromiseLike<void> {
+  toast.error(message ?? "Copy to clipboard Failed!", {
+    id: "clipboard-failed",
+  });
 }
