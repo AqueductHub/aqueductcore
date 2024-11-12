@@ -104,6 +104,7 @@ class ExtensionAction(BaseModel):
     script: str
     parameters: List[ExtensionParameter]
 
+    # pylint: disable=too-many-locals
     async def execute(
         self,
         user_info: UserInfo,
