@@ -157,6 +157,17 @@ class ExtensionAction(BaseModel):
             )
 
         start_time = datetime.now().astimezone(timezone.utc)
+
+        db_user_statement = select(orm.User).where(orm.User.uuid == user_info.uuid)
+        db_user = (await db_session.execute(db_user_statement)).scalars().first()
+
+        if not db_user:
+            db_user = orm.User(
+                uuid=user_info.uuid,
+                username=user_info.username,
+            )
+        db_session.add(db_user)
+
         task = await _execute_task(
             extension_directory_name=cwd.name,
             shell_script=rich_script,
