@@ -17,21 +17,21 @@ These are the variables that you need to change:
 - `POSTGRES_PORT`
 - `POSTGRES_DB`
 
-3. As an initial check, make sure the database is up to date with the head of changes. (If it is not, this step tries to run the migration one by one):
+2. As an initial check, make sure the database is up to date with the head of changes. (If it is not, this step tries to run the migration one by one):
 
    ```sh
    alembic upgrade head
    ```
 
-4. Create a new revision (Don't forget to update the message)
+3. Create a new revision (Don't forget to update the message)
 
    ```sh
    alembic revision --autogenerate -m "PLACE HOLDER FOR MESSAGE"
    ```
 
-5. Open the generated migration script under `alembic/versions` and adjust it accordingly by implementing the upgrade function with Alembic operations. `downgrade` function could be left untouched as we don't support downgrade at this time.
+4. Open the generated migration script under `alembic/versions` and adjust it accordingly by implementing the upgrade function with Alembic operations. `downgrade` function could be left untouched as we don't support downgrade at this time.
 
-6. Update the database with a head of changes. Alemtic automatically picks up the new migration script and executes it.
+5. Update the database with a head of changes. Alemtic automatically picks up the new migration script and executes it.
 
    ```sh
    alembic upgrade head
