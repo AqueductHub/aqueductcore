@@ -10,6 +10,13 @@ The following steps should be followed in the Python environment configured for 
 
 1. Make sure the environment variables with the database connection details are loaded into the environment. If you are using Azure instance, you will additionally need to make sure it's using the same environment variables to be connected to the database on Azure, as that's in the current state and does not require changes, but to make sure about that, we need to do the next step check.
 
+These are the variables that you need to change:
+- `POSTGRES_USERNAME`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_DB`
+
 2. As an initial check, make sure the database is up to date with the head of changes. (If it is not, this step tries to run the migration one by one):
 
    ```sh
@@ -29,3 +36,4 @@ The following steps should be followed in the Python environment configured for 
    ```sh
    alembic upgrade head
    ```
+
