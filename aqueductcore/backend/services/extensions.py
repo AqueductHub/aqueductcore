@@ -124,6 +124,7 @@ class ExtensionAction(BaseModel):
         params_json = typed_params.model_dump_json()
 
         my_env = {key: str(val) for key, val in (extension.constants or {}).items()}
+        my_env.update({"token": user_info.token})
         my_env.update(params)
         my_env["aqueduct_url"] = extension.aqueduct_url
         if extension.aqueduct_api_token is not None:
