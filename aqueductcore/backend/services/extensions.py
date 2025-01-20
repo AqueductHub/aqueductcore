@@ -125,9 +125,10 @@ class ExtensionAction(BaseModel):
 
         my_env = {key: str(val) for key, val in (extension.constants or {}).items()}
         my_env.update(params)
+        my_env["api_token"] = user_info.token
         my_env["aqueduct_url"] = extension.aqueduct_url
         if extension.aqueduct_api_token is not None:
-            my_env["API_TOKEN"] = extension.aqueduct_api_token
+            my_env["api_token"] = extension.aqueduct_api_token
 
         cwd = Path.home()
         if extension.manifest_file:
