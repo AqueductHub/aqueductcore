@@ -152,8 +152,11 @@ function ExtensionModal({ isOpen, handleClose, selectedExtension }: ExtensionMod
             include: "active",
         });
         toast.success(
-            "Execution finished successfully",
-            { id: "exec_extension_success" }
+            "Task submitted",
+            {
+                id: "exec_extension_success",
+                icon: null
+            }
         )
     }
 
