@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
 ARG USERNAME=dev_user
 ARG USER_UID=1000
