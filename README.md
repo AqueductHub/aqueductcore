@@ -5,6 +5,13 @@
 [![Development Docker Images](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/dev_docker_image.yaml)
 [![pages-build-deployment](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/AqueductHub/aqueductcore/actions/workflows/pages/pages-build-deployment)
 
+⚠️ *Archived Repository*
+
+
+This repository has been archived and is no longer actively maintained. No further updates will be made. To learn more about Riverlane's products for Quantum Error Correction, visit [riverlane.com](riverlane.com).
+
+Feel free to fork Aqueduct if you find it useful!
+
 Aqueduct is the open platform that simplifies quantum experiment management.
 
 Intuitive automation and administration features enable you to
